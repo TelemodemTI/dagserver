@@ -38,9 +38,9 @@ The application does not yet have a front end to visualize the executions and th
 
 GraphQL Endpoint:  
   
-URL: http://<serverhost>:<serverport>/server/query  
-Username: dagserver  
-Password: dagserver  
+- URL: http://<serverhost>:<serverport>/server/query  
+- Username: dagserver  
+- Password: dagserver  
   
 The current graphql schema can be checked in the schema.graphql file located at the root of the classpath.  
 The application does not have the integrated graphql client (graphqli), but that does not prevent you from using an online version like [https://lucasconstantino.github.io/graphiql-online/] 
