@@ -34,7 +34,8 @@ quartz.properties:
 
 An example of a basic Dag is included in the repository , in the form of a maven project. The DAG implementation must be compiled into a JAR file and sent to the path configured in folderpath param.  
 The application does not yet have a front end to visualize the executions and the data in a friendly way, but it does have a GraphQL api, with which you can know the scheduled DAGs, the available DAGs, and the execution logs.  
-
+An extension for the visual studio code editor also exists in the repository, but it is still in early stages of development. Therefore, its use is not yet recommended.  
+  
 ## Credentials:
 
 GraphQL Endpoint:  
