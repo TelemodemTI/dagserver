@@ -2,8 +2,8 @@ package example_dag.main;
 
 import java.util.Properties;
 import server.application.core.DagExecutable;
-import server.application.operators.DummyOperator;
 import server.application.operators.OperatorStatus;
+import server.application.operators.types.DummyOperator;
 import server.infra.annotations.Dag;
 
 @Dag(name = "example_dag",cronExpr = "0 0/5 * * * ?", group="my_dags_group")

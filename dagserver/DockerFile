@@ -1,0 +1,16 @@
+FROM maven:3.6.1-jdk-11 as maven_builder
+WORKDIR /app/
+COPY / /app/dagserver/
+WORKDIR /app/dagserver/
+RUN ["mvn","clean","install"]
+
+
+FROM tomcat:9.0.54-jdk11
+COPY --from=maven_builder /app/dagserver/target/dagserver-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/
+RUN mv /usr/local/tomcat/webapps/dagserver-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/dagserver.war
+
+EXPOSE 2587
+EXPOSE 8080
+
+CMD ["catalina.sh", "run"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]

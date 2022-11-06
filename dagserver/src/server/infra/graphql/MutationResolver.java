@@ -2,16 +2,15 @@ package server.infra.graphql;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
+import server.application.handlers.SchedulerMutationHandler;
 
-import server.application.handlers.SchedulerHandler;
 
 @Component
 public class MutationResolver implements GraphQLMutationResolver {
 	
 	@Autowired
-	SchedulerHandler handler;
+	SchedulerMutationHandler handler;
 	
 	public class Status {
 		public String status;
@@ -21,22 +20,18 @@ public class MutationResolver implements GraphQLMutationResolver {
 	
 	public Status scheduleDag(String token,String dagname,String jarname) throws Exception {
 		handler.scheduleDag(token,dagname,jarname);
-		Status status = new Status();
-		status.code = 200;
-		status.status = "ok";
-		status.value = "ok";
-		return status;
+		return ok();
     }
 	public Status unscheduleDag(String token,String dagname,String jarname) throws Exception {
 		handler.unscheduleDag(token,dagname, jarname);
+		return ok();
+	}
+	
+	private Status ok() {
 		Status status = new Status();
 		status.code = 200;
 		status.status = "ok";
 		status.value = "ok";
 		return status;
-	}
-	
-	public String getSchema() {
-		return "";
 	}
 }

@@ -22,7 +22,7 @@ import server.infra.quartz.QuartzConfig;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
-public class SchedulerHandler {
+public class SchedulerQueryHandler {
 	
 	@Value( "${param.jwt_secret}" )
 	private String jwt_secret;
@@ -36,14 +36,16 @@ public class SchedulerHandler {
 	@Value( "${param.jwt_ttl}" )
 	private Integer jwt_ttl;
 	
+	@Value( "${param.folderpath}" )
+	private String path;
+	
 	@Autowired
 	SchedulerRepository repository;
 	
 	@Autowired
 	QuartzConfig quartz;
 	
-	private static Logger log = Logger.getLogger(SchedulerHandler.class);
-	private static String path = "C:\\exmple\\dagjava";
+	private static Logger log = Logger.getLogger(SchedulerQueryHandler.class);
 	
 	public List<Map<String,Object>> listScheduledJobs() throws Exception {
 		List<Map<String,Object>> realscheduled = quartz.listScheduled();
@@ -65,22 +67,9 @@ public class SchedulerHandler {
 		var rv = scanner.getOperators();
 		return rv;
 	}
-
-
-	public void scheduleDag(String token, String dagname,String jarname) throws Exception {
-		Map<String,Object> claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
-		var scanner = new JarScheduler(this.path,quartz);
-		scanner.scheduler(dagname,jarname);
-	}
-	public void unscheduleDag(String token,String dagname,String jarname) throws Exception {
-		Map<String,Object> claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
-		var scanner = new JarScheduler(this.path,quartz);
-		scanner.unschedule(dagname,jarname);
-	}
 	public List<Log> getLogs(String dagname) {
 		return repository.getLogs(dagname);
 	}
-
 	public String login(String username,String pwdhash) throws Exception {
 		List<User> list = repository.findUser(username);
 		if(list.size() > 0) {
@@ -99,6 +88,5 @@ public class SchedulerHandler {
 		} else {
 			return "";
 		}
-		
 	}
 }

@@ -17,8 +17,7 @@ public class DefaultController {
 	
 	@RequestMapping(value="/",method = RequestMethod.GET)
     public ResponseEntity<?> index(Model model,HttpServletRequest request,HttpServletResponse response) {
-		logger.debug("prueba de log!");
-		return new ResponseEntity<String>("testing", HttpStatus.OK);
+		return new ResponseEntity<String>("dagserver is running!", HttpStatus.OK);
 	}
 
 }

@@ -1,4 +1,4 @@
-package server.application.operators;
+package server.application.operators.types;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -7,6 +7,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
+import server.application.operators.OperatorStage;
 import server.infra.annotations.Operator;
 
 @Operator(args={"host","user","pwd","port", "cmd"})

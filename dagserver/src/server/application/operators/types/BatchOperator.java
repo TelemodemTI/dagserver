@@ -1,9 +1,10 @@
-package server.application.operators;
+package server.application.operators.types;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 
+import server.application.operators.OperatorStage;
 import server.infra.annotations.Operator;
 
 @Operator(args={"prefix","c","cmd"})

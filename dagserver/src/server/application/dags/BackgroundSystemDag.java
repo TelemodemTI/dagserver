@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import server.application.core.DagExecutable;
-import server.application.operators.BatchOperator;
-import server.application.operators.DummyOperator;
-import server.application.operators.JdbcOperator;
 import server.application.operators.OperatorStatus;
+import server.application.operators.types.BatchOperator;
+import server.application.operators.types.DummyOperator;
+import server.application.operators.types.JdbcOperator;
 import server.infra.annotations.Dag;
 
 @Dag(name = "background_system_dag",cronExpr = "0 0/1 * * * ?", group="system_dags")

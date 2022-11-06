@@ -1,7 +1,8 @@
-package server.application.operators;
+package server.application.operators.types;
 
 import java.util.concurrent.Callable;
 
+import server.application.operators.OperatorStage;
 import server.infra.annotations.Operator;
 
 @Operator(args={})

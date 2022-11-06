@@ -2,8 +2,8 @@ package server.application.dags;
 
 import java.util.Properties;
 import server.application.core.DagExecutable;
-import server.application.operators.DummyOperator;
 import server.application.operators.OperatorStatus;
+import server.application.operators.types.DummyOperator;
 import server.infra.annotations.Dag;
 
 @Dag(name = "event_system_dag", group="system_dags", onEnd="background_system_dag")

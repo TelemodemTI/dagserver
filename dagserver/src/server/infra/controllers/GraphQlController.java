@@ -38,8 +38,7 @@ public class GraphQlController {
 	
 	@PostConstruct
 	public void init() {
-		GraphQLSchema graphQLSchema = SchemaParser.newParser().file("schema.graphql").schemaString(queryResolver.getSchema()+"\n"+mutationResolver.getSchema()).resolvers(queryResolver,mutationResolver).build().makeExecutableSchema();
-		//GraphQLSchema graphQLSchema = SchemaParser.newParser().file("schema.graphql").resolvers(queryResolver,mutationResolver).build().makeExecutableSchema();
+		GraphQLSchema graphQLSchema = SchemaParser.newParser().file("schema.graphql").resolvers(queryResolver,mutationResolver).build().makeExecutableSchema();
 		graphQL = GraphQL.newGraphQL(graphQLSchema).build();
 	}
 	

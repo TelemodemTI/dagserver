@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 
-import server.application.handlers.SchedulerHandler;
+import server.application.handlers.SchedulerQueryHandler;
 import server.domain.entities.Log;
 import server.domain.types.Available;
 import server.domain.types.LogEntry;
@@ -24,7 +24,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 	private final static Logger logger = Logger.getLogger(QueryResolver.class);
 	
 	@Autowired
-	SchedulerHandler handler;
+	SchedulerQueryHandler handler;
 	
 	public String login(String username,String pwdhash) throws Exception {
 		String token = handler.login(username,pwdhash);
@@ -109,7 +109,5 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}
 		return rv;
 	}
-	public String getSchema() {
-		return "";	
-	}
+	
 }

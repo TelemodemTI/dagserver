@@ -7,7 +7,8 @@ You must have a Quartz-compatible database installation. Currently only tested u
 
 ## Installation
 
-Once this war is compiled, it can be run on the latest version of TOMCAT 9
+Once this war is compiled, it can be run on the latest version of TOMCAT 9. 
+DockerFile is provided for Docker deployment support.
 
 ## Basic configuration
 

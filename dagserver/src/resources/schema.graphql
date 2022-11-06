@@ -33,7 +33,6 @@ type Query {
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 
 	logs(dagname: String): [LogEntry],
-	
 }
 
 type Mutation { 

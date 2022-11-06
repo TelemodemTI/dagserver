@@ -1,4 +1,4 @@
-package server.application.operators;
+package server.application.operators.types;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,6 +10,7 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
+import server.application.operators.OperatorStage;
 import server.infra.annotations.Operator;
 
 

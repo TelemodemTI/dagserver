@@ -27,7 +27,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import server.application.dags.BackgroundSystemDag;
 import server.application.dags.EventSystemDag;
 import server.infra.quartz.QuartzConfig;
-
+import server.infra.confs.WSServer;
 
 
 @EnableWebMvc
@@ -39,11 +39,20 @@ public class WebConfig implements WebMvcConfigurer {
 	@Value( "${org.quartz.dataSource.quartzDS.URL}" )
 	private String db_host;
 	
+	@Value( "${org.quartz.dataSource.quartzDS.driver}" )
+	private String db_driver;
+	
 	@Value( "${org.quartz.dataSource.quartzDS.user}" )
 	private String db_user;
 	
 	@Value( "${org.quartz.dataSource.quartzDS.password}" )
 	private String db_pass;
+	
+	@Value("${param.hibernate.dialect}")
+	private String db_dialect;
+	
+	@Value("${param.flyway.migrations}")
+	private String db_migrations;
 	
 	private final static Logger logger = Logger.getLogger(WebConfig.class);
 	private ArrayList<Job> defaultjobs;
@@ -99,7 +108,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Bean
 	public DataSource dataSource() {
 		BasicDataSource  dataSource = new BasicDataSource();
-	    dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+	    dataSource.setDriverClassName(this.db_driver);	    
 	    dataSource.setUsername(this.db_user);
 	    dataSource.setPassword(this.db_pass);
 	    dataSource.setUrl(this.db_host);
@@ -115,7 +124,7 @@ public class WebConfig implements WebMvcConfigurer {
 	}
 	private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect");
+        properties.put("hibernate.dialect", db_dialect);
         properties.put("hibernate.show_sql", false);
         return properties;        
     }
@@ -124,7 +133,7 @@ public class WebConfig implements WebMvcConfigurer {
 	    Flyway flyway = new Flyway();
 	    flyway.setDataSource(dataSource());
 	    flyway.setBaselineOnMigrate(true);
-	    flyway.setLocations("classpath:/server/migrations");
+	    flyway.setLocations(db_migrations);
 	    return flyway;
 	}
 }
