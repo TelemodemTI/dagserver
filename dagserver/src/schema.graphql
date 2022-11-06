@@ -1,0 +1,42 @@
+type Status { 
+	status: String , 
+	code: Int , 
+	value: String 
+}
+
+type Available {
+	jarname: String
+	classname: String
+	groupname: String
+	dagname: String
+	cronExpr: String
+	triggerEvent: String
+	targetDagname: String
+}
+
+type Scheduled {
+	dagname: String
+	groupname: String
+	eventTrigger: String
+	nextFireAt: Float
+}
+
+type LogEntry {
+	id: Int
+	dagname: String
+	execDt: Float
+	value: String
+}
+
+type Query { 
+	login(username: String ,pwdhash: String) : String,
+	scheduledJobs : [Scheduled] , 
+	availableJobs: [Available], 
+	logs(dagname: String): [LogEntry],
+	
+}
+
+type Mutation { 
+	scheduleDag(token:String, dagname:String, jarname:String) : Status, 
+	unscheduleDag(token:String, dagname:String, jarname:String) : Status 
+}
