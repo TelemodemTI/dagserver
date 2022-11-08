@@ -46,3 +46,10 @@ GraphQL Endpoint:
   
 The current graphql schema can be checked in the schema.graphql file located at the root of the classpath.  
 The application does not have the integrated graphql client (graphqli), but that does not prevent you from using an online version like [https://lucasconstantino.github.io/graphiql-online/] 
+
+
+## License
+
+<a href="https://www.buymeacoffee.com/maximolira" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
+  [Apache 2.0](LICENSE)
