@@ -22,26 +22,26 @@
       }
     ],
     "configuration": {
-			"id": "DagserverCredentials",
-			"title": "Dagserver Credentials",
-			"properties": {
-				"host": {
-					"type": "string",
-					"description": "Dagserver host",
-					"default": "dagserver"
-				},
+      "id": "DagserverCredentials",
+      "title": "Dagserver Credentials",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Dagserver host",
+          "default": "ws://localhost:65001"
+        },
         "username": {
-					"type": "string",
-					"description": "Dagserver Username",
-					"default": "dagserver"
-				},
+          "type": "string",
+          "description": "Dagserver Username",
+          "default": "dagserver"
+        },
         "password": {
-					"type": "string",
-					"description": "Dagserver Password",
-					"default": "dagserver"
-				}
-			}
-		}
+          "type": "string",
+          "description": "Dagserver Password",
+          "default": "dagserver"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -59,6 +59,7 @@
     "@types/mocha": "^10.0.0",
     "@types/node": "16.x",
     "@types/vscode": "^1.73.0",
+    "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "@vscode/test-electron": "^2.2.0",
@@ -69,5 +70,8 @@
     "typescript": "^4.8.4",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "ws": "^8.5.0"
   }
 }

@@ -1,5 +1,6 @@
 import { authentication, AuthenticationProvider, AuthenticationProviderAuthenticationSessionsChangeEvent, AuthenticationSession, Disposable, EventEmitter, ExtensionContext, ProgressLocation } from "vscode";
 import * as vscode from 'vscode';
+import { Authenticator } from "./authenticator";
 
 export const AUTH_TYPE = `dagserver`;
 const AUTH_NAME = `dagserver`;
@@ -7,10 +8,12 @@ const AUTH_NAME = `dagserver`;
 export class DagserverAuthenticationProvider implements AuthenticationProvider, Disposable {
     private _sessionChangeEmitter = new EventEmitter<AuthenticationProviderAuthenticationSessionsChangeEvent>();
     private _disposable: Disposable;
-    
+    private _authenticator: Authenticator;
   
     constructor(private readonly context: ExtensionContext) {
         this._disposable = Disposable.from(authentication.registerAuthenticationProvider(AUTH_TYPE, AUTH_NAME, this, { supportsMultipleAccounts: false }))
+        let host = vscode.workspace.getConfiguration().get<string>("host")!;
+        this._authenticator = new Authenticator(host);
     }
 
     get onDidChangeSessions() {
@@ -29,9 +32,10 @@ export class DagserverAuthenticationProvider implements AuthenticationProvider, 
 
     public async createSession(scopes: string[]): Promise<AuthenticationSession> {
         try {
-          let username = vscode.workspace.getConfiguration().get<string>("username");
-          let pwd = vscode.workspace.getConfiguration().get<string>("password");
-          const token = "token";
+          let username = vscode.workspace.getConfiguration().get<string>("username")!;
+          let pwd = vscode.workspace.getConfiguration().get<string>("password")!;
+          
+          const token = await this._authenticator.login(username,pwd);
           
           // eslint-disable-next-line curly
           if (!token) throw new Error(`Dagserver login failure`);
