@@ -2,6 +2,7 @@ import { authentication, AuthenticationProvider, AuthenticationProviderAuthentic
 import * as vscode from 'vscode';
 import { Authenticator } from "./authenticator";
 
+
 export const AUTH_TYPE = `dagserver`;
 const AUTH_NAME = `dagserver`;
 
@@ -36,15 +37,15 @@ export class DagserverAuthenticationProvider implements AuthenticationProvider, 
           let pwd = vscode.workspace.getConfiguration().get<string>("password")!;
           
           const token = await this._authenticator.login(username,pwd);
-          
+          //const token = "asdasdad";
           // eslint-disable-next-line curly
           if (!token) throw new Error(`Dagserver login failure`);
           const session: AuthenticationSession = {
-            id: "qqqq-wwwww-eeeee-rrrrr",
+            id: username,
             accessToken: token,
             account: {
-              label: "labrluser",
-              id: "testid"
+              label: username,
+              id: username
             },
             scopes: []
           };

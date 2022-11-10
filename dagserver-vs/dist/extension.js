@@ -42,15 +42,16 @@ class DagserverAuthenticationProvider {
             let username = vscode.workspace.getConfiguration().get("username");
             let pwd = vscode.workspace.getConfiguration().get("password");
             const token = await this._authenticator.login(username, pwd);
+            //const token = "asdasdad";
             // eslint-disable-next-line curly
             if (!token)
                 throw new Error(`Dagserver login failure`);
             const session = {
-                id: "qqqq-wwwww-eeeee-rrrrr",
+                id: username,
                 accessToken: token,
                 account: {
-                    label: "labrluser",
-                    id: "testid"
+                    label: username,
+                    id: username
                 },
                 scopes: []
             };
@@ -97,7 +98,7 @@ class Authenticator {
         this._socket = null;
         this.host = host;
         //`ws://localhost:3002`
-        this._socket = new WebSocket(this.host + "/login");
+        this._socket = new WebSocket(this.host + "/vscode");
     }
     async login(username, pwd) {
         return new Promise((resolve, reject) => {
@@ -107,9 +108,8 @@ class Authenticator {
             };
             this._socket?.send(JSON.stringify(message));
             this._socket?.on('message', (data) => {
-                console.log(data);
-                console.log(data.toString());
-                let msg = JSON.parse(data.toString());
+                let msg = data.toString();
+                this._socket?.close();
                 resolve(msg);
             });
         });
@@ -4751,6 +4751,94 @@ function parse(header) {
 module.exports = { parse };
 
 
+/***/ }),
+/* 27 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DagExplorer = void 0;
+const vscode = __webpack_require__(1);
+const WebSocket = __webpack_require__(4);
+const tree_item_1 = __webpack_require__(28);
+class DagExplorer {
+    constructor(context) {
+        this.context = context;
+        this._socket = null;
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+        let host = vscode.workspace.getConfiguration().get("host");
+        console.log(host);
+        this._socket = new WebSocket(host + "/vscode");
+        this.data = [];
+    }
+    getTreeItem(element) {
+        return element;
+    }
+    getChildren(element) {
+        if (element === undefined) {
+            return this.data;
+        }
+        return element.children;
+    }
+    async refresh() {
+        let sessionstr = await this.context.secrets.get("dagserver");
+        let session = JSON.parse(sessionstr)[0];
+        if (session && session.accessToken) {
+            return new Promise((resolve, reject) => {
+                let token = session.accessToken;
+                let message = {
+                    type: "availables",
+                    args: [token]
+                };
+                console.log(message);
+                this._socket?.send(JSON.stringify(message));
+                this._socket?.on('message', (data) => {
+                    let msg = data.toString();
+                    console.log(msg);
+                    let datao = JSON.parse(msg);
+                    let keys1 = Object(datao);
+                    for (let index = 0; index < keys1.length; index++) {
+                        const key = keys1[index];
+                        this.data.push(new tree_item_1.TreeItem(key, "combine"));
+                    }
+                    this._onDidChangeTreeData.fire(null);
+                    resolve(true);
+                });
+            });
+        }
+        else {
+            return Promise.resolve();
+        }
+    }
+}
+exports.DagExplorer = DagExplorer;
+
+
+/***/ }),
+/* 28 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TreeItem = void 0;
+const vscode = __webpack_require__(1);
+class TreeItem extends vscode.TreeItem {
+    constructor(label, iconPath, children) {
+        super(label, children === undefined ? vscode.TreeItemCollapsibleState.None :
+            vscode.TreeItemCollapsibleState.Expanded);
+        this.children = children;
+        this.iconPath = new vscode.ThemeIcon(iconPath);
+        this.command = {
+            "title": "Reload",
+            "command": "dagserver-vs.helloWorld",
+            "arguments": [[this.label, iconPath]]
+        };
+    }
+}
+exports.TreeItem = TreeItem;
+
+
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -4790,31 +4878,24 @@ exports.deactivate = exports.activate = void 0;
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __webpack_require__(1);
 const authentication_provider_1 = __webpack_require__(2);
+const dag_explorer_1 = __webpack_require__(27);
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "dagserver-vs" is now active!');
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with registerCommand
-    // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('dagserver-vs.helloWorld', () => {
-        // The code you place here will be executed every time your command is executed
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World from dagserver-vs!');
-    });
-    context.subscriptions.push(disposable);
     context.subscriptions.push(new authentication_provider_1.DagserverAuthenticationProvider(context));
-    getDagserverSession();
+    getDagserverSession(context);
     context.subscriptions.push(vscode.authentication.onDidChangeSessions(async (e) => {
-        getDagserverSession();
+        getDagserverSession(context);
     }));
 }
 exports.activate = activate;
-const getDagserverSession = async () => {
+const getDagserverSession = async (context) => {
     const session = await vscode.authentication.getSession("dagserver", [], { createIfNone: false });
     if (session) {
+        console.log("ypaso o mas");
+        let explorer = new dag_explorer_1.DagExplorer(context);
+        vscode.window.registerTreeDataProvider('explorer', explorer);
+        await explorer.refresh();
         vscode.window.showInformationMessage(`Logged to dagserver as ${session.account.label}`);
     }
 };

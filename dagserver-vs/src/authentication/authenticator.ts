@@ -9,7 +9,7 @@ export class Authenticator{
     constructor(host:string){
         this.host = host;
         //`ws://localhost:3002`
-        this._socket = new WebSocket(this.host+"/login");
+        this._socket = new WebSocket(this.host+"/vscode");
     }
 
     public async login(username:string,pwd:string) : Promise<string>{
@@ -20,12 +20,11 @@ export class Authenticator{
             };
             this._socket?.send(JSON.stringify(message));
             this._socket?.on('message', (data: any) => {
-                console.log(data);
-                console.log(data.toString())
-                let msg = JSON.parse(data.toString());
+                let msg = data.toString();
+                this._socket?.close();
                 resolve(msg);
             });
-        })
+        });
     }
 
 }

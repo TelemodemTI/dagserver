@@ -21,6 +21,14 @@
         "title": "Hello World"
       }
     ],
+    "views": {
+			"explorer": [
+				{
+					"id": "explorer",
+					"name": "DagsExplorer"
+				}
+			]
+		},
     "configuration": {
       "id": "DagserverCredentials",
       "title": "Dagserver Credentials",
@@ -28,7 +36,7 @@
         "host": {
           "type": "string",
           "description": "Dagserver host",
-          "default": "ws://localhost:65001"
+          "default": "ws://localhost:8080/dagserver"
         },
         "username": {
           "type": "string",
@@ -58,6 +66,7 @@
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.0",
     "@types/node": "16.x",
+    "@types/uuid": "^8.3.4",
     "@types/vscode": "^1.73.0",
     "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
