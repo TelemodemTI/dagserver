@@ -4768,7 +4768,6 @@ class DagExplorer {
         this._onDidChangeTreeData = new vscode.EventEmitter();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         let host = vscode.workspace.getConfiguration().get("host");
-        console.log(host);
         this._socket = new WebSocket(host + "/vscode");
         this.data = [];
     }
@@ -4791,16 +4790,19 @@ class DagExplorer {
                     type: "availables",
                     args: [token]
                 };
-                console.log(message);
                 this._socket?.send(JSON.stringify(message));
                 this._socket?.on('message', (data) => {
                     let msg = data.toString();
-                    console.log(msg);
                     let datao = JSON.parse(msg);
-                    let keys1 = Object(datao);
+                    let keys1 = Object.keys(datao);
                     for (let index = 0; index < keys1.length; index++) {
                         const key = keys1[index];
-                        this.data.push(new tree_item_1.TreeItem(key, "combine"));
+                        let childrens = [];
+                        for (let index = 0; index < datao[key].length; index++) {
+                            const dag = datao[key][index];
+                            childrens.push(new tree_item_1.TreeItem(dag.dagname, "debug-console"));
+                        }
+                        this.data.push(new tree_item_1.TreeItem(key, "package", childrens));
                     }
                     this._onDidChangeTreeData.fire(null);
                     resolve(true);
@@ -4831,7 +4833,7 @@ class TreeItem extends vscode.TreeItem {
         this.iconPath = new vscode.ThemeIcon(iconPath);
         this.command = {
             "title": "Reload",
-            "command": "dagserver-vs.helloWorld",
+            "command": "dagserver-vs.loadView",
             "arguments": [[this.label, iconPath]]
         };
     }
@@ -4883,6 +4885,12 @@ const dag_explorer_1 = __webpack_require__(27);
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     context.subscriptions.push(new authentication_provider_1.DagserverAuthenticationProvider(context));
+    let disposable = vscode.commands.registerCommand('dagserver-vs.loadView', () => {
+        // The code you place here will be executed every time your command is executed
+        // Display a message box to the user
+        vscode.window.showInformationMessage('Hello World from dagserver-vs!');
+    });
+    context.subscriptions.push(disposable);
     getDagserverSession(context);
     context.subscriptions.push(vscode.authentication.onDidChangeSessions(async (e) => {
         getDagserverSession(context);
@@ -4892,7 +4900,6 @@ exports.activate = activate;
 const getDagserverSession = async (context) => {
     const session = await vscode.authentication.getSession("dagserver", [], { createIfNone: false });
     if (session) {
-        console.log("ypaso o mas");
         let explorer = new dag_explorer_1.DagExplorer(context);
         vscode.window.registerTreeDataProvider('explorer', explorer);
         await explorer.refresh();

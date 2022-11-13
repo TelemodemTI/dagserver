@@ -17,8 +17,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "dagserver-vs.helloWorld",
-        "title": "Hello World"
+        "command": "dagserver-vs.loadView",
+        "title": "Load Job Detail"
       }
     ],
     "views": {

@@ -12,8 +12,8 @@ export class TreeItem extends vscode.TreeItem {
       this.iconPath = new vscode.ThemeIcon(iconPath);
       this.command = {
         "title": "Reload",
-        "command": "dagserver-vs.helloWorld",
-		    "arguments": [[this.label,iconPath]]
+        "command": "dagserver-vs.loadView",
+		"arguments": [[this.label,iconPath]]
      };
 	}
     

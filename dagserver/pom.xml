@@ -134,7 +134,13 @@
 		    <artifactId>spring-beans</artifactId>
 		    <version>${spring.version}</version>
 		</dependency>
-		
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-websocket</artifactId>
+		    <version>${spring.version}</version>
+		</dependency>
+
   
 		  	<dependency>
 				<groupId>org.slf4j</groupId>
@@ -224,6 +230,14 @@
 		    <artifactId>java-jwt</artifactId>
 		    <version>${jwt.version}</version>
 		</dependency>
+		
+		
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20220924</version>
+		</dependency>
+
   </dependencies>
   
 </project>

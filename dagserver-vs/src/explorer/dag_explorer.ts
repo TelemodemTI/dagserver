@@ -14,7 +14,6 @@ export class DagExplorer implements vscode.TreeDataProvider<TreeItem> {
   
 	constructor(private readonly context: ExtensionContext) {
       let host = vscode.workspace.getConfiguration().get<string>("host")!;
-      console.log(host)
       this._socket = new WebSocket(host+"/vscode");
 	  this.data = [];
 	}
@@ -39,25 +38,28 @@ export class DagExplorer implements vscode.TreeDataProvider<TreeItem> {
                     type: "availables",
                     args: [token]
                 };
-                console.log(message)
                 this._socket?.send(JSON.stringify(message));
                 this._socket?.on('message', (data: any) => {
                     let msg = data.toString();
-                    console.log(msg);
                     let datao:any = JSON.parse(msg);
-                    let keys1 = Object(datao);
+                    let keys1 = Object.keys(datao);
                     for (let index = 0; index < keys1.length; index++) {
                         const key = keys1[index];
-                        this.data.push(new TreeItem(key, "combine"));
+                        let childrens = [];
+                        for (let index = 0; index < datao[key].length; index++) {
+                            const dag = datao[key][index];
+                            childrens.push(new TreeItem(dag.dagname, "debug-console" ));
+                        }
+                        this.data.push(new TreeItem(key, "package",childrens));
                     }
                     this._onDidChangeTreeData.fire(null);
                     resolve(true);
                 });
-            })
+            });
         } else {
-            return Promise.resolve()
+            return Promise.resolve();
         }
-        
     }
     
 }
+
