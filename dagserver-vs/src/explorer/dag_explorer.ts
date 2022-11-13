@@ -48,9 +48,11 @@ export class DagExplorer implements vscode.TreeDataProvider<TreeItem> {
                         let childrens = [];
                         for (let index = 0; index < datao[key].length; index++) {
                             const dag = datao[key][index];
-                            childrens.push(new TreeItem(dag.dagname, "debug-console" ));
+                            let icon = dag.isScheduled ? "debug-console":"terminal";
+                            let context = dag.isScheduled ? "scheduled":"notscheduled";
+                            childrens.push(new TreeItem(dag.dagname, icon , context ));
                         }
-                        this.data.push(new TreeItem(key, "package",childrens));
+                        this.data.push(new TreeItem(key, "package", "package",childrens));
                     }
                     this._onDidChangeTreeData.fire(null);
                     resolve(true);

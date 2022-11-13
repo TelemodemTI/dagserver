@@ -13,6 +13,6 @@ public interface SchedulerQueryUseCase {
 
 	List<Log> getLogs(String dagname);
 
-	String login(String username, String pwdhash) throws Exception;
+	
 
 }

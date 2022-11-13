@@ -4757,10 +4757,105 @@ module.exports = { parse };
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DagDetailView = void 0;
+const vscode = __webpack_require__(1);
+const WebSocket = __webpack_require__(4);
+class DagDetailView {
+    constructor(context, args) {
+        this.context = context;
+        this.args = args;
+        this._socket = null;
+        let host = vscode.workspace.getConfiguration().get("host");
+        this._socket = new WebSocket(host + "/vscode");
+    }
+    async configure() {
+        let sessionstr = await this.context.secrets.get("dagserver");
+        return new Promise((resolve, reject) => {
+            let session = JSON.parse(sessionstr)[0];
+            if (session && session.accessToken) {
+                let token = session.accessToken;
+                let message = {
+                    type: "logs",
+                    args: [token, this.args[0]]
+                };
+                this._socket?.send(JSON.stringify(message));
+                this._socket?.on('message', (data) => {
+                    let msg = JSON.parse(data.toString());
+                    this._socket?.close();
+                    resolve(msg);
+                });
+            }
+        });
+    }
+    getHtmlForWebview(logs) {
+        let tablebody = "";
+        for (let index = 0; index < logs.length; index++) {
+            const log = logs[index];
+            tablebody = tablebody + `<tr>
+                <td>${log.id}</td>
+                <td>${log.dagname}</td>
+                <td>${log.execdt}</td>
+                <td>
+                    <button onclick="start('test')">View</button>
+                </td>  
+            </tr>`;
+        }
+        return `<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Cat Colors</title>
+			</head>
+			<body>
+        
+        <script>
+            (function() {
+                
+                setInterval(() => {
+                    
+                        vscode.postMessage({
+                            command: 'alert',
+                            text: ' on line '
+                        })
+                   
+                }, 100);
+            }())
+        </script>
+
+            <table border=1>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Dagname</th>
+                        <th>ExecutedAt</th>
+                        <th>View</th>  
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tablebody}
+                </tbody>
+            </table>
+
+
+			</body>
+			</html>`;
+    }
+}
+exports.DagDetailView = DagDetailView;
+DagDetailView.viewType = 'Dagserver.DagDetailView';
+
+
+/***/ }),
+/* 28 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DagExplorer = void 0;
 const vscode = __webpack_require__(1);
 const WebSocket = __webpack_require__(4);
-const tree_item_1 = __webpack_require__(28);
+const tree_item_1 = __webpack_require__(29);
 class DagExplorer {
     constructor(context) {
         this.context = context;
@@ -4800,9 +4895,11 @@ class DagExplorer {
                         let childrens = [];
                         for (let index = 0; index < datao[key].length; index++) {
                             const dag = datao[key][index];
-                            childrens.push(new tree_item_1.TreeItem(dag.dagname, "debug-console"));
+                            let icon = dag.isScheduled ? "debug-console" : "terminal";
+                            let context = dag.isScheduled ? "scheduled" : "notscheduled";
+                            childrens.push(new tree_item_1.TreeItem(dag.dagname, icon, context));
                         }
-                        this.data.push(new tree_item_1.TreeItem(key, "package", childrens));
+                        this.data.push(new tree_item_1.TreeItem(key, "package", "package", childrens));
                     }
                     this._onDidChangeTreeData.fire(null);
                     resolve(true);
@@ -4818,7 +4915,7 @@ exports.DagExplorer = DagExplorer;
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -4826,11 +4923,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TreeItem = void 0;
 const vscode = __webpack_require__(1);
 class TreeItem extends vscode.TreeItem {
-    constructor(label, iconPath, children) {
+    constructor(label, iconPath, context, children) {
         super(label, children === undefined ? vscode.TreeItemCollapsibleState.None :
             vscode.TreeItemCollapsibleState.Expanded);
         this.children = children;
         this.iconPath = new vscode.ThemeIcon(iconPath);
+        this.contextValue = context;
         this.command = {
             "title": "Reload",
             "command": "dagserver-vs.loadView",
@@ -4880,17 +4978,38 @@ exports.deactivate = exports.activate = void 0;
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __webpack_require__(1);
 const authentication_provider_1 = __webpack_require__(2);
-const dag_explorer_1 = __webpack_require__(27);
+const dag_detail_view_1 = __webpack_require__(27);
+const dag_explorer_1 = __webpack_require__(28);
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     context.subscriptions.push(new authentication_provider_1.DagserverAuthenticationProvider(context));
-    let disposable = vscode.commands.registerCommand('dagserver-vs.loadView', () => {
-        // The code you place here will be executed every time your command is executed
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World from dagserver-vs!');
+    let disposable1 = vscode.commands.registerCommand('dagserver-vs.loadView', (args) => {
+        if (args[1] !== "terminal") {
+            let view = new dag_detail_view_1.DagDetailView(context, args);
+            view.configure().then((logs) => {
+                const panel = vscode.window.createWebviewPanel(dag_detail_view_1.DagDetailView.viewType, "Log Executions", vscode.ViewColumn.One, {
+                    enableScripts: true
+                });
+                panel.webview.html = view.getHtmlForWebview(logs);
+                panel.webview.onDidReceiveMessage(message => {
+                    console.log(message);
+                });
+            });
+        }
+        else {
+            vscode.window.showInformationMessage('DAG is not scheduled!');
+        }
     });
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(disposable1);
+    let disposable2 = vscode.commands.registerCommand('dagserver-vs.schedule', () => {
+        vscode.window.showInformationMessage('scheduled');
+    });
+    context.subscriptions.push(disposable2);
+    let disposable3 = vscode.commands.registerCommand('dagserver-vs.unschedule', () => {
+        vscode.window.showInformationMessage('unschedule');
+    });
+    context.subscriptions.push(disposable3);
     getDagserverSession(context);
     context.subscriptions.push(vscode.authentication.onDidChangeSessions(async (e) => {
         getDagserverSession(context);

@@ -3,6 +3,8 @@ package main.domain.services;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -14,7 +16,7 @@ import main.domain.repositories.SchedulerRepository;
 
 @Service
 @ImportResource("classpath:properties-config.xml")
-public class LoginService implements LoginUseCase {
+public class LoginService implements LoginUseCase ,Function<List<String>,String> {
 
 	@Autowired
 	private SchedulerRepository repository;

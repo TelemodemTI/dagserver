@@ -1,6 +1,7 @@
 package main.infra.adapters.input.graphql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 
+import main.application.ports.input.LoginUseCase;
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.domain.entities.Log;
 import main.domain.types.Available;
@@ -26,8 +28,11 @@ public class QueryResolver implements GraphQLQueryResolver {
 	@Autowired
 	SchedulerQueryUseCase handler;
 	
+	@Autowired
+	LoginUseCase login;
+	
 	public String login(String username,String pwdhash) throws Exception {
-		String token = handler.login(username,pwdhash);
+		String token = login.apply(Arrays.asList(username, pwdhash));
 		return token;
 	}
 	

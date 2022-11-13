@@ -78,24 +78,5 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	public List<Log> getLogs(String dagname) {
 		return repository.getLogs(dagname);
 	}
-	@Override
-	public String login(String username,String pwdhash) throws Exception {
-		List<User> list = repository.findUser(username);
-		if(list.size() > 0) {
-			User user = list.get(0);
-			String hash = TokenEngine.sha256(pwdhash);
-			
-			if(hash.equals(user.getPwdhash())) {
-				Map<String,String> claims = new HashMap<String,String>();
-				claims.put("username", username);
-				claims.put("userid", user.getId().toString());
-				String token = TokenEngine.tokenize(jwt_secret, jwt_signer, jwt_subject, jwt_ttl, claims);
-				return token;
-			} else {
-				return "";
-			}
-		} else {
-			return "";
-		}
-	}
+	
 }

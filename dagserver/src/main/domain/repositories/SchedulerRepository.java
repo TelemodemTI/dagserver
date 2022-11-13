@@ -39,7 +39,7 @@ public class SchedulerRepository {
 	}
 	
 	public List<Log> getLogs(String dagname){
-		return dao.read(Log.class, "select log from Log as log where log.dagname = '"+dagname+"'");
+		return dao.read(Log.class, "select log from Log as log where log.dagname = '"+dagname+"' order by log.execDt desc");
 	}
 	
 	public void setLog(String dagname,String value) {

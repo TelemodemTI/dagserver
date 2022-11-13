@@ -10,7 +10,6 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:dagserver-vs.helloWorld",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
@@ -19,16 +18,33 @@
       {
         "command": "dagserver-vs.loadView",
         "title": "Load Job Detail"
+      },
+      {
+        "command": "dagserver-vs.schedule",
+        "title": "Schedule DAG"
+      },
+      {
+        "command": "dagserver-vs.unschedule",
+        "title": "Unschedule DAG"
       }
     ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "dagserver-vs.unschedule",
+          "icon": "trash",
+          "when": "view == explorer && viewItem  == scheduled"
+        }
+      ]
+    },
     "views": {
-			"explorer": [
-				{
-					"id": "explorer",
-					"name": "DagsExplorer"
-				}
-			]
-		},
+      "explorer": [
+        {
+          "id": "explorer",
+          "name": "DagsExplorer"
+        }
+      ]
+    },
     "configuration": {
       "id": "DagserverCredentials",
       "title": "Dagserver Credentials",
