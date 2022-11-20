@@ -1,5 +1,5 @@
 #
-# In your Quartz properties file, you'll need to set
+# In your Quartz properties file, youll need to set
 # org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 #
 #

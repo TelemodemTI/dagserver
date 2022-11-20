@@ -21,7 +21,6 @@ export class Authenticator{
             this._socket?.send(JSON.stringify(message));
             this._socket?.on('message', (data: any) => {
                 let msg = data.toString();
-                this._socket?.close();
                 resolve(msg);
             });
         });

@@ -34,10 +34,12 @@ public class DagExecutable implements Job,JobListener {
 		public Class<?> operator;
 		public String name;
 		public Properties args;
-		DagNode(String name,Class<?> operator,Properties args){
+		public Properties optionals;
+		DagNode(String name,Class<?> operator,Properties args,Properties optionals){
 			this.name = name;
 			this.operator = operator;
 			this.args = args;
+			this.optionals = optionals;
 		}
 	}
 	private String dagname = "";
@@ -61,6 +63,7 @@ public class DagExecutable implements Job,JobListener {
 		log.debug("outcode::" + status.toString()); 
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private OperatorStatus evaluate() throws JobExecutionException {
 		var fa = this.createDagMemoryAppender();
 		Logger logdag = Logger.getLogger("DAG");
@@ -81,6 +84,7 @@ public class DagExecutable implements Job,JobListener {
 				op.setArgs(node.args);
 				op.setXcom(xcom);
 				op.setName(node.name);
+				op.setOptionals(node.optionals);
 				Callable<?> instance  = (Callable<?>) op; 
 				var result = instance.call();
 				xcom.put(node.name , result );
@@ -110,7 +114,13 @@ public class DagExecutable implements Job,JobListener {
 		Logger.getRootLogger().addAppender(fa);
 		return fa;
 	}
+	protected void addOperator(String name,Class<?> operator) throws Exception {
+		this.addOperator(name, operator, new Properties() , new Properties());
+	}
 	protected void addOperator(String name,Class<?> operator,Properties args) throws Exception {
+		this.addOperator(name, operator, args , new Properties());
+	}
+	protected void addOperator(String name,Class<?> operator,Properties args,Properties optionals) throws Exception {
 		Operator annotation = operator.getAnnotation(Operator.class);
 		String[] argsarr = annotation.args();
 		for (int i = 0; i < argsarr.length; i++) {
@@ -119,7 +129,7 @@ public class DagExecutable implements Job,JobListener {
 				throw new Exception(string + "not found");
 			}
 		}
-		var node = new DagNode(name,operator,args);
+		var node = new DagNode(name,operator,args,optionals);
 		this.nodeList.put(name, node);
 		this.g.addVertex(node);
 	}
@@ -127,7 +137,9 @@ public class DagExecutable implements Job,JobListener {
 		var node1 = this.nodeList.get(name1);
 		var node2 = this.nodeList.get(name2);
 		this.constraints.put(name1, status);
-		this.g.addEdge(node1, node2);
+		try {
+			this.g.addEdge(node1, node2);
+		} catch (Exception e) {}	
 	}
 
 	public void setName(String dagname) {

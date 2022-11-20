@@ -1,22 +1,17 @@
 package main.infra.adapters.input.websocket;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import main.application.ports.input.GetAvailablesUseCase;
+import main.application.ports.input.GetLogUseCase;
 import main.application.ports.input.GetLogsUseCase;
 import main.application.ports.input.LoginUseCase;
 import main.domain.messages.Message;
@@ -37,6 +32,9 @@ public class WebSocketVsHandler extends TextWebSocketHandler  {
 	@Autowired
 	GetLogsUseCase logs;
 	
+	@Autowired
+	GetLogUseCase log;
+	
 	private Map<String,Function> commands = new HashMap<>();
 	
 	private static Logger logger = Logger.getLogger(WebSocketVsHandler.class);
@@ -51,6 +49,7 @@ public class WebSocketVsHandler extends TextWebSocketHandler  {
 			commands.put("login", (Function) login);
 			commands.put("availables", (Function) available);
 			commands.put("logs", (Function) logs);
+			commands.put("log", (Function) log);
 		}
 		return this;
 	}

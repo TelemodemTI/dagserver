@@ -1,17 +1,20 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { DagserverAuthenticationProvider } from './authentication/authentication_provider';
 import { DagDetailView } from './dag/dag_detail_view';
 
 
 import { DagExplorer } from './explorer/dag_explorer';
+import { LogViewer } from './log/log_view';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
 export function activate(context: vscode.ExtensionContext) {
 
+	let explorer : DagExplorer = new DagExplorer(context);
 	context.subscriptions.push(new DagserverAuthenticationProvider(context));
 	let disposable1 = vscode.commands.registerCommand('dagserver-vs.loadView', (args:any) => {
 		if(args[1] !== "terminal"){
@@ -21,9 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
 					enableScripts: true
 				  });
 				panel.webview.html = view.getHtmlForWebview(logs);
-
 				panel.webview.onDidReceiveMessage(message => {
-					console.log(message)
+					vscode.commands.executeCommand('dagserver-vs.loadLog',message.text);
 				});
 
 			});
@@ -33,23 +35,32 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable1);
 
-	let disposable2 = vscode.commands.registerCommand('dagserver-vs.schedule', () => {
-		vscode.window.showInformationMessage('scheduled');
-	});
-	context.subscriptions.push(disposable2);
+	
 
-	let disposable3 = vscode.commands.registerCommand('dagserver-vs.unschedule', () => {
-		vscode.window.showInformationMessage('unschedule');
+	let disposable4 = vscode.commands.registerCommand('dagserver-vs.loadLog', (args:any) => {
+		let log = new LogViewer(context);
+		log.getLogData(args).then((data:any)=>{
+			vscode.workspace.openTextDocument({
+				content: data.toString(), 
+				language: "text"
+			});
+			vscode.window.showInformationMessage('load log file');
+		});
 	});
-	context.subscriptions.push(disposable3);
+	context.subscriptions.push(disposable4);
 
+
+	let disposable5 = vscode.commands.registerCommand('dagserver-vs.reloadExplorer', (args:any) => {
+		getDagserverSession(context,explorer);
+	});
+	context.subscriptions.push(disposable5);
 	
 	
-	getDagserverSession(context);
+	getDagserverSession(context,explorer);
 
 	context.subscriptions.push(
 		vscode.authentication.onDidChangeSessions(async e => {
-			getDagserverSession(context);
+			getDagserverSession(context,explorer);
 		})
 	);
 
@@ -58,13 +69,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 
-const getDagserverSession = async (context: vscode.ExtensionContext) => {
+const getDagserverSession = async (context: vscode.ExtensionContext,explorer: DagExplorer) => {
 	const session = await vscode.authentication.getSession("dagserver", [], { createIfNone: false });
 	if (session) {
-		let explorer : DagExplorer = new DagExplorer(context);
+		
 		vscode.window.registerTreeDataProvider('explorer',explorer );
 		await explorer.refresh();	
 		vscode.window.showInformationMessage(`Logged to dagserver as ${session.account.label}`);
+	} else {
+		await explorer.refresh();
 	}
 };
 

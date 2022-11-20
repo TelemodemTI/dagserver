@@ -35,7 +35,6 @@ export class DagserverAuthenticationProvider implements AuthenticationProvider, 
         try {
           let username = vscode.workspace.getConfiguration().get<string>("username")!;
           let pwd = vscode.workspace.getConfiguration().get<string>("password")!;
-          
           const token = await this._authenticator.login(username,pwd);
           //const token = "asdasdad";
           // eslint-disable-next-line curly
@@ -62,6 +61,7 @@ export class DagserverAuthenticationProvider implements AuthenticationProvider, 
 
     public async removeSession(sessionId: string): Promise<void> {
         const allSessions = await this.context.secrets.get("dagserver");
+        console.log(allSessions)
         if (allSessions) {
           let sessions = JSON.parse(allSessions) as AuthenticationSession[];
           const sessionIdx = sessions.findIndex(s => s.id === sessionId);

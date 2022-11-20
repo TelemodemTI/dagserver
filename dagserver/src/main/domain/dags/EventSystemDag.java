@@ -12,8 +12,8 @@ public class EventSystemDag extends DagExecutable {
 	public EventSystemDag() throws Exception {
 		super();
 
-		this.addOperator("step1",DummyOperator.class, new Properties());
-		this.addOperator("step2",DummyOperator.class, new Properties());
+		this.addOperator("step1",DummyOperator.class);
+		this.addOperator("step2",DummyOperator.class);
 		
 		this.addDependency("step1","step2",OperatorStatus.OK);
 

@@ -13,8 +13,6 @@ export class DagDetailView {
         let host = vscode.workspace.getConfiguration().get<string>("host")!;
         this._socket = new WebSocket(host+"/vscode");
 
-
-        
     }
 
     public async configure(){
@@ -47,7 +45,7 @@ export class DagDetailView {
                 <td>${log.dagname}</td>
                 <td>${log.execdt}</td>
                 <td>
-                    <button onclick="start('test')">View</button>
+                    <button onclick="handleHowdyClick(${log.id})">View</button>
                 </td>  
             </tr>`;
         }
@@ -61,17 +59,15 @@ export class DagDetailView {
 			<body>
         
         <script>
-            (function() {
+                const vscode = acquireVsCodeApi();
                 
-                setInterval(() => {
-                    
-                        vscode.postMessage({
-                            command: 'alert',
-                            text: ' on line '
-                        })
-                   
-                }, 100);
-            }())
+                function handleHowdyClick(id) {
+                    vscode.postMessage({
+                      command: "logDetails",
+                      text: id,
+                    });
+                }
+    
         </script>
 
             <table border=1>

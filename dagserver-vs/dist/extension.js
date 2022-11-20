@@ -67,6 +67,7 @@ class DagserverAuthenticationProvider {
     }
     async removeSession(sessionId) {
         const allSessions = await this.context.secrets.get("dagserver");
+        console.log(allSessions);
         if (allSessions) {
             let sessions = JSON.parse(allSessions);
             const sessionIdx = sessions.findIndex(s => s.id === sessionId);
@@ -109,7 +110,6 @@ class Authenticator {
             this._socket?.send(JSON.stringify(message));
             this._socket?.on('message', (data) => {
                 let msg = data.toString();
-                this._socket?.close();
                 resolve(msg);
             });
         });
@@ -4796,7 +4796,7 @@ class DagDetailView {
                 <td>${log.dagname}</td>
                 <td>${log.execdt}</td>
                 <td>
-                    <button onclick="start('test')">View</button>
+                    <button onclick="handleHowdyClick(${log.id})">View</button>
                 </td>  
             </tr>`;
         }
@@ -4810,17 +4810,15 @@ class DagDetailView {
 			<body>
         
         <script>
-            (function() {
+                const vscode = acquireVsCodeApi();
                 
-                setInterval(() => {
-                    
-                        vscode.postMessage({
-                            command: 'alert',
-                            text: ' on line '
-                        })
-                   
-                }, 100);
-            }())
+                function handleHowdyClick(id) {
+                    vscode.postMessage({
+                      command: "logDetails",
+                      text: id,
+                    });
+                }
+    
         </script>
 
             <table border=1>
@@ -4876,38 +4874,49 @@ class DagExplorer {
         return element.children;
     }
     async refresh() {
-        let sessionstr = await this.context.secrets.get("dagserver");
-        let session = JSON.parse(sessionstr)[0];
-        if (session && session.accessToken) {
-            return new Promise((resolve, reject) => {
-                let token = session.accessToken;
-                let message = {
-                    type: "availables",
-                    args: [token]
-                };
-                this._socket?.send(JSON.stringify(message));
-                this._socket?.on('message', (data) => {
-                    let msg = data.toString();
-                    let datao = JSON.parse(msg);
-                    let keys1 = Object.keys(datao);
-                    for (let index = 0; index < keys1.length; index++) {
-                        const key = keys1[index];
-                        let childrens = [];
-                        for (let index = 0; index < datao[key].length; index++) {
-                            const dag = datao[key][index];
-                            let icon = dag.isScheduled ? "debug-console" : "terminal";
-                            let context = dag.isScheduled ? "scheduled" : "notscheduled";
-                            childrens.push(new tree_item_1.TreeItem(dag.dagname, icon, context));
+        try {
+            let sessionstr = await this.context.secrets.get("dagserver");
+            let session = JSON.parse(sessionstr)[0];
+            if (session && session.accessToken) {
+                return new Promise((resolve, reject) => {
+                    let token = session.accessToken;
+                    let message = {
+                        type: "availables",
+                        args: [token]
+                    };
+                    this._socket?.send(JSON.stringify(message));
+                    this._socket?.on('message', (data) => {
+                        this.data = [];
+                        let msg = data.toString();
+                        let datao = JSON.parse(msg);
+                        let keys1 = Object.keys(datao);
+                        for (let index = 0; index < keys1.length; index++) {
+                            const key = keys1[index];
+                            let childrens = [];
+                            for (let index = 0; index < datao[key].length; index++) {
+                                const dag = datao[key][index];
+                                let icon = dag.isScheduled ? "debug-console" : "terminal";
+                                let context = dag.isScheduled ? "scheduled" : "notscheduled";
+                                childrens.push(new tree_item_1.TreeItem(dag.dagname, icon, context));
+                            }
+                            this.data.push(new tree_item_1.TreeItem(key, "package", "package", childrens));
                         }
-                        this.data.push(new tree_item_1.TreeItem(key, "package", "package", childrens));
-                    }
-                    this._onDidChangeTreeData.fire(null);
-                    resolve(true);
+                        console.log(data);
+                        this._onDidChangeTreeData.fire(null);
+                        resolve(true);
+                    });
                 });
-            });
+            }
+            else {
+                this.data = [];
+                this._onDidChangeTreeData.fire(null);
+                return Promise.resolve(true);
+            }
         }
-        else {
-            return Promise.resolve();
+        catch (error) {
+            this.data = [];
+            this._onDidChangeTreeData.fire(null);
+            return Promise.resolve(true);
         }
     }
 }
@@ -4937,6 +4946,46 @@ class TreeItem extends vscode.TreeItem {
     }
 }
 exports.TreeItem = TreeItem;
+
+
+/***/ }),
+/* 30 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogViewer = void 0;
+const vscode = __webpack_require__(1);
+const WebSocket = __webpack_require__(4);
+class LogViewer {
+    constructor(context) {
+        this.context = context;
+        this._socket = null;
+        let host = vscode.workspace.getConfiguration().get("host");
+        this._socket = new WebSocket(host + "/vscode");
+    }
+    async getLogData(logid) {
+        let sessionstr = await this.context.secrets.get("dagserver");
+        let session = JSON.parse(sessionstr)[0];
+        if (session && session.accessToken) {
+            return new Promise((resolve, reject) => {
+                let token = session.accessToken;
+                let message = {
+                    type: "log",
+                    args: [token, logid]
+                };
+                this._socket?.send(JSON.stringify(message));
+                this._socket?.on('message', (data) => {
+                    resolve(data);
+                });
+            });
+        }
+        else {
+            return Promise.resolve();
+        }
+    }
+}
+exports.LogViewer = LogViewer;
 
 
 /***/ })
@@ -4980,9 +5029,11 @@ const vscode = __webpack_require__(1);
 const authentication_provider_1 = __webpack_require__(2);
 const dag_detail_view_1 = __webpack_require__(27);
 const dag_explorer_1 = __webpack_require__(28);
+const log_view_1 = __webpack_require__(30);
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
+    let explorer = new dag_explorer_1.DagExplorer(context);
     context.subscriptions.push(new authentication_provider_1.DagserverAuthenticationProvider(context));
     let disposable1 = vscode.commands.registerCommand('dagserver-vs.loadView', (args) => {
         if (args[1] !== "terminal") {
@@ -4993,7 +5044,7 @@ function activate(context) {
                 });
                 panel.webview.html = view.getHtmlForWebview(logs);
                 panel.webview.onDidReceiveMessage(message => {
-                    console.log(message);
+                    vscode.commands.executeCommand('dagserver-vs.loadLog', message.text);
                 });
             });
         }
@@ -5002,27 +5053,36 @@ function activate(context) {
         }
     });
     context.subscriptions.push(disposable1);
-    let disposable2 = vscode.commands.registerCommand('dagserver-vs.schedule', () => {
-        vscode.window.showInformationMessage('scheduled');
+    let disposable4 = vscode.commands.registerCommand('dagserver-vs.loadLog', (args) => {
+        let log = new log_view_1.LogViewer(context);
+        log.getLogData(args).then((data) => {
+            vscode.workspace.openTextDocument({
+                content: data.toString(),
+                language: "text"
+            });
+            vscode.window.showInformationMessage('load log file');
+        });
     });
-    context.subscriptions.push(disposable2);
-    let disposable3 = vscode.commands.registerCommand('dagserver-vs.unschedule', () => {
-        vscode.window.showInformationMessage('unschedule');
+    context.subscriptions.push(disposable4);
+    let disposable5 = vscode.commands.registerCommand('dagserver-vs.reloadExplorer', (args) => {
+        getDagserverSession(context, explorer);
     });
-    context.subscriptions.push(disposable3);
-    getDagserverSession(context);
+    context.subscriptions.push(disposable5);
+    getDagserverSession(context, explorer);
     context.subscriptions.push(vscode.authentication.onDidChangeSessions(async (e) => {
-        getDagserverSession(context);
+        getDagserverSession(context, explorer);
     }));
 }
 exports.activate = activate;
-const getDagserverSession = async (context) => {
+const getDagserverSession = async (context, explorer) => {
     const session = await vscode.authentication.getSession("dagserver", [], { createIfNone: false });
     if (session) {
-        let explorer = new dag_explorer_1.DagExplorer(context);
         vscode.window.registerTreeDataProvider('explorer', explorer);
         await explorer.refresh();
         vscode.window.showInformationMessage(`Logged to dagserver as ${session.account.label}`);
+    }
+    else {
+        await explorer.refresh();
     }
 };
 // This method is called when your extension is deactivated

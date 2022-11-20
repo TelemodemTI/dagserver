@@ -20,23 +20,15 @@
         "title": "Load Job Detail"
       },
       {
-        "command": "dagserver-vs.schedule",
-        "title": "Schedule DAG"
+        "command": "dagserver-vs.loadLog",
+        "title": "Load Log",
+        "args": "logid"
       },
       {
-        "command": "dagserver-vs.unschedule",
-        "title": "Unschedule DAG"
+        "command": "dagserver-vs.reloadExplorer",
+        "title": "Reload Dagserver Explorer"
       }
     ],
-    "menus": {
-      "view/item/context": [
-        {
-          "command": "dagserver-vs.unschedule",
-          "icon": "trash",
-          "when": "view == explorer && viewItem  == scheduled"
-        }
-      ]
-    },
     "views": {
       "explorer": [
         {

@@ -1,12 +1,15 @@
 package main.infra.adapters.confs;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +58,7 @@ public class DAO{
             }
         }
     }
-    public void deleteBy (final String query){
+    public void execute (final String query, Map<String,Object> params){
     	Session session = null;
         try {
       	    session = sessionFactory.getCurrentSession();
@@ -64,6 +67,11 @@ public class DAO{
         }
         try {
         	Query queryO = session.createQuery(query);
+        	var keys = params.keySet();
+        	for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String string = iterator.next();
+				queryO.setParameter(string, params.get(string));	
+			}
             queryO.executeUpdate();
         } catch (HibernateException e) {
         	e.printStackTrace();
@@ -73,14 +81,14 @@ public class DAO{
             }
         }
     }
-    public List<Object> raw(final String query){
-    	return read(Object.class,query,null,null,true);
-    }
     public <T> List<T> read(final Class<T> returnType,final String query ){
-    	return this.read(returnType, query,null,null,false);
+    	return this.read(returnType, query,new HashMap<String,Object>(){{}},null,null);
+    }
+    public <T> List<T> read(final Class<T> returnType,final String query,final Map<String,Object> params ){
+    	return this.read(returnType, query,params,null,null);
     }
     @SuppressWarnings("unchecked")
-	public <T> List<T> read(final Class<T> returnType,final String query,final Integer firstResult,final Integer limit,boolean nativeExec ){
+	public <T> List<T> read(final Class<T> returnType,final String query,final Map<String,Object> params,final Integer firstResult,final Integer limit ){
     	Session session = null;
         try {
       	    session = sessionFactory.getCurrentSession();
@@ -89,18 +97,16 @@ public class DAO{
         }  
         List<T> list = null;
         try {
+        	Query queryO = session.createQuery(query);
+        	var keys = params.keySet();
+        	for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String string = iterator.next();
+				queryO.setParameter(string, params.get(string));	
+			}
         	if((firstResult != null) && (limit != null)){
-        		if(nativeExec) {
-        			list = session.createSQLQuery(query).setFirstResult(firstResult).setMaxResults(limit).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE).list();
-        		} else {
-        			list = session.createQuery(query).setFirstResult(firstResult).setMaxResults(limit).list();	
-        		}
+        		list = queryO.setFirstResult(firstResult).setMaxResults(limit).list();	
         	} else {
-        		if(nativeExec) {
-        			list = session.createSQLQuery(query).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE).list();
-        		} else {
-        			list = session.createQuery(query).list();	
-        		}
+        		list = queryO.list();	
         	}
         } catch (HibernateException e) {
         	e.printStackTrace();
@@ -110,43 +116,5 @@ public class DAO{
             }
         }
         return list;
-    }
-    public <T> Integer count(String query){
-    	Session session = null;
-        try {
-      	    session = sessionFactory.getCurrentSession();
-        } catch (HibernateException e) {
-      	    session = sessionFactory.openSession();
-        }
-        Integer res = null;
-        try {
-        	res = ((Long) session.createQuery("select count(*) " + query).iterate().next() ).intValue();
-        } catch (HibernateException e) {
-        	e.printStackTrace();
-        } finally {
-        	if (session.isOpen()){
-            	session.close();
-            }
-        }
-    	return res;
-    }
-    public <T> Integer countDistinct(String distinctStr,String query){
-    	Session session = null;
-        try {
-      	    session = sessionFactory.getCurrentSession();
-        } catch (HibernateException e) {
-      	    session = sessionFactory.openSession();
-        }
-        Integer res = null;
-        try {
-        	res = ((Long) session.createQuery("select count(distinct "+distinctStr+") " + query).iterate().next() ).intValue();
-        } catch (HibernateException e) {
-        	e.printStackTrace();
-        } finally {
-        	if (session.isOpen()){
-            	session.close();
-            }
-        }
-    	return res;
     }
 }

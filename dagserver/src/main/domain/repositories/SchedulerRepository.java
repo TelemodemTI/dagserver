@@ -1,6 +1,7 @@
 package main.domain.repositories;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,9 @@ public class SchedulerRepository {
 	}
 	
 	public void removeListener(String name) {
-		dao.deleteBy("del from EventListener where listenerName = '"+name+"'");
+		dao.execute("del from EventListener where listenerName = :name'",new HashMap<String, Object>(){{
+			put("name", name);
+		}});
 	}
 	
 	public List<EventListener> listEventListeners(){
@@ -42,6 +45,10 @@ public class SchedulerRepository {
 		return dao.read(Log.class, "select log from Log as log where log.dagname = '"+dagname+"' order by log.execDt desc");
 	}
 	
+	public Log getLog(Integer logid){
+		return dao.read(Log.class, "select log from Log as log where log.id = :logid",new HashMap<String,Object>(){{put("logid",logid);}}).get(0);
+	}
+	
 	public void setLog(String dagname,String value) {
 		var entry = new Log();
 		entry.setDagname(dagname);
@@ -50,6 +57,10 @@ public class SchedulerRepository {
 		dao.save(entry);
 	}
 
+	public void deleteLogsBy(Date rolldate) {
+		dao.execute("delete from Log where execDt < :rolldate",new HashMap<String,Object>(){{put("rolldate",rolldate);}});
+	}
+	
 	public List<User> findUser(String username) {
 		List<User> founded = dao.read(User.class, "select user from User as user where user.username = '"+username+"'");
 		return founded;

@@ -1,6 +1,5 @@
 package main.domain.types;
 
-import java.util.Date;
 
 public class Scheduled {
 	private String dagname;

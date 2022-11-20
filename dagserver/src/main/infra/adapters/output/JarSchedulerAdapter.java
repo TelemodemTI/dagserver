@@ -61,7 +61,8 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
 		        // This ZipEntry represents a class. Now, what class does it represent?
 		    	Class<?> clazz = cl.loadClass(entry.getName().replace("/", ".").replace(".class", ""));
-		        Dag dag = clazz.getAnnotation(Dag.class);
+		        
+		    	Dag dag = clazz.getAnnotation(Dag.class);
 		        var map = new HashMap<String,String>();
 		        map.put("dagname", dag.name());
 		        map.put("groupname", dag.group());

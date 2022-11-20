@@ -35,3 +35,4 @@ CREATE TABLE `sche_users` (
 -- Records of usuarios
 -- ----------------------------
 INSERT INTO `sche_users` VALUES ('1', 'dagserver', 'f399729e48f37737f3aa5f2e74e62f9f75bb7bb10adb065a0a8e21df433d6fa3', NOW());
+commit;

@@ -1,6 +1,5 @@
 package main.infra.adapters.confs;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -26,8 +25,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import main.application.ports.input.GetDefaultJobsUseCase;
-import main.infra.adapters.confs.QuartzConfig;
-
 
 
 @EnableWebMvc
@@ -74,12 +71,7 @@ public class WebConfig implements WebMvcConfigurer {
 				quartz.init(defaultjobs);
 				logger.debug("starting QUARTZ");
 				
-				/*
-	 			if(this.websocket == null) {
-					websocket = new WSServer();
-	 				websocket.start();
-					logger.debug("starting Websocket");
-				}*/
+				
 				
 			} catch (Exception e) {
 				logger.error(e);

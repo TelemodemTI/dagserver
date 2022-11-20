@@ -35,5 +35,13 @@ public class OperatorStage {
 	public void setXcom(Map<String, Object> xcom) {
 		this.xcom = xcom;
 	}
+	protected Properties optionals;
+	public Properties getOptionals() {
+		return optionals;
+	}
+
+	public void setOptionals(Properties optionals) {
+		this.optionals = optionals;
+	}
 	
 }

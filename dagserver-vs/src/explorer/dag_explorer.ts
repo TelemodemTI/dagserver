@@ -15,6 +15,7 @@ export class DagExplorer implements vscode.TreeDataProvider<TreeItem> {
 	constructor(private readonly context: ExtensionContext) {
       let host = vscode.workspace.getConfiguration().get<string>("host")!;
       this._socket = new WebSocket(host+"/vscode");
+      
 	  this.data = [];
 	}
 
@@ -29,38 +30,50 @@ export class DagExplorer implements vscode.TreeDataProvider<TreeItem> {
         return element.children;
     }
     async refresh() {
-        let sessionstr :any = await this.context.secrets.get("dagserver"); 
-        let session = JSON.parse(sessionstr)[0];
-        if(session && session.accessToken){
-            return new Promise((resolve,reject)=>{
-                let token = session.accessToken;
-                let message = {
-                    type: "availables",
-                    args: [token]
-                };
-                this._socket?.send(JSON.stringify(message));
-                this._socket?.on('message', (data: any) => {
-                    let msg = data.toString();
-                    let datao:any = JSON.parse(msg);
-                    let keys1 = Object.keys(datao);
-                    for (let index = 0; index < keys1.length; index++) {
-                        const key = keys1[index];
-                        let childrens = [];
-                        for (let index = 0; index < datao[key].length; index++) {
-                            const dag = datao[key][index];
-                            let icon = dag.isScheduled ? "debug-console":"terminal";
-                            let context = dag.isScheduled ? "scheduled":"notscheduled";
-                            childrens.push(new TreeItem(dag.dagname, icon , context ));
+        try {
+            
+            let sessionstr :any = await this.context.secrets.get("dagserver"); 
+            let session = JSON.parse(sessionstr)[0];
+            if(session && session.accessToken){
+                return new Promise((resolve,reject)=>{
+                    let token = session.accessToken;
+                    let message = {
+                        type: "availables",
+                        args: [token]
+                    };
+                    this._socket?.send(JSON.stringify(message));
+                    this._socket?.on('message', (data: any) => {
+                        this.data = [];
+                        let msg = data.toString();
+                        let datao:any = JSON.parse(msg);
+                        let keys1 = Object.keys(datao);
+                        for (let index = 0; index < keys1.length; index++) {
+                            const key = keys1[index];
+                            let childrens = [];
+                            for (let index = 0; index < datao[key].length; index++) {
+                                const dag = datao[key][index];
+                                let icon = dag.isScheduled ? "debug-console":"terminal";
+                                let context = dag.isScheduled ? "scheduled":"notscheduled";
+                                childrens.push(new TreeItem(dag.dagname, icon , context ));
+                            }
+                            this.data.push(new TreeItem(key, "package", "package",childrens));
                         }
-                        this.data.push(new TreeItem(key, "package", "package",childrens));
-                    }
-                    this._onDidChangeTreeData.fire(null);
-                    resolve(true);
+                        console.log(data)
+                        this._onDidChangeTreeData.fire(null);
+                        resolve(true);
+                    });
                 });
-            });
-        } else {
-            return Promise.resolve();
+            } else {
+                this.data = [];
+                this._onDidChangeTreeData.fire(null);
+                return Promise.resolve(true);
+            }   
+        } catch (error) {
+            this.data = [];
+            this._onDidChangeTreeData.fire(null);
+            return Promise.resolve(true);
         }
+        
     }
     
 }
