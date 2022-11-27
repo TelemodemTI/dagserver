@@ -28,11 +28,13 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		try {
 			DbUtils.loadDriver(this.args.getProperty("driver"));
 			if(xcomname != null) {
-				List<Object> data = (List<Object>) this.xcom.get(xcomname);	
+				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
+				Object[][] objList = data.stream().map(m -> m.values().toArray()).toArray(Object[][]::new);
 				if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {
 					result = queryRunner.query(con, this.args.getProperty("query"), new MapListHandler(),data.get(0));	
 				} else {
-					queryRunner.update(con, this.args.getProperty("query"),data.get(0));
+					queryRunner.batch(con,this.args.getProperty("query"), objList);
+					
 				}	
 			} else {
 				if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {
