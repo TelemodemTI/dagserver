@@ -103,10 +103,22 @@ public class WebConfig implements WebMvcConfigurer {
 	@Bean
 	public DataSource dataSource() {
 		BasicDataSource  dataSource = new BasicDataSource();
-	    dataSource.setDriverClassName(this.db_driver);	    
-	    dataSource.setUsername(this.db_user);
-	    dataSource.setPassword(this.db_pass);
-	    dataSource.setUrl(this.db_host);
+		dataSource.setDriverClassName(this.db_driver);
+		if(System.getenv("APP_JDBC_USER") != null) {
+			dataSource.setUsername(System.getenv("APP_JDBC_USER"));
+		} else {
+			dataSource.setUsername(this.db_user);
+		}
+		if(System.getenv("APP_JDBC_USER") != null) {
+			dataSource.setPassword(System.getenv("APP_JDBC_PASSWORD"));
+		} else {
+			dataSource.setPassword(this.db_pass);
+		}
+		if(System.getenv("APP_JDBC_URL") != null) {
+			dataSource.setUrl(System.getenv("APP_JDBC_URL"));
+		} else {
+			dataSource.setUrl(this.db_host);
+		}
 	    return dataSource;
 	}
 	@Bean

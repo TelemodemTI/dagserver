@@ -5,11 +5,16 @@ import org.springframework.stereotype.Component;
 import main.domain.core.DagExecutable;
 import main.domain.repositories.SchedulerRepository;
 import main.domain.annotations.Dag;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
@@ -37,7 +42,7 @@ public class QuartzConfig {
 	private static Logger log = Logger.getLogger(QuartzConfig.class);
 	
 	//private static final String CRON_STATEMENT = "0 0/1 * * * ?";
-	private static final String FILE_CONFIG_QUARTZ = "quartz.properties";
+	//private static final String FILE_CONFIG_QUARTZ = "quartz.properties";
 	private static final String PREFIX_JOB_DB = "";
 	private static Scheduler scheduler;
 	
@@ -143,9 +148,10 @@ public class QuartzConfig {
 		}
 	}
 	@SuppressWarnings("static-access")
-	public void init(List<Job> defaultjobs) throws SchedulerException {
+	public void init(List<Job> defaultjobs) throws Exception {
+		Properties p = this.getQuartzProperties();
 		StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
-		schedulerFactory.initialize(FILE_CONFIG_QUARTZ);
+		schedulerFactory.initialize(p);
 		this.scheduler = schedulerFactory.getScheduler();
 		if (this.scheduler == null)
 			throw new SchedulerException("QUARTZ not initialized!.");
@@ -192,5 +198,20 @@ public class QuartzConfig {
 		}
 		return arr;
 	}
-	
+	private Properties getQuartzProperties() throws IOException {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();           
+		InputStream stream = loader.getResourceAsStream("quartz.properties");
+		Properties p = new Properties();
+		p.load(stream);
+		if(System.getenv("APP_JDBC_URL") != null) {
+			p.setProperty("org.quartz.dataSource.quartzDS.URL", System.getenv("APP_JDBC_URL"));	
+		}
+		if(System.getenv("APP_JDBC_USER") != null) {
+			p.setProperty("org.quartz.dataSource.quartzDS.user", System.getenv("APP_JDBC_USER"));
+		}
+		if(System.getenv("APP_JDBC_USER") != null) {
+			p.setProperty("org.quartz.dataSource.quartzDS.password", System.getenv("APP_JDBC_PASSWORD"));
+		}
+		return p;
+	}
 }

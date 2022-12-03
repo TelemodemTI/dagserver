@@ -31,6 +31,11 @@ quartz.properties:
 - org.quartz.dataSource.quartzDS.user: Quartz engine database user  
 - org.quartz.dataSource.quartzDS.password: Quartz engine database password  
 	
+These last three variables can be overridden using the following environment variables:  
+- APP_JDBC_URL  
+- APP_JDBC_USER  	
+- APP_JDBC_PASSWORD  
+	  
 ## Basic Usage
 
 Examples repo is here [dagserver-examples](https://github.com/maximolira/dagserver-examples)

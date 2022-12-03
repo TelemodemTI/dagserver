@@ -12,5 +12,9 @@ RUN mv /usr/local/tomcat/webapps/dagserver-0.0.1-SNAPSHOT.war /usr/local/tomcat/
 EXPOSE 2587
 EXPOSE 8080
 
+ENV env_name APP_JDBC_URL
+ENV env_name APP_JDBC_USER
+ENV env_name APP_JDBC_PASSWORD
+
 CMD ["catalina.sh", "run"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
