@@ -22,6 +22,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import main.application.ports.input.GetDefaultJobsUseCase;
@@ -70,7 +71,6 @@ public class WebConfig implements WebMvcConfigurer {
 				this.defaultjobs = (List<Job>)(Object) this.defaults.getDefaultJobs();
 				quartz.init(defaultjobs);
 				logger.debug("starting QUARTZ");
-				
 				
 				
 			} catch (Exception e) {
@@ -144,4 +144,11 @@ public class WebConfig implements WebMvcConfigurer {
 	    return flyway;
 	}
 	
+	
+	@Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+          .addResourceHandler("/cli/**")
+          .addResourceLocations("/WEB-INF/cli/");	
+    }
 }

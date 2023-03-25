@@ -19,12 +19,21 @@ public class MutationResolver implements GraphQLMutationResolver {
 	}
 	
 	public Status scheduleDag(String token,String dagname,String jarname) throws Exception {
-		handler.scheduleDag(token,dagname,jarname);
-		return ok();
+		try {
+			handler.scheduleDag(token,dagname,jarname);
+			return ok();	
+		} catch (Exception e) {
+			return error(e.getMessage());
+		}
     }
 	public Status unscheduleDag(String token,String dagname,String jarname) throws Exception {
-		handler.unscheduleDag(token,dagname, jarname);
-		return ok();
+		try {
+			handler.unscheduleDag(token,dagname, jarname);
+			return ok();	
+		} catch (Exception e) {
+			return error(e.getMessage());
+		}
+		
 	}
 	
 	private Status ok() {
@@ -32,6 +41,13 @@ public class MutationResolver implements GraphQLMutationResolver {
 		status.code = 200;
 		status.status = "ok";
 		status.value = "ok";
+		return status;
+	}
+	private Status error(String msg) {
+		Status status = new Status();
+		status.code = 503;
+		status.status = "error";
+		status.value = msg;
 		return status;
 	}
 }
