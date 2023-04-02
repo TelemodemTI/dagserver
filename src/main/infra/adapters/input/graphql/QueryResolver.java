@@ -15,8 +15,11 @@ import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import main.application.ports.input.LoginUseCase;
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.domain.entities.Log;
+import main.domain.messages.DagDTO;
 import main.domain.types.Available;
+import main.domain.types.Detail;
 import main.domain.types.LogEntry;
+import main.domain.types.Node;
 import main.domain.types.Scheduled;
 
 
@@ -30,6 +33,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 	
 	@Autowired
 	LoginUseCase login;
+	
+	
 	
 	public String login(String username,String pwdhash) throws Exception {
 		String token = login.apply(Arrays.asList(username, pwdhash));
@@ -114,5 +119,29 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}
 		return rv;
 	}
-	
+	public List<Detail> detail(String jarname) throws Exception{
+		var map = handler.getDagDetail(jarname);
+		var rv = new ArrayList<Detail>();
+		for (Iterator<DagDTO> iterator = map.iterator(); iterator.hasNext();) {
+			DagDTO detail = iterator.next();
+			Detail det = new Detail();
+			det.setDagname(detail.getDagname());
+			det.setCronExpr(detail.getCronExpr());
+			det.setGroup(detail.getGroup());
+			det.setOnEnd(detail.getOnEnd());
+			det.setOnStart(detail.getOnStart());
+			List<Node> nodes = new ArrayList<Node>();
+			int i = 1;
+			for (Iterator<List<String>> iterator2 = detail.getOps().iterator(); iterator2.hasNext();i++) {
+				Node node = new Node();
+				List<String> ops = iterator2.next();
+				node.setOperations(ops);
+				node.setIndex(i);
+				nodes.add(node);
+			}
+			det.setNode(nodes);
+			rv.add(det);
+		}
+		return rv;
+	}
 }

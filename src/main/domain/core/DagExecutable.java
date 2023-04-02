@@ -1,8 +1,12 @@
 package main.domain.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -25,6 +29,7 @@ import main.domain.annotations.Dag;
 import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
 import main.infra.adapters.confs.InMemoryLoggerAppender;
+
 
 //@Component
 public class DagExecutable implements Job,JobListener {
@@ -184,5 +189,20 @@ public class DagExecutable implements Job,JobListener {
 
 	public void setEventname(String eventname) {
 		this.eventname = eventname;
+	}
+	
+	public List<List<String>> getDagGraph(){
+		var info = new ArrayList<List<String>>();
+		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
+		Integer index = 1;
+		while (breadthFirstIterator.hasNext()) {
+			var detail = new ArrayList<String>();
+			DagNode node = (DagNode) breadthFirstIterator.next();
+			detail.add(node.name);
+			detail.add(node.operator.getCanonicalName());
+			info.add(detail);
+			index++;
+		}
+		return info;
 	}
 }

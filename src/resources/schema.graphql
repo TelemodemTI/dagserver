@@ -1,3 +1,17 @@
+type Node {
+	index: Int,
+	operations: [String]
+}
+type Detail {
+	dagname: String,
+	cronExpr: String,
+	group: String,
+	onStart: String,
+	onEnd: String,
+	node: [Node] 
+}
+
+
 type Status { 
 	status: String , 
 	code: Int , 
@@ -22,9 +36,9 @@ type Scheduled {
 }
 
 type LogEntry {
-	id: Int
-	dagname: String
-	execDt: Float
+	id: Int,
+	dagname: String,
+	execDt: Float,
 	value: String
 }
 
@@ -33,6 +47,7 @@ type Query {
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 
 	logs(dagname: String): [LogEntry],
+	detail(jarname: String) : [Detail]
 }
 
 type Mutation { 

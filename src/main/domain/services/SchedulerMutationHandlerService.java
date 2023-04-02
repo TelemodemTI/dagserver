@@ -1,6 +1,5 @@
 package main.domain.services;
 
-import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,12 +43,12 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	
 	@Override
 	public void scheduleDag(String token, String dagname,String jarname) throws Exception {
-		Map<String,Object> claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		scanner.init().scheduler(dagname,jarname);
 	}
 	@Override
 	public void unscheduleDag(String token,String dagname,String jarname) throws Exception {
-		Map<String,Object> claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		scanner.init().unschedule(dagname,jarname);
 	}
 }

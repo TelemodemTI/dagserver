@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import main.domain.entities.Log;
+import main.domain.messages.DagDTO;
 
 public interface SchedulerQueryUseCase {
 
@@ -13,6 +14,6 @@ public interface SchedulerQueryUseCase {
 
 	List<Log> getLogs(String dagname);
 
-	
+	List<DagDTO> getDagDetail(String jarname) throws Exception;
 
 }

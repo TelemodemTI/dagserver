@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +24,10 @@ import org.springframework.stereotype.Component;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
+import main.domain.messages.DagDTO;
 import main.infra.adapters.confs.QuartzConfig;
+import main.infra.adapters.operators.DummyOperator;
+import main.infra.adapters.operators.LogsRollupOperator;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -96,6 +100,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				Dag toschedule = clazz.getAnnotation(Dag.class);
 				if(toschedule.name().equals(dagname)) {
 					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+					
 					if(toschedule.cronExpr().equals("")) {
 						quartz.configureListener(toschedule,dag);	
 					} else {
@@ -142,4 +147,65 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			}
 		}
 	}	
+	
+	public List<DagDTO> getDagDetail(String jarname) throws Exception {
+		if(jarname.toLowerCase().equals("system")) {
+			return this.getDefaultsSYSTEMS();
+		} else {
+			return this.getDagDetailJAR(jarname);
+		}
+	}
+	private List<DagDTO> getDefaultsSYSTEMS() {
+		List<DagDTO> defs = new ArrayList<>();
+		List<String> ops = Arrays.asList("internal",LogsRollupOperator.class.getCanonicalName());
+		DagDTO item = new DagDTO();
+		item.setDagname("background_system_dag");
+		item.setCronExpr("0 0/60 * * * ?");
+		item.setGroup("system_dags");
+		item.setOps(new ArrayList<List<String>>() {
+			private static final long serialVersionUID = 1L;
+		{
+			add(ops);
+		}});
+		List<String> step1 = Arrays.asList("step1",DummyOperator.class.getCanonicalName());
+		List<String> step2 = Arrays.asList("step2",DummyOperator.class.getCanonicalName());
+		DagDTO evt = new DagDTO();
+		evt.setDagname("event_system_dag");
+		evt.setGroup("system_dags");
+		evt.setOnEnd("background_system_dag");
+		evt.setOps(new ArrayList<List<String>>() {
+			private static final long serialVersionUID = 1L;
+		{
+			add(step1);
+			add(step2);
+		}});
+		defs.add(item);
+		defs.add(evt);
+		return defs;
+	}
+	private List<DagDTO> getDagDetailJAR(String jarname) throws Exception {
+		List<Map<String,String>> classNames = classMap.get(jarname);
+		var result = new ArrayList<DagDTO>();
+		File jarfileO = this.findJarFile(jarname);
+		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
+		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+			String classname = iterator.next().get("classname");
+			try {
+				Class<?> clazz = cl.loadClass(classname);
+				Dag scheduled = clazz.getAnnotation(Dag.class);
+				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
+				DagDTO dto = new DagDTO();
+				dto.setDagname(scheduled.name());
+				dto.setCronExpr(scheduled.cronExpr());
+				dto.setGroup(scheduled.group());
+				dto.setOnEnd(scheduled.onEnd());
+				dto.setOnStart(scheduled.onStart());
+				dto.setOps(dag.getDagGraph());
+				result.add(dto);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
 }

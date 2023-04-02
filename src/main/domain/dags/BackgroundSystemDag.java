@@ -1,6 +1,4 @@
 package main.domain.dags;
-
-import java.util.Properties;
 import main.domain.core.DagExecutable;
 import main.infra.adapters.operators.LogsRollupOperator;
 import main.domain.annotations.Dag;

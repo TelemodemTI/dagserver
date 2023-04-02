@@ -140,7 +140,6 @@ public class WebConfig implements WebMvcConfigurer {
 	    Flyway flyway = new Flyway();
 	    flyway.setDataSource(dataSource());
 	    flyway.setBaselineOnMigrate(true);
-	    //flyway.setLocations(db_migrations);
 	    return flyway;
 	}
 	

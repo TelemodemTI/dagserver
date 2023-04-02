@@ -1,6 +1,5 @@
 package main.domain.dags;
 
-import java.util.Properties;
 import main.domain.core.DagExecutable;
 import main.domain.enums.OperatorStatus;
 import main.infra.adapters.operators.DummyOperator;

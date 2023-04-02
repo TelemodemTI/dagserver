@@ -19,6 +19,7 @@ import main.domain.core.TokenEngine;
 import main.domain.entities.EventListener;
 import main.domain.entities.Log;
 import main.domain.entities.User;
+import main.domain.messages.DagDTO;
 import main.domain.repositories.SchedulerRepository;
 
 
@@ -77,6 +78,9 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	@Override
 	public List<Log> getLogs(String dagname) {
 		return repository.getLogs(dagname);
+	}
+	public List<DagDTO> getDagDetail(String jarname) throws Exception {
+		return scanner.init().getDagDetail(jarname);
 	}
 	
 }
