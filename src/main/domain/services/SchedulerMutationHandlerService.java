@@ -51,4 +51,14 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		scanner.init().unschedule(dagname,jarname);
 	}
+	@Override
+	public void createProperty(String token, String name, String description, String value,String group) throws Exception {
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		repository.setProperty(name,description,value,group);
+	}
+	@Override
+	public void deleteProperty(String token, String name,String group) throws Exception {
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		repository.delProperty(name,group);
+	}
 }

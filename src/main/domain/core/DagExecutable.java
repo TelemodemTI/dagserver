@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -204,5 +202,9 @@ public class DagExecutable implements Job,JobListener {
 			index++;
 		}
 		return info;
+	}
+	
+	protected Properties getDagProperties(String string) throws Exception {
+		return repo.getPropertiesFromDb(string);
 	}
 }

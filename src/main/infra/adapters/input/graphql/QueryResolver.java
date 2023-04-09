@@ -20,6 +20,7 @@ import main.domain.types.Available;
 import main.domain.types.Detail;
 import main.domain.types.LogEntry;
 import main.domain.types.Node;
+import main.domain.types.Property;
 import main.domain.types.Scheduled;
 
 
@@ -143,5 +144,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 			rv.add(det);
 		}
 		return rv;
+	}
+	public List<Property> properties() throws Exception{
+		return handler.properties();
 	}
 }

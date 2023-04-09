@@ -1,3 +1,9 @@
+type Property {
+	group: String
+	name: String
+	description: String
+}
+
 type Node {
 	index: Int,
 	operations: [String]
@@ -47,10 +53,13 @@ type Query {
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 
 	logs(dagname: String): [LogEntry],
-	detail(jarname: String) : [Detail]
+	detail(jarname: String) : [Detail],
+	properties: [Property]
 }
 
 type Mutation { 
 	scheduleDag(token:String, dagname:String, jarname:String) : Status, 
-	unscheduleDag(token:String, dagname:String, jarname:String) : Status 
+	unscheduleDag(token:String, dagname:String, jarname:String) : Status,
+	createProperty(token:String, name: String, description: String, value: String,group: String) : Status,
+	deleteProperty(token:String, name: String, group: String) : Status
 }

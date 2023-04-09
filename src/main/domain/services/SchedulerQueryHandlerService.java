@@ -1,26 +1,25 @@
 package main.domain.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.application.ports.output.QuartzOutputPort;
-import main.domain.core.TokenEngine;
 import main.domain.entities.EventListener;
 import main.domain.entities.Log;
-import main.domain.entities.User;
+import main.domain.entities.PropertyParameter;
 import main.domain.messages.DagDTO;
 import main.domain.repositories.SchedulerRepository;
+import main.domain.types.Property;
 
 
 
@@ -81,6 +80,20 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	}
 	public List<DagDTO> getDagDetail(String jarname) throws Exception {
 		return scanner.init().getDagDetail(jarname);
+	}
+	@Override
+	public List<Property> properties() throws Exception {
+		List<Property> res = new ArrayList<Property>();
+		var sollection = repository.getProperties(null);
+		for (Iterator<PropertyParameter> iterator = sollection.iterator(); iterator.hasNext();) {
+			PropertyParameter type = iterator.next();
+			Property newitem = new Property();
+			newitem.setDescription(type.getDescription());
+			newitem.setGroup(type.getGroup());
+			newitem.setName(type.getName());
+			res.add(newitem);
+		}
+		return res;
 	}
 	
 }

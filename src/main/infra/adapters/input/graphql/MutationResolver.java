@@ -36,6 +36,23 @@ public class MutationResolver implements GraphQLMutationResolver {
 		
 	}
 	
+	public Status createProperty(String token, String name, String description, String value,String group) {
+		try {
+			handler.createProperty(token, name, description, value,group);
+			return ok();
+		} catch (Exception e) {
+			return error(e.getMessage());
+		}
+	}
+	public Status deleteProperty(String token,String name,String group){
+		try {
+			handler.deleteProperty(token, name,group);
+			return ok();
+		} catch (Exception e) {
+			return error(e.getMessage());
+		}
+	}
+	
 	private Status ok() {
 		Status status = new Status();
 		status.code = 200;
