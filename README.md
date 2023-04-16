@@ -40,9 +40,8 @@ These last three variables can be overridden using the following environment var
 
 Examples repo is here [dagserver-examples](https://github.com/maximolira/dagserver-examples)
 The DAG implementation must be compiled into a JAR file (Maven Project) and sent to the path configured in folderpath param, then it will be visible to the scheduler engine.  
-The application does not yet have a front end to visualize the executions and the data in a friendly way, but it does have a GraphQL api, with which you can know the scheduled DAGs, the available DAGs, and the execution logs.  
-An extension for the visual studio code editor also exists [Dagserver-vscode](https://github.com/maximolira/dagserver-vscode), you can browse available DAGs and view execution logs with it.  
-  
+The Front-End application to search the logs and see the detail of each DAG can be found here [dagserver-examples](https://github.com/maximolira/dagserver-front)
+
 ## Credentials:
 
 GraphQL Endpoint:  
@@ -52,8 +51,10 @@ GraphQL Endpoint:
 - Password: dagserver  
   
 The current graphql schema can be checked in the schema.graphql file located at the root of the classpath.  
-The application does not have the integrated graphql client (graphqli), but that does not prevent you from using an online version like [https://lucasconstantino.github.io/graphiql-online/] 
 
+## Run as Container
+
+In the examples you can find the docker-compose.yml file for running the server within a container environment.
 
 ## License
 
