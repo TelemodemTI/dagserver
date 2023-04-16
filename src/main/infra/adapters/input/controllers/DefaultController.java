@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class DefaultController {
 	
+	@SuppressWarnings("unused")
 	private final static Logger logger = Logger.getLogger(DefaultController.class);
 	/*
 	@RequestMapping(value="/",method = RequestMethod.GET)

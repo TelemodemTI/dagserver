@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,10 @@ import main.application.ports.input.LoginUseCase;
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.domain.entities.Log;
 import main.domain.messages.DagDTO;
+import main.domain.types.Agent;
 import main.domain.types.Available;
 import main.domain.types.Detail;
+import main.domain.types.DetailStatus;
 import main.domain.types.LogEntry;
 import main.domain.types.Node;
 import main.domain.types.Property;
@@ -27,6 +30,7 @@ import main.domain.types.Scheduled;
 @Component
 public class QueryResolver implements GraphQLQueryResolver {
 	
+	@SuppressWarnings("unused")
 	private final static Logger logger = Logger.getLogger(QueryResolver.class);
 	
 	@Autowired
@@ -120,32 +124,43 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}
 		return rv;
 	}
-	public List<Detail> detail(String jarname) throws Exception{
-		var map = handler.getDagDetail(jarname);
+	public DetailStatus detail(String jarname) throws Exception{
+		
+		DetailStatus status = new DetailStatus();
 		var rv = new ArrayList<Detail>();
-		for (Iterator<DagDTO> iterator = map.iterator(); iterator.hasNext();) {
-			DagDTO detail = iterator.next();
-			Detail det = new Detail();
-			det.setDagname(detail.getDagname());
-			det.setCronExpr(detail.getCronExpr());
-			det.setGroup(detail.getGroup());
-			det.setOnEnd(detail.getOnEnd());
-			det.setOnStart(detail.getOnStart());
-			List<Node> nodes = new ArrayList<Node>();
-			int i = 1;
-			for (Iterator<List<String>> iterator2 = detail.getOps().iterator(); iterator2.hasNext();i++) {
-				Node node = new Node();
-				List<String> ops = iterator2.next();
-				node.setOperations(ops);
-				node.setIndex(i);
-				nodes.add(node);
+		try {
+			var map = handler.getDagDetail(jarname);
+			for (Iterator<DagDTO> iterator = map.iterator(); iterator.hasNext();) {
+				DagDTO detail = iterator.next();
+				Detail det = new Detail();
+				det.setDagname(detail.getDagname());
+				det.setCronExpr(detail.getCronExpr());
+				det.setGroup(detail.getGroup());
+				det.setOnEnd(detail.getOnEnd());
+				det.setOnStart(detail.getOnStart());
+				List<Node> nodes = new ArrayList<Node>();
+				int i = 1;
+				for (Iterator<List<String>> iterator2 = detail.getOps().iterator(); iterator2.hasNext();i++) {
+					Node node = new Node();
+					List<String> ops = iterator2.next();
+					node.setOperations(ops);
+					node.setIndex(i);
+					nodes.add(node);
+				}
+				det.setNode(nodes);
+				rv.add(det);
 			}
-			det.setNode(nodes);
-			rv.add(det);
+			status.setStatus("ok");
+		} catch (Exception e) {
+			status.setStatus(ExceptionUtils.getRootCauseMessage(e));
 		}
-		return rv;
+		status.setDetail(rv);
+		return status;
 	}
 	public List<Property> properties() throws Exception{
 		return handler.properties();
+	}
+	public List<Agent> agents(){
+		return handler.agents();
 	}
 }

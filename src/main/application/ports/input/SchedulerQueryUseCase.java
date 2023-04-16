@@ -5,6 +5,7 @@ import java.util.Map;
 
 import main.domain.entities.Log;
 import main.domain.messages.DagDTO;
+import main.domain.types.Agent;
 import main.domain.types.Property;
 
 public interface SchedulerQueryUseCase {
@@ -18,4 +19,6 @@ public interface SchedulerQueryUseCase {
 	List<DagDTO> getDagDetail(String jarname) throws Exception;
 
 	List<Property> properties()  throws Exception;
+
+	List<Agent> agents();
 }

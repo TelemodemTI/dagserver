@@ -191,7 +191,7 @@ public class DagExecutable implements Job,JobListener {
 	
 	public List<List<String>> getDagGraph(){
 		var info = new ArrayList<List<String>>();
-		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
+		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		Integer index = 1;
 		while (breadthFirstIterator.hasNext()) {
 			var detail = new ArrayList<String>();

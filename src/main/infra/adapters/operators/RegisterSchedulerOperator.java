@@ -1,6 +1,5 @@
 package main.infra.adapters.operators;
 
-import java.util.Calendar;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
@@ -13,7 +12,7 @@ import main.domain.repositories.SchedulerRepository;
 import main.domain.types.OperatorStage;
 
 @Operator(args={})
-public class LogsRollupOperator extends OperatorStage implements Callable<Void> {
+public class RegisterSchedulerOperator extends OperatorStage implements Callable<Void> {
 
 	@Override
 	public Void call() throws Exception {		
@@ -22,11 +21,7 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 		SchedulerRepository repo = this.getSchedulerRepository(springContext);
 		var prop = new Properties();
 		prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));
-		
-		Calendar rollup = Calendar.getInstance();
-		rollup.setTimeInMillis(rollup.getTimeInMillis());
-		rollup.add(Calendar.HOUR, Integer.parseInt(prop.getProperty("param.logs.rollup.hours")));
-		repo.deleteLogsBy(rollup.getTime());
+		repo.setMetadata(prop.getProperty("param.host"), prop.getProperty("param.name"));
 		log.debug(this.getClass()+" end "+this.name);
 		return null;
 	}

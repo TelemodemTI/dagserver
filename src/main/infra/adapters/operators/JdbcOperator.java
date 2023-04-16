@@ -28,6 +28,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		try {
 			DbUtils.loadDriver(this.args.getProperty("driver"));
 			if(xcomname != null) {
+				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
 				Object[][] objList = data.stream().map(m -> m.values().toArray()).toArray(Object[][]::new);
 				if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {

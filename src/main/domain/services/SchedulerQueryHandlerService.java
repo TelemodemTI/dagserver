@@ -19,6 +19,7 @@ import main.domain.entities.Log;
 import main.domain.entities.PropertyParameter;
 import main.domain.messages.DagDTO;
 import main.domain.repositories.SchedulerRepository;
+import main.domain.types.Agent;
 import main.domain.types.Property;
 
 
@@ -51,6 +52,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	@Autowired
 	QuartzOutputPort quartz;
 	
+	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerQueryHandlerService.class);
 	
 	@Override
@@ -95,5 +97,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		}
 		return res;
 	}
-	
+	public List<Agent> agents(){
+		return repository.getAgents();
+	}
 }

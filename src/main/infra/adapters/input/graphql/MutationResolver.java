@@ -1,5 +1,6 @@
 package main.infra.adapters.input.graphql;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
@@ -23,7 +24,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			handler.scheduleDag(token,dagname,jarname);
 			return ok();	
 		} catch (Exception e) {
-			return error(e.getMessage());
+			return error(e);
 		}
     }
 	public Status unscheduleDag(String token,String dagname,String jarname) throws Exception {
@@ -31,7 +32,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			handler.unscheduleDag(token,dagname, jarname);
 			return ok();	
 		} catch (Exception e) {
-			return error(e.getMessage());
+			return error(e);
 		}
 		
 	}
@@ -41,7 +42,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			handler.createProperty(token, name, description, value,group);
 			return ok();
 		} catch (Exception e) {
-			return error(e.getMessage());
+			return error(e);
 		}
 	}
 	public Status deleteProperty(String token,String name,String group){
@@ -49,7 +50,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			handler.deleteProperty(token, name,group);
 			return ok();
 		} catch (Exception e) {
-			return error(e.getMessage());
+			return error(e);
 		}
 	}
 	
@@ -60,11 +61,11 @@ public class MutationResolver implements GraphQLMutationResolver {
 		status.value = "ok";
 		return status;
 	}
-	private Status error(String msg) {
+	private Status error(Exception e) {
 		Status status = new Status();
 		status.code = 503;
 		status.status = "error";
-		status.value = msg;
+		status.value = ExceptionUtils.getRootCauseMessage(e);
 		return status;
 	}
 }

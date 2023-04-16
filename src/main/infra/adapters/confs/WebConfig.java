@@ -1,5 +1,6 @@
 package main.infra.adapters.confs;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -71,8 +72,10 @@ public class WebConfig implements WebMvcConfigurer {
 				this.defaultjobs = (List<Job>)(Object) this.defaults.getDefaultJobs();
 				quartz.init(defaultjobs);
 				logger.debug("starting QUARTZ");
-				
-				
+				for (Iterator<Job> iterator = defaultjobs.iterator(); iterator.hasNext();) {
+					 var job = iterator.next();
+					 quartz.executeInmediate(job);	
+				}
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();

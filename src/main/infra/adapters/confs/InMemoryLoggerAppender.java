@@ -13,7 +13,6 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class InMemoryLoggerAppender extends AppenderSkeleton {
 
-	private String dateformat = "";
     private StringBuilder builder = new StringBuilder();
 
     @Override

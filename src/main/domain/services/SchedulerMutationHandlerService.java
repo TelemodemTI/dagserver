@@ -37,6 +37,7 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	@Autowired 
 	JarSchedulerOutputPort scanner;
 		
+	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerMutationHandlerService.class);
 	
 	

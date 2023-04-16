@@ -1,5 +1,6 @@
 package main.domain.repositories;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Component;
 
 import main.domain.entities.EventListener;
 import main.domain.entities.Log;
+import main.domain.entities.Metadata;
 import main.domain.entities.PropertyParameter;
 import main.domain.entities.User;
+import main.domain.types.Agent;
 import main.infra.adapters.confs.DAO;
 
 
@@ -32,7 +35,9 @@ public class SchedulerRepository {
 	}
 	
 	public void removeListener(String name) {
-		dao.execute("del from EventListener where listenerName = :name'",new HashMap<String, Object>(){{
+		dao.execute("del from EventListener where listenerName = :name'",new HashMap<String, Object>(){
+			private static final long serialVersionUID = 1L;
+		{
 			put("name", name);
 		}});
 	}
@@ -49,7 +54,9 @@ public class SchedulerRepository {
 	}
 	
 	public Log getLog(Integer logid){
-		return dao.read(Log.class, "select log from Log as log where log.id = :logid",new HashMap<String,Object>(){{put("logid",logid);}}).get(0);
+		return dao.read(Log.class, "select log from Log as log where log.id = :logid",new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+		{put("logid",logid);}}).get(0);
 	}
 	
 	public void setLog(String dagname,String value) {
@@ -61,7 +68,9 @@ public class SchedulerRepository {
 	}
 
 	public void deleteLogsBy(Date rolldate) {
-		dao.execute("delete from Log where execDt < :rolldate",new HashMap<String,Object>(){{put("rolldate",rolldate);}});
+		dao.execute("delete from Log where execDt < :rolldate",new HashMap<String,Object>(){
+			private static final long serialVersionUID = 1L;
+		{put("rolldate",rolldate);}});
 	}
 	
 	public List<User> findUser(String username) {
@@ -72,7 +81,7 @@ public class SchedulerRepository {
 		List<PropertyParameter> founded;
 		if(groupname != null) {
 			founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+groupname+"'");
-			if(founded.size() == 0) throw new Exception("property not found");
+			if(founded.size() == 0) throw new Exception("DAG properties "+groupname+ " not found");
 		} else {
 			founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
 		}
@@ -103,5 +112,35 @@ public class SchedulerRepository {
 			PropertyParameter propertyParameter = iterator.next();
 			dao.delete(propertyParameter);
 		}
+	}
+	
+	public void setMetadata(String hostname,String name) {
+		List<Metadata> founded = dao.read(Metadata.class, "select meta from Metadata meta where meta.name = '"+name+"'");
+		if(founded.isEmpty()) {
+			Metadata info = new Metadata();
+			info.setHost(hostname);
+			info.setName(name);
+			info.setLastUpdatedAt(new Date());
+			dao.save(info);	
+		} else {
+			Metadata found = founded.get(0);
+			found.setLastUpdatedAt(new Date());
+			dao.save(found);
+		}
+	}
+
+	public List<Agent> getAgents() {
+		List<Metadata> list = dao.read(Metadata.class, "select meta from Metadata meta");
+		List<Agent> res = new ArrayList<Agent>();
+		for (Iterator<Metadata> iterator = list.iterator(); iterator.hasNext();) {
+			Metadata metadata = iterator.next();
+			Agent agent = new Agent();
+			agent.setId(metadata.getId());
+			agent.setHostname(metadata.getHost());
+			agent.setName(metadata.getName());
+			agent.setUpdatedOn(metadata.getLastUpdatedAt().getTime());
+			res.add(agent);
+		}
+		return res;
 	}
 }

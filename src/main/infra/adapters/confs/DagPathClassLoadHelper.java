@@ -2,13 +2,8 @@ package main.infra.adapters.confs;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -22,6 +17,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements ClassLoadHelper {
 
+	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(DagPathClassLoadHelper.class);
 	
 	@Override
@@ -52,7 +48,6 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 	}
 	private Class<?> search(File jarFile,String searched) throws Exception {
 		URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
-		List<Map<String,String>> classNames = new ArrayList<Map<String,String>>();
 		ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
 		Class<?> rvclazz = null;
 		for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
@@ -65,6 +60,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		    	}
 		    }
 		}
+		cl.close();
 		return rvclazz;
 	}
 }

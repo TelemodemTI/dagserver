@@ -5,6 +5,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+
+
+import main.domain.repositories.SchedulerRepository;
 
 public class OperatorStage {
 	protected static Logger log = Logger.getLogger("DAG");
@@ -43,5 +48,11 @@ public class OperatorStage {
 	public void setOptionals(Properties optionals) {
 		this.optionals = optionals;
 	}
-	
+	protected SchedulerRepository getSchedulerRepository(ApplicationContext springContext) {
+		SchedulerRepository repo = new SchedulerRepository();
+		AutowireCapableBeanFactory factory = springContext.getAutowireCapableBeanFactory();
+		factory.autowireBean( repo );
+		factory.initializeBean( repo, "schedulerRepository" );
+		return repo;
+	}
 }

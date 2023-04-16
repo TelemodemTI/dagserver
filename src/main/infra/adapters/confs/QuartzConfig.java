@@ -41,10 +41,8 @@ public class QuartzConfig {
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(QuartzConfig.class);
 	
-	//private static final String CRON_STATEMENT = "0 0/1 * * * ?";
-	//private static final String FILE_CONFIG_QUARTZ = "quartz.properties";
 	private static final String PREFIX_JOB_DB = "";
-	private static Scheduler scheduler;
+	private Scheduler scheduler;
 	
 	public Scheduler getScheduler() {
 		return scheduler;
@@ -91,6 +89,18 @@ public class QuartzConfig {
 		}
 	}
 	
+	public void executeInmediate(Job jobType) throws SchedulerException {
+		Dag type = jobType.getClass().getAnnotation(Dag.class);
+		try {
+			 
+			String jobName = PREFIX_JOB_DB + type.name();
+			JobKey jobKey = new JobKey(jobName,type.group());
+			this.scheduler.triggerJob(jobKey);	
+		} catch (Exception e) {
+			log.debug(type.name() +" not a job!");
+		}
+		
+	}
 	
 	public void activateJob(Job jobType,String group) throws SchedulerException {	
 		Dag type = jobType.getClass().getAnnotation(Dag.class); 
@@ -180,7 +190,6 @@ public class QuartzConfig {
 	}
 	public void removeListener(Dag annotation,DagExecutable executable) throws SchedulerException {
 		this.scheduler.getListenerManager().removeJobListener(annotation.name());
-		var eventList = repo.getEventListeners(annotation.name()).get(0);  
 		repo.removeListener(annotation.name());
 	}
 	public List<Map<String,Object>> listScheduled() throws SchedulerException {
@@ -190,7 +199,8 @@ public class QuartzConfig {
 				 var map = new HashMap<String,Object>(); 
 				 map.put("jobname", jobKey.getName());
 				 map.put("jobgroup", jobKey.getGroup());
-				 List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+				 @SuppressWarnings("unchecked")
+				List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 				 map.put("nextFireAt", triggers.get(0).getNextFireTime());
 				 map.put("eventTrigger", "");
 				 arr.add(map);

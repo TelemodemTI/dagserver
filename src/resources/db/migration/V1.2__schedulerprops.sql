@@ -8,3 +8,13 @@ CREATE TABLE `sche_properties` (
   PRIMARY KEY (`prop_id`)
 ) ENGINE=InnoDB;
 
+
+
+DROP TABLE IF EXISTS `sche_metadata`;
+CREATE TABLE `sche_metadata` (
+  `metadata_id` int NOT NULL AUTO_INCREMENT,
+  `metadata_name` varchar(190) NOT NULL,
+  `metadata_host` varchar(190) NOT NULL,
+  `metadata_last_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`metadata_id`)
+) ENGINE=InnoDB;

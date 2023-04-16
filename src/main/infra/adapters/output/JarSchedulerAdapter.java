@@ -2,7 +2,8 @@ package main.infra.adapters.output;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -81,6 +83,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		        classNames.add(map);
 		    }
 		}
+		cl.close();
 		return classNames;
 	}
 	@Override
@@ -88,14 +91,13 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		return classMap;
 	}
 	@Override
-	public void scheduler(String dagname,String jarname) throws MalformedURLException {
+	public void scheduler(String dagname,String jarname) throws Exception {
 		List<Map<String,String>> classNames = classMap.get(jarname);
-		
 		File jarfileO = this.findJarFile(jarname);
 		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
 		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 			String classname = iterator.next().get("classname");
-			try {
+			
 				Class<?> clazz = cl.loadClass(classname);
 				Dag toschedule = clazz.getAnnotation(Dag.class);
 				if(toschedule.name().equals(dagname)) {
@@ -108,10 +110,9 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					}
 					log.debug("job scheduled!::");
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			
 		}
+		cl.close();
 	}	
 	private File findJarFile(String jarFilename) {
 		File jar = null;
@@ -125,7 +126,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		return jar;
 	}
 	@Override
-	public void unschedule(String dagname, String jarname) throws MalformedURLException {
+	public void unschedule(String dagname, String jarname) throws IOException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
 		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
@@ -146,6 +147,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				e.printStackTrace();
 			}
 		}
+		cl.close();
 	}	
 	
 	public List<DagDTO> getDagDetail(String jarname) throws Exception {
@@ -190,22 +192,21 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
 		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 			String classname = iterator.next().get("classname");
-			try {
-				Class<?> clazz = cl.loadClass(classname);
-				Dag scheduled = clazz.getAnnotation(Dag.class);
-				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
-				DagDTO dto = new DagDTO();
-				dto.setDagname(scheduled.name());
-				dto.setCronExpr(scheduled.cronExpr());
-				dto.setGroup(scheduled.group());
-				dto.setOnEnd(scheduled.onEnd());
-				dto.setOnStart(scheduled.onStart());
-				dto.setOps(dag.getDagGraph());
-				result.add(dto);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			
+			Class<?> clazz = cl.loadClass(classname);
+			Dag scheduled = clazz.getAnnotation(Dag.class);
+			DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
+			DagDTO dto = new DagDTO();
+			dto.setDagname(scheduled.name());
+			dto.setCronExpr(scheduled.cronExpr());
+			dto.setGroup(scheduled.group());
+			dto.setOnEnd(scheduled.onEnd());
+			dto.setOnStart(scheduled.onStart());
+			dto.setOps(dag.getDagGraph());
+			result.add(dto);
+			
 		}
+		cl.close();
 		return result;
 	}
 }

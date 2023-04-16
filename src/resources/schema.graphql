@@ -1,3 +1,10 @@
+type Agent {
+	id: Int,
+	name: String,
+	hostname: String,
+	updatedOn: Float
+}
+
 type Property {
 	group: String
 	name: String
@@ -15,6 +22,10 @@ type Detail {
 	onStart: String,
 	onEnd: String,
 	node: [Node] 
+}
+type DetailStatus {
+	status: String,
+	detail: [Detail]
 }
 
 
@@ -53,8 +64,9 @@ type Query {
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 
 	logs(dagname: String): [LogEntry],
-	detail(jarname: String) : [Detail],
-	properties: [Property]
+	detail(jarname: String) : DetailStatus,
+	properties: [Property],
+	agents : [Agent]
 }
 
 type Mutation { 
