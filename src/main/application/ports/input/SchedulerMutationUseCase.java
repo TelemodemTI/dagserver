@@ -10,4 +10,5 @@ public interface SchedulerMutationUseCase {
 	
 	void deleteProperty(String token,String name, String group) throws Exception;
 
+	public void execute(String token, String jarname, String dagname) throws Exception;
 }

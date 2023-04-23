@@ -1,5 +1,6 @@
 package main.domain.services;
 
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,5 +62,10 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	public void deleteProperty(String token, String name,String group) throws Exception {
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		repository.delProperty(name,group);
+	}
+	@Override
+	public void execute(String token, String jarname, String dagname) throws Exception {
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		scanner.init().execute(jarname, dagname);
 	}
 }

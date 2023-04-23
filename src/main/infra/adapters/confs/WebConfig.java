@@ -27,6 +27,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import main.application.ports.input.GetDefaultJobsUseCase;
+import main.domain.annotations.Dag;
 
 
 @EnableWebMvc
@@ -74,7 +75,11 @@ public class WebConfig implements WebMvcConfigurer {
 				logger.debug("starting QUARTZ");
 				for (Iterator<Job> iterator = defaultjobs.iterator(); iterator.hasNext();) {
 					 var job = iterator.next();
-					 quartz.executeInmediate(job);	
+					 Dag type = job.getClass().getAnnotation(Dag.class);
+					 if(!type.cronExpr().isEmpty()) {
+						 quartz.executeInmediate(job);	 
+					 }
+					 	
 				}
 			} catch (Exception e) {
 				logger.error(e);

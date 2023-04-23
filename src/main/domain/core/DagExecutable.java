@@ -14,6 +14,7 @@ import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.quartz.Job;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
@@ -45,6 +46,8 @@ public class DagExecutable implements Job,JobListener {
 			this.optionals = optionals;
 		}
 	}
+	private Boolean isRunning = true;
+	
 	private String dagname = "";
 	private String eventname = "";
 	private SchedulerRepository repo;
@@ -52,6 +55,7 @@ public class DagExecutable implements Job,JobListener {
 	private Map<String,OperatorStatus> constraints = new HashMap<>();
 	protected Graph<DagNode, DefaultEdge> g;
 	protected Map<String,Object> xcom = new HashMap<String,Object>();
+	protected JobDetail jobDetail;
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -60,16 +64,22 @@ public class DagExecutable implements Job,JobListener {
 	}
 	
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		jobDetail = context.getJobDetail();
+		this.isRunning = true;
 		Dag anno = this.getClass().getAnnotation(Dag.class);
 		this.dagname = anno.name();
 		var status = this.evaluate();
-		log.debug("outcode::" + status.toString()); 
+		this.isRunning = false;
+		log.debug("outcode::" + status.toString());
 	}
+	
+
 	
 	@SuppressWarnings("rawtypes")
 	private OperatorStatus evaluate() throws JobExecutionException {
 		var fa = this.createDagMemoryAppender();
 		Logger logdag = Logger.getLogger("DAG");
+		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
 		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		while (breadthFirstIterator.hasNext()) {
@@ -90,9 +100,9 @@ public class DagExecutable implements Job,JobListener {
 				op.setOptionals(node.optionals);
 				Callable<?> instance  = (Callable<?>) op; 
 				var result = instance.call();
-				xcom.put(node.name , result );
+				this.xcom.put(node.name , result );
 				if( (statusToBe == null) || (statusToBe == OperatorStatus.OK ) || (statusToBe == OperatorStatus.ANY)) {
-					logdag.debug("result::"+result);
+					logdag.debug("::end execution::");
 				} else {
 					throw new JobExecutionException("constraint failed::"+node.name);	
 				}
@@ -105,7 +115,7 @@ public class DagExecutable implements Job,JobListener {
 			}	
 		}
 		Logger.getRootLogger().removeAppender(fa);
-		repo.setLog(dagname, fa.getResult());
+		repo.setLog(dagname, fa.getResult(),this.xcom);
 		return OperatorStatus.OK;
 	}
 	private InMemoryLoggerAppender createDagMemoryAppender() {
@@ -207,4 +217,22 @@ public class DagExecutable implements Job,JobListener {
 	protected Properties getDagProperties(String string) throws Exception {
 		return repo.getPropertiesFromDb(string);
 	}
+
+	
+	public void setXcom(Map<String, Object> xcom) {
+		this.xcom = xcom;
+	}
+
+	public Boolean getIsRunning() {
+		return isRunning;
+	}
+
+	public void setIsRunning(Boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+	
+	public JobDetail getDetail() {
+		return this.jobDetail;
+	}
+
 }

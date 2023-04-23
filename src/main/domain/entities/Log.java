@@ -26,6 +26,9 @@ public class Log {
 	 
 	@Column(name = "text_value", nullable = false)
 	private String value;
+	
+	@Column(name = "outxcom", nullable = false)
+	private String outputxcom;
 
 	public Integer getId() {
 		return id;
@@ -57,6 +60,14 @@ public class Log {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public String getOutputxcom() {
+		return outputxcom;
+	}
+
+	public void setOutputxcom(String outputxcom) {
+		this.outputxcom = outputxcom;
 	}
 	
 }

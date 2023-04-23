@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.application.ports.output.JarSchedulerOutputPort;
-import main.application.ports.output.QuartzOutputPort;
 import main.domain.entities.EventListener;
 import main.domain.entities.Log;
 import main.domain.entities.PropertyParameter;
@@ -49,15 +48,13 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	@Autowired 
 	JarSchedulerOutputPort scanner;
 	
-	@Autowired
-	QuartzOutputPort quartz;
-	
+
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerQueryHandlerService.class);
 	
 	@Override
 	public List<Map<String,Object>> listScheduledJobs() throws Exception {
-		List<Map<String,Object>> realscheduled = quartz.listScheduled();
+		List<Map<String,Object>> realscheduled = scanner.listScheduled();
 		var list = repository.listEventListeners();
 		for (Iterator<EventListener> iterator = list.iterator(); iterator.hasNext();) {
 			EventListener eventListener = iterator.next();

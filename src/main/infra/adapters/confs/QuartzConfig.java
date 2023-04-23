@@ -89,17 +89,11 @@ public class QuartzConfig {
 		}
 	}
 	
-	public void executeInmediate(Job jobType) throws SchedulerException {
-		Dag type = jobType.getClass().getAnnotation(Dag.class);
-		try {
-			 
-			String jobName = PREFIX_JOB_DB + type.name();
-			JobKey jobKey = new JobKey(jobName,type.group());
-			this.scheduler.triggerJob(jobKey);	
-		} catch (Exception e) {
-			log.debug(type.name() +" not a job!");
-		}
-		
+	public void executeInmediate(Job jobType) throws Exception {
+	    Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
+	    JobDetail jobDetail = JobBuilder.newJob(jobType.getClass()).withIdentity(jobType.getClass().getName()).build();
+	    this.scheduler.scheduleJob(jobDetail,trigger);
+	    
 	}
 	
 	public void activateJob(Job jobType,String group) throws SchedulerException {	

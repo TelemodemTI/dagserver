@@ -16,4 +16,7 @@ public interface JarSchedulerOutputPort {
 
 	
 	public List<DagDTO> getDagDetail(String jarname) throws Exception;
+
+	public void execute(String jarname, String dagname) throws Exception;
+	public List<Map<String,Object>> listScheduled() throws Exception;
 }

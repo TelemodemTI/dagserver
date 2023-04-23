@@ -54,6 +54,15 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
+	public Status executeDag(String token,String dagname,String jarname) {
+		try {
+			handler.execute(token,jarname, dagname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	private Status ok() {
 		Status status = new Status();
 		status.code = 200;

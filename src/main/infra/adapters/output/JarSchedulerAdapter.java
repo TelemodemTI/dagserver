@@ -3,7 +3,6 @@ package main.infra.adapters.output;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -16,13 +15,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
-
-
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
@@ -41,7 +37,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	@Autowired
 	QuartzConfig quartz;
-	
+		
 	private static Logger log = Logger.getLogger(JarSchedulerAdapter.class);
 	
 	private List<File> jars = new ArrayList<File>();
@@ -208,5 +204,32 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		}
 		cl.close();
 		return result;
+	}
+	
+	@SuppressWarnings("resource")
+	public void execute(String jarname, String dagname) throws Exception {
+		List<Map<String,String>> classNames = classMap.get(jarname);
+		File jarfileO = this.findJarFile(jarname);
+		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
+		Boolean founded = false;
+		
+		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+			String classname = iterator.next().get("classname");
+			Class<?> clazz = cl.loadClass(classname);
+			Dag toschedule = clazz.getAnnotation(Dag.class);
+			if(toschedule.name().equals(dagname)) {
+				founded = true;
+				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+				quartz.executeInmediate(dag);
+				break;
+			}
+		}
+		if(!founded) {
+			throw new Exception("dagname not found");
+		} 
+	}
+	
+	public List<Map<String,Object>> listScheduled() throws Exception {
+		 return quartz.listScheduled();
 	}
 }

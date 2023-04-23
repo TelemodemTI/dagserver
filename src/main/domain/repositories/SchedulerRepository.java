@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -59,11 +61,13 @@ public class SchedulerRepository {
 		{put("logid",logid);}}).get(0);
 	}
 	
-	public void setLog(String dagname,String value) {
+	public void setLog(String dagname,String value,Map<String,Object> xcom) {
 		var entry = new Log();
 		entry.setDagname(dagname);
 		entry.setExecDt(new Date());
 		entry.setValue(value);
+		JSONObject nuevo = new JSONObject(xcom);
+		entry.setOutputxcom(nuevo.toString());
 		dao.save(entry);
 	}
 

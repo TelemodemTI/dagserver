@@ -20,14 +20,14 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	public List<Map<String, Object>> call() throws Exception {		
 		QueryRunner queryRunner = new QueryRunner();
 		Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));
-		
-		
 		String xcomname = this.args.getProperty("xcom");
-		
 		List<Map<String, Object>> result = new ArrayList<>();
 		try {
 			DbUtils.loadDriver(this.args.getProperty("driver"));
 			if(xcomname != null) {
+				if(!this.xcom.containsKey(xcomname)) {
+					throw new Exception("xcom not exist for dagname::"+xcomname);
+				}
 				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
 				Object[][] objList = data.stream().map(m -> m.values().toArray()).toArray(Object[][]::new);
@@ -35,7 +35,6 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 					result = queryRunner.query(con, this.args.getProperty("query"), new MapListHandler(),data.get(0));	
 				} else {
 					queryRunner.batch(con,this.args.getProperty("query"), objList);
-					
 				}	
 			} else {
 				if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {

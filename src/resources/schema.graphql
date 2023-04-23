@@ -56,7 +56,8 @@ type LogEntry {
 	id: Int,
 	dagname: String,
 	execDt: Float,
-	value: String
+	value: String,
+	xcomoutput: String
 }
 
 type Query { 
@@ -73,5 +74,6 @@ type Mutation {
 	scheduleDag(token:String, dagname:String, jarname:String) : Status, 
 	unscheduleDag(token:String, dagname:String, jarname:String) : Status,
 	createProperty(token:String, name: String, description: String, value: String,group: String) : Status,
-	deleteProperty(token:String, name: String, group: String) : Status
+	deleteProperty(token:String, name: String, group: String) : Status,
+	executeDag(token:String, dagname:String, jarname:String) : Status
 }

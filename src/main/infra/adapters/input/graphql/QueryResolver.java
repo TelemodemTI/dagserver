@@ -120,6 +120,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 			entry.setExecDt(log.getExecDt().getTime());
 			entry.setId(log.getId());
 			entry.setValue(log.getValue());
+			entry.setXcomoutput(log.getOutputxcom());
 			rv.add(entry);
 		}
 		return rv;
