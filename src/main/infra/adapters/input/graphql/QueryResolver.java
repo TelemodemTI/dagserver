@@ -93,7 +93,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		var bsd = new Available();
 		bsd.setJarname("SYSTEM");
 		bsd.setClassname("main.domain.dags.BackgroundSystemDag");
-		bsd.setCronExpr("0 0/1 * * * ?");
+		bsd.setCronExpr("0 0/10 * * * ?");
 		bsd.setDagname("background_system_dag");
 		bsd.setGroupname("system_dags");
 		bsd.setTriggerEvent("CRON STATEMENT");

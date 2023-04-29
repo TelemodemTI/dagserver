@@ -8,7 +8,7 @@ import main.domain.annotations.Operator;
 import main.domain.types.OperatorStage;
 
 @Operator(args={"prefix","c","cmd"})
-public class BatchOperator extends OperatorStage implements Callable<StringBuilder> {
+public class CmdOperator extends OperatorStage implements Callable<StringBuilder> {
 
 	@Override
 	public StringBuilder call() throws Exception {		

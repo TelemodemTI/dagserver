@@ -28,6 +28,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import main.application.ports.input.GetDefaultJobsUseCase;
 import main.domain.annotations.Dag;
+import main.domain.core.DagExecutable;
 
 
 @EnableWebMvc
@@ -78,6 +79,8 @@ public class WebConfig implements WebMvcConfigurer {
 					 Dag type = job.getClass().getAnnotation(Dag.class);
 					 if(!type.cronExpr().isEmpty()) {
 						 quartz.executeInmediate(job);	 
+					 } else {
+						 quartz.configureListener(type, (DagExecutable) job);
 					 }
 					 	
 				}

@@ -25,7 +25,9 @@ import main.domain.core.DagExecutable;
 import main.domain.messages.DagDTO;
 import main.infra.adapters.confs.QuartzConfig;
 import main.infra.adapters.operators.DummyOperator;
+import main.infra.adapters.operators.Junit5SuiteOperator;
 import main.infra.adapters.operators.LogsRollupOperator;
+import main.infra.adapters.operators.RegisterSchedulerOperator;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -156,17 +158,18 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private List<DagDTO> getDefaultsSYSTEMS() {
 		List<DagDTO> defs = new ArrayList<>();
 		List<String> ops = Arrays.asList("internal",LogsRollupOperator.class.getCanonicalName());
+		List<String> register = Arrays.asList("register",RegisterSchedulerOperator.class.getCanonicalName());
 		DagDTO item = new DagDTO();
 		item.setDagname("background_system_dag");
-		item.setCronExpr("0 0/60 * * * ?");
+		item.setCronExpr("0 0/10 * * * ?");
 		item.setGroup("system_dags");
 		item.setOps(new ArrayList<List<String>>() {
 			private static final long serialVersionUID = 1L;
 		{
 			add(ops);
+			add(register);
 		}});
-		List<String> step1 = Arrays.asList("step1",DummyOperator.class.getCanonicalName());
-		List<String> step2 = Arrays.asList("step2",DummyOperator.class.getCanonicalName());
+		List<String> step1 = Arrays.asList("local_testing",Junit5SuiteOperator.class.getCanonicalName());
 		DagDTO evt = new DagDTO();
 		evt.setDagname("event_system_dag");
 		evt.setGroup("system_dags");
@@ -175,7 +178,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			private static final long serialVersionUID = 1L;
 		{
 			add(step1);
-			add(step2);
 		}});
 		defs.add(item);
 		defs.add(evt);
@@ -209,6 +211,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@SuppressWarnings("resource")
 	public void execute(String jarname, String dagname) throws Exception {
 		List<Map<String,String>> classNames = classMap.get(jarname);
+		log.debug(jarname);
 		File jarfileO = this.findJarFile(jarname);
 		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
 		Boolean founded = false;
