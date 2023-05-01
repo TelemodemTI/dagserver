@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
@@ -24,7 +25,6 @@ import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
 import main.domain.messages.DagDTO;
 import main.infra.adapters.confs.QuartzConfig;
-import main.infra.adapters.operators.DummyOperator;
 import main.infra.adapters.operators.Junit5SuiteOperator;
 import main.infra.adapters.operators.LogsRollupOperator;
 import main.infra.adapters.operators.RegisterSchedulerOperator;
@@ -53,10 +53,30 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			if(listOfFiles[i].getName().endsWith(".jar")) {
 				jars.add(listOfFiles[i]);
 				classMap.put(listOfFiles[i].getName(), this.analizeJar(listOfFiles[i]));
+				quartz.validate(listOfFiles[i].getName().replace(".jar", ""), this.analizeJarProperties(listOfFiles[i]));
 			}
 		}
+		
 		return this;
 	}	
+	
+	private Map<String,Properties> analizeJarProperties(File jarFile) throws Exception{
+		URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
+		ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+		Map<String,Properties> props = new HashMap<String,Properties>();
+		for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+			if (!entry.isDirectory() && entry.getName().endsWith(".properties")) {
+		    	var prop = new Properties();
+		    	prop.load(cl.getResourceAsStream(entry.getName()));
+		    	String[] name = entry.getName().replace(".properties", "").split("/");
+		    	props.put(name[name.length-1], prop);
+		    }
+		}
+		cl.close();
+		return props;
+	}
+	
+	
 	private List<Map<String,String>> analizeJar(File jarFile) throws Exception{
 		URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 		List<Map<String,String>> classNames = new ArrayList<Map<String,String>>();

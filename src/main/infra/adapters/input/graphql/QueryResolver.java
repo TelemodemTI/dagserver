@@ -121,6 +121,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 			entry.setId(log.getId());
 			entry.setValue(log.getValue());
 			entry.setXcomoutput(log.getOutputxcom());
+			entry.setStatus(log.getStatus());
 			rv.add(entry);
 		}
 		return rv;

@@ -30,6 +30,9 @@ public class Log {
 	@Column(name = "outxcom", nullable = false)
 	private String outputxcom;
 
+	@Column(name = "status", nullable = false)
+	private String status;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -68,6 +71,14 @@ public class Log {
 
 	public void setOutputxcom(String outputxcom) {
 		this.outputxcom = outputxcom;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 }

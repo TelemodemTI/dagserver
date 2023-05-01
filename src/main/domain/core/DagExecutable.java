@@ -13,6 +13,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -81,6 +82,7 @@ public class DagExecutable implements Job,JobListener {
 		Logger logdag = Logger.getLogger("DAG");
 		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
+		Map<String,OperatorStatus> status = new HashMap<>();
 		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		while (breadthFirstIterator.hasNext()) {
 			DagNode node = (DagNode) breadthFirstIterator.next();
@@ -103,19 +105,23 @@ public class DagExecutable implements Job,JobListener {
 				this.xcom.put(node.name , result );
 				if( (statusToBe == null) || (statusToBe == OperatorStatus.OK ) || (statusToBe == OperatorStatus.ANY)) {
 					logdag.debug("::end execution::");
+					status.put(node.name, OperatorStatus.OK);
 				} else {
+					status.put(node.name, OperatorStatus.ERROR);
 					throw new JobExecutionException("constraint failed::"+node.name);	
 				}
 			} catch (Exception e) {
 				if(statusToBe == OperatorStatus.ERROR) {
+					status.put(node.name, OperatorStatus.ERROR);
 					logdag.debug("result::"+e.getMessage());
 				} else {
+					status.put(node.name, OperatorStatus.OK);
 					throw new JobExecutionException(e);	
 				}
 			}	
 		}
 		Logger.getRootLogger().removeAppender(fa);
-		repo.setLog(dagname, fa.getResult(),this.xcom);
+		repo.setLog(dagname, fa.getResult(),this.xcom,status);
 		return OperatorStatus.OK;
 	}
 	private InMemoryLoggerAppender createDagMemoryAppender() {
@@ -208,6 +214,10 @@ public class DagExecutable implements Job,JobListener {
 			DagNode node = (DagNode) breadthFirstIterator.next();
 			detail.add(node.name);
 			detail.add(node.operator.getCanonicalName());
+			JSONObject props = new JSONObject(node.args);
+			JSONObject opts = new JSONObject(node.optionals);
+			detail.add(props.toString());
+			detail.add(opts.toString());
 			info.add(detail);
 			index++;
 		}

@@ -218,4 +218,11 @@ public class QuartzConfig {
 		}
 		return p;
 	}
+	public void validate(String jarname,Map<String, Properties> analizeJarProperties) {
+		// iterar sobre el mapa		
+		for (String propertiesFile : analizeJarProperties.keySet()) {
+	        Properties properties = analizeJarProperties.get(propertiesFile);
+	        repo.insertIfNotExists(jarname,propertiesFile,properties);
+		}
+	}
 }

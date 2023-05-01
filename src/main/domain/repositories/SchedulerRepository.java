@@ -17,6 +17,7 @@ import main.domain.entities.Log;
 import main.domain.entities.Metadata;
 import main.domain.entities.PropertyParameter;
 import main.domain.entities.User;
+import main.domain.enums.OperatorStatus;
 import main.domain.types.Agent;
 import main.infra.adapters.confs.DAO;
 
@@ -61,13 +62,15 @@ public class SchedulerRepository {
 		{put("logid",logid);}}).get(0);
 	}
 	
-	public void setLog(String dagname,String value,Map<String,Object> xcom) {
+	public void setLog(String dagname,String value,Map<String,Object> xcom, Map<String, OperatorStatus> status) {
 		var entry = new Log();
 		entry.setDagname(dagname);
 		entry.setExecDt(new Date());
 		entry.setValue(value);
 		JSONObject nuevo = new JSONObject(xcom);
 		entry.setOutputxcom(nuevo.toString());
+		JSONObject statusObj = new JSONObject(status);
+		entry.setStatus(statusObj.toString());
 		dao.save(entry);
 	}
 
@@ -147,4 +150,35 @@ public class SchedulerRepository {
 		}
 		return res;
 	}
+
+	
+	public void insertIfNotExists(String jarname,String propertiesFile, Properties properties) {
+	    List<PropertyParameter> existingProperties = dao.read(PropertyParameter.class, "SELECT props FROM PropertyParameter AS props WHERE props.group = '" + jarname+"."+propertiesFile + "'");
+	    
+	    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+	        String key = (String) entry.getKey();
+	        String value = (String) entry.getValue();
+	        
+	        boolean found = false;
+	        for (PropertyParameter existingProperty : existingProperties) {
+	            if (existingProperty.getName().equals(key)) {
+	                found = true;
+	                break;
+	            }
+	        }
+	        
+	        if (!found) {
+	            // La propiedad no existe, insertarla
+	            PropertyParameter newProperty = new PropertyParameter();
+	            newProperty.setGroup(jarname+"."+propertiesFile);
+	            newProperty.setName(key);
+	            newProperty.setValue(value);
+	            newProperty.setDescription("imported by Scheduler.");
+	            dao.save(newProperty);
+	        }
+	    }
+	}
+
+	
+	
 }

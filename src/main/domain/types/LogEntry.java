@@ -5,7 +5,8 @@ public class LogEntry {
 	private String dagname;
 	private Long execDt;
 	private String value;
-	private String xcomoutput; 
+	private String xcomoutput;
+	private String status;
 	public Integer getId() {
 		return id;
 	}
@@ -35,6 +36,12 @@ public class LogEntry {
 	}
 	public void setXcomoutput(String xcomoutput) {
 		this.xcomoutput = xcomoutput;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 }

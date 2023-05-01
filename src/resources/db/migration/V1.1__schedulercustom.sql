@@ -18,6 +18,7 @@ CREATE TABLE `sche_logs` (
   `exec_dt` datetime DEFAULT NULL,
   `text_value` text,
   `outxcom` text,
+  `status` text,
   PRIMARY KEY (`log_id`)
 ) ENGINE=InnoDB;
 
