@@ -16,9 +16,11 @@ import main.domain.entities.EventListener;
 import main.domain.entities.Log;
 import main.domain.entities.Metadata;
 import main.domain.entities.PropertyParameter;
+import main.domain.entities.ScheUncompiledDags;
 import main.domain.entities.User;
 import main.domain.enums.OperatorStatus;
 import main.domain.types.Agent;
+import main.domain.types.Uncompiled;
 import main.infra.adapters.confs.DAO;
 
 
@@ -177,6 +179,34 @@ public class SchedulerRepository {
 	            dao.save(newProperty);
 	        }
 	    }
+	}
+
+	public void addUncompiled(String string,String name, JSONObject json, Integer userid) {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.name = '"+name+"'");
+		if(list.isEmpty()) {
+			ScheUncompiledDags existingProperties = new ScheUncompiledDags(); 
+			existingProperties.setCreatedDt(new Date());
+			existingProperties.setBin(json.toString());
+			existingProperties.setName(name);
+			existingProperties.setUserId(userid);
+			dao.save(existingProperties);	
+		} else {
+			throw new RuntimeException("jarname already exists");
+		}
+	}
+
+	public List<Uncompiled> getUncompileds(int parseInt) {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.userId = "+parseInt);
+		List<Uncompiled> rv = new ArrayList<>();
+		for (Iterator<ScheUncompiledDags> iterator = list.iterator(); iterator.hasNext();) {
+			ScheUncompiledDags scheUncompiledDags = iterator.next();
+			Uncompiled item = new Uncompiled();
+			item.setBin(scheUncompiledDags.getBin());
+			item.setCreatedDt(scheUncompiledDags.getCreatedDt().getTime());
+			item.setUncompiledId(scheUncompiledDags.getUncompiledId());
+			rv.add(item);
+		}
+		return rv;
 	}
 
 	

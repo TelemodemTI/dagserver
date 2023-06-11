@@ -7,6 +7,7 @@ import main.domain.entities.Log;
 import main.domain.messages.DagDTO;
 import main.domain.types.Agent;
 import main.domain.types.Property;
+import main.domain.types.Uncompiled;
 
 public interface SchedulerQueryUseCase {
 
@@ -21,4 +22,6 @@ public interface SchedulerQueryUseCase {
 	List<Property> properties()  throws Exception;
 
 	List<Agent> agents();
+	
+	List<Uncompiled> getUncompileds(String token) throws Exception;
 }

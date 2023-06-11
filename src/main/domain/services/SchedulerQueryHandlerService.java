@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.application.ports.output.JarSchedulerOutputPort;
+import main.domain.core.TokenEngine;
 import main.domain.entities.EventListener;
 import main.domain.entities.Log;
 import main.domain.entities.PropertyParameter;
@@ -20,6 +21,7 @@ import main.domain.messages.DagDTO;
 import main.domain.repositories.SchedulerRepository;
 import main.domain.types.Agent;
 import main.domain.types.Property;
+import main.domain.types.Uncompiled;
 
 
 
@@ -96,5 +98,10 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	}
 	public List<Agent> agents(){
 		return repository.getAgents();
+	}
+	@Override
+	public List<Uncompiled> getUncompileds(String token) throws Exception {
+		Map<String,Object> claims = (Map<String, Object>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		return repository.getUncompileds(Integer.parseInt(claims.get("userid").toString()));
 	}
 }

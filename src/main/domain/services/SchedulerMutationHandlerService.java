@@ -1,7 +1,10 @@
 package main.domain.services;
 
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -67,5 +70,10 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	public void execute(String token, String jarname, String dagname) throws Exception {
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		scanner.init().execute(jarname, dagname);
+	}
+	@Override
+	public void saveUncompiled(String token, JSONObject json) throws Exception {
+		Map<String,Object> claims = (Map<String, Object>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		repository.addUncompiled(claims.get("username").toString(), json.getString("jarname"),json,Integer.parseInt(claims.get("userid").toString()));
 	}
 }

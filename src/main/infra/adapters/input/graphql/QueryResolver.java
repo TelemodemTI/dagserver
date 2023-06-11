@@ -25,6 +25,7 @@ import main.domain.types.LogEntry;
 import main.domain.types.Node;
 import main.domain.types.Property;
 import main.domain.types.Scheduled;
+import main.domain.types.Uncompiled;
 
 
 @Component
@@ -164,5 +165,9 @@ public class QueryResolver implements GraphQLQueryResolver {
 	}
 	public List<Agent> agents(){
 		return handler.agents();
+	}
+	
+	public List<Uncompiled> getUncompileds(String token) throws Exception{
+		return handler.getUncompileds(token);
 	}
 }

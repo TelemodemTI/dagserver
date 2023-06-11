@@ -1,14 +1,9 @@
 package main.domain.dags;
 
 import main.domain.core.DagExecutable;
-import main.domain.repositories.SchedulerRepository;
 import main.infra.adapters.operators.Junit5SuiteOperator;
-
 import java.util.Properties;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

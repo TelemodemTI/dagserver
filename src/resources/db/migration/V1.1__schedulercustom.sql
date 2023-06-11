@@ -29,6 +29,7 @@ CREATE TABLE `sche_users` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(190) NOT NULL,
   `pwdhash` varchar(190) NOT NULL,
+  `type_account` varchar(190) NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB;
@@ -36,7 +37,7 @@ CREATE TABLE `sche_users` (
 -- ----------------------------
 -- Records of usuarios
 -- ----------------------------
-INSERT INTO `sche_users` VALUES ('1', 'dagserver', 'f399729e48f37737f3aa5f2e74e62f9f75bb7bb10adb065a0a8e21df433d6fa3', NOW());
+INSERT INTO `sche_users` VALUES ('1', 'dagserver', 'f399729e48f37737f3aa5f2e74e62f9f75bb7bb10adb065a0a8e21df433d6fa3', 'ADMIN' , NOW());
 
 
 DROP TABLE IF EXISTS `sche_properties`;
@@ -60,6 +61,14 @@ CREATE TABLE `sche_metadata` (
   PRIMARY KEY (`metadata_id`)
 ) ENGINE=InnoDB;
 
-
+DROP TABLE IF EXISTS `sche_uncompiled_dags`;
+CREATE TABLE `sche_uncompiled_dags` (
+  `uncompiled_id` int NOT NULL AUTO_INCREMENT,  
+  `uncompiled_name` varchar(190) NOT NULL,
+  `user_id` int NOT NULL,
+  `bin` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`uncompiled_id`)
+) ENGINE=InnoDB;
 
 commit;

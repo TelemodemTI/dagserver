@@ -1,6 +1,10 @@
 package main.infra.adapters.input.graphql;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
@@ -63,6 +67,16 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
+	public Status saveUncompiled(String token, String bin) {
+		try {
+			var defobj = this.decodeBase64JSON(bin);
+			handler.saveUncompiled(token,defobj);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	private Status ok() {
 		Status status = new Status();
 		status.code = 200;
@@ -77,4 +91,9 @@ public class MutationResolver implements GraphQLMutationResolver {
 		status.value = ExceptionUtils.getRootCauseMessage(e);
 		return status;
 	}
+	private JSONObject decodeBase64JSON(String base64EncodedString) {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64EncodedString);
+        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+        return new JSONObject(decodedString);
+    }
 }

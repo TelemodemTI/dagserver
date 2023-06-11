@@ -22,7 +22,10 @@ public class User {
 	
 	@Column(name = "pwdhash", nullable = false)
 	private String pwdhash;
-	 
+
+	@Column(name = "type_account", nullable = false)
+	private String typeAccount;
+	
 	@Column(name="created_at")
 	@Type(type="timestamp")
 	private Date createdAt;

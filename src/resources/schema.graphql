@@ -11,6 +11,13 @@ type Property {
 	description: String
 }
 
+type Uncompiled {
+	uncompiledId : Int
+	bin: String
+	createdDt: Float
+}
+
+
 type Node {
 	index: Int,
 	operations: [String]
@@ -68,7 +75,8 @@ type Query {
 	logs(dagname: String): [LogEntry],
 	detail(jarname: String) : DetailStatus,
 	properties: [Property],
-	agents : [Agent]
+	agents : [Agent],
+	getUncompileds(token:String) : [Uncompiled]
 }
 
 type Mutation { 
@@ -76,5 +84,6 @@ type Mutation {
 	unscheduleDag(token:String, dagname:String, jarname:String) : Status,
 	createProperty(token:String, name: String, description: String, value: String,group: String) : Status,
 	deleteProperty(token:String, name: String, group: String) : Status,
-	executeDag(token:String, dagname:String, jarname:String) : Status
+	executeDag(token:String, dagname:String, jarname:String) : Status,
+	saveUncompiled(token:String, bin:String) : Status
 }
