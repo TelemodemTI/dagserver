@@ -9,8 +9,8 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import main.domain.annotations.Operator;
-import main.domain.repositories.SchedulerRepository;
-import main.domain.types.OperatorStage;
+import main.infra.adapters.input.graphql.types.OperatorStage;
+import main.infra.adapters.output.repositories.SchedulerRepository;
 
 @Operator(args={})
 public class LogsRollupOperator extends OperatorStage implements Callable<Void> {

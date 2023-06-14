@@ -1,25 +1,25 @@
-package main.domain.messages;
+package main.infra.adapters.input.graphql.types;
 
 import java.util.List;
 
-public class DagDTO {
-	private String dagname;
-	private List<List<String>> ops;
-	private String cronExpr;
-	private String group;
-	private String onStart;
-	private String onEnd;
+public class Detail {
+	public String dagname;
+	public String cronExpr;
+	public String group;
+	public String onStart;
+	public String onEnd;
+	public List<Node> node;
 	public String getDagname() {
 		return dagname;
 	}
 	public void setDagname(String dagname) {
 		this.dagname = dagname;
 	}
-	public List<List<String>> getOps() {
-		return ops;
+	public List<Node> getNode() {
+		return node;
 	}
-	public void setOps(List<List<String>> ops) {
-		this.ops = ops;
+	public void setNode(List<Node> node) {
+		this.node = node;
 	}
 	public String getCronExpr() {
 		return cronExpr;
@@ -33,16 +33,17 @@ public class DagDTO {
 	public void setGroup(String group) {
 		this.group = group;
 	}
-	public String getOnEnd() {
-		return onEnd;
-	}
-	public void setOnEnd(String onEnd) {
-		this.onEnd = onEnd;
-	}
 	public String getOnStart() {
 		return onStart;
 	}
 	public void setOnStart(String onStart) {
 		this.onStart = onStart;
 	}
+	public String getOnEnd() {
+		return onEnd;
+	}
+	public void setOnEnd(String onEnd) {
+		this.onEnd = onEnd;
+	}
+	
 }

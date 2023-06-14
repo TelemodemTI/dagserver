@@ -23,12 +23,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import main.domain.repositories.SchedulerRepository;
-import main.domain.types.OperatorStage;
 import main.domain.annotations.Dag;
 import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
 import main.infra.adapters.confs.InMemoryLoggerAppender;
+import main.infra.adapters.input.graphql.types.OperatorStage;
+import main.infra.adapters.output.repositories.SchedulerRepository;
 
 
 //@Component

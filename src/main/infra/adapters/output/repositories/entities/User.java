@@ -1,4 +1,4 @@
-package main.domain.entities;
+package main.infra.adapters.output.repositories.entities;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,6 +60,14 @@ public class User {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public String getTypeAccount() {
+		return typeAccount;
+	}
+
+	public void setTypeAccount(String typeAccount) {
+		this.typeAccount = typeAccount;
 	}
 
 }

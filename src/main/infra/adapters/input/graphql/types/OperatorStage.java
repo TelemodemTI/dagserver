@@ -1,4 +1,4 @@
-package main.domain.types;
+package main.infra.adapters.input.graphql.types;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,8 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
-
-import main.domain.repositories.SchedulerRepository;
+import main.infra.adapters.output.repositories.SchedulerRepository;
 
 public class OperatorStage {
 	protected static Logger log = Logger.getLogger("DAG");

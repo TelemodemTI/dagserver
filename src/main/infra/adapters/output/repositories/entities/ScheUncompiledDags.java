@@ -1,4 +1,4 @@
-package main.domain.entities;
+package main.infra.adapters.output.repositories.entities;
 
 import java.util.Date;
 

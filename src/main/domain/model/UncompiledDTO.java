@@ -1,6 +1,6 @@
-package main.domain.types;
+package main.domain.model;
 
-public class Uncompiled {
+public class UncompiledDTO {
 
 	private Integer uncompiledId;
 	private String bin;
@@ -23,5 +23,4 @@ public class Uncompiled {
 	public void setCreatedDt(Long createdDt) {
 		this.createdDt = createdDt;
 	}
-	
 }

@@ -10,18 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
-
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.application.ports.output.JarSchedulerOutputPort;
+import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
-import main.domain.entities.EventListener;
-import main.domain.entities.Log;
-import main.domain.entities.PropertyParameter;
-import main.domain.messages.DagDTO;
-import main.domain.repositories.SchedulerRepository;
-import main.domain.types.Agent;
-import main.domain.types.Property;
-import main.domain.types.Uncompiled;
+import main.domain.model.AgentDTO;
+import main.domain.model.DagDTO;
+import main.domain.model.EventListenerDTO;
+import main.domain.model.LogDTO;
+import main.domain.model.PropertyDTO;
+import main.domain.model.PropertyParameterDTO;
+import main.domain.model.UncompiledDTO;
+
 
 
 
@@ -45,7 +45,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	private String path;
 	
 	@Autowired
-	SchedulerRepository repository;
+	SchedulerRepositoryOutputPort repository;
 	
 	@Autowired 
 	JarSchedulerOutputPort scanner;
@@ -58,8 +58,8 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	public List<Map<String,Object>> listScheduledJobs() throws Exception {
 		List<Map<String,Object>> realscheduled = scanner.listScheduled();
 		var list = repository.listEventListeners();
-		for (Iterator<EventListener> iterator = list.iterator(); iterator.hasNext();) {
-			EventListener eventListener = iterator.next();
+		for (Iterator<EventListenerDTO> iterator = list.iterator(); iterator.hasNext();) {
+			EventListenerDTO eventListener = iterator.next();
 			Map<String,Object> mapa = new HashMap<>();
 			mapa.put("jobname",eventListener.getListenerName());
 			mapa.put("jobgroup",eventListener.getGroupName());
@@ -76,19 +76,19 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		return rv;
 	}
 	@Override
-	public List<Log> getLogs(String dagname) {
+	public List<LogDTO> getLogs(String dagname) {
 		return repository.getLogs(dagname);
 	}
 	public List<DagDTO> getDagDetail(String jarname) throws Exception {
 		return scanner.init().getDagDetail(jarname);
 	}
 	@Override
-	public List<Property> properties() throws Exception {
-		List<Property> res = new ArrayList<Property>();
+	public List<PropertyDTO> properties() throws Exception {
+		List<PropertyDTO> res = new ArrayList<PropertyDTO>();
 		var sollection = repository.getProperties(null);
-		for (Iterator<PropertyParameter> iterator = sollection.iterator(); iterator.hasNext();) {
-			PropertyParameter type = iterator.next();
-			Property newitem = new Property();
+		for (Iterator<PropertyParameterDTO> iterator = sollection.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO type = iterator.next();
+			PropertyDTO newitem = new PropertyDTO();
 			newitem.setDescription(type.getDescription());
 			newitem.setGroup(type.getGroup());
 			newitem.setName(type.getName());
@@ -96,11 +96,11 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		}
 		return res;
 	}
-	public List<Agent> agents(){
+	public List<AgentDTO> agents(){
 		return repository.getAgents();
 	}
 	@Override
-	public List<Uncompiled> getUncompileds(String token) throws Exception {
+	public List<UncompiledDTO> getUncompileds(String token) throws Exception {
 		Map<String,Object> claims = (Map<String, Object>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
 		return repository.getUncompileds(Integer.parseInt(claims.get("userid").toString()));
 	}

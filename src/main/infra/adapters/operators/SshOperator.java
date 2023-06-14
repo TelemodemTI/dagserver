@@ -8,7 +8,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 import main.domain.annotations.Operator;
-import main.domain.types.OperatorStage;
+import main.infra.adapters.input.graphql.types.OperatorStage;
 
 @Operator(args={"host","user","pwd","port", "cmd"})
 public class SshOperator extends OperatorStage implements Callable<String> {

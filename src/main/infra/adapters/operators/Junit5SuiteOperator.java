@@ -17,7 +17,7 @@ import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import main.domain.annotations.Operator;
-import main.domain.types.OperatorStage;
+import main.infra.adapters.input.graphql.types.OperatorStage;
 
 @Operator(args={"suiteClass"})
 public class Junit5SuiteOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {

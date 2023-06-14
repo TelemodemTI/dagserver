@@ -1,4 +1,4 @@
-package main.domain.types;
+package main.infra.adapters.input.graphql.types;
 
 import java.util.List;
 

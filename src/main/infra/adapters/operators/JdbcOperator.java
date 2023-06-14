@@ -11,7 +11,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import main.domain.annotations.Operator;
-import main.domain.types.OperatorStage;
+import main.infra.adapters.input.graphql.types.OperatorStage;
 
 
 @Operator(args={"url","user","pwd","driver","query"},optionalv = { "xcom" })

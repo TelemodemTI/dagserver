@@ -3,7 +3,7 @@ package main.infra.adapters.operators;
 import java.util.concurrent.Callable;
 
 import main.domain.annotations.Operator;
-import main.domain.types.OperatorStage;
+import main.infra.adapters.input.graphql.types.OperatorStage;
 
 @Operator(args={})
 public class DummyOperator extends OperatorStage implements Callable<Void> {

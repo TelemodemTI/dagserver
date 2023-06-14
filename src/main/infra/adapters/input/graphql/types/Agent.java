@@ -1,7 +1,9 @@
-package main.domain.types;
+package main.infra.adapters.input.graphql.types;
 
+import java.io.Serializable;
 
-public class Agent {
+public class Agent implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private String name;
 	private String hostname;

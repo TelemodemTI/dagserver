@@ -10,16 +10,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import main.domain.core.TokenEngine;
+import main.domain.model.UserDTO;
 import main.application.ports.input.LoginUseCase;
-import main.domain.entities.User;
-import main.domain.repositories.SchedulerRepository;
+import main.application.ports.output.SchedulerRepositoryOutputPort;
+
 
 @Service
 @ImportResource("classpath:properties-config.xml")
 public class LoginService implements LoginUseCase ,Function<List<String>,String> {
 
 	@Autowired
-	private SchedulerRepository repository;
+	private SchedulerRepositoryOutputPort repository;
 	
 	@Value( "${param.jwt_secret}" )
 	private String jwt_secret;
@@ -36,9 +37,9 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 	
 	
 	private String login(String username,String pwdhash) throws Exception {
-		List<User> list = repository.findUser(username);
+		List<UserDTO> list = repository.findUser(username);
 		if(list.size() > 0) {
-			User user = list.get(0);
+			UserDTO user = list.get(0);
 			String hash = TokenEngine.sha256(pwdhash);
 			if(hash.equals(user.getPwdhash())) {
 				Map<String,String> claims = new HashMap<String,String>();

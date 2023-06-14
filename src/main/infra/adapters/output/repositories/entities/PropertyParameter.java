@@ -1,4 +1,4 @@
-package main.domain.entities;
+package main.infra.adapters.output.repositories.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

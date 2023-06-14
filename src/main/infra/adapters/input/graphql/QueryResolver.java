@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -15,18 +16,18 @@ import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 
 import main.application.ports.input.LoginUseCase;
 import main.application.ports.input.SchedulerQueryUseCase;
-import main.domain.entities.Log;
-import main.domain.messages.DagDTO;
-import main.domain.types.Agent;
-import main.domain.types.Available;
-import main.domain.types.Detail;
-import main.domain.types.DetailStatus;
-import main.domain.types.LogEntry;
-import main.domain.types.Node;
-import main.domain.types.Property;
-import main.domain.types.Scheduled;
-import main.domain.types.Uncompiled;
-
+import main.domain.model.DagDTO;
+import main.domain.model.LogDTO;
+import main.infra.adapters.input.graphql.types.Agent;
+import main.infra.adapters.input.graphql.types.Available;
+import main.infra.adapters.input.graphql.types.Detail;
+import main.infra.adapters.input.graphql.types.DetailStatus;
+import main.infra.adapters.input.graphql.types.LogEntry;
+import main.infra.adapters.input.graphql.types.Node;
+import main.infra.adapters.input.graphql.types.Property;
+import main.infra.adapters.input.graphql.types.Scheduled;
+import main.infra.adapters.input.graphql.types.Uncompiled;
+import main.infra.adapters.input.graphql.mappers.QueryResolverMapper;
 
 @Component
 public class QueryResolver implements GraphQLQueryResolver {
@@ -40,7 +41,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 	@Autowired
 	LoginUseCase login;
 	
-	
+	@Autowired
+	QueryResolverMapper mapper;
 	
 	public String login(String username,String pwdhash) throws Exception {
 		String token = login.apply(Arrays.asList(username, pwdhash));
@@ -114,8 +116,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 	public List<LogEntry> logs(String dagname){
 		var arr = handler.getLogs(dagname);
 		var rv = new ArrayList<LogEntry>();
-		for (Iterator<Log> iterator = arr.iterator(); iterator.hasNext();) {
-			Log log =  iterator.next();
+		for (Iterator<LogDTO> iterator = arr.iterator(); iterator.hasNext();) {
+			LogDTO log =  iterator.next();
 			var entry = new LogEntry();
 			entry.setDagname(log.getDagname());
 			entry.setExecDt(log.getExecDt().getTime());
@@ -161,13 +163,13 @@ public class QueryResolver implements GraphQLQueryResolver {
 		return status;
 	}
 	public List<Property> properties() throws Exception{
-		return handler.properties();
+		return handler.properties().stream().map(elt -> mapper.toProperty(elt)).collect(Collectors.toList());
 	}
 	public List<Agent> agents(){
-		return handler.agents();
+		return handler.agents().stream().map(elt -> mapper.toAgent(elt)).collect(Collectors.toList());
 	}
 	
 	public List<Uncompiled> getUncompileds(String token) throws Exception{
-		return handler.getUncompileds(token);
+		return handler.getUncompileds(token).stream().map(elt -> mapper.toUncompiled(elt)).collect(Collectors.toList());
 	}
 }

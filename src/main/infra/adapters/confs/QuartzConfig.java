@@ -3,7 +3,7 @@ package main.infra.adapters.confs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import main.domain.core.DagExecutable;
-import main.domain.repositories.SchedulerRepository;
+import main.infra.adapters.output.repositories.SchedulerRepository;
 import main.domain.annotations.Dag;
 
 import java.io.IOException;

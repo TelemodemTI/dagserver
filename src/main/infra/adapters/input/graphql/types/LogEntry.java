@@ -1,4 +1,4 @@
-package main.domain.types;
+package main.infra.adapters.input.graphql.types;
 
 public class LogEntry {
 	private Integer id;

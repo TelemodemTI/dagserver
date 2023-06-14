@@ -1,4 +1,4 @@
-package main.infra.adapters.output;
+package main.infra.adapters.output.scheduler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
-import main.domain.messages.DagDTO;
+import main.domain.model.DagDTO;
 import main.infra.adapters.confs.QuartzConfig;
 import main.infra.adapters.operators.Junit5SuiteOperator;
 import main.infra.adapters.operators.LogsRollupOperator;

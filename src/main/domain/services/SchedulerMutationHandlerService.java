@@ -11,8 +11,9 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import main.application.ports.input.SchedulerMutationUseCase;
 import main.application.ports.output.JarSchedulerOutputPort;
-import main.domain.repositories.SchedulerRepository;
+import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
+
 
 
 
@@ -36,7 +37,7 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	private String path;
 	
 	@Autowired
-	SchedulerRepository repository;
+	SchedulerRepositoryOutputPort repository;
 	
 	@Autowired 
 	JarSchedulerOutputPort scanner;
