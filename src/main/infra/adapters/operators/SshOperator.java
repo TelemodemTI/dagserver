@@ -8,7 +8,10 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 import main.domain.annotations.Operator;
+import main.domain.core.DagExecutable;
 import main.infra.adapters.input.graphql.types.OperatorStage;
+import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.implementation.MethodCall;
 
 @Operator(args={"host","user","pwd","port", "cmd"})
 public class SshOperator extends OperatorStage implements Callable<String> {
@@ -57,5 +60,12 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		}
 		return outputBuffer.toString("UTF-8");
 	}
-
+	@Override
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
+		Implementation implementation = MethodCall.invoke(DagExecutable.class.getConstructor())				
+				.andThen(
+						MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, SshOperator.class,propkey)
+				);
+		return implementation;
+    }
 }

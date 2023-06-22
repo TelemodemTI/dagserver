@@ -32,6 +32,8 @@ public interface SchedulerRepositoryOutputPort {
 	public void setMetadata(String hostname,String name); 
 	public List<AgentDTO> getAgents();
 	public void insertIfNotExists(String jarname,String propertiesFile, Properties properties);
-	public void addUncompiled(String string,String name, JSONObject json, Integer userid);
+	public void addUncompiled(String name, JSONObject json, Integer userid);
+	public void updateUncompiled(Integer uncompiled,JSONObject json);
 	public List<UncompiledDTO> getUncompileds(int parseInt);
+	public String getUncompiledBin(Integer uncompiled);
 }

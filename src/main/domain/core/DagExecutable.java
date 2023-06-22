@@ -139,6 +139,19 @@ public class DagExecutable implements Job,JobListener {
 	protected void addOperator(String name,Class<?> operator,Properties args) throws Exception {
 		this.addOperator(name, operator, args , new Properties());
 	}
+	
+	protected void addOperator(String name,Class<?> operator,String propertyKey) throws Exception {
+		Properties props = this.getDagProperties(propertyKey);
+		Properties propsOpt = new Properties();
+		this.addOperator(name, operator, props, propsOpt);
+	}
+	
+	protected void addOperator(String name,Class<?> operator,String propertyKey,String optionalsKey) throws Exception {
+		Properties props = this.getDagProperties(propertyKey);
+		Properties propsOpt = this.getDagProperties(optionalsKey);
+		this.addOperator(name, operator, props, propsOpt);
+	}
+	
 	protected void addOperator(String name,Class<?> operator,Properties args,Properties optionals) throws Exception {
 		Operator annotation = operator.getAnnotation(Operator.class);
 		String[] argsarr = annotation.args();
@@ -151,6 +164,10 @@ public class DagExecutable implements Job,JobListener {
 		var node = new DagNode(name,operator,args,optionals);
 		this.nodeList.put(name, node);
 		this.g.addVertex(node);
+	}
+	
+	protected void addDependency(String name1, String name2, String status) {
+		this.addDependency(name1, name2, OperatorStatus.valueOf(status));
 	}
 	protected void addDependency(String name1, String name2, OperatorStatus status) {
 		var node1 = this.nodeList.get(name1);

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import main.application.ports.input.SchedulerMutationUseCase;
+import main.application.ports.output.CompilerOutputPort;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
@@ -41,6 +42,9 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	
 	@Autowired 
 	JarSchedulerOutputPort scanner;
+	
+	@Autowired
+	CompilerOutputPort compiler;
 		
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerMutationHandlerService.class);
@@ -72,9 +76,24 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		scanner.init().execute(jarname, dagname);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public void saveUncompiled(String token, JSONObject json) throws Exception {
 		Map<String,Object> claims = (Map<String, Object>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
-		repository.addUncompiled(claims.get("username").toString(), json.getString("jarname"),json,Integer.parseInt(claims.get("userid").toString()));
+		repository.addUncompiled(json.getString("jarname"),json,Integer.parseInt(claims.get("userid").toString()));
 	}
+	@SuppressWarnings({ "unchecked", "unused" })
+	@Override
+	public void updateUncompiled(String token,Integer uncompiled, JSONObject json) throws Exception {
+		Map<String,Object> claims = (Map<String, Object>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		repository.updateUncompiled(uncompiled,json);
+	}
+	@Override
+	public void compile(String token, Integer uncompiled) throws Exception {
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		String bin = repository.getUncompiledBin(uncompiled);
+		compiler.createJar(bin);
+	}
+	
+	
 }

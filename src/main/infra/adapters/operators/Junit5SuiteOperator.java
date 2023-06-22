@@ -18,6 +18,7 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import main.domain.annotations.Operator;
 import main.infra.adapters.input.graphql.types.OperatorStage;
+import net.bytebuddy.implementation.Implementation;
 
 @Operator(args={"suiteClass"})
 public class Junit5SuiteOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
@@ -53,5 +54,9 @@ public class Junit5SuiteOperator extends OperatorStage implements Callable<List<
                 item.put("endAt", new Date());
             }
         };
+    }
+    @Override
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
+    	return null;
     }
 }

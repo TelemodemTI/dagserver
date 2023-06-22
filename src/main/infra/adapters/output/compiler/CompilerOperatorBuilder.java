@@ -1,0 +1,54 @@
+package main.infra.adapters.output.compiler;
+
+import org.json.JSONArray;
+import org.springframework.stereotype.Component;
+
+import main.domain.core.DagExecutable;
+import main.infra.adapters.input.graphql.types.OperatorStage;
+import main.infra.adapters.operators.DummyOperator;
+import net.bytebuddy.agent.builder.AgentBuilder.DescriptionStrategy;
+import net.bytebuddy.agent.builder.AgentBuilder.PoolStrategy;
+import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.implementation.MethodCall;
+import net.bytebuddy.pool.TypePool;
+import net.bytebuddy.implementation.Implementation.Composable;
+
+@Component
+public class CompilerOperatorBuilder {
+
+	@SuppressWarnings("unchecked")
+	public Implementation build(JSONArray boxes) throws Exception {
+
+		
+		Composable implementation = (Composable) MethodCall.invoke(DagExecutable.class.getConstructor());
+				
+				
+				
+		for (int i = 0; i < boxes.length(); i++) {
+			var box = boxes.getJSONObject(i);
+			String typeope = box.getString("type");
+			String idope = box.getString("id");
+			Class<OperatorStage> cls = (Class<OperatorStage>) Class.forName(typeope);	
+			Composable composable = (Composable) cls.getDeclaredConstructor().newInstance().getDinamicInvoke(idope,idope+"."+typeope+".props",idope+"."+typeope+".opts");
+			implementation = implementation.andThen(composable);
+		}
+		for (int i = 0; i < boxes.length(); i++) {
+			var box = boxes.getJSONObject(i);
+			String idope = box.getString("id");
+			String status = box.getString("status");
+			if(box.has("source")) {
+				String target = box.getJSONObject("source").getJSONObject("attrs").getJSONObject("label").getString("text");
+				Composable composable = this.getDependencies(idope, target, status);
+				implementation = implementation.andThen(composable);
+			}
+		}
+		
+		return implementation; 
+	}
+	
+	private Composable getDependencies(String source,String target, String status) throws Exception {
+		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addDependency", String.class, String.class , String.class )).with(source,target,status);
+		return (Composable) implementation;
+		
+	}
+}

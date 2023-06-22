@@ -9,10 +9,14 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import main.infra.adapters.output.repositories.SchedulerRepository;
+import net.bytebuddy.implementation.Implementation;
 
-public class OperatorStage {
+public abstract class OperatorStage {
 	protected static Logger log = Logger.getLogger("DAG");
 	protected String name;
+	
+	public abstract Implementation getDinamicInvoke(String stepName, String propkey, String optkey) throws Exception;
+	
 	public String getName() {
 		return name;
 	}

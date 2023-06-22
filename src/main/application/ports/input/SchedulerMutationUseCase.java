@@ -15,4 +15,8 @@ public interface SchedulerMutationUseCase {
 	public void execute(String token, String jarname, String dagname) throws Exception;
 
 	void saveUncompiled(String token, JSONObject defobj) throws Exception;
+	
+	void updateUncompiled(String token,Integer uncompiled, JSONObject json) throws Exception;
+
+	void compile(String token, Integer uncompiled) throws Exception;
 }

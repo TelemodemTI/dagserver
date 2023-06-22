@@ -11,7 +11,10 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import main.domain.annotations.Operator;
+import main.domain.core.DagExecutable;
 import main.infra.adapters.input.graphql.types.OperatorStage;
+import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.implementation.MethodCall;
 
 
 @Operator(args={"url","user","pwd","driver","query"},optionalv = { "xcom" })
@@ -50,4 +53,12 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	    }        
 		return result;
 	}
+	@Override
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
+		Implementation implementation = MethodCall.invoke(DagExecutable.class.getConstructor())				
+				.andThen(
+						MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey)
+				);
+		return implementation;
+    }
 }

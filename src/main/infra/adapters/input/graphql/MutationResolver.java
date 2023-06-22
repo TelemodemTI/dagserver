@@ -77,6 +77,26 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
+	public Status updateUncompiled(String token, Integer uncompiled ,String bin) {
+		try {
+			var defobj = this.decodeBase64JSON(bin);
+			handler.updateUncompiled(token, uncompiled, defobj);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
+	public Status compile(String token, Integer uncompiled) {
+		try {
+			handler.compile(token, uncompiled);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
+	
 	private Status ok() {
 		Status status = new Status();
 		status.code = 200;

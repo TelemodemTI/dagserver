@@ -10,6 +10,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import main.domain.annotations.Operator;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import main.infra.adapters.output.repositories.SchedulerRepository;
+import net.bytebuddy.implementation.Implementation;
 
 @Operator(args={})
 public class RegisterSchedulerOperator extends OperatorStage implements Callable<Void> {
@@ -25,5 +26,8 @@ public class RegisterSchedulerOperator extends OperatorStage implements Callable
 		log.debug(this.getClass()+" end "+this.name);
 		return null;
 	}
-
+	@Override
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
+    	return null;
+    }
 }

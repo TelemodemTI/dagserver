@@ -5,7 +5,10 @@ import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 
 import main.domain.annotations.Operator;
+import main.domain.core.DagExecutable;
 import main.infra.adapters.input.graphql.types.OperatorStage;
+import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.implementation.MethodCall;
 
 @Operator(args={"prefix","c","cmd"})
 public class CmdOperator extends OperatorStage implements Callable<StringBuilder> {
@@ -26,4 +29,12 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 	    }
 		return sbuilder;	
 	}
+	@Override
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
+		Implementation implementation = MethodCall.invoke(DagExecutable.class.getConstructor())				
+				.andThen(
+						MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, CmdOperator.class,propkey)
+				);
+		return implementation;
+    }
 }

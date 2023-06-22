@@ -195,7 +195,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	    }
 	}
 
-	public void addUncompiled(String string,String name, JSONObject json, Integer userid) {
+	public void addUncompiled(String name, JSONObject json, Integer userid) {
 		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.name = '"+name+"'");
 		if(list.isEmpty()) {
 			ScheUncompiledDags existingProperties = new ScheUncompiledDags(); 
@@ -206,6 +206,17 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			dao.save(existingProperties);	
 		} else {
 			throw new RuntimeException("jarname already exists");
+		}
+	}
+	
+	public void updateUncompiled(Integer uncompiled,JSONObject json) {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.id = "+uncompiled);
+		if(!list.isEmpty()) {
+			ScheUncompiledDags existingProperties = list.get(0);
+			existingProperties.setBin(json.toString());
+			dao.save(existingProperties);	
+		} else {
+			throw new RuntimeException("uncompiled not exists");
 		}
 	}
 
@@ -221,6 +232,13 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			rv.add(item);
 		}
 		return rv;
+	}
+
+	@Override
+	public String getUncompiledBin(Integer uncompiled) {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = "+uncompiled);
+		String bin = list.get(0).getBin();
+		return bin;
 	}
 
 	
