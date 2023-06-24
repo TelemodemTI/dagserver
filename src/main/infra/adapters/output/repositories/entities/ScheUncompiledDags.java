@@ -20,8 +20,6 @@ public class ScheUncompiledDags {
 	@Column(name="uncompiled_id",nullable=false)
 	private Integer uncompiledId;
 	
-	@Column(name = "user_id", nullable = false)
-	private Integer userId;
 	
 	@Column(name = "uncompiled_name", nullable = false)
 	private String name;
@@ -39,14 +37,6 @@ public class ScheUncompiledDags {
 
 	public void setUncompiledId(Integer uncompiledId) {
 		this.uncompiledId = uncompiledId;
-	}
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
 	}
 
 	public String getBin() {

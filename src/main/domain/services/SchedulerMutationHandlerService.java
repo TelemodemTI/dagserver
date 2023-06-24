@@ -1,8 +1,5 @@
 package main.domain.services;
 
-
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +11,6 @@ import main.application.ports.output.CompilerOutputPort;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
-
-
 
 
 @Component
@@ -76,23 +71,29 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		scanner.init().execute(jarname, dagname);
 	}
-	@SuppressWarnings("unchecked")
 	@Override
 	public void saveUncompiled(String token, JSONObject json) throws Exception {
-		Map<String,Object> claims = (Map<String, Object>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
-		repository.addUncompiled(json.getString("jarname"),json,Integer.parseInt(claims.get("userid").toString()));
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		repository.addUncompiled(json.getString("jarname"),json);
 	}
-	@SuppressWarnings({ "unchecked", "unused" })
 	@Override
 	public void updateUncompiled(String token,Integer uncompiled, JSONObject json) throws Exception {
-		Map<String,Object> claims = (Map<String, Object>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
 		repository.updateUncompiled(uncompiled,json);
 	}
 	@Override
-	public void compile(String token, Integer uncompiled) throws Exception {
+	public void compile(String token, Integer uncompiled, Boolean force) throws Exception {
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		String bin = repository.getUncompiledBin(uncompiled);
-		compiler.createJar(bin);
+		JSONObject def = new JSONObject(bin);
+		String jarname = def.getString("jarname");
+		compiler.createJar(bin,force);
+		repository.createParams(jarname,bin);
+	}
+	@Override
+	public void deleteUncompiled(String token, Integer uncompiled) throws Exception {
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		repository.deleteUncompiled(uncompiled);
 	}
 	
 	

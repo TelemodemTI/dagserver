@@ -87,15 +87,27 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
-	public Status compile(String token, Integer uncompiled) {
+	public Status compile(String token, Integer uncompiled,Integer force) {
 		try {
-			handler.compile(token, uncompiled);
+			Boolean forceb = false;
+			if(force != null) {
+				forceb = force.equals(0)?false:true;	
+			}
+			
+			handler.compile(token, uncompiled,forceb);
 			return ok();
 		} catch (Exception e) {
 			return error(e);
 		}
 	}
-	
+	public Status deleteUncompiled(String token, Integer uncompiled) {
+		try {
+			handler.deleteUncompiled(token, uncompiled);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	
 	private Status ok() {
 		Status status = new Status();

@@ -9,11 +9,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import main.application.ports.output.SchedulerRepositoryOutputPort;
+import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
 import main.domain.model.AgentDTO;
 import main.domain.model.EventListenerDTO;
@@ -195,14 +197,13 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	    }
 	}
 
-	public void addUncompiled(String name, JSONObject json, Integer userid) {
+	public void addUncompiled(String name, JSONObject json) {
 		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.name = '"+name+"'");
 		if(list.isEmpty()) {
 			ScheUncompiledDags existingProperties = new ScheUncompiledDags(); 
 			existingProperties.setCreatedDt(new Date());
 			existingProperties.setBin(json.toString());
 			existingProperties.setName(name);
-			existingProperties.setUserId(userid);
 			dao.save(existingProperties);	
 		} else {
 			throw new RuntimeException("jarname already exists");
@@ -220,8 +221,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		}
 	}
 
-	public List<UncompiledDTO> getUncompileds(int parseInt) {
-		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.userId = "+parseInt);
+	public List<UncompiledDTO> getUncompileds() {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom");
 		List<UncompiledDTO> rv = new ArrayList<>();
 		for (Iterator<ScheUncompiledDags> iterator = list.iterator(); iterator.hasNext();) {
 			ScheUncompiledDags scheUncompiledDags = iterator.next();
@@ -241,6 +242,51 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return bin;
 	}
 
+	@Override
+	public void deleteUncompiled(Integer uncompiled) {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = "+uncompiled);
+		dao.delete(list.get(0));
+	}
+
+	@Override
+	public void createParams(String jarname,String bin) throws Exception {
+		JSONObject def = new JSONObject(bin);
+		for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
+			JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
+			JSONArray boxes = dag.getJSONArray("boxes");
+			for (int j = 0; j < boxes.length(); j++) {
+				for (int k = 0; k < boxes.length(); k++) {
+					var box = boxes.getJSONObject(k);
+					String typeope = box.getString("type");
+					String idope = box.getString("id");
+					String group = jarname+"."+idope+"."+typeope+".props";
+					Class<?> clazz = Class.forName(typeope);
+					Operator annotation = clazz.getAnnotation(Operator.class);
+					for (int l = 0; l < box.getJSONArray("params").length(); l++) {
+						JSONObject parm = box.getJSONArray("params").getJSONObject(l);
+						if(this.searchValue(annotation.args(), parm.getString("key"))) {
+							this.setProperty(parm.getString("key"), "generated parameter from editor", parm.getString("value"), group);	
+						}
+					}
+					String groupo = jarname+"."+idope+"."+typeope+".opts";
+					for (int l = 0; l < box.getJSONArray("params").length(); l++) {
+						JSONObject parm = box.getJSONArray("params").getJSONObject(l);
+						if(this.searchValue(annotation.optionalv(), parm.getString("key"))) {
+							this.setProperty(parm.getString("key"), "generated optional from editor", parm.getString("value"), groupo);	
+						}
+					}
+				}
+			}
+		}
+	}
+	private boolean searchValue(String[] array, String value) {
+        for (String element : array) {
+            if (element.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
 	
 	
 }

@@ -5,19 +5,15 @@ import org.springframework.stereotype.Component;
 
 import main.domain.core.DagExecutable;
 import main.infra.adapters.input.graphql.types.OperatorStage;
-import main.infra.adapters.operators.DummyOperator;
-import net.bytebuddy.agent.builder.AgentBuilder.DescriptionStrategy;
-import net.bytebuddy.agent.builder.AgentBuilder.PoolStrategy;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
-import net.bytebuddy.pool.TypePool;
 import net.bytebuddy.implementation.Implementation.Composable;
 
 @Component
 public class CompilerOperatorBuilder {
 
 	@SuppressWarnings("unchecked")
-	public Implementation build(JSONArray boxes) throws Exception {
+	public Implementation build(String jarname,JSONArray boxes) throws Exception {
 
 		
 		Composable implementation = (Composable) MethodCall.invoke(DagExecutable.class.getConstructor());
@@ -29,7 +25,7 @@ public class CompilerOperatorBuilder {
 			String typeope = box.getString("type");
 			String idope = box.getString("id");
 			Class<OperatorStage> cls = (Class<OperatorStage>) Class.forName(typeope);	
-			Composable composable = (Composable) cls.getDeclaredConstructor().newInstance().getDinamicInvoke(idope,idope+"."+typeope+".props",idope+"."+typeope+".opts");
+			Composable composable = (Composable) cls.getDeclaredConstructor().newInstance().getDinamicInvoke(idope,jarname+"."+idope+"."+typeope+".props",jarname+"."+idope+"."+typeope+".opts");
 			implementation = implementation.andThen(composable);
 		}
 		for (int i = 0; i < boxes.length(); i++) {

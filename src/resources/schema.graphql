@@ -87,5 +87,6 @@ type Mutation {
 	executeDag(token:String, dagname:String, jarname:String) : Status,
 	saveUncompiled(token:String, bin:String) : Status,
 	updateUncompiled(token:String, uncompiled:Int , bin:String) : Status,
-	compile(token:String, uncompiled:Int) : Status
+	compile(token:String, uncompiled:Int, force: Int) : Status,
+	deleteUncompiled(token:String, uncompiled:Int) : Status
 }

@@ -65,7 +65,6 @@ DROP TABLE IF EXISTS `sche_uncompiled_dags`;
 CREATE TABLE `sche_uncompiled_dags` (
   `uncompiled_id` int NOT NULL AUTO_INCREMENT,  
   `uncompiled_name` varchar(190) NOT NULL,
-  `user_id` int NOT NULL,
   `bin` text NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`uncompiled_id`)
