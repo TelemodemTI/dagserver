@@ -31,7 +31,6 @@ import main.infra.adapters.operators.RegisterSchedulerOperator;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
-
 public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	@Value("${param.folderpath}")

@@ -1,5 +1,6 @@
 package main.infra.adapters.output.repositories;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
 import main.application.ports.output.SchedulerRepositoryOutputPort;
@@ -34,6 +37,7 @@ import main.infra.adapters.output.repositories.mappers.SchedulerMapper;
 
 
 @Component
+@ImportResource("classpath:properties-config.xml")
 public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	@Autowired
@@ -41,6 +45,9 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	@Autowired
 	SchedulerMapper mapper;
+	
+	@Value("${param.folderpath}")
+	private String pathfolder;
 	
 	public void addEventListener(String name,String onstart,String onend,String groupname) {
 		var event = new EventListener();
@@ -80,13 +87,12 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return mapper.toLogDTO(log);
 	}
 	
-	public void setLog(String dagname,String value,Map<String,Object> xcom, Map<String, OperatorStatus> status) {
+	public void setLog(String dagname,String value,String xcom, Map<String, OperatorStatus> status) {
 		var entry = new Log();
 		entry.setDagname(dagname);
 		entry.setExecDt(new Date());
 		entry.setValue(value);
-		JSONObject nuevo = new JSONObject(xcom);
-		entry.setOutputxcom(nuevo.toString());
+		entry.setOutputxcom(xcom);
 		JSONObject statusObj = new JSONObject(status);
 		entry.setStatus(statusObj.toString());
 		dao.save(entry);
@@ -288,5 +294,20 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
         return false;
     }
 	
+	@Override
+	public String createInternalStatus(JSONObject data) throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+		String name = sdf.format(new Date())+"_data.json";
+		InternalStorage storage = new InternalStorage(pathfolder+name);
+		storage.put(data);
+		return storage.getLocatedb();
+	}
+
+	@Override
+	public JSONObject readXcom(String locatedAt) throws Exception {
+		InternalStorage storage = new InternalStorage(locatedAt);
+		var rv = storage.get();
+		return rv;
+	}
 	
 }

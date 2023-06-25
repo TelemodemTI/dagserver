@@ -1,10 +1,8 @@
 package main.infra.adapters.input.graphql.types;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -26,7 +24,8 @@ public abstract class OperatorStage {
 	}
 
 	protected Properties args;
-	protected Map<String,Object> xcom = new HashMap<String,Object>();
+	protected JSONObject xcom = new JSONObject();
+
 	
 	public Properties getArgs() {
 		return args;
@@ -36,13 +35,7 @@ public abstract class OperatorStage {
 		this.args = args;
 	}
 
-	public Map<String, Object> getXcom() {
-		return xcom;
-	}
-
-	public void setXcom(Map<String, Object> xcom) {
-		this.xcom = xcom;
-	}
+	
 	protected Properties optionals;
 	public Properties getOptionals() {
 		return optionals;
@@ -57,5 +50,13 @@ public abstract class OperatorStage {
 		factory.autowireBean( repo );
 		factory.initializeBean( repo, "schedulerRepository" );
 		return repo;
+	}
+
+	public JSONObject getXcom() {
+		return xcom;
+	}
+
+	public void setXcom(JSONObject xcom) {
+		this.xcom = xcom;
 	}
 }

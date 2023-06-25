@@ -28,7 +28,8 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		try {
 			DbUtils.loadDriver(this.args.getProperty("driver"));
 			if(xcomname != null) {
-				if(!this.xcom.containsKey(xcomname)) {
+				
+				if(!this.xcom.has(xcomname)) {
 					throw new Exception("xcom not exist for dagname::"+xcomname);
 				}
 				@SuppressWarnings("unchecked")

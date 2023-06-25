@@ -1,10 +1,8 @@
 package main.infra.adapters.operators;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
 import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.agent.builder.AgentBuilder.DescriptionStrategy;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
 
@@ -16,8 +14,6 @@ public class DummyOperator extends OperatorStage implements Callable<Void> {
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
-		log.debug("xcom");
-		log.debug(xcom);
 		log.debug(this.getClass()+" end "+this.name);
 		return null;
 	}

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -76,8 +77,16 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		return rv;
 	}
 	@Override
-	public List<LogDTO> getLogs(String dagname) {
-		return repository.getLogs(dagname);
+	public List<LogDTO> getLogs(String dagname) throws Exception {
+		List<LogDTO> newrv = new ArrayList<>();
+		var list = repository.getLogs(dagname);
+		for (Iterator<LogDTO> iterator = list.iterator(); iterator.hasNext();) {
+			LogDTO logDTO = iterator.next();
+			JSONObject xcom = repository.readXcom(logDTO.getOutputxcom());
+			logDTO.setOutputxcom(xcom.toString());
+			newrv.add(logDTO);
+		}
+		return newrv;
 	}
 	public List<DagDTO> getDagDetail(String jarname) throws Exception {
 		return scanner.init().getDagDetail(jarname);

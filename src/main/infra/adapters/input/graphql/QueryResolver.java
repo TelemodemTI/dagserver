@@ -114,19 +114,23 @@ public class QueryResolver implements GraphQLQueryResolver {
 		return rv;
 	}
 	public List<LogEntry> logs(String dagname){
-		var arr = handler.getLogs(dagname);
 		var rv = new ArrayList<LogEntry>();
-		for (Iterator<LogDTO> iterator = arr.iterator(); iterator.hasNext();) {
-			LogDTO log =  iterator.next();
-			var entry = new LogEntry();
-			entry.setDagname(log.getDagname());
-			entry.setExecDt(log.getExecDt().getTime());
-			entry.setId(log.getId());
-			entry.setValue(log.getValue());
-			entry.setXcomoutput(log.getOutputxcom());
-			entry.setStatus(log.getStatus());
-			rv.add(entry);
-		}
+		try {
+			var arr = handler.getLogs(dagname);
+			for (Iterator<LogDTO> iterator = arr.iterator(); iterator.hasNext();) {
+				LogDTO log =  iterator.next();
+				var entry = new LogEntry();
+				entry.setDagname(log.getDagname());
+				entry.setExecDt(log.getExecDt().getTime());
+				entry.setId(log.getId());
+				entry.setValue(log.getValue());
+				entry.setXcomoutput(log.getOutputxcom());
+				entry.setStatus(log.getStatus());
+				rv.add(entry);
+			}	
+		} catch (Exception e) {
+			logger.error(e);
+		}		
 		return rv;
 	}
 	public DetailStatus detail(String jarname) throws Exception{

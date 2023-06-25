@@ -22,7 +22,7 @@ public interface SchedulerRepositoryOutputPort {
 	public List<EventListenerDTO> getEventListeners(String listenerName);
 	public List<LogDTO> getLogs(String dagname);
 	public LogDTO getLog(Integer logid);
-	public void setLog(String dagname,String value,Map<String,Object> xcom, Map<String, OperatorStatus> status);
+	public void setLog(String dagname,String value,String xcom, Map<String, OperatorStatus> status);
 	public void deleteLogsBy(Date rolldate);
 	public List<UserDTO> findUser(String username);
 	public List<PropertyParameterDTO> getProperties(String groupname) throws Exception;
@@ -38,4 +38,6 @@ public interface SchedulerRepositoryOutputPort {
 	public String getUncompiledBin(Integer uncompiled);
 	public void deleteUncompiled(Integer uncompiled);
 	public void createParams(String jarname, String bin) throws Exception;
+	public String createInternalStatus(JSONObject data) throws Exception;
+	public JSONObject readXcom(String locatedAt) throws Exception;
 }

@@ -22,19 +22,20 @@ import org.quartz.JobListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
+import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
 import main.infra.adapters.confs.InMemoryLoggerAppender;
 import main.infra.adapters.input.graphql.types.OperatorStage;
-import main.infra.adapters.output.repositories.SchedulerRepository;
+
 
 
 //@Component
 public class DagExecutable implements Job,JobListener {
 	
 	private static Logger log = Logger.getLogger(DagExecutable.class);
+	
 	protected class DagNode {
 		public Class<?> operator;
 		public String name;
@@ -48,20 +49,21 @@ public class DagExecutable implements Job,JobListener {
 		}
 	}
 	private Boolean isRunning = true;
-	
 	private String dagname = "";
 	private String eventname = "";
-	private SchedulerRepository repo;
+	private SchedulerRepositoryOutputPort repo;
 	private Map<String,DagNode> nodeList = new HashMap<>();
 	private Map<String,OperatorStatus> constraints = new HashMap<>();
 	protected Graph<DagNode, DefaultEdge> g;
-	protected Map<String,Object> xcom = new HashMap<String,Object>();
+	//protected Map<String,Object> xcom = new HashMap<String,Object>();
+	
+	
 	protected JobDetail jobDetail;
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
 		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoaderListener.getCurrentWebApplicationContext().getServletContext());
-		repo = (SchedulerRepository) springContext.getBean("schedulerRepository");
+		repo = (SchedulerRepositoryOutputPort) springContext.getBean("schedulerRepository");
 	}
 	
 	public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -79,6 +81,7 @@ public class DagExecutable implements Job,JobListener {
 	@SuppressWarnings("rawtypes")
 	private OperatorStatus evaluate() throws JobExecutionException {
 		var fa = this.createDagMemoryAppender();
+		JSONObject xcom = new JSONObject();
 		Logger logdag = Logger.getLogger("DAG");
 		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
@@ -102,7 +105,7 @@ public class DagExecutable implements Job,JobListener {
 				op.setOptionals(node.optionals);
 				Callable<?> instance  = (Callable<?>) op; 
 				var result = instance.call();
-				this.xcom.put(node.name , result );
+				xcom.put(node.name , result );
 				if( (statusToBe == null) || (statusToBe == OperatorStatus.OK ) || (statusToBe == OperatorStatus.ANY)) {
 					logdag.debug("::end execution::");
 					status.put(node.name, OperatorStatus.OK);
@@ -120,9 +123,14 @@ public class DagExecutable implements Job,JobListener {
 				}
 			}	
 		}
-		Logger.getRootLogger().removeAppender(fa);
-		repo.setLog(dagname, fa.getResult(),this.xcom,status);
-		return OperatorStatus.OK;
+		try {
+			Logger.getRootLogger().removeAppender(fa);
+			String locatedAt = repo.createInternalStatus(xcom);
+			repo.setLog(dagname, fa.getResult(),locatedAt,status);
+			return OperatorStatus.OK;	
+		} catch (Exception e) {
+			throw new JobExecutionException(e);
+		}
 	}
 	private InMemoryLoggerAppender createDagMemoryAppender() {
 		InMemoryLoggerAppender fa = new InMemoryLoggerAppender();
@@ -246,10 +254,7 @@ public class DagExecutable implements Job,JobListener {
 	}
 
 	
-	public void setXcom(Map<String, Object> xcom) {
-		this.xcom = xcom;
-	}
-
+	
 	public Boolean getIsRunning() {
 		return isRunning;
 	}

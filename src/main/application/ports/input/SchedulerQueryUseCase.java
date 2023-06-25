@@ -16,7 +16,7 @@ public interface SchedulerQueryUseCase {
 
 	Map<String, List<Map<String, String>>> availableJobs() throws Exception;
 
-	List<LogDTO> getLogs(String dagname);
+	List<LogDTO> getLogs(String dagname)  throws Exception;
 
 	List<DagDTO> getDagDetail(String jarname) throws Exception;
 
