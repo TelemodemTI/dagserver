@@ -31,10 +31,7 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 	}
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
-		Implementation implementation = MethodCall.invoke(DagExecutable.class.getConstructor())				
-				.andThen(
-						MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, CmdOperator.class,propkey)
-				);
+		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, CmdOperator.class,propkey);
 		return implementation;
     }
 }

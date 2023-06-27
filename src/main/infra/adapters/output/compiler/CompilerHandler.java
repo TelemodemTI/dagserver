@@ -58,7 +58,6 @@ public class CompilerHandler implements CompilerOutputPort {
 			String group = dag.getString("group");
 			validateParams(dag.getJSONArray("boxes"));
 			var dagdef1 = this.getClassDefinition(jarname,classname, classname, crondef, group, dag.getJSONArray("boxes"));
-						
 			this.packageJar(jarname, classname, dagdef1.getBytes());
 			log.error(dagdef1);
 		}
@@ -70,17 +69,19 @@ public class CompilerHandler implements CompilerOutputPort {
 			Class<?> clazz = Class.forName(type);
 	        // Obtener las anotaciones de la clase
 			Operator annotation = clazz.getAnnotation(Operator.class);
-	        for (int j = 0; j < item.getJSONArray("params").length(); j++) {
-				JSONObject param = item.getJSONArray("params").getJSONObject(j);
-				if(!searchValue(annotation.args(), param.getString("key"))) {
-					if(!searchValue(annotation.optionalv(), param.getString("key"))) {
-						throw new IOException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
+	        if(item.has("params")) {
+	        	for (int j = 0; j < item.getJSONArray("params").length(); j++) {
+					JSONObject param = item.getJSONArray("params").getJSONObject(j);
+					if(!searchValue(annotation.args(), param.getString("key"))) {
+						if(!searchValue(annotation.optionalv(), param.getString("key"))) {
+							throw new IOException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
+						}
 					}
 				}
-			}
-			if(item.getJSONArray("params").length() < annotation.args().length ) {
-				throw new IOException(item.getJSONArray("params").toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
-			}
+				if(item.getJSONArray("params").length() < annotation.args().length ) {
+					throw new IOException(item.getJSONArray("params").toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
+				}	
+	        }
 		}
 	}
 	private boolean searchValue(String[] array, String value) {

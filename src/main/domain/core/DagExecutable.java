@@ -110,7 +110,7 @@ public class DagExecutable implements Job,JobListener {
 					logdag.debug("::end execution::");
 					status.put(node.name, OperatorStatus.OK);
 				} else {
-					status.put(node.name, OperatorStatus.ERROR);
+					status.put(node.name, OperatorStatus.ERROR);				
 					throw new JobExecutionException("constraint failed::"+node.name);	
 				}
 			} catch (Exception e) {
@@ -118,7 +118,13 @@ public class DagExecutable implements Job,JobListener {
 					status.put(node.name, OperatorStatus.ERROR);
 					logdag.debug("result::"+e.getMessage());
 				} else {
-					status.put(node.name, OperatorStatus.OK);
+					status.put(node.name, OperatorStatus.ERROR);
+					logdag.error(e);
+					Logger.getRootLogger().removeAppender(fa);
+					try {
+						String locatedAt = repo.createInternalStatus(xcom);
+						repo.setLog(dagname, fa.getResult(),locatedAt,status);	
+					} catch (Exception e2) {}
 					throw new JobExecutionException(e);	
 				}
 			}	

@@ -22,13 +22,13 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	@Override
 	public List<Map<String, Object>> call() throws Exception {		
 		QueryRunner queryRunner = new QueryRunner();
+		List<Map<String, Object>> result = new ArrayList<>();
+		
+		DbUtils.loadDriver(this.getClass().getClassLoader(), this.args.getProperty("driver"));
 		Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));
 		String xcomname = this.args.getProperty("xcom");
-		List<Map<String, Object>> result = new ArrayList<>();
-		try {
-			DbUtils.loadDriver(this.args.getProperty("driver"));
-			if(xcomname != null) {
-				
+			
+		if(xcomname != null) {
 				if(!this.xcom.has(xcomname)) {
 					throw new Exception("xcom not exist for dagname::"+xcomname);
 				}
@@ -40,26 +40,19 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 				} else {
 					queryRunner.batch(con,this.args.getProperty("query"), objList);
 				}	
-			} else {
+		} else {
 				if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {
 					result = queryRunner.query(con, this.args.getProperty("query"), new MapListHandler());	
 				} else {
 					queryRunner.update(con, this.args.getProperty("query"));
 				}
-			}
-	    } catch (Exception e) {
-			throw e;
-		} finally {
-	      DbUtils.close(con);
-	    }        
+		}
+		DbUtils.close(con);
 		return result;
 	}
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
-		Implementation implementation = MethodCall.invoke(DagExecutable.class.getConstructor())				
-				.andThen(
-						MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey)
-				);
+		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey);
 		return implementation;
     }
 }
