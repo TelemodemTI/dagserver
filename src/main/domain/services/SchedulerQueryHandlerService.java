@@ -101,6 +101,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 			newitem.setDescription(type.getDescription());
 			newitem.setGroup(type.getGroup());
 			newitem.setName(type.getName());
+			newitem.setValue(type.getValue());
 			res.add(newitem);
 		}
 		return res;

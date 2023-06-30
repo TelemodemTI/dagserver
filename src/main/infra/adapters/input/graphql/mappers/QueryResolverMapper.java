@@ -26,6 +26,7 @@ public class QueryResolverMapper {
 		prop.setDescription(dto.getDescription());
 		prop.setGroup(dto.getGroup());
 		prop.setName(dto.getName());
+		prop.setValue(dto.getValue());
 		return prop;
 	}
 	

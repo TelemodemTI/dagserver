@@ -9,6 +9,7 @@ type Property {
 	group: String
 	name: String
 	description: String
+	value: String
 }
 
 type Uncompiled {
@@ -84,6 +85,7 @@ type Mutation {
 	unscheduleDag(token:String, dagname:String, jarname:String) : Status,
 	createProperty(token:String, name: String, description: String, value: String,group: String) : Status,
 	deleteProperty(token:String, name: String, group: String) : Status,
+	deleteGroupProperty(token:String, name: String, group: String) : Status,
 	executeDag(token:String, dagname:String, jarname:String) : Status,
 	saveUncompiled(token:String, bin:String) : Status,
 	updateUncompiled(token:String, uncompiled:Int , bin:String) : Status,

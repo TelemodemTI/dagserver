@@ -95,6 +95,11 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		repository.deleteUncompiled(uncompiled);
 	}
+	@Override
+	public void deleteGroupProperty(String token, String name, String group) throws Exception {
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		repository.delGroupProperty(group);
+	}
 	
 	
 }

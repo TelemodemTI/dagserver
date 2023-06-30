@@ -4,6 +4,7 @@ public class PropertyDTO {
 	private String group;
 	private String name;
 	private String description;
+	private String value;
 	public String getGroup() {
 		return group;
 	}
@@ -21,5 +22,11 @@ public class PropertyDTO {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
 	}
 }

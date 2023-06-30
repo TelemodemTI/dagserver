@@ -322,5 +322,15 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		var rv = storage.get();
 		return rv;
 	}
+
+	@Override
+	public void delGroupProperty(String group) {
+		var founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+group+"'");
+		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
+			PropertyParameter propertyParameter = iterator.next();
+			dao.delete(propertyParameter);
+		}
+		
+	}
 	
 }

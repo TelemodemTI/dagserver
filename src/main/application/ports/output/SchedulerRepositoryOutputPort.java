@@ -40,4 +40,5 @@ public interface SchedulerRepositoryOutputPort {
 	public void createParams(String jarname, String bin) throws Exception;
 	public String createInternalStatus(JSONObject data) throws Exception;
 	public JSONObject readXcom(String locatedAt) throws Exception;
+	public void delGroupProperty(String group);
 }

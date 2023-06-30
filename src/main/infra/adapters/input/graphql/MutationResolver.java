@@ -57,6 +57,14 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
+	public Status deleteGroupProperty(String token,String name,String group){
+		try {
+			handler.deleteGroupProperty(token, name,group);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	
 	public Status executeDag(String token,String dagname,String jarname) {
 		try {
