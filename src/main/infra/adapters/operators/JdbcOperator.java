@@ -9,6 +9,8 @@ import java.util.concurrent.Callable;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
@@ -55,4 +57,25 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey);
 		return implementation;
     }
+	@Override
+	public JSONObject getMetadataOperator() {
+		JSONArray params = new JSONArray();
+		params.put(new JSONObject("{name:\"url\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"name\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"pwd\",type:\"password\"}"));
+		params.put(new JSONObject("{name:\"driver\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"query\",type:\"sourcecode\"}"));
+		
+		JSONArray opts = new JSONArray();
+		opts.put(new JSONObject("{name:\"xcom\",type:\"text\"}"));
+		
+		JSONObject tag = new JSONObject();
+		tag.put("class", "main.infra.adapters.operators.JdbcOperator");
+		tag.put("name", "JdbcOperator");
+		tag.put("params", params);
+		tag.put("opt", opts);
+
+		return tag;
+		
+	}
 }

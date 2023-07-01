@@ -6,12 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import main.application.ports.input.SchedulerQueryUseCase;
+import main.application.ports.output.CompilerOutputPort;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
@@ -51,6 +53,8 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	@Autowired 
 	JarSchedulerOutputPort scanner;
 	
+	@Autowired
+	CompilerOutputPort compiler;
 
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerQueryHandlerService.class);
@@ -113,5 +117,9 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	public List<UncompiledDTO> getUncompileds(String token) throws Exception {
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
 		return repository.getUncompileds();
+	}
+	@Override
+	public JSONArray operators() throws Exception {
+		return compiler.operators();
 	}
 }

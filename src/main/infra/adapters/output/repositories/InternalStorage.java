@@ -17,23 +17,32 @@ public class InternalStorage {
 		return  locatedb;
 	}
 	public void put(JSONObject json) {
-		try (FileWriter file = new FileWriter(locatedb)) {
-		    file.write(json.toString());
-		    file.flush();
-		} catch (IOException e) {
-		    e.printStackTrace();
+		if(json.length() > 0) {
+			try (FileWriter file = new FileWriter(locatedb)) {
+			    file.write(json.toString());
+			    file.flush();
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}	
 		}
 	}
 	public JSONObject get() throws Exception {
 		StringBuilder content = new StringBuilder();
-		FileReader reader = new FileReader(locatedb);
-        int character;
-        while ((character = reader.read()) != -1) {
-                content.append((char) character);
-        }
-        JSONObject jsonObject = new JSONObject(content.toString());
-        reader.close();
-        return  jsonObject;
+		try {
+			FileReader reader = new FileReader(locatedb);
+	        int character;
+	        while ((character = reader.read()) != -1) {
+	                content.append((char) character);
+	        }
+	        JSONObject jsonObject = new JSONObject(content.toString());
+	        reader.close();
+	        return  jsonObject;
+		} catch (Exception e) {
+			JSONObject jsonObject = new JSONObject();
+			return jsonObject;
+		}
+		
+        
 	}
 	
 }

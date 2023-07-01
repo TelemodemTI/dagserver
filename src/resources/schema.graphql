@@ -78,6 +78,7 @@ type Query {
 	properties: [Property],
 	agents : [Agent],
 	getUncompileds(token:String) : [Uncompiled]
+	operatorsMetadata : String
 }
 
 type Mutation { 

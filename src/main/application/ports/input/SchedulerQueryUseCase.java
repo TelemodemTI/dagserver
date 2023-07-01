@@ -3,6 +3,8 @@ package main.application.ports.input;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+
 import main.domain.model.AgentDTO;
 import main.domain.model.DagDTO;
 import main.domain.model.LogDTO;
@@ -25,4 +27,6 @@ public interface SchedulerQueryUseCase {
 	List<AgentDTO> agents();
 	
 	List<UncompiledDTO> getUncompileds(String token) throws Exception;
+	
+	JSONArray operators() throws Exception;
 }

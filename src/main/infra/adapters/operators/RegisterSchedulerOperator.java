@@ -3,6 +3,7 @@ package main.infra.adapters.operators;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -30,4 +31,8 @@ public class RegisterSchedulerOperator extends OperatorStage implements Callable
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
     	return null;
     }
+	@Override
+	public JSONObject getMetadataOperator() {
+		return null;
+	}
 }

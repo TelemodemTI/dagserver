@@ -1,5 +1,9 @@
 package main.infra.adapters.operators;
 import java.util.concurrent.Callable;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
 import main.infra.adapters.input.graphql.types.OperatorStage;
@@ -22,6 +26,15 @@ public class DummyOperator extends OperatorStage implements Callable<Void> {
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
 		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class)).with(stepName, DummyOperator.class);
 		return implementation;
+	}
+
+	@Override
+	public JSONObject getMetadataOperator() {
+		JSONObject tag = new JSONObject();
+		tag.put("class", "main.infra.adapters.operators.DummyOperator");
+		tag.put("name", "DummyOperator");
+		tag.put("params", new JSONArray());
+		return tag;
 	}
 	
 	

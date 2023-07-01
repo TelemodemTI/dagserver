@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
 import main.infra.adapters.input.graphql.types.OperatorStage;
@@ -34,4 +37,17 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, CmdOperator.class,propkey);
 		return implementation;
     }
+	@Override
+	public JSONObject getMetadataOperator() {
+		JSONArray params = new JSONArray();
+		params.put(new JSONObject("{name:\"prefix\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"c\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"cmd\",type:\"sourcecode\"}"));
+		
+		JSONObject tag = new JSONObject();
+		tag.put("class", "main.infra.adapters.operators.CmdOperator");
+		tag.put("name", "CmdOperator");
+		tag.put("params", params);
+		return tag;
+	}
 }

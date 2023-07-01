@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.json.JSONObject;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
@@ -59,4 +60,9 @@ public class Junit5SuiteOperator extends OperatorStage implements Callable<List<
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
     	return null;
     }
+
+	@Override
+	public JSONObject getMetadataOperator() {
+		return null;
+	}
 }

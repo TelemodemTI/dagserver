@@ -49,6 +49,10 @@ public class QueryResolver implements GraphQLQueryResolver {
 		return token;
 	}
 	
+	public String operatorsMetadata() throws Exception {
+		return handler.operators().toString();
+	}
+	
 	public List<Scheduled> scheduledJobs() throws Exception {
         var rv = new ArrayList<Scheduled>();
 		var list = handler.listScheduledJobs();

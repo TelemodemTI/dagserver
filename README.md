@@ -7,9 +7,9 @@ You must have a Quartz-compatible database installation. Currently only tested u
 
 ## Installation
 
-Once this war is compiled, it can be run on the latest version of TOMCAT 9. 
-Docker image is provided [Docker-Hub](https://hub.docker.com/r/maximolira/dagserver) 
-DockerFile used is provided here in repository for custom Docker deployment support.
+Once this war file is compiled, it can be run on the latest version of TOMCAT 9.
+A Docker image is provided [Docker-Hub](https://hub.docker.com/r/maximolira/dagserver).
+A DockerFile used here is provided in this repository for compatibility with your custom Docker implementation.
 
 ## Basic configuration
 
@@ -38,9 +38,10 @@ These last three variables can be overridden using the following environment var
 	  
 ## Basic Usage
 
-Examples repo is here [dagserver-examples](https://github.com/maximolira/dagserver-examples)
+Examples repo of detailes implementation is here [dagserver-examples](https://github.com/maximolira/dagserver-examples)
 The DAG implementation must be compiled into a JAR file (Maven Project) and sent to the path configured in folderpath param, then it will be visible to the scheduler engine.  
-The Front-End application to search the logs and see the detail of each DAG can be found here [dagserver-examples](https://github.com/maximolira/dagserver-front)
+The Front-End of this application includes a web editor that allows you to design, implement, and compile DAGs (Directed Acyclic Graphs) in an intuitive and efficient way, search the logs and see the detail of each DAG.
+You can find the Front-End application here: [dagserver-front](https://github.com/maximolira/dagserver-front)
 
 ## Credentials:
 

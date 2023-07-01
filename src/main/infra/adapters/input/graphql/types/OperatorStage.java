@@ -14,6 +14,7 @@ public abstract class OperatorStage {
 	protected String name;
 	
 	public abstract Implementation getDinamicInvoke(String stepName, String propkey, String optkey) throws Exception;
+	public abstract JSONObject getMetadataOperator();
 	
 	public String getName() {
 		return name;

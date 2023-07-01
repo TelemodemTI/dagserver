@@ -3,6 +3,10 @@ package main.infra.adapters.operators;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.concurrent.Callable;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -65,4 +69,18 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, SshOperator.class,propkey);
 		return implementation;
     }
+	@Override
+	public JSONObject getMetadataOperator() {
+		JSONArray params = new JSONArray();
+		params.put(new JSONObject("{name:\"host\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"user\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"pwd\",type:\"password\"}"));
+		params.put(new JSONObject("{name:\"port\",type:\"number\"}"));
+		params.put(new JSONObject("{name:\"cmd\",type:\"sourcecode\"}"));
+		JSONObject tag = new JSONObject();
+		tag.put("class", "main.infra.adapters.operators.SshOperator");
+		tag.put("name", "SshOperator");
+		tag.put("params", params);
+		return tag;
+	}
 }

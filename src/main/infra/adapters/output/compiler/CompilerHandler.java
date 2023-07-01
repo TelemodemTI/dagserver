@@ -4,12 +4,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -19,6 +24,7 @@ import main.application.ports.output.CompilerOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
+import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.modifier.Visibility;
@@ -183,4 +189,19 @@ public class CompilerHandler implements CompilerOutputPort {
         
         return transformedString;
     }
+	@Override
+	public JSONArray operators() throws Exception {		
+		Reflections reflections = new Reflections("main.infra.adapters.operators", new SubTypesScanner(false));
+		var lista = reflections.getSubTypesOf(OperatorStage.class).stream().collect(Collectors.toSet());
+		JSONArray arr = new JSONArray();
+		for (Iterator<Class<? extends OperatorStage>> iterator = lista.iterator(); iterator.hasNext();) {
+			Class<? extends OperatorStage> class1 = iterator.next();
+			OperatorStage op = class1.getDeclaredConstructor().newInstance();
+			var item = op.getMetadataOperator(); 
+			if(item != null) {
+				arr.put(item);	
+			}
+		}
+		return arr;
+	}
 }
