@@ -40,4 +40,7 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 	public JSONObject getMetadataOperator() {
 		return null;
 	}
+	public String getIconImage() {
+		return "internal.png";
+	}
 }

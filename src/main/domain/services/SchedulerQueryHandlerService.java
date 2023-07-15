@@ -24,6 +24,7 @@ import main.domain.model.LogDTO;
 import main.domain.model.PropertyDTO;
 import main.domain.model.PropertyParameterDTO;
 import main.domain.model.UncompiledDTO;
+import main.domain.model.UserDTO;
 
 
 
@@ -121,5 +122,19 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	@Override
 	public JSONArray operators() throws Exception {
 		return compiler.operators();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<UserDTO> credentials(String token) throws Exception {
+		Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		if(claims.get("typeAccount").equals("ADMIN")) {
+			return repository.getUsers();	
+		} else {
+			return new ArrayList<UserDTO>();
+		}
+	}
+	@Override
+	public String getIcons(String type) throws Exception {
+		return scanner.getIcons(type);
 	}
 }

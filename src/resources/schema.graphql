@@ -1,3 +1,4 @@
+
 type Agent {
 	id: Int,
 	name: String,
@@ -69,16 +70,25 @@ type LogEntry {
 	status: String
 }
 
+type Account {
+	id: Int,
+    username: String,
+    typeAccount: String
+}
+
+
 type Query { 
 	login(username: String ,pwdhash: String) : String,
+	getIcons(type:String) : String,
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 
 	logs(dagname: String): [LogEntry],
 	detail(jarname: String) : DetailStatus,
 	properties: [Property],
 	agents : [Agent],
-	getUncompileds(token:String) : [Uncompiled]
-	operatorsMetadata : String
+	getUncompileds(token:String) : [Uncompiled],
+	operatorsMetadata : String,
+	credentials(token: String) : [Account]
 }
 
 type Mutation { 
@@ -91,5 +101,7 @@ type Mutation {
 	saveUncompiled(token:String, bin:String) : Status,
 	updateUncompiled(token:String, uncompiled:Int , bin:String) : Status,
 	compile(token:String, uncompiled:Int, force: Int) : Status,
-	deleteUncompiled(token:String, uncompiled:Int) : Status
+	deleteUncompiled(token:String, uncompiled:Int) : Status,
+	createAccount(token:String,username:String,accountType:String, pwdHash:String) : Status,
+	deleteAccount(token:String,username:String) : Status
 }

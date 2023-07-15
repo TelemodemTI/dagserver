@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import main.domain.model.AgentDTO;
 import main.domain.model.PropertyDTO;
 import main.domain.model.UncompiledDTO;
+import main.domain.model.UserDTO;
+import main.infra.adapters.input.graphql.types.Account;
 import main.infra.adapters.input.graphql.types.Agent;
 import main.infra.adapters.input.graphql.types.Property;
 import main.infra.adapters.input.graphql.types.Uncompiled;
@@ -37,4 +39,15 @@ public class QueryResolverMapper {
 		un.setUncompiledId(dto.getUncompiledId());
 		return un;
 	}
+
+	public Account toAccount(UserDTO elt) {
+		Account acc = new Account();
+		acc.setId(elt.getId());
+		acc.setTypeAccount(elt.getTypeAccount());
+		acc.setUsername(elt.getUsername());
+		return acc;
+	}
+
+	
+	
 }

@@ -35,4 +35,7 @@ public class RegisterSchedulerOperator extends OperatorStage implements Callable
 	public JSONObject getMetadataOperator() {
 		return null;
 	}
+	public String getIconImage() {
+		return "internal.png";
+	}
 }

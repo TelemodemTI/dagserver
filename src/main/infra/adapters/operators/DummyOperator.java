@@ -36,6 +36,8 @@ public class DummyOperator extends OperatorStage implements Callable<Void> {
 		tag.put("params", new JSONArray());
 		return tag;
 	}
-	
+	public String getIconImage() {
+		return "dummy.png";
+	}
 	
 }

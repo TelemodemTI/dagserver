@@ -18,6 +18,7 @@ import main.application.ports.input.LoginUseCase;
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.domain.model.DagDTO;
 import main.domain.model.LogDTO;
+import main.infra.adapters.input.graphql.types.Account;
 import main.infra.adapters.input.graphql.types.Agent;
 import main.infra.adapters.input.graphql.types.Available;
 import main.infra.adapters.input.graphql.types.Detail;
@@ -179,5 +180,16 @@ public class QueryResolver implements GraphQLQueryResolver {
 	
 	public List<Uncompiled> getUncompileds(String token) throws Exception{
 		return handler.getUncompileds(token).stream().map(elt -> mapper.toUncompiled(elt)).collect(Collectors.toList());
+	}
+	public List<Account> credentials(String token) throws Exception{
+		return handler.credentials(token).stream().map(elt -> mapper.toAccount(elt)).collect(Collectors.toList());
+	}
+	public String getIcons(String type) {
+		try {
+			return handler.getIcons(type);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
 	}
 }

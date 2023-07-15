@@ -4,9 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.json.JSONObject;
-
 import main.domain.enums.OperatorStatus;
 import main.domain.model.AgentDTO;
 import main.domain.model.EventListenerDTO;
@@ -41,4 +39,7 @@ public interface SchedulerRepositoryOutputPort {
 	public String createInternalStatus(JSONObject data) throws Exception;
 	public JSONObject readXcom(String locatedAt) throws Exception;
 	public void delGroupProperty(String group);
+	public List<UserDTO> getUsers();
+	public void createAccount(String username, String accountType, String pwdHash);
+	public void delAccount(String username);
 }

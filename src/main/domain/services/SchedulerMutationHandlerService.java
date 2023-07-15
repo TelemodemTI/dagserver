@@ -1,5 +1,7 @@
 package main.domain.services;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +101,27 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	public void deleteGroupProperty(String token, String name, String group) throws Exception {
 		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		repository.delGroupProperty(group);
+	}
+	@Override
+	public void createAccount(String token, String username, String accountType, String pwdHash) throws Exception {
+		var claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		Map<String,String> claimsmap = (Map<String, String>) claims.get("claims");
+		if(claimsmap.get("typeAccount").equals("ADMIN")) {
+			repository.createAccount(username,accountType,pwdHash);
+		} else {
+			throw new Exception("insufficient privileges");
+		}
+	}
+	@Override
+	public void deleteAccount(String token, String username) throws Exception {
+		var claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		Map<String,String> claimsmap = (Map<String, String>) claims.get("claims");
+		if(claimsmap.get("typeAccount").equals("ADMIN")) {
+			repository.delAccount(username);
+		} else {
+			throw new Exception("insufficient privileges");
+		}
+		
 	}
 	
 	

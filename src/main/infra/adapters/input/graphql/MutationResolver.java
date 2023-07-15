@@ -117,6 +117,24 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
+	
+	public Status createAccount(String token,String username,String accountType,String pwdHash) {
+		try {
+			handler.createAccount(token,username,accountType,pwdHash);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public Status deleteAccount(String token,String username) {
+		try {
+			handler.deleteAccount(token,username);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	private Status ok() {
 		Status status = new Status();
 		status.code = 200;

@@ -76,6 +76,8 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		tag.put("opt", opts);
 
 		return tag;
-		
+	}
+	public String getIconImage() {
+		return "jdbc.png";
 	}
 }

@@ -65,4 +65,9 @@ public class Junit5SuiteOperator extends OperatorStage implements Callable<List<
 	public JSONObject getMetadataOperator() {
 		return null;
 	}
+	public String getIconImage() {
+		return "junit5.png";
+	}
+	
+	
 }

@@ -14,4 +14,6 @@ public interface SchedulerMutationUseCase {
 	void compile(String token, Integer uncompiled,Boolean force) throws Exception;
 	void deleteUncompiled(String token, Integer uncompiled) throws Exception;
 	void deleteGroupProperty(String token, String name, String group) throws Exception;
+	void createAccount(String token, String username, String accountType, String pwdHash) throws Exception;
+	void deleteAccount(String token, String username) throws Exception;
 }

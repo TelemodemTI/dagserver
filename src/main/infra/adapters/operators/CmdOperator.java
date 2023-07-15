@@ -50,4 +50,7 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 		tag.put("params", params);
 		return tag;
 	}
+	public String getIconImage() {
+		return "cmd.png";
+	}
 }

@@ -24,7 +24,9 @@ import main.application.ports.output.JarSchedulerOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
 import main.domain.model.DagDTO;
+
 import main.infra.adapters.confs.QuartzConfig;
+import main.infra.adapters.input.graphql.types.OperatorStage;
 import main.infra.adapters.operators.Junit5SuiteOperator;
 import main.infra.adapters.operators.LogsRollupOperator;
 import main.infra.adapters.operators.RegisterSchedulerOperator;
@@ -253,5 +255,9 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	public List<Map<String,Object>> listScheduled() throws Exception {
 		 return quartz.listScheduled();
+	}
+	public String getIcons(String type) throws Exception {
+		OperatorStage instance = (OperatorStage) Class.forName(type).getDeclaredConstructor().newInstance();
+		return instance.getIconImage();
 	}
 }

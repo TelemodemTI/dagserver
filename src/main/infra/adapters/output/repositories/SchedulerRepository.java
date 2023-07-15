@@ -9,14 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
-
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
@@ -329,6 +327,37 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
 			PropertyParameter propertyParameter = iterator.next();
 			dao.delete(propertyParameter);
+		}
+		
+	}
+
+	@Override
+	public List<UserDTO> getUsers() {
+		List<UserDTO> list = new ArrayList<UserDTO>();
+		var users = dao.read(User.class, "select creds from User as creds");
+		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
+			User user = iterator.next();
+			list.add(mapper.toUserDTO(user));
+		}
+		return list;
+	}
+
+	@Override
+	public void createAccount(String username, String accountType, String pwdHash) {
+		User newuser = new User();
+		newuser.setCreatedAt(new Date());
+		newuser.setPwdhash(pwdHash);
+		newuser.setTypeAccount(accountType);
+		newuser.setUsername(username);
+		dao.save(newuser);
+	}
+
+	@Override
+	public void delAccount(String username) {
+		var users = dao.read(User.class, "select creds from User as creds where creds.username = '"+username+"'");
+		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
+			User user = iterator.next();
+			dao.delete(user);
 		}
 		
 	}

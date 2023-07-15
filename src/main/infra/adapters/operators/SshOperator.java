@@ -83,4 +83,7 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		tag.put("params", params);
 		return tag;
 	}
+	public String getIconImage() {
+		return "ssh.png";
+	}
 }

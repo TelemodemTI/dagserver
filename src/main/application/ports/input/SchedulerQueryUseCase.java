@@ -2,14 +2,13 @@ package main.application.ports.input;
 
 import java.util.List;
 import java.util.Map;
-
 import org.json.JSONArray;
-
 import main.domain.model.AgentDTO;
 import main.domain.model.DagDTO;
 import main.domain.model.LogDTO;
 import main.domain.model.PropertyDTO;
 import main.domain.model.UncompiledDTO;
+import main.domain.model.UserDTO;
 
 
 public interface SchedulerQueryUseCase {
@@ -29,4 +28,8 @@ public interface SchedulerQueryUseCase {
 	List<UncompiledDTO> getUncompileds(String token) throws Exception;
 	
 	JSONArray operators() throws Exception;
+
+	List<UserDTO> credentials(String token) throws Exception;
+
+	String getIcons(String type) throws Exception;
 }
