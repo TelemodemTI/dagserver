@@ -59,12 +59,15 @@ public class CompilerHandler implements CompilerOutputPort {
 		for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 			JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
 			String crondef = dag.getString("cron");
+			String triggerv = dag.getString("trigger");
+			String loc = dag.getString("loc");
+			String target = dag.getString("target");
 			String classname = dag.getString("class");
 			String group = dag.getString("group");
 			validateParams(dag.getJSONArray("boxes"));
-			var dagdef1 = this.getClassDefinition(jarname,classname, classname, crondef, group, dag.getJSONArray("boxes"));
+			var dagdef1 = this.getClassDefinition(jarname,classname, classname, triggerv ,crondef, group,loc ,dag.getJSONArray("boxes"));
 			this.packageJar(jarname, classname, dagdef1.getBytes());
-			log.error(dagdef1);
+
 		}
 	}
 	private void validateParams(JSONArray jsonArray) throws Exception {
@@ -105,13 +108,12 @@ public class CompilerHandler implements CompilerOutputPort {
             } 
         }
 	}
-	private Unloaded<DagExecutable> getClassDefinition(String jarname, String classname, String name, String cron, String group, JSONArray boxes) throws Exception {
+	private Unloaded<DagExecutable> getClassDefinition(String jarname, String classname, String name, String type, String value, String group, String listenerLabel,JSONArray boxes) throws Exception {
 		log.error(boxes);
 		
 		
 		ClassFileLocator classFileLocator = new DirectoryClassFileLocator(pathfolder+"/testingbb/");
 		var pool = new TypePool.Default(new CacheProvider.Simple(),classFileLocator,TypePool.Default.ReaderMode.FAST);
-		
 		
 		var byteBuddy = new ByteBuddy();
 		
@@ -119,13 +121,22 @@ public class CompilerHandler implements CompilerOutputPort {
 		Initial<DagExecutable> inicial = builderbb.defineConstructor(Visibility.PUBLIC);
 		
 		ReceiverTypeDefinition<DagExecutable>  receiver = inicial.intercept(builder.build(jarname,boxes));
-		Unloaded<DagExecutable> varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
-                .define("name", name)
-                .define("cronExpr", cron)
-                .define("group", group)
-                .build())
-		.make(pool);
-
+		Unloaded<DagExecutable> varu = null;
+		if(type.equals("cron")) {
+			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
+	                .define("name", name)
+	                .define("cronExpr", value)
+	                .define("group", group)
+	                .build())
+			.make(pool);	
+		} else {
+			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
+	                .define("name", name)
+	                .define(listenerLabel, value)
+	                .define("group", group)
+	                .build())
+			.make(pool);	
+		}
 		return varu;
 	}
 	private void packageJar(String jarname,String classname, byte[] bytes) throws Exception {

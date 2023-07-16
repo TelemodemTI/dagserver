@@ -28,6 +28,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			handler.scheduleDag(token,dagname,jarname);
 			return ok();	
 		} catch (Exception e) {
+			e.printStackTrace();
 			return error(e);
 		}
     }

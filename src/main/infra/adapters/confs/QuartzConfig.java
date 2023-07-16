@@ -174,11 +174,13 @@ public class QuartzConfig {
 	public void configureListener(Dag annotation,DagExecutable executable) throws SchedulerException {
 		String eventname = annotation.onEnd().equals("") ? "onStart" : "onEnd";
 		executable.setEventname(eventname);
+		executable.setName(annotation.name());
 		JobListener listener = (JobListener) executable;
 		String jobkey = annotation.onEnd().equals("") ? annotation.onStart() : annotation.onEnd();
 		JobKey jobKey1 = new JobKey(jobkey, annotation.group());
 		var list = new ArrayList<Matcher<JobKey>>();
 		list.add(KeyMatcher.keyEquals(jobKey1));
+		list.add(GroupMatcher.jobGroupEquals(jobkey));	
 		this.scheduler.getListenerManager().addJobListener(listener,list);
 		this.repo.addEventListener(listener.getName(), annotation.onStart(), annotation.onEnd(), annotation.group());
 	}

@@ -57,7 +57,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 	
 	public void removeListener(String name) {
-		dao.execute("del from EventListener where listenerName = :name'",new HashMap<String, Object>(){
+		dao.execute("delete from EventListener where listenerName = :name",new HashMap<String, Object>(){
 			private static final long serialVersionUID = 1L;
 		{
 			put("name", name);
