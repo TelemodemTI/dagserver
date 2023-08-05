@@ -38,10 +38,9 @@ These last three variables can be overridden using the following environment var
 	  
 ## Basic Usage
 
-Examples repo of detailes implementation is here [dagserver-examples](https://github.com/maximolira/dagserver-examples)
 The DAG implementation must be compiled into a JAR file (Maven Project) and sent to the path configured in folderpath param, then it will be visible to the scheduler engine.  
 The Front-End of this application includes a web editor that allows you to design, implement, and compile DAGs (Directed Acyclic Graphs) in an intuitive and efficient way, search the logs and see the detail of each DAG.
-You can find the Front-End application here: [dagserver-front](https://github.com/maximolira/dagserver-front)
+
 
 ## Credentials:
 

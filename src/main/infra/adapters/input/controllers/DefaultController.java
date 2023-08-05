@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class DefaultController {
@@ -17,9 +18,14 @@ public class DefaultController {
 	private final static Logger logger = Logger.getLogger(DefaultController.class);
 	
 	@RequestMapping(value="/version",method = RequestMethod.GET)
-    public ResponseEntity<?> version(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {		
-		
+    public ResponseEntity<?> version(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
 		return new ResponseEntity<String>("dagserver is running!", HttpStatus.OK);
 	}
 
+	@RequestMapping(value="/",method = RequestMethod.GET)
+    public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
+		RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/dagserver/cli/index.html");
+        return redirectView;
+	}
 }

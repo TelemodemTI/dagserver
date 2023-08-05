@@ -1,0 +1,63 @@
+version: "3.9"  # optional since v1.27.0
+services:
+
+  dagserver:
+    image: dagserver
+    container_name: dagserver
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "65002:8080"
+      - "65003:2587"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+    - DAGSERVERURI=http://127.0.0.1:65002/dagserver/query
+    - APP_JDBC_URL=jdbc:mysql://host.docker.internal:3306/scheduler?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    - APP_JDBC_USER=scheduler_user
+    - APP_JDBC_PASSWORD=password
+    volumes:
+    - "C:/tmp/:/root/dags/"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.3
+  
+  
+
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'scheduler'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'scheduler_user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+    healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            timeout: 20s
+            retries: 10
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/tmp/mysql
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.4
+
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
+volumes:
+  my-db: 
