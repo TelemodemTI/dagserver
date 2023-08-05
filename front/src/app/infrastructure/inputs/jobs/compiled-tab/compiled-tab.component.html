@@ -1,0 +1,36 @@
+<br><br>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-hover" id="dataTables-jobs">
+                                        <thead>
+                                            <tr>
+                                                <th>Jarname</th>
+                                                <th>ClassName</th>
+                                                <th>GroupName</th>
+                                                <th>DagName</th>
+                                                <th>Activated</th>
+                                                <th>Options</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of jobs">
+                                                <td>{{item.jarname}}</td>
+                                                <td>{{item.classname}}</td>
+                                                <td>{{item.groupname}}</td>
+                                                <td>{{item.dagname}}</td>
+                                                <td>{{item.hasScheduled}}</td>
+                                                
+                                                <td>
+                                                    <ng-container *ngIf="item.jarname != 'SYSTEM'">
+                                                        <button type="button" (click)="play(item.jarname,item.dagname)" class="btn btn-default btn-circle" title="Execute dag now"><i class="fa fa-play"></i></button>
+                                                    </ng-container>
+                                                    <button type="button" (click)="jobDetail(item.jarname,item.dagname)" class="btn btn-default btn-circle" title="Jar Detail"><i class="fa fa-archive"></i></button>
+                                                    <button type="button" (click)="viewLogs(item.dagname)" class="btn btn-default btn-circle" title="View Logs"><i class="fa fa-dedent"></i></button>
+                                                    <ng-container *ngIf="item.jarname != 'SYSTEM'">
+                                                        <button type="button" (click)="hasScheduled(item)" class="btn btn-default btn-circle" title="Toggle Dag"><i class="fa fa-cog"></i></button>
+                                                    </ng-container>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>        
+                                </div>
+                                <app-error-mondal [titleMsje]="title_msje" [errorMsje]="error_msje" [idModal]="'propertyNotFoundModal'"></app-error-mondal>

@@ -1,0 +1,6 @@
+.execlogtime {
+    min-width: 150px;
+}
+table.display {
+    table-layout: fixed;          
+}

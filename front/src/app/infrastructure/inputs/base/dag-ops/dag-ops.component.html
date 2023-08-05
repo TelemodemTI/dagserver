@@ -1,0 +1,32 @@
+<a data-toggle="collapse" href="#collapseOne{{dagName}}" aria-expanded="false" class="collapsed">Create new operator</a>
+<div id="collapseOne{{dagName}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label>Name</label>
+                                                    <input id="stepinput-{{dagName}}" class="form-control dagname inputc {{dagName}}" placeholder="new Operator name" value="step1">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Source Step</label>
+                                                    <select id="sourcestep-{{dagName}}" class="form-control dagname {{dagName}}">
+                                                        <option *ngFor="let item of boxes" value="{{item.id}}">{{item.id}}</option>    
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Status</label>
+                                                    <select id="status-{{dagName}}" class="form-control dagname {{dagName}}">
+                                                        <option value="ANY">ANY</option>    
+                                                        <option value="OK">OK</option>    
+                                                        <option value="ERROR">ERROR</option>    
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Type</label>
+                                                    <select id="steptype-{{dagName}}" class="form-control dagname {{dagName}}">
+                                                        <option *ngFor="let item of parameters" value="{{item.class}}">{{item.name}}</option>
+                                                    </select>
+                                                </div>
+                                                <a class="btn btn-primary" (click)="createNewStep(dagName)">
+                                                    <i class="fa fa-floppy-o"></i> Add
+                                                </a>
+                                            </div>
+                                        </div>

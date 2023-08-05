@@ -1,0 +1,75 @@
+<div class="modal fade" id="param-modalexistingj" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{selectedStep}} details</h4>
+            </div>
+            <div class="modal-body">
+
+                
+
+
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#home" data-toggle="tab">Parameters</a>
+                    </li>
+                    <li><a href="#profile" data-toggle="tab">Scripts</a>
+                    </li>
+                </ul>
+                <div #loader class="loader"></div>
+                <div #form class="tab-content">
+                    <div class="tab-pane fade in active" id="home">
+                        
+                        <div class="form-group" *ngFor="let item of generatedIdParams">
+                            <ng-container *ngIf="item.type == 'text'">
+                                <label>{{item.key}}</label>
+                                <input class="form-control param-value-input" id="param-{{item.key}}-value" value="{{item.value}}">
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'password'">
+                                <label>{{item.key}}</label>
+                                <input class="form-control param-value-input" type="password" id="param-{{item.key}}-value" value="{{item.value}}">
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'number'">
+                                <label>{{item.key}}</label>
+                                <input class="form-control param-value-input" type="number" id="param-{{item.key}}-value" value="{{item.value}}">
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'boolean'">
+                                <label>{{item.key}}</label>
+                                <select class="form-control param-value-input" id="param-{{item.key}}-value">
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'list'">
+                                <label>{{item.key}}</label>
+                                <select class="form-control param-value-input" id="param-{{item.key}}-value">
+                                    <option *ngFor="let opt of item.opt" value="{{opt}}">{{opt}}</option>
+                                </select>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="profile">
+                        <div class="form-group" *ngFor="let item of generatedIdParams">
+                            <ng-container *ngIf="item.type == 'sourcecode'">
+                                <label>{{item.key}}</label><br>
+                                <textarea  autocomplete="off" id="param-{{item.key}}-value" name="param-{{item.key}}-value" class="editor">{{item.value}}</textarea>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" (click)="removeStep()" >Remove</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="updateParams()" >Save changes</button>
+                
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

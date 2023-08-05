@@ -1,0 +1,87 @@
+<div class="form-group">
+    <label>DagName</label>
+    <input id="dagnameinput-{{dagName}}"  class="form-control dagname {{dagName}}" placeholder="new Dag name" value="{{dagName}}" (change)="changeDagName(dagName)">
+</div>
+<div class="form-group">
+    <label>Group</label>
+    <input id="daggroupinput-{{dagName}}" class="form-control dagname {{dagName}}" value="main.group">
+</div>
+<div class="form-group">
+    <ng-container *ngIf="typeTrigger == 'cron';else nocron">
+        <label>Cron Expression</label>
+    </ng-container>
+    <ng-template #nocron>triggerval
+        <a (click)="changeTrigger('cron')">Cron</a>    
+    </ng-template>
+    &nbsp;|&nbsp;
+    <ng-container *ngIf="typeTrigger == 'listener';else nolistener">
+        <label>Listener</label>
+    </ng-container>
+    <ng-template #nolistener>
+        <a (click)="changeTrigger('listener')">Listener</a>    
+    </ng-template>
+    <ng-container *ngIf="typeTrigger == 'cron';else nocronin">
+        <input id="dagcroninput-{{dagName}}" class="form-control dagname {{dagName}}" placeholder="cron expression" value="{{triggerval}}">
+    </ng-container>
+    <ng-template #nocronin>
+        <br><br>
+        <div class="form-group">
+            <label>Location:</label><br>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="radio-inline">
+                        <input type="radio" name="listenerLoc" id="optionslistenerLoc1" value="onStart" (click)="locCheck('onStart')" [checked]="loc=='onStart'">onStart
+                    </label>
+                </div>
+                <div class="col-md-3">
+                    <label class="radio-inline">
+                        <input type="radio" name="listenerLoc" id="optionslistenerLoc2" value="onEnd" (click)="locCheck('onEnd')" [checked]="loc=='onEnd'">onEnd
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Target Type</label><br>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="radio-inline">
+                        <input type="radio" name="listenerGroup" id="optionslistenerGroup1" value="DAG" (click)="targetCheck('DAG')" [checked]="targetType=='DAG'">DAG
+                    </label>
+                </div>
+                <div class="col-md-3">
+                    <label class="radio-inline">
+                        <input type="radio" name="listenerGroup" id="optionslistenerGroup2" value="GROUP" (click)="targetCheck('GROUP')" [checked]="targetType=='GROUP'">GROUP
+                    </label>
+                </div>    
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Target</label>
+            <ng-container *ngIf="targetType == 'DAG'; else groupele">
+                <select class="form-control" id="dagcroninput-{{dagName}}">
+                    <option *ngFor="let item of availables" value="{{item.dagname}}" [selected]="triggerval == item.dagname ? 'selected':''">{{item.dagname}}</option>
+                </select>
+            </ng-container>
+            <ng-template #groupele>
+                <select class="form-control" id="dagcroninput-{{dagName}}">
+                    <option *ngFor="let item of groups" value="{{item}}" [selected]="triggerval == item ? 'selected':''">{{item}}</option>
+                </select>
+            </ng-template>
+        </div>
+    </ng-template>
+    
+</div>
+<div class="form-group">
+    <button type="button" class="btn btn-primary" (click)="saveDag(dagName)">
+        <i class="fa fa-floppy-o">&nbsp;</i>
+        Save
+    </button>&nbsp;
+    <button type="button" class="btn btn-danger">
+        <i class="fa fa-trash">&nbsp;</i>
+        Remove
+    </button>
+    <br><br>
+    <div #dagsavedstatus class="alert alert-success hidden">
+        Dag saved.
+    </div>
+</div>

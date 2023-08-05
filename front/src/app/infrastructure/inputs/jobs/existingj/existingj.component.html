@@ -1,0 +1,93 @@
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Job</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Edit job
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <b>Options</b><br>
+                                <button type="button" class="btn btn-primary" (click)="createDag()">
+                                    <i class="fa fa-chain">&nbsp;</i>
+                                    Create Dag
+                                </button>&nbsp;
+                                <button type="button" class="btn btn-primary" (click)="saveJar()">
+                                    <i class="fa fa-floppy-o">&nbsp;</i>
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <app-dag-canvas #dagCanvasComponent
+                                    [data]="data"
+                                    [parameters]="parameters"
+                                    [selectedTab]="selectedTab"
+                                    (clickedStepEvent)="clickedStep($event)"
+                                ></app-dag-canvas>
+                            </div>
+                            <div class="col-md-5">
+                                <ul class="nav nav-tabs">
+                                    <li *ngFor="let tabs of data?.dags; let i = index;" id="canvas-{{tabs.name}}" class="tab-pane fade in {{tabs.name == selectedTab ? 'active':''}}">
+                                        <a href="#details-{{tabs.name}}" (click)="changeTab(tabs.name)" data-toggle="tab" class="tabpill " >{{tabs.name}}</a>
+                                    </li>
+                                </ul>
+
+
+                                <div class="tab-content">
+                                    <div *ngFor="let tabs of data?.dags; let i = index;" id="#details-{{tabs.name}}" class="tab-pane fade in  {{tabs.name == selectedTab ? 'active':''}}">
+                                        
+                                        
+                                        <app-dag-props #dagPropsComponent
+                                            [dagName]="tabs.name"
+                                            [data]="data"
+                                            (saveDagEvent)="saveDag($event)"
+                                            (changeDagNameEvent)="changeDagName($event)"
+                                        ></app-dag-props>
+                                        
+                                        
+                                        <app-dag-ops #dagOpsComponent
+                                        [dagName]="tabs.name"
+                                        [boxes]="boxes"
+                                        [diagram]="diagram"
+                                        [parameters]="parameters"
+                                        (createNewStepEvent)="createNewStep($event)"
+                                        ></app-dag-ops>
+
+    
+                                        
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-param-existingj #modalparam
+    [selectedTab]="selectedTab"
+    [selectedStep]="selectedObj?.selectedStep"
+    [selectedStepParams]="selectedObj?.selectedStepParams"
+    [generatedIdParams]="selectedObj?.generatedIdParams"
+    [data]="data"
+    (removeStepEvent)="removeStepEvent($event)"
+>
+</app-param-existingj>
