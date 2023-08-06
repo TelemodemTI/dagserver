@@ -20,7 +20,7 @@ writeFile(targetPath1, environmentFileContent, function (err) {
    if (err) {
       console.log(err);
    }
-
+   console.log(environmentFileContent)
    console.log(`Wrote variables to ${targetPath1}`);
 });
 
