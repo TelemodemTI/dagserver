@@ -9,7 +9,6 @@ You must have a Quartz-compatible database installation. Currently only tested u
 
 Once this war file is compiled, it can be run on the latest version of TOMCAT 9.
 A Docker image is provided [Docker-Hub](https://hub.docker.com/r/maximolira/dagserver).
-A DockerFile used here is provided in this repository for compatibility with your custom Docker implementation.
 
 ## Basic configuration
 
@@ -35,6 +34,7 @@ These last three variables can be overridden using the following environment var
 - APP_JDBC_URL  
 - APP_JDBC_USER  	
 - APP_JDBC_PASSWORD  
+- DAGSERVERURI
 	  
 ## Basic Usage
 
@@ -54,7 +54,7 @@ The current graphql schema can be checked in the schema.graphql file located at 
 
 ## Run as Container
 
-In the examples you can find the docker-compose.yml file for running the server within a container environment.
+docker-compose.yml file is provided for running the server within a container environment.
 
 ## License
 

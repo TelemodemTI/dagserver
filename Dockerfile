@@ -7,6 +7,7 @@ RUN ["mvn","clean","install"]
 
 FROM tomcat:9.0.54-jdk11
 COPY --from=maven_builder /app/dagserver/target/dagserver-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/
+COPY --from=maven_builder /app/dagserver/start.sh /root/
 RUN apt-get update
 RUN apt-get install vim -y
 RUN mv /usr/local/tomcat/webapps/dagserver-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/dagserver.war
@@ -20,5 +21,8 @@ ENV env_name APP_JDBC_URL
 ENV env_name APP_JDBC_USER
 ENV env_name APP_JDBC_PASSWORD
 
-CMD ["catalina.sh", "run"]
+WORKDIR  /root
+
+#CMD ["catalina.sh", "run"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
+CMD ["start.sh", "run"]
