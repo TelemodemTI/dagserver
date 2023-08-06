@@ -1,6 +1,8 @@
 # dagserver
 Dag server based on quartz, allows to execute batch processes modeled as DAG (Direct Acyclic graph). Inspired by Apache Airflow
 
+![CI/CD](https://github.com/maximolira/dagserver/actions/workflows/CICD.yml/badge.svg)
+
 ## Requirements
 
 You must have a Quartz-compatible database installation. Currently only tested using Mysql type (MariaDB).
