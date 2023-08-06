@@ -16,3 +16,7 @@ jobs:
         with:
           push: true
           tags: maximolira/dagserver:latest
+      - name: run docker-compose
+        uses: sudo-bot/action-docker-compose@latest
+        with:
+          cli-args: "up"
