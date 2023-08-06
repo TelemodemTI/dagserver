@@ -6,7 +6,7 @@ jobs:
     name: deploy to aws
     steps:
       - uses: actions/checkout@master
-      - name: build and push to docker
+      - name: build and push to docker Hub
         uses: docker/build-push-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
