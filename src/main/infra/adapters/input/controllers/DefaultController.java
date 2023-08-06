@@ -28,4 +28,11 @@ public class DefaultController {
         redirectView.setUrl("/dagserver/cli/index.html");
         return redirectView;
 	}
+
+	@RequestMapping(value="/cli",method = RequestMethod.GET)
+    public RedirectView defaultCliGet(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
+		RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/dagserver/cli/index.html");
+        return redirectView;
+	}
 }
