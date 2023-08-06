@@ -2,6 +2,9 @@
 cd /usr/local/tomcat/bin
 sh catalina.sh run > /usr/local/tomcat/logs/pre_running_catalina.log 2>&1 &
 
+echo "cooltime"
+sleep 30
+
 # Ruta del archivo que esperamos que exista
 archivo_esperado="/usr/local/tomcat/webapps/dagserver/WEB-INF/cli/assets/defaults.js"
 
