@@ -1,6 +1,6 @@
 #!/bin/bash
 cd /usr/local/tomcat/bin
-sh catalina.sh run > /usr/local/tomcat/logs/pre_running_catalina.log 2>&1 &
+sh catalina.sh run > /usr/local/tomcat/logs/catalina.log 2>&1 &
 
 echo "cooltime"
 sleep 30
@@ -18,5 +18,5 @@ sh catalina.sh stop
 # Una vez que el archivo esperado existe, reemplazarlo
 echo 'var environment = {\n dagserverUri : "'$DAGSERVERURI'"};' > /usr/local/tomcat/webapps/dagserver/WEB-INF/cli/assets/defaults.js
 
-sh catalina.sh run > /usr/local/tomcat/logs/catalina.log 2>&1 &
+sh catalina.sh run >> /usr/local/tomcat/logs/catalina.log 2>&1 &
 tail -f /usr/local/tomcat/logs/catalina.log
