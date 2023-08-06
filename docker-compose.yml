@@ -18,7 +18,7 @@ services:
     - APP_JDBC_USER=scheduler_user
     - APP_JDBC_PASSWORD=password
     volumes:
-    - "C:/tmp/:/root/dags/"
+    - "/home/ec2-user/dags/:/root/dags/"
     networks:
       vpcbr:
         ipv4_address: 10.5.0.3
