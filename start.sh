@@ -2,7 +2,7 @@
 cd /usr/local/tomcat/bin
 sh catalina.sh run > /usr/local/tomcat/logs/catalina.log 2>&1 &
 
-echo "cooltime"
+echo "cooltime first run"
 sleep 30
 
 # Ruta del archivo que esperamos que exista
@@ -13,7 +13,12 @@ while [ ! -e "$archivo_esperado" ]; do
     echo "Esperando a que el archivo $archivo_esperado exista..."
     sleep 10  # Puedes ajustar el tiempo de espera en segundos (opcional)
 done
-sh catalina.sh stop
+sh catalina.sh stop >> /usr/local/tomcat/logs/catalina.log 2>&1 &
+
+echo "cooltime end first run"
+sleep 30
+pkill -f "java.*catalina"
+
 
 # Una vez que el archivo esperado existe, reemplazarlo
 echo 'var environment = {\n dagserverUri : "'$DAGSERVERURI'"};' > /usr/local/tomcat/webapps/dagserver/WEB-INF/cli/assets/defaults.js
