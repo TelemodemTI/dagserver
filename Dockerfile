@@ -25,4 +25,4 @@ WORKDIR  /root
 
 #CMD ["catalina.sh", "run"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
-CMD ["start.sh", "run"]
+CMD ["sh","start.sh"]

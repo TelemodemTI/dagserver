@@ -25,11 +25,13 @@ for (let index = 0; index < targetPaths.length; index++) {
       // write the content to the respective file
       writeFile(targetPath1, environmentFileContent, function (err) {
          if (err) {
-            reject(err);
+            console.log(err);
+            resolve(false)
+         } else {
+            console.log(environmentFileContent)
+            console.log(`Wrote variables to ${targetPath1}`);
+            resolve(true);
          }
-         console.log(environmentFileContent)
-         console.log(`Wrote variables to ${targetPath1}`);
-         resolve(true);
       });
    }))
 }
