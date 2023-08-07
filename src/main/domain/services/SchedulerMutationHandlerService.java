@@ -123,6 +123,11 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 		}
 		
 	}
+	@Override
+	public void updateParamsCompiled(String token,String idope, String typeope, String jarname, String bin) throws Exception  {
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+		repository.updateParams(idope, typeope, jarname, bin);
+	}
 	
 	
 }

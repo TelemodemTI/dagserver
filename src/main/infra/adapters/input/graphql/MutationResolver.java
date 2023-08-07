@@ -135,7 +135,16 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	
+
+	public Status updateParamsCompiled(String token, String idope, String typeope, String jarname, String bin) {
+		try {
+			handler.updateParamsCompiled(token, idope, typeope, jarname, bin);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+
 	private Status ok() {
 		Status status = new Status();
 		status.code = 200;

@@ -104,4 +104,5 @@ type Mutation {
 	deleteUncompiled(token:String, uncompiled:Int) : Status,
 	createAccount(token:String,username:String,accountType:String, pwdHash:String) : Status,
 	deleteAccount(token:String,username:String) : Status
+	updateParamsCompiled(token:String, idope:String,typeope:String, jarname:String. bin:String) : Status
 }

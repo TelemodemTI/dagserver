@@ -24,6 +24,7 @@ export class JardetailComponent {
   selectedDag!:any
   selectedStep!:any
   selectedStepParams!:any
+  selectedStepMetadata!:any
 
   @ViewChild("modalp") modalp!: JardetailpComponent;
 
@@ -196,6 +197,9 @@ export class JardetailComponent {
             return node1.operations[0] == selectedStep
           })[0]
           let params = JSON.parse(node.operations[2])
+          let metadata = JSON.parse(node.operations[4])
+          
+          this.selectedStepMetadata = metadata
           this.selectedDag = dag
           this.selectedStep = selectedStep
           this.selectedStepParams = params

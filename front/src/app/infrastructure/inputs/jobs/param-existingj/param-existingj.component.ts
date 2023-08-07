@@ -32,7 +32,6 @@ export class ParamExistingjComponent {
         let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
         let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
         let value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]
-        console.log(value.value)
         this.editor.setValue(value.value) 
       }
     })
@@ -41,9 +40,7 @@ export class ParamExistingjComponent {
 
   refreshCodemirror(){
     let interval = setInterval(()=>{
-      console.log("test1")  
       if(this.loader?.nativeElement.classList.contains("invisible")){
-        console.log("test2")    
         clearInterval(interval)
         setTimeout(() => {
           this.editor.refresh()

@@ -10,21 +10,54 @@
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#home" data-toggle="tab">Parameters</a>
                     </li>
-                    <li><a id="trigger-id" href="#profile" data-toggle="tab">Scripts</a>
+                    <li><a id="trigger-id" href="#profile"  (click)="refreshCodemirror()" data-toggle="tab">Scripts</a>
                     </li>
                 </ul>
                 <div #loader class="loader"></div>
                 <div #form class="tab-content">
                     <div class="tab-pane fade in active" id="home">
-                        <div class="form-group" *ngFor="let item of selectedStepParams | keyvalue">
-                            <label>{{item.key}}</label>
-                            <input class="form-control param-value-input" id="param-{{item.key}}-value" value="{{item.value}}">
+                        <div class="form-group" *ngFor="let item of selectedStepMetadata?.params">
+
+                            <ng-container *ngIf="item.type == 'text'">
+                                <label>{{item.name}}</label>
+                                <input class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepParams[item.name]}}">
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'password'">
+                                <label>{{item.name}}</label>
+                                <input type="password" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepParams[item.name]}}">
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'number'">
+                                <label>{{item.name}}</label>
+                                <input type="number" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepParams[item.name]}}">
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'boolean'">
+                                <label>{{item.name}}</label>
+                                <select class="form-control param-value-input" id="param-{{item.name}}-value">
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </ng-container>
+                            <ng-container *ngIf="item.type == 'list'">
+                                <label>{{item.name}}</label>
+                                <select class="form-control param-value-input" id="param-{{item.name}}-value">
+                                    <option *ngFor="let opt of item.opt" value="{{opt}}">{{opt}}</option>
+                                </select>
+                            </ng-container>                        
                         </div>
                     </div>
                     <div class="tab-pane fade" id="profile">
-                        
+                        <div class="form-group" *ngFor="let item of selectedStepMetadata?.params">
+                            <ng-container *ngIf="item.type == 'sourcecode'">
+                                <label>{{item.name}}</label><br>
+                                <textarea id="queryTextqv" height="300" name="queryText"></textarea>
+                            </ng-container>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="updateParams()" >Save changes</button>
             </div>
         </div>
     </div>

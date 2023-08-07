@@ -18,6 +18,7 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+  
 
   getIcons(type: string): Promise<string> {
     return new Promise<string>((resolve,reject)=>{
@@ -339,7 +340,17 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
     })
     return response
   }
-
+  updateParamsCompiled(jarname: string, idope: string,typeope: string, bin: any): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      var token = localStorage.getItem("dagserver_token")!
+      var string = "mutation updateParamsCompiled($token:String, $idope:String,, $typeope:String, $jarname:String, $bin:String) { updateParamsCompiled(token:$token, idope:$idope,typeope:$typeope, jarname:$jarname, bin:$bin) { code, status, value } }"
+      this.query(string,{token:token,idope:idope,typeope:typeope,jarname:jarname,bin:bin}).subscribe((result:any)=>{
+        if(result && result.updateParamsCompiled){
+          resolve()
+        }
+      })
+    })
+  }
 }
 
 

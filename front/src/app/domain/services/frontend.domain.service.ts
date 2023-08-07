@@ -23,6 +23,7 @@ import { ExistingJInputPort } from 'src/app/application/inputs/existingj.input.p
 import { CredentialsInputPort } from 'src/app/application/inputs/credentials.input.port';
 import { EncryptionOutputPort } from 'src/app/application/outputs/encryption.output.port';
 import { environment  } from 'src/environments/environment';
+import { JardetailpInputPort } from 'src/app/application/inputs/jardetailp.input.port';
 
 @Injectable({
   providedIn: 'root'
@@ -37,11 +38,14 @@ export class FrontEndDomainService implements
     LogDetailInputPort,
     PropsInputPort,
     ExistingJInputPort,
-    CredentialsInputPort {
+    CredentialsInputPort,
+    JardetailpInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
     private jwtadapter:JWTOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  
 
 
   getIcons(type: string): Promise<string> {
@@ -133,5 +137,8 @@ export class FrontEndDomainService implements
   login(user: any, pwd: any): Promise<boolean> {
     let encrypted = this.encryptor.set(environment.sha256key,pwd)
     return this.adapter.login(user,encrypted);
+  }
+  updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void> {
+    return this.adapter.updateParamsCompiled(jarname,idope,typeope,bin);
   }
 }

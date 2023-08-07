@@ -42,4 +42,5 @@ public interface SchedulerRepositoryOutputPort {
 	public List<UserDTO> getUsers();
 	public void createAccount(String username, String accountType, String pwdHash);
 	public void delAccount(String username);
+	public void updateParams(String idope, String typeope, String jarname, String bin);
 }

@@ -28,6 +28,7 @@ import { EncryptionOutputPort } from './application/outputs/encryption.output.po
 import { EncryptionOutputPortAdapterService } from './infrastructure/outputs/encryption/encryption.output.adapter.service';
 import { DagOpsInputPort } from './application/inputs/dagops.input.port';
 import { DagPropsInputPort } from './application/inputs/dagprops.input.port';
+import { JardetailpInputPort } from './application/inputs/jardetailp.input.port';
 
 
 
@@ -63,7 +64,9 @@ import { DagPropsInputPort } from './application/inputs/dagprops.input.port';
     { provide: NewJInputPort, useClass: FrontEndDomainService},
     { provide: PropsInputPort, useClass: FrontEndDomainService},
     { provide: ExistingJInputPort, useClass: FrontEndDomainService},
-    { provide: CredentialsInputPort, useClass: FrontEndDomainService}
+    { provide: CredentialsInputPort, useClass: FrontEndDomainService},
+    { provide: JardetailpInputPort, useClass: FrontEndDomainService},
+    
   ],
   bootstrap: [AppComponent]
 })

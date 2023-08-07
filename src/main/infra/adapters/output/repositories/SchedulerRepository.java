@@ -2,6 +2,7 @@ package main.infra.adapters.output.repositories;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -360,6 +361,26 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			dao.delete(user);
 		}
 		
+	}
+
+	@Override
+	public void updateParams(String idope,String typeope,String jarname, String bin) {
+		byte[] bytesDecodificados = Base64.getDecoder().decode(bin);
+        String cadenaDecodificada = new String(bytesDecodificados);
+        JSONArray bindata = new JSONArray(cadenaDecodificada);
+        var groupname = jarname+"."+idope+"."+typeope+".props";
+		var founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+groupname+"'");
+		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
+			PropertyParameter propertyParameter = iterator.next();
+			String paraf = ""; 
+			for (int i = 0; i < bindata.length(); i++) {
+				JSONObject b = bindata.getJSONObject(i);
+				if(b.getString("key").equals(propertyParameter.getName())) {
+					propertyParameter.setValue(b.getString("value"));
+					dao.save(propertyParameter);
+				}
+			}
+		}
 	}
 	
 }
