@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "config": "node ./set-env.js",
-    "start": "ng serve",
+    "start": "node ./set-env.js && ng serve",
     "build": "node ./set-env.js && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -20,9 +20,11 @@
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/router": "^15.2.0",
     "@apollo/client": "^3.0.0",
+    "@codemirror/lang-javascript": "^6.1.9",
     "@types/crypto-js": "^4.1.1",
     "apollo-angular": "^4.2.1",
     "buffer": "^5.7.1",
+    "codemirror": "^6.0.1",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "graphql": "^16",

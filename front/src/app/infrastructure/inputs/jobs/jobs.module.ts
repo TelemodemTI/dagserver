@@ -8,6 +8,7 @@ import { BaseModule } from '../base/base.module';
 import { CompiledTabComponent } from './compiled-tab/compiled-tab.component';
 import { UncompiledTabComponent } from './uncompiled-tab/uncompiled-tab.component';
 import { ParamExistingjComponent } from './param-existingj/param-existingj.component';
+import { JardetailpComponent } from './jardetailp/jardetailp.component';
 
 
 
@@ -19,7 +20,8 @@ import { ParamExistingjComponent } from './param-existingj/param-existingj.compo
     ExistingjComponent,
     CompiledTabComponent,
     UncompiledTabComponent,
-    ParamExistingjComponent
+    ParamExistingjComponent,
+    JardetailpComponent
   ],
   imports: [
     CommonModule,

@@ -6,7 +6,7 @@ require('dotenv').config();
 // read the command line arguments passed with yargs
 
 
-const targetPaths = [`./src/assets/defaults.js`,`../WebContent/WEB-INF/cli/assets/defaults.js`]; 
+const targetPaths = [`./src/assets/defaults.js`]; 
 
 
 

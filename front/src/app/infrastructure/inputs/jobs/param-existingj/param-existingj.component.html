@@ -13,7 +13,7 @@
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#home" data-toggle="tab">Parameters</a>
                     </li>
-                    <li><a href="#profile" data-toggle="tab">Scripts</a>
+                    <li><a id="trigger-id" href="#profile" (click)="refreshCodemirror()" data-toggle="tab">Scripts</a>
                     </li>
                 </ul>
                 <div #loader class="loader"></div>
@@ -52,7 +52,7 @@
                         <div class="form-group" *ngFor="let item of generatedIdParams">
                             <ng-container *ngIf="item.type == 'sourcecode'">
                                 <label>{{item.key}}</label><br>
-                                <textarea  autocomplete="off" id="param-{{item.key}}-value" name="param-{{item.key}}-value" class="editor">{{item.value}}</textarea>
+                                <textarea id="queryTextqv" height="300" name="queryText"></textarea>
                             </ng-container>
                         </div>
                     </div>

@@ -1,16 +1,5 @@
-.editor {
-    width: 562px; 
-    height: 300px;
-    resize: none;
-    color: #3E3E3C;
-    border: 0;
-    background-color:#CCCDC2 ;
-    white-space: pre;
-    overflow: auto;
-    font-size: 15px;
-    font-family: monospace;
-    line-height: 15px;
-    font-weight: 500;
+.modal-dialog {
+    width: 50%;
 }
 
 .loader {
@@ -31,8 +20,4 @@
 
   .invisible{
     display: none;
-  }
-
-  .modal-dialog {
-    width: 50%;
   }

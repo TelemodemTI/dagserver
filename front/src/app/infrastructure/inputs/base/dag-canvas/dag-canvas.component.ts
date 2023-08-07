@@ -36,12 +36,8 @@ export class DagCanvasComponent {
         paper.on('element:pointerdblclick', (elementView:any)=> {
           let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab})[0]
           let step = obj.boxes.filter((obj:any)=>{ return obj.id == elementView.model.attributes.attrs.label.text})[0]
-          
-          console.log(this.parameters)
-          console.log(step)
           this.selectedStepParams = this.parameters.filter((el:any)=>{ return el.class == step.type })[0]
           this.generatedIdParams = []
-          console.log(this.selectedStepParams)
           this.selectedStepParams.params.forEach((el:any)=>{
             let defval = undefined
             let opt = el.opt?el.opt:[]
@@ -49,10 +45,8 @@ export class DagCanvasComponent {
               let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
               defval = parit.value
             }
-
             this.generatedIdParams.push({key:el.name,type:el.type,value:defval, domid:this.generateRandomString(5),opt:opt})
           })
-          console.log(this.generatedIdParams)
           if(this.selectedStepParams.opt){
             this.selectedStepParams.opt.forEach((el:any)=>{
               let defval = undefined
@@ -63,7 +57,6 @@ export class DagCanvasComponent {
               this.generatedIdParams.push({key:el.name,type:el.type, value:defval, domid:this.generateRandomString(5)})
             })
           }
-          console.log(this.generatedIdParams)
           this.selectedStep = step.id
           this.clickedStepEvent.emit({selectedStep:this.selectedStep,selectedStepParams:this.selectedStepParams,generatedIdParams:this.generatedIdParams})
         });

@@ -1,5 +1,6 @@
 package main.domain.core;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -236,7 +237,7 @@ public class DagExecutable implements Job,JobListener {
 		this.eventname = eventname;
 	}
 	
-	public List<List<String>> getDagGraph(){
+	public List<List<String>> getDagGraph()  throws Exception {
 		var info = new ArrayList<List<String>>();
 		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		Integer index = 1;
@@ -245,10 +246,17 @@ public class DagExecutable implements Job,JobListener {
 			DagNode node = (DagNode) breadthFirstIterator.next();
 			detail.add(node.name);
 			detail.add(node.operator.getCanonicalName());
+			
+
+			Class<?> clase = Class.forName(node.operator.getCanonicalName());
+			Constructor<?> constructor = clase.getDeclaredConstructor();
+			OperatorStage instancia = (OperatorStage) constructor.newInstance();
+
 			JSONObject props = new JSONObject(node.args);
 			JSONObject opts = new JSONObject(node.optionals);
 			detail.add(props.toString());
 			detail.add(opts.toString());
+			detail.add(instancia.getMetadataOperator().toString());
 			info.add(detail);
 			index++;
 		}

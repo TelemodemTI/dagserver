@@ -1,0 +1,31 @@
+<div class="modal fade" id="param-modaljardetailj" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{selectedStep}} details</h4>
+            </div>
+            <div class="modal-body">
+                
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#home" data-toggle="tab">Parameters</a>
+                    </li>
+                    <li><a id="trigger-id" href="#profile" data-toggle="tab">Scripts</a>
+                    </li>
+                </ul>
+                <div #loader class="loader"></div>
+                <div #form class="tab-content">
+                    <div class="tab-pane fade in active" id="home">
+                        <div class="form-group" *ngFor="let item of selectedStepParams | keyvalue">
+                            <label>{{item.key}}</label>
+                            <input class="form-control param-value-input" id="param-{{item.key}}-value" value="{{item.value}}">
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="profile">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

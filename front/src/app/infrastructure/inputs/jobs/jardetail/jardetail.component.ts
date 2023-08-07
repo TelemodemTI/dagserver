@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JardetailInputPort } from 'src/app/application/inputs/jardetail.input.port';
+import { JardetailpComponent } from '../jardetailp/jardetailp.component';
 
 
 declare var $:any
@@ -20,6 +21,11 @@ export class JardetailComponent {
 
   dagsavai:any[] = []
 
+  selectedDag!:any
+  selectedStep!:any
+  selectedStepParams!:any
+
+  @ViewChild("modalp") modalp!: JardetailpComponent;
 
   constructor(private router: Router, 
     private route: ActivatedRoute,
@@ -59,7 +65,6 @@ export class JardetailComponent {
       
       for (let index = 0; index < diagrams.length; index++) {
         const diagram = diagrams[index];
-        //let boxes = this.loadBoxes(diagram,this.result,index)  
         this.loadBoxes(diagram,this.result,index).then((boxes:any)=>{
           this.drawDiagram(diagram,boxes);
         })
@@ -170,7 +175,7 @@ export class JardetailComponent {
       setTimeout(()=>{
         var namespace = joint.shapes;
         let graph = new joint.dia.Graph({}, { cellNamespace: namespace });
-        new joint.dia.Paper({
+        let paper = new joint.dia.Paper({
             el: document.getElementById("diagram-ctn-"+id),
             model: graph,
             width: '90%',
@@ -183,6 +188,19 @@ export class JardetailComponent {
         });    
         $("#graph-lineage-opt-form").draggable({revert: "invalid"});
         $("#diagram-ctn-"+id).droppable()
+        paper.on('element:pointerdblclick', (elementView:any)=> {
+          let dagname = id;
+          let selectedStep = elementView.model.attributes.attrs.label.text
+          let dag = this.result.detail.detail.filter((element:any)=>{ return element.dagname == dagname })[0]
+          let node = dag.node.filter((node1:any)=>{
+            return node1.operations[0] == selectedStep
+          })[0]
+          let params = JSON.parse(node.operations[2])
+          this.selectedDag = dag
+          this.selectedStep = selectedStep
+          this.selectedStepParams = params
+          this.modalp.show();
+        })
         resolve(graph)
       },100)
     })
