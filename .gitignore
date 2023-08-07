@@ -1,4 +1,4 @@
 /target/
 /.apt_generated/
 /WebContent/WEB-INF/cli
-/frot/src/assets/defaults.js
+front/src/assets/defaults.js

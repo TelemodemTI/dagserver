@@ -1,5 +1,5 @@
 # dagserver
-Dag server based on quartz, allows to execute batch processes modeled as DAG (Direct Acyclic graph). Inspired by Apache Airflow
+Dag server based on quartz, allows to execute batch processes modeled as DAG (Direct Acyclic graph). Inspired by Apache Airflow and IBM Datastage.
 
 ![CI/CD](https://github.com/maximolira/dagserver/actions/workflows/CICD.yaml/badge.svg)
 
