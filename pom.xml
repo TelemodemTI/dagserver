@@ -22,12 +22,24 @@
         </configuration>
       </plugin>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19.1</version>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-surefire-provider</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+        </dependencies>
+    </plugin>
+      <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.3</version>
         <configuration>
           <warSourceDirectory>WebContent</warSourceDirectory>
         </configuration>
       </plugin>
+      
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
@@ -36,7 +48,6 @@
                 <workingDirectory>front</workingDirectory>
         </configuration>
         <executions>
-        		
                 <execution>
                         <id>install node and npm</id>
                         <goals>
@@ -47,8 +58,6 @@
 	                        <npmVersion>6.14.11</npmVersion>
 	                    </configuration>
                 </execution>
-                
-				
 				<execution>
                     <id>npm install</id>
                     <goals>
@@ -58,7 +67,6 @@
                         <arguments>install</arguments>
                     </configuration>
                 </execution>
-                
 	            <execution>
 				    <id>npm run build</id>
 				    <goals>
@@ -69,10 +77,28 @@
 				        <arguments>run build</arguments>
 				    </configuration>
 				</execution>
-				
         </executions>
-        
-    </plugin>
+       </plugin>
+       <plugin>
+		    <groupId>org.jacoco</groupId>
+		    <artifactId>jacoco-maven-plugin</artifactId>
+		    <version>0.8.10</version>
+		    <executions>
+		        <execution>
+		            <goals>
+		                <goal>prepare-agent</goal>
+		            </goals>
+		        </execution>
+		        <execution>
+		            <id>report</id>
+		            <phase>prepare-package</phase>
+		            <goals>
+		                <goal>report</goal>
+		            </goals>
+		        </execution>
+		    </executions>
+</plugin>
+      
       
     </plugins>
   </build>
@@ -233,21 +259,6 @@
 		    <version>5.8.2</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.junit.jupiter</groupId>
-		    <artifactId>junit-jupiter-engine</artifactId>
-		    <version>5.8.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.junit.platform</groupId>
-		    <artifactId>junit-platform-launcher</artifactId>
-		    <version>1.8.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.junit.platform</groupId>
-		    <artifactId>junit-platform-runner</artifactId>
-		    <version>1.8.2</version>
-		</dependency>
-		<dependency>
 		  <groupId>net.bytebuddy</groupId>
 		  <artifactId>byte-buddy</artifactId>
 		  <version>1.14.5</version>
@@ -271,6 +282,21 @@
 		    <groupId>org.apache.groovy</groupId>
 		    <artifactId>groovy</artifactId>
 		    <version>4.0.13</version>
+		</dependency>
+		<dependency>
+	        <groupId>org.mockito</groupId>
+	        <artifactId>mockito-all</artifactId>
+	        <version>1.8.4</version>
+	    </dependency>
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-engine</artifactId>
+		    <version>5.8.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-launcher</artifactId>
+		    <version>1.8.2</version>
 		</dependency>
 		
   </dependencies>
