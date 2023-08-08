@@ -29,9 +29,10 @@ import { EncryptionOutputPortAdapterService } from './infrastructure/outputs/enc
 import { DagOpsInputPort } from './application/inputs/dagops.input.port';
 import { DagPropsInputPort } from './application/inputs/dagprops.input.port';
 import { JardetailpInputPort } from './application/inputs/jardetailp.input.port';
+import { APP_BASE_HREF } from '@angular/common';
 
 
-
+declare var window: any;
 @NgModule({
   declarations: [
     AppComponent
@@ -49,6 +50,7 @@ import { JardetailpInputPort } from './application/inputs/jardetailp.input.port'
     CredentialsModule
   ],
   providers: [
+    {provide: APP_BASE_HREF, useValue: window["base-href"]},
     { provide: GraphQLOutputPort , useClass: GraphQLOutputPortAdapterService },
     { provide: JWTOutputPort, useClass: JwtOutputPortAdapterService },
     { provide: EncryptionOutputPort, useClass: EncryptionOutputPortAdapterService },
