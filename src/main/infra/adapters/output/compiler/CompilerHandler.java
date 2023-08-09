@@ -61,7 +61,6 @@ public class CompilerHandler implements CompilerOutputPort {
 			String crondef = dag.getString("cron");
 			String triggerv = dag.getString("trigger");
 			String loc = dag.getString("loc");
-			String target = dag.getString("target");
 			String classname = dag.getString("class");
 			String group = dag.getString("group");
 			validateParams(dag.getJSONArray("boxes"));
@@ -142,47 +141,30 @@ public class CompilerHandler implements CompilerOutputPort {
 	private void packageJar(String jarname,String classname, byte[] bytes) throws Exception {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream fis = classloader.getResourceAsStream("basedag.zip");
-        ZipInputStream zis = new ZipInputStream(fis);
-        
-        // Crea un archivo ZIP temporal en la ruta de destino
         FileOutputStream fos = new FileOutputStream(pathfolder+jarname);
-        ZipOutputStream zos = new ZipOutputStream(fos);
-
-        // Copia las entradas existentes al nuevo archivo ZIP
-        ZipEntry entrada;
-        while ((entrada = zis.getNextEntry()) != null) {
-            String nombreArchivo = entrada.getName();
-            // Agrega la entrada al nuevo archivo ZIP
-            zos.putNextEntry(new ZipEntry(nombreArchivo));
-
-            // Copia los datos desde el archivo ZIP existente
-            byte[] buffer = new byte[1024];
-            int leido;
-            while ((leido = zis.read(buffer)) > 0) {
-                zos.write(buffer, 0, leido);
+        try(ZipOutputStream zos = new ZipOutputStream(fos);ZipInputStream zis = new ZipInputStream(fis);) {
+            ZipEntry entrada;
+            while ((entrada = zis.getNextEntry()) != null) {
+                String nombreArchivo = entrada.getName();
+                zos.putNextEntry(new ZipEntry(nombreArchivo));
+                byte[] buffer = new byte[1024];
+                int leido;
+                while ((leido = zis.read(buffer)) > 0) {
+                    zos.write(buffer, 0, leido);
+                }
+                zos.closeEntry();
             }
-
-            // Cierra la entrada actual
+            var strcom = classname.replaceAll("\\.", "/");
+            zos.putNextEntry(new ZipEntry(this.getPackageDef(classname)));
             zos.closeEntry();
-        }
 
-        var strcom = classname.replaceAll("\\.", "/");
-        
-        
-        // Crea la nueva carpeta dentro del nuevo archivo ZIP
-        zos.putNextEntry(new ZipEntry(this.getPackageDef(classname)));
-        zos.closeEntry();
-
-        zos.putNextEntry(new ZipEntry(strcom+".class"));
-        zos.write(bytes);
-        zos.closeEntry();
-        
-        
-        // Cierra los flujos
-        zis.close();
-        zos.close();
-        
-
+            zos.putNextEntry(new ZipEntry(strcom+".class"));
+            zos.write(bytes);
+            zos.closeEntry();
+            
+		} catch (Exception e) {
+			log.error(e);
+		}
 	}
     public String getPackageDef(String input) {
         String[] segments = input.split("\\.");

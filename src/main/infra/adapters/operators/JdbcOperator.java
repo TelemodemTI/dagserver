@@ -27,10 +27,9 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		List<Map<String, Object>> result = new ArrayList<>();
 		
 		DbUtils.loadDriver(this.getClass().getClassLoader(), this.args.getProperty("driver"));
-		Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));
 		String xcomname = this.args.getProperty("xcom");
-			
-		if(xcomname != null) {
+		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
+			if(xcomname != null) {
 				if(!this.xcom.has(xcomname)) {
 					throw new Exception("xcom not exist for dagname::"+xcomname);
 				}
@@ -42,14 +41,16 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 				} else {
 					queryRunner.batch(con,this.args.getProperty("query"), objList);
 				}	
-		} else {
-				if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {
-					result = queryRunner.query(con, this.args.getProperty("query"), new MapListHandler());	
-				} else {
-					queryRunner.update(con, this.args.getProperty("query"));
-				}
+			} else {
+					if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {
+						result = queryRunner.query(con, this.args.getProperty("query"), new MapListHandler());	
+					} else {
+						queryRunner.update(con, this.args.getProperty("query"));
+					}
+			}	
+		} catch (Exception e) {
+			log.error(e);
 		}
-		DbUtils.close(con);
 		return result;
 	}
 	@Override

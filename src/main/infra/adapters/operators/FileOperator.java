@@ -46,43 +46,46 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 		if(mode.equals(0)) {
 			 log.debug("mode:read");
 	         FileReader fileReader = new FileReader(filepath);
-	         BufferedReader bufferedReader = new BufferedReader(fileReader);
 	         String line;
 	         Integer lineNumber = 0;
 	         List<String> titles = new ArrayList<>();
-	         
-	         while ((line = bufferedReader.readLine()) != null) {
-	        	 Map<String, String> row = new HashMap<String,String>();
-	        	 String[] fields = line.split(rowDelimiter);
-	        	 if(lineNumber.equals(0)) {
-	        		 if(firstrow) {
-	        			 titles = Arrays.asList(fields);	 
-	        		 } else {
-	        			 titles = this.generateTitleList(fields.length);
-	        		 }
-	        	 }
-	        	 for (int i = 0; i < fields.length; i++) {
-	 				String string = fields[i];
-	 				row.put(titles.get(i), string);
-	 			 }	 
-	        	 lineNumber++;
-	        	 result.add(row);
+	         try(BufferedReader bufferedReader = new BufferedReader(fileReader);) {
+	        	 while ((line = bufferedReader.readLine()) != null) {
+		        	 Map<String, String> row = new HashMap<String,String>();
+		        	 String[] fields = line.split(rowDelimiter);
+		        	 if(lineNumber.equals(0)) {
+		        		 if(firstrow) {
+		        			 titles = Arrays.asList(fields);	 
+		        		 } else {
+		        			 titles = this.generateTitleList(fields.length);
+		        		 }
+		        	 }
+		        	 for (int i = 0; i < fields.length; i++) {
+		 				String string = fields[i];
+		 				row.put(titles.get(i), string);
+		 			 }	 
+		        	 lineNumber++;
+		        	 result.add(row);
+		         }	
+	         } catch (Exception e) {
+				log.error(e);
 	         }
-	         bufferedReader.close();
 	         log.debug("readed "+filepath+"--lines:"+lineNumber);
 		} else {
 			log.debug("mode:write");
 			List<Map<String, String>> data = (List<Map<String, String>>) this.xcom.get(xcomname);
-			BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));
 			Integer lines = 0;
-	        for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
-				Map<String, String> map =  iterator.next();
-				String resultLine = String.join(rowDelimiter, map.values());
-				writer.write(resultLine);
-                writer.newLine();
-                lines ++;
+			try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
+		        for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
+					Map<String, String> map =  iterator.next();
+					String resultLine = String.join(rowDelimiter, map.values());
+					writer.write(resultLine);
+	                writer.newLine();
+	                lines ++;
+				}	
+			} catch (Exception e) {
+				log.error(e);
 			}
-	        writer.close();
 	        log.debug("write "+filepath+"--lines:"+lines);
 		}
 		return result;

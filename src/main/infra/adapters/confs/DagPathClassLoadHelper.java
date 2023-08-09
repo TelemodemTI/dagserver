@@ -42,25 +42,27 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			}
 			return super.loadClass(name);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
 		}
 		return super.loadClass(name);
 	}
 	private Class<?> search(File jarFile,String searched) throws Exception {
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
-		ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
 		Class<?> rvclazz = null;
-		for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
-		    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-		        // This ZipEntry represents a class. Now, what class does it represent?
-		    	Class<?> clazz = cl.loadClass(entry.getName().replace("/", ".").replace(".class", ""));
-		    	if(clazz.getName().equals(searched)) {
-		    		rvclazz = clazz;
-		    		break;
-		    	}
-		    }
+		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());) {
+			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+			    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+			        // This ZipEntry represents a class. Now, what class does it represent?
+			    	Class<?> clazz = cl.loadClass(entry.getName().replace("/", ".").replace(".class", ""));
+			    	if(clazz.getName().equals(searched)) {
+			    		rvclazz = clazz;
+			    		break;
+			    	}
+			    }
+			}	
+		} catch (Exception e) {
+			log.error(e);
 		}
-		cl.close();
 		return rvclazz;
 	}
 }
