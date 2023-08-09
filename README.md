@@ -2,6 +2,8 @@
 Dag server based on quartz, allows to execute batch processes modeled as DAG (Direct Acyclic graph). Inspired by Apache Airflow and IBM Datastage.
 
 ![CI/CD](https://github.com/maximolira/dagserver/actions/workflows/CICD.yaml/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=maximolira_dagserver&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=maximolira_dagserver)
+
 
 ## Requirements
 
