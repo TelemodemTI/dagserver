@@ -18,6 +18,12 @@ jobs:
           maven-version: 3.8.2
       - name: Build with test
         run: mvn test
+      
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
