@@ -10,20 +10,15 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '11'
-          distribution: 'adopt'
-          
+          distribution: 'adopt'          
       - name: Set up Maven
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.8.2
       - name: Build with test
         run: mvn test
-      
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          
+      - name: Analize Sonarcloud
+        run: mvn sonar:sonar -Dsonar.projectKey=dagserver -Dsonar.organization=maximolira -Dsonar.host.url=https://sonarcloud.io  -Dsonar.login=${{ secrets.SONAR_TOKEN }}
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
