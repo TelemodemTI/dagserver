@@ -5,10 +5,11 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <build>
+  <testSourceDirectory>test/</testSourceDirectory>
   <resources>
 	 <resource>
      	<directory>src/resources</directory>
-     </resource>			
+     </resource>	
   </resources>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
