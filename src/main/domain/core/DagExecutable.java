@@ -63,8 +63,14 @@ public class DagExecutable implements Job,JobListener {
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
-		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoaderListener.getCurrentWebApplicationContext().getServletContext());
-		repo = (SchedulerRepositoryOutputPort) springContext.getBean("schedulerRepository");
+		var context = ContextLoaderListener.getCurrentWebApplicationContext();
+		if(context != null) {
+			var servletctx = context.getServletContext();
+			if(servletctx != null) {
+				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(servletctx);
+				repo = (SchedulerRepositoryOutputPort) springContext.getBean("schedulerRepository");	
+			}
+		}
 	}
 	
 	public void execute(JobExecutionContext context) throws JobExecutionException {

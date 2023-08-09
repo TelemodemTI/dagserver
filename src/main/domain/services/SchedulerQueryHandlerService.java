@@ -116,7 +116,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	}
 	@Override
 	public List<UncompiledDTO> getUncompileds(String token) throws Exception {
-		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		return repository.getUncompileds();
 	}
 	@Override

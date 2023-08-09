@@ -61,11 +61,11 @@ public class DAO{
     public void execute (final String query, Map<String,Object> params){
     	Session session = null;
         try {
-      	    session = sessionFactory.getCurrentSession();
-        } catch (HibernateException e) {
-      	    session = sessionFactory.openSession();
-        }
-        try {
+        	try {
+          	    session = sessionFactory.getCurrentSession();
+            } catch (HibernateException e) {
+          	    session = sessionFactory.openSession();
+            }
         	Query queryO = session.createQuery(query);
         	var keys = params.keySet();
         	for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {

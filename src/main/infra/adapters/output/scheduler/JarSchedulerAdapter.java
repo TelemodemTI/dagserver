@@ -61,48 +61,52 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		return this;
 	}	
 	
-	private Map<String,Properties> analizeJarProperties(File jarFile) throws Exception{
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
-		ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+	private Map<String,Properties> analizeJarProperties(File jarFile){
 		Map<String,Properties> props = new HashMap<String,Properties>();
-		for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
-			if (!entry.isDirectory() && entry.getName().endsWith(".properties")) {
-		    	var prop = new Properties();
-		    	prop.load(cl.getResourceAsStream(entry.getName()));
-		    	String[] name = entry.getName().replace(".properties", "").split("/");
-		    	props.put(name[name.length-1], prop);
-		    }
-		}
-		cl.close();
+		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader())) {
+			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+				if (!entry.isDirectory() && entry.getName().endsWith(".properties")) {
+			    	var prop = new Properties();
+			    	prop.load(cl.getResourceAsStream(entry.getName()));
+			    	String[] name = entry.getName().replace(".properties", "").split("/");
+			    	props.put(name[name.length-1], prop);
+			    }
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
 		return props;
 	}
 	
 	
-	private List<Map<String,String>> analizeJar(File jarFile) throws Exception{
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
+	private List<Map<String,String>> analizeJar(File jarFile) {
 		List<Map<String,String>> classNames = new ArrayList<Map<String,String>>();
-		ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
-		for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
-		    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-		        // This ZipEntry represents a class. Now, what class does it represent?
-		    	Class<?> clazz = cl.loadClass(entry.getName().replace("/", ".").replace(".class", ""));
-		        
-		    	Dag dag = clazz.getAnnotation(Dag.class);
-		        var map = new HashMap<String,String>();
-		        map.put("dagname", dag.name());
-		        map.put("groupname", dag.group());
-		        map.put("cronExpr", dag.cronExpr());
-		        map.put("onStart", dag.onStart());
-		        map.put("onEnd", dag.onEnd());
-		        String className = entry.getName().replace('/', '.'); // including ".class"
-		        String finalname = className.substring(0, className.length() - ".class".length());
-		        if(finalname != null && !finalname.startsWith("bin")) {
-		        	map.put("classname", finalname);	
-		        }
-		        classNames.add(map);
-		    }
+		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());) {
+			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+			    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+			        // This ZipEntry represents a class. Now, what class does it represent?
+			    	Class<?> clazz = cl.loadClass(entry.getName().replace("/", ".").replace(".class", ""));
+			        
+			    	Dag dag = clazz.getAnnotation(Dag.class);
+			        var map = new HashMap<String,String>();
+			        map.put("dagname", dag.name());
+			        map.put("groupname", dag.group());
+			        map.put("cronExpr", dag.cronExpr());
+			        map.put("onStart", dag.onStart());
+			        map.put("onEnd", dag.onEnd());
+			        String className = entry.getName().replace('/', '.'); // including ".class"
+			        String finalname = className.substring(0, className.length() - ".class".length());
+			        if(finalname != null && !finalname.startsWith("bin")) {
+			        	map.put("classname", finalname);	
+			        }
+			        classNames.add(map);
+			    }
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		cl.close();
 		return classNames;
 	}
 	@Override

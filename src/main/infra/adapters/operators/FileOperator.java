@@ -24,6 +24,7 @@ import net.bytebuddy.implementation.MethodCall;
 @Operator(args={"mode","filepath","rowDelimiter","firstRowTitles"},optionalv = {"xcom"})
 public class FileOperator extends OperatorStage implements Callable<List<Map<String, String>>> {
 
+	private Random random = new Random();
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	
 	@SuppressWarnings("unchecked")
@@ -100,9 +101,8 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 	
 	private String generateRandomString(int length) {
         StringBuilder sb = new StringBuilder(length);
-        Random random = new Random();
         for (int i = 0; i < length; i++) {
-            int randomIndex = random.nextInt(CHARACTERS.length());
+            int randomIndex = this.random.nextInt(CHARACTERS.length());
             char randomChar = CHARACTERS.charAt(randomIndex);
             sb.append(randomChar);
         }
