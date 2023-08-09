@@ -61,11 +61,7 @@ public class DAO{
     public void execute (final String query, Map<String,Object> params){
     	Session session = null;
         try {
-        	try {
-          	    session = sessionFactory.getCurrentSession();
-            } catch (HibernateException e) {
-          	    session = sessionFactory.openSession();
-            }
+        	session = this.getCreateSession();
         	Query queryO = session.createQuery(query);
         	var keys = params.keySet();
         	for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
@@ -76,9 +72,16 @@ public class DAO{
         } catch (HibernateException e) {
         	e.printStackTrace();
         } finally {
-        	if (session.isOpen()){
+        	if (session != null && session.isOpen()){
             	session.close();
             }
+        }
+    }
+    private Session getCreateSession() {
+    	try {
+      	    return sessionFactory.getCurrentSession();
+        } catch (HibernateException e) {
+      	    return sessionFactory.openSession();
         }
     }
     public <T> List<T> read(final Class<T> returnType,final String query ){
