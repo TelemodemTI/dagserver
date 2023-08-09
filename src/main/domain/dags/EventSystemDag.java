@@ -4,7 +4,7 @@ import main.domain.core.DagExecutable;
 import main.infra.adapters.operators.Junit5SuiteOperator;
 import java.util.Properties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import main.domain.annotations.Dag;
@@ -15,7 +15,7 @@ public class EventSystemDag extends DagExecutable {
 
 	public EventSystemDag() throws Exception {
 		super();
-		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoaderListener.getCurrentWebApplicationContext().getServletContext());
+		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoader.getCurrentWebApplicationContext().getServletContext());
 		var prop = new Properties();
 		prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));
 		Boolean localTest = Boolean.parseBoolean(prop.getProperty("param.junit.local"));	

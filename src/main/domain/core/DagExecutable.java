@@ -21,7 +21,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.annotations.Dag;
@@ -63,7 +63,7 @@ public class DagExecutable implements Job,JobListener {
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
-		var context = ContextLoaderListener.getCurrentWebApplicationContext();
+		var context = ContextLoader.getCurrentWebApplicationContext();
 		if(context != null) {
 			var servletctx = context.getServletContext();
 			if(servletctx != null) {
@@ -228,7 +228,9 @@ public class DagExecutable implements Job,JobListener {
 	
 	
 	@Override
-	public void jobExecutionVetoed(JobExecutionContext context) {}
+	public void jobExecutionVetoed(JobExecutionContext context) {
+		log.debug("jobExecutionVetoed");
+	}
 
 	@Override
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {

@@ -7,12 +7,11 @@ import java.net.URLClassLoader;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.log4j.Logger;
 import org.quartz.simpl.CascadingClassLoadHelper;
 import org.quartz.spi.ClassLoadHelper;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements ClassLoadHelper {
@@ -23,10 +22,8 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
 		
-		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoaderListener.getCurrentWebApplicationContext().getServletContext());
-		
+		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoader.getCurrentWebApplicationContext().getServletContext());
 		var prop = new Properties();
-
 		try {
 			prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));	
 			String pathfolder = prop.getProperty("param.folderpath");

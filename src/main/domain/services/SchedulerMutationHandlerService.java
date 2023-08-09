@@ -19,6 +19,8 @@ import main.domain.core.TokenEngine;
 @ImportResource("classpath:properties-config.xml")
 public class SchedulerMutationHandlerService implements SchedulerMutationUseCase {
 	
+	private static final String CLAIMS = "claims";
+	
 	@Value( "${param.jwt_secret}" )
 	private String jwt_secret;
 
@@ -75,12 +77,12 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	}
 	@Override
 	public void saveUncompiled(String token, JSONObject json) throws Exception {
-		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get(CLAIMS);
 		repository.addUncompiled(json.getString("jarname"),json);
 	}
 	@Override
 	public void updateUncompiled(String token,Integer uncompiled, JSONObject json) throws Exception {
-		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get(CLAIMS);
 		repository.updateUncompiled(uncompiled,json);
 	}
 	@Override
@@ -105,7 +107,7 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	@Override
 	public void createAccount(String token, String username, String accountType, String pwdHash) throws Exception {
 		var claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
-		Map<String,String> claimsmap = (Map<String, String>) claims.get("claims");
+		Map<String,String> claimsmap = (Map<String, String>) claims.get(CLAIMS);
 		if(claimsmap.get("typeAccount").equals("ADMIN")) {
 			repository.createAccount(username,accountType,pwdHash);
 		} else {
@@ -115,7 +117,7 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	@Override
 	public void deleteAccount(String token, String username) throws Exception {
 		var claims = TokenEngine.untokenize(token, jwt_secret, jwt_signer);
-		Map<String,String> claimsmap = (Map<String, String>) claims.get("claims");
+		Map<String,String> claimsmap = (Map<String, String>) claims.get(CLAIMS);
 		if(claimsmap.get("typeAccount").equals("ADMIN")) {
 			repository.delAccount(username);
 		} else {
