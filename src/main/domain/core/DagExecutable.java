@@ -104,38 +104,44 @@ public class DagExecutable implements Job,JobListener {
 				logdag.debug("no constraint");
 			}
 			Class<?> clazz = node.operator;
-			try {
-				OperatorStage op = (OperatorStage) clazz.getDeclaredConstructor().newInstance();
-				op.setArgs(node.args);
-				op.setXcom(xcom);
-				op.setName(node.name);
-				op.setOptionals(node.optionals);
-				Callable<?> instance  = (Callable<?>) op; 
-				var result = instance.call();
-				xcom.put(node.name , result );
-				if( (statusToBe == null) || (statusToBe == OperatorStatus.OK ) || (statusToBe == OperatorStatus.ANY)) {
-					logdag.debug("::end execution::");
-					status.put(node.name, OperatorStatus.OK);
-				} else {
-					status.put(node.name, OperatorStatus.ERROR);				
-					throw new JobExecutionException("constraint failed::"+node.name);	
-				}
-			} catch (Exception e) {
-				if(statusToBe == OperatorStatus.ERROR) {
-					status.put(node.name, OperatorStatus.ERROR);
-					logdag.debug("result::"+e.getMessage());
-				} else {
-					status.put(node.name, OperatorStatus.ERROR);
-					logdag.error(e);
-					Logger.getRootLogger().removeAppender(fa);
-					try {
-						String locatedAt = repo.createInternalStatus(xcom);
-						repo.setLog(dagname, fa.getResult(),locatedAt,status);	
-					} catch (Exception e2) {}
-					throw new JobExecutionException(e);	
-				}
-			}	
+			this.instanciateEvaluate(clazz,node,xcom,statusToBe,logdag,status,fa);
 		}
+		return this.setLogEvaluate(fa, xcom, status);
+	}
+	private void instanciateEvaluate(Class<?> clazz,DagNode node,JSONObject xcom,OperatorStatus statusToBe,Logger logdag,Map<String,OperatorStatus> status,InMemoryLoggerAppender fa) throws JobExecutionException {
+		try {
+			OperatorStage op = (OperatorStage) clazz.getDeclaredConstructor().newInstance();
+			op.setArgs(node.args);
+			op.setXcom(xcom);
+			op.setName(node.name);
+			op.setOptionals(node.optionals);
+			Callable<?> instance  = (Callable<?>) op; 
+			var result = instance.call();
+			xcom.put(node.name , result );
+			if( (statusToBe == null) || (statusToBe == OperatorStatus.OK ) || (statusToBe == OperatorStatus.ANY)) {
+				logdag.debug("::end execution::");
+				status.put(node.name, OperatorStatus.OK);
+			} else {
+				status.put(node.name, OperatorStatus.ERROR);				
+				throw new JobExecutionException("constraint failed::"+node.name);	
+			}
+		} catch (Exception e) {
+			if(statusToBe == OperatorStatus.ERROR) {
+				status.put(node.name, OperatorStatus.ERROR);
+				logdag.debug("result::"+e.getMessage());
+			} else {
+				status.put(node.name, OperatorStatus.ERROR);
+				logdag.error(e);
+				Logger.getRootLogger().removeAppender(fa);
+				try {
+					String locatedAt = repo.createInternalStatus(xcom);
+					repo.setLog(dagname, fa.getResult(),locatedAt,status);	
+				} catch (Exception e2) {}
+				throw new JobExecutionException(e);	
+			}
+		}
+	}
+	private OperatorStatus setLogEvaluate(InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status) throws JobExecutionException {
 		try {
 			Logger.getRootLogger().removeAppender(fa);
 			String locatedAt = repo.createInternalStatus(xcom);
