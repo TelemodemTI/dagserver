@@ -63,8 +63,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	private Map<String,Properties> analizeJarProperties(File jarFile){
 		Map<String,Properties> props = new HashMap<String,Properties>();
-		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader())) {
-			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+		try(
+				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
+				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+				) {
 			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
 				if (!entry.isDirectory() && entry.getName().endsWith(".properties")) {
 			    	var prop = new Properties();
@@ -74,7 +76,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			    }
 			}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
 		} 
 		return props;
 	}
@@ -82,8 +84,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	private List<Map<String,String>> analizeJar(File jarFile) {
 		List<Map<String,String>> classNames = new ArrayList<Map<String,String>>();
-		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());) {
-			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+		try(
+				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
+				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+				) {
 			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
 			    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
 			        // This ZipEntry represents a class. Now, what class does it represent?
@@ -105,7 +109,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			    }
 			}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
 		}
 		return classNames;
 	}
@@ -117,24 +121,26 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public void scheduler(String dagname,String jarname) throws Exception {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
-		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-			String classname = iterator.next().get("classname");
-			
-				Class<?> clazz = cl.loadClass(classname);
-				Dag toschedule = clazz.getAnnotation(Dag.class);
-				if(toschedule.name().equals(dagname)) {
-					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
-					if(toschedule.cronExpr().equals("")) {
-						quartz.configureListener(toschedule,dag);	
-					} else {
-						quartz.activateJob((Job) dag, toschedule.group());	
+		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
+			for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+				String classname = iterator.next().get("classname");
+				
+					Class<?> clazz = cl.loadClass(classname);
+					Dag toschedule = clazz.getAnnotation(Dag.class);
+					if(toschedule.name().equals(dagname)) {
+						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+						if(toschedule.cronExpr().equals("")) {
+							quartz.configureListener(toschedule,dag);	
+						} else {
+							quartz.activateJob((Job) dag, toschedule.group());	
+						}
+						log.debug("job scheduled!::");
 					}
-					log.debug("job scheduled!::");
-				}
-			
+				
+			}	
+		} catch (Exception e) {
+			log.error(e);
 		}
-		cl.close();
 	}	
 	private File findJarFile(String jarFilename) {
 		File jar = null;

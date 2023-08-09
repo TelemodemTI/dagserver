@@ -28,21 +28,17 @@ public class InternalStorage {
 	}
 	public JSONObject get() throws Exception {
 		StringBuilder content = new StringBuilder();
-		try {
-			FileReader reader = new FileReader(locatedb);
+		try(FileReader reader = new FileReader(locatedb);) {
 	        int character;
 	        while ((character = reader.read()) != -1) {
 	                content.append((char) character);
 	        }
 	        JSONObject jsonObject = new JSONObject(content.toString());
-	        reader.close();
 	        return  jsonObject;
 		} catch (Exception e) {
 			JSONObject jsonObject = new JSONObject();
 			return jsonObject;
 		}
-		
-        
 	}
 	
 }

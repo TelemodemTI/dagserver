@@ -3,13 +3,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.Callable;
 
 import org.json.JSONArray;
@@ -24,7 +24,7 @@ import net.bytebuddy.implementation.MethodCall;
 @Operator(args={"mode","filepath","rowDelimiter","firstRowTitles"},optionalv = {"xcom"})
 public class FileOperator extends OperatorStage implements Callable<List<Map<String, String>>> {
 
-	private Random random = new Random();
+	private SecureRandom random = new SecureRandom();
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	
 	@SuppressWarnings("unchecked")

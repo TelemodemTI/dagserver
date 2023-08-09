@@ -16,37 +16,40 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements ClassLoadHelper {
 
-	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(DagPathClassLoadHelper.class);
 	
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		
-		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoader.getCurrentWebApplicationContext().getServletContext());
 		var prop = new Properties();
-		try {
-			prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));	
-			String pathfolder = prop.getProperty("param.folderpath");
-			File folder = new File(pathfolder);
-			File[] listOfFiles = folder.listFiles();	
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if(listOfFiles[i].getName().endsWith(".jar")) {
-					Class<?> rv = this.search(listOfFiles[i], name);
-					if(rv != null) {
-						return rv;	
-					} 
+		var context = ContextLoader.getCurrentWebApplicationContext();
+		if(context!=null){
+			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(context.getServletContext());
+			try {
+				prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));	
+				String pathfolder = prop.getProperty("param.folderpath");
+				File folder = new File(pathfolder);
+				File[] listOfFiles = folder.listFiles();	
+				for (int i = 0; i < listOfFiles.length; i++) {
+					if(listOfFiles[i].getName().endsWith(".jar")) {
+						Class<?> rv = this.search(listOfFiles[i], name);
+						if(rv != null) {
+							return rv;	
+						} 
+					}
 				}
+				return super.loadClass(name);
+			} catch (Exception e) {
+				log.error(e);
 			}
-			return super.loadClass(name);
-		} catch (Exception e) {
-			log.error(e);
 		}
 		return super.loadClass(name);
 	}
 	private Class<?> search(File jarFile,String searched) throws Exception {
 		Class<?> rvclazz = null;
-		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());) {
-			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+		try(
+				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
+				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+		) {
 			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
 			    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
 			        // This ZipEntry represents a class. Now, what class does it represent?

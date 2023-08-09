@@ -77,12 +77,12 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	}
 	@Override
 	public void saveUncompiled(String token, JSONObject json) throws Exception {
-		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get(CLAIMS);
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		repository.addUncompiled(json.getString("jarname"),json);
 	}
 	@Override
 	public void updateUncompiled(String token,Integer uncompiled, JSONObject json) throws Exception {
-		TokenEngine.untokenize(token, jwt_secret, jwt_signer).get(CLAIMS);
+		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
 		repository.updateUncompiled(uncompiled,json);
 	}
 	@Override
