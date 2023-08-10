@@ -18,6 +18,7 @@ import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import main.domain.annotations.Operator;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.implementation.Implementation;
 
@@ -25,20 +26,24 @@ import net.bytebuddy.implementation.Implementation;
 public class Junit5SuiteOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
 
     @Override
-    public List<Map<String, Object>> call() throws Exception {
-    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-    	Map<String, Object> item = new HashMap<String, Object>();
-    	result.add(item);
-    	
-        String suiteClassName = args.getProperty("suiteClass");
-        Class<?> suiteClass = Class.forName(suiteClassName);
-        ClassSelector classSelector = DiscoverySelectors.selectClass(suiteClass);
-        LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(classSelector)
-                .build();
-        Launcher launcherFactory = LauncherFactory.create();
-        launcherFactory.execute(request,this.getListener(item));
-        return result;
+    public List<Map<String, Object>> call() throws DomainException {
+    	try {
+    		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        	Map<String, Object> item = new HashMap<String, Object>();
+        	result.add(item);
+        	
+            String suiteClassName = args.getProperty("suiteClass");
+            Class<?> suiteClass = Class.forName(suiteClassName);
+            ClassSelector classSelector = DiscoverySelectors.selectClass(suiteClass);
+            LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
+                    .selectors(classSelector)
+                    .build();
+            Launcher launcherFactory = LauncherFactory.create();
+            launcherFactory.execute(request,this.getListener(item));
+            return result;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
     }
     
     private TestExecutionListener getListener(Map<String, Object> item) {
@@ -57,7 +62,7 @@ public class Junit5SuiteOperator extends OperatorStage implements Callable<List<
         };
     }
     @Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
     	return null;
     }
 

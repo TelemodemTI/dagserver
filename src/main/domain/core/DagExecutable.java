@@ -27,6 +27,7 @@ import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.confs.InMemoryLoggerAppender;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 
@@ -161,32 +162,48 @@ public class DagExecutable implements Job,JobListener {
 		Logger.getRootLogger().addAppender(fa);
 		return fa;
 	}
-	protected void addOperator(String name,Class<?> operator) throws Exception {
-		this.addOperator(name, operator, new Properties() , new Properties());
+	protected void addOperator(String name,Class<?> operator) throws DomainException {
+		try {
+			this.addOperator(name, operator, new Properties() , new Properties());	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
-	protected void addOperator(String name,Class<?> operator,Properties args) throws Exception {
-		this.addOperator(name, operator, args , new Properties());
-	}
-	
-	protected void addOperator(String name,Class<?> operator,String propertyKey) throws Exception {
-		Properties props = this.getDagProperties(propertyKey);
-		Properties propsOpt = new Properties();
-		this.addOperator(name, operator, props, propsOpt);
-	}
-	
-	protected void addOperator(String name,Class<?> operator,String propertyKey,String optionalsKey) throws Exception {
-		Properties props = this.getDagProperties(propertyKey);
-		Properties propsOpt = this.getDagProperties(optionalsKey);
-		this.addOperator(name, operator, props, propsOpt);
+	protected void addOperator(String name,Class<?> operator,Properties args) throws DomainException {
+		try {
+			this.addOperator(name, operator, args , new Properties());	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
 	
-	protected void addOperator(String name,Class<?> operator,Properties args,Properties optionals) throws Exception {
+	protected void addOperator(String name,Class<?> operator,String propertyKey) throws DomainException {
+		try {
+			Properties props = this.getDagProperties(propertyKey);
+			Properties propsOpt = new Properties();
+			this.addOperator(name, operator, props, propsOpt);	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+	}
+	
+	protected void addOperator(String name,Class<?> operator,String propertyKey,String optionalsKey) throws DomainException {
+		try {
+			Properties props = this.getDagProperties(propertyKey);
+			Properties propsOpt = this.getDagProperties(optionalsKey);
+			this.addOperator(name, operator, props, propsOpt);	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+	}
+	
+	protected void addOperator(String name,Class<?> operator,Properties args,Properties optionals) throws DomainException {
 		Operator annotation = operator.getAnnotation(Operator.class);
 		String[] argsarr = annotation.args();
 		for (int i = 0; i < argsarr.length; i++) {
 			String string = argsarr[i];
 			if(!args.containsKey(string)) {
-				throw new Exception(string + "not found");
+				throw new DomainException(string + "not found");
 			}
 		}
 		var node = new DagNode(name,operator,args,optionals);

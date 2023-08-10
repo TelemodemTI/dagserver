@@ -13,6 +13,7 @@ import com.jcraft.jsch.Session;
 
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
@@ -21,50 +22,58 @@ import net.bytebuddy.implementation.MethodCall;
 public class SshOperator extends OperatorStage implements Callable<String> {
 
 	@Override
-	public String call() throws Exception {		
-		JSch jsch = new JSch();		
-		Session session = jsch.getSession(this.args.getProperty("user"), this.args.getProperty("host"), Integer.parseInt(this.args.getProperty("port")));
-		session.setPassword(this.args.getProperty("pwd"));
-		session.connect();
-		ChannelExec channel = (ChannelExec) session.openChannel("shell");
-		channel.setCommand("pwd");
+	public String call() throws DomainException {		
+		try {
+			JSch jsch = new JSch();		
+			Session session = jsch.getSession(this.args.getProperty("user"), this.args.getProperty("host"), Integer.parseInt(this.args.getProperty("port")));
+			session.setPassword(this.args.getProperty("pwd"));
+			session.connect();
+			ChannelExec channel = (ChannelExec) session.openChannel("shell");
+			channel.setCommand("pwd");
 
-		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
-		ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
+			ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+			ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
 
-		InputStream in = channel.getInputStream();
-		InputStream err = channel.getExtInputStream();
+			InputStream in = channel.getInputStream();
+			InputStream err = channel.getExtInputStream();
 
-		channel.connect();
+			channel.connect();
 
-		byte[] tmp = new byte[1024];
-		while (true) {
-		    while (in.available() > 0) {
-		        int i = in.read(tmp, 0, 1024);
-		        if (i < 0) break;
-		        outputBuffer.write(tmp, 0, i);
-		    }
-		    while (err.available() > 0) {
-		        int i = err.read(tmp, 0, 1024);
-		        if (i < 0) break;
-		        errorBuffer.write(tmp, 0, i);
-		    }
-		    if (channel.isClosed()) {
-		        if ((in.available() > 0) || (err.available() > 0)) continue; 
-		        break;
-		    }
-		    Thread.sleep(1000);
+			byte[] tmp = new byte[1024];
+			while (true) {
+			    while (in.available() > 0) {
+			        int i = in.read(tmp, 0, 1024);
+			        if (i < 0) break;
+			        outputBuffer.write(tmp, 0, i);
+			    }
+			    while (err.available() > 0) {
+			        int i = err.read(tmp, 0, 1024);
+			        if (i < 0) break;
+			        errorBuffer.write(tmp, 0, i);
+			    }
+			    if (channel.isClosed()) {
+			        if ((in.available() > 0) || (err.available() > 0)) continue; 
+			        break;
+			    }
+			    Thread.sleep(1000);
+			}
+			channel.disconnect();
+			if(!errorBuffer.toString("UTF-8").equals("")) {
+				throw new Exception(errorBuffer.toString("UTF-8"));
+			}
+			return outputBuffer.toString("UTF-8");
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		channel.disconnect();
-		if(!errorBuffer.toString("UTF-8").equals("")) {
-			throw new Exception(errorBuffer.toString("UTF-8"));
-		}
-		return outputBuffer.toString("UTF-8");
 	}
 	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
-		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, SshOperator.class,propkey);
-		return implementation;
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
+		try {
+			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, SshOperator.class,propkey);
+			return implementation;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
     }
 	@Override
 	public JSONObject getMetadataOperator() {

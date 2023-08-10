@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import main.domain.annotations.Operator;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import main.infra.adapters.output.repositories.SchedulerRepository;
 import net.bytebuddy.implementation.Implementation;
@@ -15,24 +16,28 @@ import net.bytebuddy.implementation.Implementation;
 public class RegisterSchedulerOperator extends OperatorStage implements Callable<Void> {
 
 	@Override
-	public Void call() throws Exception {		
-		log.debug(this.getClass()+" init "+this.name);
-		var wa = ContextLoader.getCurrentWebApplicationContext();
-		var prop = new Properties();
-		var vl = (wa != null)?wa.getServletContext():null;
-		if(wa != null && vl != null) {
-			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(vl);
-			SchedulerRepository repo = this.getSchedulerRepository(springContext);
-			if(springContext != null) {
-				var cls = springContext.getClassLoader();
-				if(cls != null) {
-					prop.load(cls.getResourceAsStream("application.properties"));
-					repo.setMetadata(prop.getProperty("param.host"), prop.getProperty("param.name"));
-					log.debug(this.getClass()+" end "+this.name);	
-				}	
+	public Void call() throws DomainException {		
+		try {
+			log.debug(this.getClass()+" init "+this.name);
+			var wa = ContextLoader.getCurrentWebApplicationContext();
+			var prop = new Properties();
+			var vl = (wa != null)?wa.getServletContext():null;
+			if(wa != null && vl != null) {
+				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(vl);
+				SchedulerRepository repo = this.getSchedulerRepository(springContext);
+				if(springContext != null) {
+					var cls = springContext.getClassLoader();
+					if(cls != null) {
+						prop.load(cls.getResourceAsStream("application.properties"));
+						repo.setMetadata(prop.getProperty("param.host"), prop.getProperty("param.name"));
+						log.debug(this.getClass()+" end "+this.name);	
+					}	
+				}
 			}
+			return null;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		return null;
 	}
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {

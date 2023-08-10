@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
@@ -22,7 +23,7 @@ import net.bytebuddy.implementation.MethodCall;
 @Operator(args={"url","user","pwd","driver","query"},optionalv = { "xcom" })
 public class JdbcOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
 	@Override
-	public List<Map<String, Object>> call() throws Exception {		
+	public List<Map<String, Object>> call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
 		List<Map<String, Object>> result = new ArrayList<>();
 		
@@ -31,7 +32,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
 			if(xcomname != null) {
 				if(!this.xcom.has(xcomname)) {
-					throw new Exception("xcom not exist for dagname::"+xcomname);
+					throw new DomainException("xcom not exist for dagname::"+xcomname);
 				}
 				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
@@ -54,9 +55,13 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		return result;
 	}
 	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
-		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey);
-		return implementation;
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
+		try {
+			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey);
+			return implementation;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
     }
 	@Override
 	public JSONObject getMetadataOperator() {
