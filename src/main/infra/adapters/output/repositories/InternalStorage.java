@@ -33,11 +33,9 @@ public class InternalStorage {
 	        while ((character = reader.read()) != -1) {
 	                content.append((char) character);
 	        }
-	        JSONObject jsonObject = new JSONObject(content.toString());
-	        return  jsonObject;
+	        return new JSONObject(content.toString());
 		} catch (Exception e) {
-			JSONObject jsonObject = new JSONObject();
-			return jsonObject;
+			return new JSONObject();
 		}
 	}
 	

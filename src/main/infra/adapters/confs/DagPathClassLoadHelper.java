@@ -12,6 +12,7 @@ import org.quartz.simpl.CascadingClassLoadHelper;
 import org.quartz.spi.ClassLoadHelper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements ClassLoadHelper {
@@ -23,26 +24,39 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		var prop = new Properties();
 		var context = ContextLoader.getCurrentWebApplicationContext();
 		if(context!=null){
-			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(context.getServletContext());
-			try {
-				prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));	
-				String pathfolder = prop.getProperty("param.folderpath");
-				File folder = new File(pathfolder);
-				File[] listOfFiles = folder.listFiles();	
-				for (int i = 0; i < listOfFiles.length; i++) {
-					if(listOfFiles[i].getName().endsWith(".jar")) {
-						Class<?> rv = this.search(listOfFiles[i], name);
-						if(rv != null) {
-							return rv;	
-						} 
-					}
-				}
-				return super.loadClass(name);
-			} catch (Exception e) {
-				log.error(e);
-			}
+			return this.loadClassProps(prop,context,name);
 		}
 		return super.loadClass(name);
+	}
+	private Class<?> loadClassProps(Properties prop,WebApplicationContext context,String name) {
+		var srv = context.getServletContext();
+		if(srv != null) {
+			try {
+				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(srv);
+				var ctx = springContext.getClassLoader();
+				if(ctx !=null) {
+					prop.load(ctx.getResourceAsStream("application.properties"));	
+					String pathfolder = prop.getProperty("param.folderpath");
+					File folder = new File(pathfolder);
+					File[] listOfFiles = folder.listFiles();	
+					for (int i = 0; i < listOfFiles.length; i++) {
+						if(listOfFiles[i].getName().endsWith(".jar")) {
+							Class<?> rv = this.search(listOfFiles[i], name);
+							if(rv != null) {
+								return rv;	
+							} 
+						}
+					}
+					return super.loadClass(name);	
+				} else {
+					log.error("no existe contexto??");
+					return null;
+				}
+			} catch (Exception e) {
+				log.error(e);
+				return null;
+			}	
+		} else return null;
 	}
 	private Class<?> search(File jarFile,String searched) throws Exception {
 		Class<?> rvclazz = null;

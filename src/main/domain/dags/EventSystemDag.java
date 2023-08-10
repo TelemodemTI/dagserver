@@ -24,9 +24,14 @@ public class EventSystemDag extends DagExecutable {
 		}
 		var ctx = ContextLoader.getCurrentWebApplicationContext();
 		if(ctx!=null) {
-			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx.getServletContext());
-			prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));
-				
+			var srv = ctx.getServletContext();
+			if(srv != null) {
+				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(srv);
+				var cloader = springContext.getClassLoader();
+				if(cloader != null) 
+					prop.load(cloader.getResourceAsStream("application.properties"));	
+			}
+			
 		}
 	}
 	

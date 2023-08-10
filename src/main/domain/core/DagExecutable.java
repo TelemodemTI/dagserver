@@ -69,7 +69,7 @@ public class DagExecutable implements Job,JobListener {
 			if(servletctx != null) {
 				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(servletctx);
 				if(springContext != null)
-				repo = (SchedulerRepositoryOutputPort) springContext.getBean("schedulerRepository");	
+					repo = (SchedulerRepositoryOutputPort) springContext.getBean("schedulerRepository");	
 			}
 		}
 	}
