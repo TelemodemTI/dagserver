@@ -121,25 +121,27 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public void scheduler(String dagname,String jarname) throws Exception {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
-		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
-			for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-				String classname = iterator.next().get("classname");
-				
-					Class<?> clazz = cl.loadClass(classname);
-					Dag toschedule = clazz.getAnnotation(Dag.class);
-					if(toschedule.name().equals(dagname)) {
-						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
-						if(toschedule.cronExpr().equals("")) {
-							quartz.configureListener(toschedule,dag);	
-						} else {
-							quartz.activateJob((Job) dag, toschedule.group());	
+		if(jarfileO!= null) {
+			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
+				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+					String classname = iterator.next().get("classname");
+					
+						Class<?> clazz = cl.loadClass(classname);
+						Dag toschedule = clazz.getAnnotation(Dag.class);
+						if(toschedule.name().equals(dagname)) {
+							DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+							if(toschedule.cronExpr().equals("")) {
+								quartz.configureListener(toschedule,dag);	
+							} else {
+								quartz.activateJob((Job) dag, toschedule.group());	
+							}
+							log.debug("job scheduled!::");
 						}
-						log.debug("job scheduled!::");
-					}
-				
+					
+				}	
+			} catch (Exception e) {
+				log.error(e);
 			}	
-		} catch (Exception e) {
-			log.error(e);
 		}
 	}	
 	private File findJarFile(String jarFilename) {
@@ -217,24 +219,24 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		var result = new ArrayList<DagDTO>();
 		File jarfileO = this.findJarFile(jarname);
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
-		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-			String classname = iterator.next().get("classname");
-			
-			Class<?> clazz = cl.loadClass(classname);
-			Dag scheduled = clazz.getAnnotation(Dag.class);
-			DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
-			DagDTO dto = new DagDTO();
-			dto.setDagname(scheduled.name());
-			dto.setCronExpr(scheduled.cronExpr());
-			dto.setGroup(scheduled.group());
-			dto.setOnEnd(scheduled.onEnd());
-			dto.setOnStart(scheduled.onStart());
-			dto.setOps(dag.getDagGraph());
-			result.add(dto);
-			
+		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
+			for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+				String classname = iterator.next().get("classname");	
+				Class<?> clazz = cl.loadClass(classname);
+				Dag scheduled = clazz.getAnnotation(Dag.class);
+				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
+				DagDTO dto = new DagDTO();
+				dto.setDagname(scheduled.name());
+				dto.setCronExpr(scheduled.cronExpr());
+				dto.setGroup(scheduled.group());
+				dto.setOnEnd(scheduled.onEnd());
+				dto.setOnStart(scheduled.onStart());
+				dto.setOps(dag.getDagGraph());
+				result.add(dto);
+			}	
+		} catch (Exception e) {
+			log.error(e);
 		}
-		cl.close();
 		return result;
 	}
 	

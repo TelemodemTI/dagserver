@@ -15,14 +15,18 @@ public class EventSystemDag extends DagExecutable {
 
 	public EventSystemDag() throws Exception {
 		super();
-		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoader.getCurrentWebApplicationContext().getServletContext());
 		var prop = new Properties();
-		prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));
-		Boolean localTest = Boolean.parseBoolean(prop.getProperty("param.junit.local"));	
+		Boolean localTest = Boolean.parseBoolean(prop.getProperty("param.junit.local"));
 		if(localTest) {
 			var propop = new Properties();
 			propop.setProperty("suiteClass", "main.BasicTest");
 			this.addOperator("local_testing",Junit5SuiteOperator.class,propop);	
+		}
+		var ctx = ContextLoader.getCurrentWebApplicationContext();
+		if(ctx!=null) {
+			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx.getServletContext());
+			prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));
+				
 		}
 	}
 	
