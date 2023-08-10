@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,8 +12,11 @@ import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import main.application.ports.input.SchedulerMutationUseCase;
 
 
+
 @Component
 public class MutationResolver implements GraphQLMutationResolver {
+	
+	private final static Logger logger = Logger.getLogger(MutationResolver.class);
 	
 	@Autowired
 	SchedulerMutationUseCase handler;
@@ -28,7 +32,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			handler.scheduleDag(token,dagname,jarname);
 			return ok();	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 			return error(e);
 		}
     }

@@ -9,12 +9,12 @@ import static org.mockito.Mockito.mock;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DefaultControllerTest {
+class DefaultControllerTest {
 
 	private DefaultController controller = new DefaultController(); 
 	
     @Test
-    public void versionTest() {
+    void versionTest() {
     	Model model = mock(Model.class);
     	HttpServletRequest request = mock(HttpServletRequest.class);
     	HttpServletResponse response = mock(HttpServletResponse.class);

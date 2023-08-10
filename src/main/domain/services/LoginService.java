@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import main.domain.core.TokenEngine;
 import main.domain.model.UserDTO;
+
 import main.application.ports.input.LoginUseCase;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 
@@ -19,6 +20,8 @@ import main.application.ports.output.SchedulerRepositoryOutputPort;
 @ImportResource("classpath:properties-config.xml")
 public class LoginService implements LoginUseCase ,Function<List<String>,String> {
 
+	private final static Logger logger = Logger.getLogger(LoginService.class);
+	
 	@Autowired
 	private SchedulerRepositoryOutputPort repository;
 	
@@ -62,7 +65,7 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 		try {
 			return this.login(username, pwd);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 			return "";
 		}
 	}

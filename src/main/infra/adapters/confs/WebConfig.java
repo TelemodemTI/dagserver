@@ -86,7 +86,6 @@ public class WebConfig implements WebMvcConfigurer {
 				}
 			} catch (Exception e) {
 				logger.error(e);
-				e.printStackTrace();
 			}	
 		}
 	}

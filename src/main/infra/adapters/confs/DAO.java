@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -14,9 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 @Repository
-public class DAO{
+public class DAO
+{
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	private final static Logger logger = Logger.getLogger(DAO.class);
+	
 	@SuppressWarnings("unchecked")
 	@Transactional
     public <T> T save(T o){
@@ -56,7 +61,7 @@ public class DAO{
 			}
             queryO.executeUpdate();
         } catch (HibernateException e) {
-        	e.printStackTrace();
+        	logger.error(e);
         } 
     }
     private Session getCreateSession() {
@@ -90,7 +95,7 @@ public class DAO{
         		list = queryO.list();	
         	}
         } catch (HibernateException e) {
-        	e.printStackTrace();
+        	logger.error(e);
         }
         return list;
     }

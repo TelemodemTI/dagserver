@@ -19,8 +19,9 @@ public class RegisterSchedulerOperator extends OperatorStage implements Callable
 		log.debug(this.getClass()+" init "+this.name);
 		var wa = ContextLoader.getCurrentWebApplicationContext();
 		var prop = new Properties();
-		if(wa != null && wa.getServletContext() != null) {
-			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(wa.getServletContext());
+		var vl = wa.getServletContext();
+		if(wa != null && vl != null) {
+			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(vl);
 			SchedulerRepository repo = this.getSchedulerRepository(springContext);
 			var cls = springContext.getClassLoader();
 			if(cls != null) {

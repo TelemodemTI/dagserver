@@ -31,6 +31,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.KeyMatcher;
+import org.quartz.utils.Key;
 
 @Component
 public class QuartzConfig {
@@ -51,7 +52,7 @@ public class QuartzConfig {
 	public void scheduleOne(Job jobType,String key,Map<?,?> map,Date dateRun) throws SchedulerException{
 		String jobName = key + "_db_" + dateRun.getTime();
 		JobKey jobKey = new JobKey(jobName);
-		TriggerKey triggerKey = new TriggerKey(TriggerKey.DEFAULT_GROUP + jobName);
+		TriggerKey triggerKey = new TriggerKey(Key.DEFAULT_GROUP + jobName);
 		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startAt(dateRun).build();
 		JobBuilder jobBuilder = JobBuilder.newJob(jobType.getClass() ).withIdentity(jobKey);
 		jobBuilder.withDescription(jobName);

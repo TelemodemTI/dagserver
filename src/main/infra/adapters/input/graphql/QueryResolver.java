@@ -188,7 +188,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		try {
 			return handler.getIcons(type);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 			return e.getMessage();
 		}
 	}
