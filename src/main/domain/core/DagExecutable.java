@@ -221,7 +221,7 @@ public class DagExecutable implements Job,JobListener {
 			try {
 				this.evaluate();
 			} catch (JobExecutionException e) {
-				e.printStackTrace();
+				log.error(e);
 			}	
 		}
 	}
@@ -239,7 +239,7 @@ public class DagExecutable implements Job,JobListener {
 			try {
 				this.evaluate();
 			} catch (JobExecutionException e) {
-				e.printStackTrace();
+				log.error(e);
 			}	
 		}
 	}

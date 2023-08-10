@@ -56,6 +56,7 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		    try { 
 		      Thread.sleep(1000);
 		    } catch (Exception ee) {
+		    	log.error(ee);
 		    }
 		}
 		channel.disconnect();

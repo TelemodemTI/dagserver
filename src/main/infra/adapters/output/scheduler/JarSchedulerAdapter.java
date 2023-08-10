@@ -159,25 +159,29 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public void unschedule(String dagname, String jarname) throws IOException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
-		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-			String classname = iterator.next().get("classname");
-			try {
-				Class<?> clazz = cl.loadClass(classname);
-				Dag toschedule = clazz.getAnnotation(Dag.class);
-				if(toschedule.name().equals(dagname)) {
-					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
-					if(toschedule.cronExpr().equals("")) {
-						quartz.removeListener(toschedule, dag);
-					} else {
-						quartz.deactivateJob(dag);	
+		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
+			if(jarfileO != null) {
+				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+					String classname = iterator.next().get("classname");
+					try {
+						Class<?> clazz = cl.loadClass(classname);
+						Dag toschedule = clazz.getAnnotation(Dag.class);
+						if(toschedule.name().equals(dagname)) {
+							DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+							if(toschedule.cronExpr().equals("")) {
+								quartz.removeListener(toschedule, dag);
+							} else {
+								quartz.deactivateJob(dag);	
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+				}		
+			} 	
+		} catch (Exception e) {
+			log.error(e);
 		}
-		cl.close();
 	}	
 	
 	public List<DagDTO> getDagDetail(String jarname) throws Exception {

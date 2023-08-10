@@ -25,12 +25,15 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 			if(srv != null) {
 				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(srv);
 				SchedulerRepository repo = this.getSchedulerRepository(springContext);
-				prop.load(springContext.getClassLoader().getResourceAsStream("application.properties"));
-				Calendar rollup = Calendar.getInstance();
-				rollup.setTimeInMillis(rollup.getTimeInMillis());
-				rollup.add(Calendar.HOUR, Integer.parseInt(prop.getProperty("param.logs.rollup.hours")));
-				repo.deleteLogsBy(rollup.getTime());
-				log.debug(this.getClass()+" end "+this.name);	
+				var clsl = (springContext!=null)? springContext.getClassLoader():null;
+				if(clsl!=null) {
+					prop.load(clsl.getResourceAsStream("application.properties"));
+					Calendar rollup = Calendar.getInstance();
+					rollup.setTimeInMillis(rollup.getTimeInMillis());
+					rollup.add(Calendar.HOUR, Integer.parseInt(prop.getProperty("param.logs.rollup.hours")));
+					repo.deleteLogsBy(rollup.getTime());
+					log.debug(this.getClass()+" end "+this.name);	
+				}
 			} else return null;
 		}
 		return null;
