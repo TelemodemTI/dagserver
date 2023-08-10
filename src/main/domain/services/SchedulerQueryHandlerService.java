@@ -94,7 +94,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		}
 		return newrv;
 	}
-	public List<DagDTO> getDagDetail(String jarname) throws Exception {
+	public List<DagDTO> getDagDetail(String jarname) throws DomainException {
 		return scanner.init().getDagDetail(jarname);
 	}
 	@Override

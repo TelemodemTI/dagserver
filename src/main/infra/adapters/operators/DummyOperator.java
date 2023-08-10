@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
@@ -14,7 +15,7 @@ import net.bytebuddy.implementation.MethodCall;
 public class DummyOperator extends OperatorStage implements Callable<Void> {
 
 	@Override
-	public Void call() throws Exception {		
+	public Void call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -23,9 +24,13 @@ public class DummyOperator extends OperatorStage implements Callable<Void> {
 	}
 	
 	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
-		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class)).with(stepName, DummyOperator.class);
-		return implementation;
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
+		try {
+			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class)).with(stepName, DummyOperator.class);
+			return implementation;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
 
 	@Override

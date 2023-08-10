@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
@@ -29,66 +30,70 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Map<String, String>> call() throws Exception {		
-		List<Map<String, String>> result = new ArrayList<>();
-		
-		log.debug(this.getClass()+" init "+this.name);
-		log.debug("args");
-		log.debug(this.args);
-		log.debug(this.getClass()+" end "+this.name);
-		
-		Integer mode = this.getMode(this.args.getProperty("mode"));
-		String xcomname = this.args.getProperty("xcom");
-		String filepath = this.args.getProperty("filepath");
-		Boolean firstrow = Boolean.valueOf(this.args.getProperty("firstRowTitles"));
-		String rowDelimiter = this.args.getProperty("rowDelimiter");
-		
-		if(mode.equals(0)) {
-			 log.debug("mode:read");
-	         FileReader fileReader = new FileReader(filepath);
-	         String line;
-	         Integer lineNumber = 0;
-	         List<String> titles = new ArrayList<>();
-	         try(BufferedReader bufferedReader = new BufferedReader(fileReader);) {
-	        	 while ((line = bufferedReader.readLine()) != null) {
-		        	 Map<String, String> row = new HashMap<String,String>();
-		        	 String[] fields = line.split(rowDelimiter);
-		        	 if(lineNumber.equals(0)) {
-		        		 if(firstrow) {
-		        			 titles = Arrays.asList(fields);	 
-		        		 } else {
-		        			 titles = this.generateTitleList(fields.length);
-		        		 }
-		        	 }
-		        	 for (int i = 0; i < fields.length; i++) {
-		 				String string = fields[i];
-		 				row.put(titles.get(i), string);
-		 			 }	 
-		        	 lineNumber++;
-		        	 result.add(row);
-		         }	
-	         } catch (Exception e) {
-				log.error(e);
-	         }
-	         log.debug("readed "+filepath+"--lines:"+lineNumber);
-		} else {
-			log.debug("mode:write");
-			List<Map<String, String>> data = (List<Map<String, String>>) this.xcom.get(xcomname);
-			Integer lines = 0;
-			try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
-		        for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
-					Map<String, String> map =  iterator.next();
-					String resultLine = String.join(rowDelimiter, map.values());
-					writer.write(resultLine);
-	                writer.newLine();
-	                lines ++;
-				}	
-			} catch (Exception e) {
-				log.error(e);
+	public List<Map<String, String>> call() throws DomainException {		
+		try {
+			List<Map<String, String>> result = new ArrayList<>();
+			
+			log.debug(this.getClass()+" init "+this.name);
+			log.debug("args");
+			log.debug(this.args);
+			log.debug(this.getClass()+" end "+this.name);
+			
+			Integer mode = this.getMode(this.args.getProperty("mode"));
+			String xcomname = this.args.getProperty("xcom");
+			String filepath = this.args.getProperty("filepath");
+			Boolean firstrow = Boolean.valueOf(this.args.getProperty("firstRowTitles"));
+			String rowDelimiter = this.args.getProperty("rowDelimiter");
+			
+			if(mode.equals(0)) {
+				 log.debug("mode:read");
+		         FileReader fileReader = new FileReader(filepath);
+		         String line;
+		         Integer lineNumber = 0;
+		         List<String> titles = new ArrayList<>();
+		         try(BufferedReader bufferedReader = new BufferedReader(fileReader);) {
+		        	 while ((line = bufferedReader.readLine()) != null) {
+			        	 Map<String, String> row = new HashMap<String,String>();
+			        	 String[] fields = line.split(rowDelimiter);
+			        	 if(lineNumber.equals(0)) {
+			        		 if(firstrow) {
+			        			 titles = Arrays.asList(fields);	 
+			        		 } else {
+			        			 titles = this.generateTitleList(fields.length);
+			        		 }
+			        	 }
+			        	 for (int i = 0; i < fields.length; i++) {
+			 				String string = fields[i];
+			 				row.put(titles.get(i), string);
+			 			 }	 
+			        	 lineNumber++;
+			        	 result.add(row);
+			         }	
+		         } catch (Exception e) {
+					log.error(e);
+		         }
+		         log.debug("readed "+filepath+"--lines:"+lineNumber);
+			} else {
+				log.debug("mode:write");
+				List<Map<String, String>> data = (List<Map<String, String>>) this.xcom.get(xcomname);
+				Integer lines = 0;
+				try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
+			        for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
+						Map<String, String> map =  iterator.next();
+						String resultLine = String.join(rowDelimiter, map.values());
+						writer.write(resultLine);
+		                writer.newLine();
+		                lines ++;
+					}	
+				} catch (Exception e) {
+					log.error(e);
+				}
+		        log.debug("write "+filepath+"--lines:"+lines);
 			}
-	        log.debug("write "+filepath+"--lines:"+lines);
+			return result;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		return result;
 	}
 	
 	private Integer getMode(String mode) {
@@ -113,9 +118,13 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
     }
 	
 	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
-		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, FileOperator.class,propkey,optkey);
-		return implementation;
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
+		try {
+			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, FileOperator.class,propkey,optkey);
+			return implementation;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
 
 	

@@ -2,13 +2,14 @@ package example_dag.main;
 
 import main.domain.core.DagExecutable;
 import main.domain.enums.OperatorStatus;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.operators.DummyOperator;
 import main.domain.annotations.Dag;
 
 @Dag(name = "custom_dag_example",cronExpr = "0 0/1 * * * ?", group="my_dags_group")
 public class CustomDagExample extends DagExecutable {
 
-	public CustomDagExample() throws Exception {
+	public CustomDagExample() throws DomainException {
 		super();
 		this.addOperator("Dummy",DummyOperator.class);
 		this.addOperator("Dummy2",DummyOperator.class);
