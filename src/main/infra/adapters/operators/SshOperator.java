@@ -53,11 +53,7 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		        if ((in.available() > 0) || (err.available() > 0)) continue; 
 		        break;
 		    }
-		    try { 
-		      Thread.sleep(1000);
-		    } catch (Exception ee) {
-		    	log.error(ee);
-		    }
+		    Thread.sleep(1000);
 		}
 		channel.disconnect();
 		if(!errorBuffer.toString("UTF-8").equals("")) {

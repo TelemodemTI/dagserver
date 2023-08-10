@@ -1,11 +1,8 @@
 package main.infra.adapters.operators;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
+import java.util.concurrent.Callable;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import main.domain.annotations.Operator;
@@ -35,14 +32,7 @@ public class GroovyOperator extends OperatorStage implements Callable<Object> {
 		return shell.evaluate(source);
 	}
 	
-	private Map<String, Object> convertJSONObjectToMap(JSONObject jsonObject) {
-	    Map<String, Object> map = new HashMap<>();
-	    for (String key : jsonObject.keySet()) {
-	        Object value = jsonObject.get(key);
-	        map.put(key, value);
-	    }
-	    return map;
-	}
+	
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
 		Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class )).with(stepName, GroovyOperator.class,propkey);

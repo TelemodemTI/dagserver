@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
+import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
 import main.domain.model.EventListenerDTO;
 import main.domain.model.LogDTO;
@@ -107,17 +108,22 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		List<User> founded = dao.read(User.class, "select user from User as user where user.username = '"+username+"'");
 		return founded.stream().map(elt -> mapper.toUserDTO(elt)).collect(Collectors.toList()); 
 	}
-	public List<PropertyParameterDTO> getProperties(String groupname) throws Exception{
-		List<PropertyParameter> founded;
-		if(groupname != null) {
-			founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+groupname+"'");
-			if(founded.size() == 0) throw new Exception("DAG properties "+groupname+ " not found");
-		} else {
-			founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
+	public List<PropertyParameterDTO> getProperties(String groupname) throws DomainException{
+		try {
+			List<PropertyParameter> founded;
+			if(groupname != null) {
+				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+groupname+"'");
+				if(founded.size() == 0) throw new Exception("DAG properties "+groupname+ " not found");
+			} else {
+				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
+			}
+			return founded.stream().map(elt -> mapper.toPropertyParameterDTO(elt)).collect(Collectors.toList());	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		return founded.stream().map(elt -> mapper.toPropertyParameterDTO(elt)).collect(Collectors.toList());
+		
 	}
-	public Properties getPropertiesFromDb(String groupname) throws Exception {
+	public Properties getPropertiesFromDb(String groupname) throws DomainException {
 		Properties nueva = new Properties();
 		var founded = this.getProperties(groupname);
 		for (Iterator<PropertyParameterDTO> iterator = founded.iterator(); iterator.hasNext();) {
@@ -254,38 +260,42 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 
 	@Override
-	public void createParams(String jarname,String bin) throws Exception {
-		JSONObject def = new JSONObject(bin);
-		for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
-			JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
-			JSONArray boxes = dag.getJSONArray("boxes");
-			for (int j = 0; j < boxes.length(); j++) {
-				for (int k = 0; k < boxes.length(); k++) {
-					var box = boxes.getJSONObject(k);
-					String typeope = box.getString("type");
-					String idope = box.getString("id");
-					String group = jarname+"."+idope+"."+typeope+".props";
-					Class<?> clazz = Class.forName(typeope);
-					Operator annotation = clazz.getAnnotation(Operator.class);
-					this.deletePropsByGroup(group);
-					if(box.has("params")) {
-						for (int l = 0; l < box.getJSONArray("params").length(); l++) {
-							JSONObject parm = box.getJSONArray("params").getJSONObject(l);
-							if(this.searchValue(annotation.args(), parm.getString("key"))) {
-								this.setProperty(parm.getString("key"), "generated parameter from editor", parm.getString("value"), group);	
+	public void createParams(String jarname,String bin) throws DomainException {
+		try {
+			JSONObject def = new JSONObject(bin);
+			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
+				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
+				JSONArray boxes = dag.getJSONArray("boxes");
+				for (int j = 0; j < boxes.length(); j++) {
+					for (int k = 0; k < boxes.length(); k++) {
+						var box = boxes.getJSONObject(k);
+						String typeope = box.getString("type");
+						String idope = box.getString("id");
+						String group = jarname+"."+idope+"."+typeope+".props";
+						Class<?> clazz = Class.forName(typeope);
+						Operator annotation = clazz.getAnnotation(Operator.class);
+						this.deletePropsByGroup(group);
+						if(box.has("params")) {
+							for (int l = 0; l < box.getJSONArray("params").length(); l++) {
+								JSONObject parm = box.getJSONArray("params").getJSONObject(l);
+								if(this.searchValue(annotation.args(), parm.getString("key"))) {
+									this.setProperty(parm.getString("key"), "generated parameter from editor", parm.getString("value"), group);	
+								}
 							}
+							String groupo = jarname+"."+idope+"."+typeope+".opts";
+							this.deletePropsByGroup(groupo);
+							for (int l = 0; l < box.getJSONArray("params").length(); l++) {
+								JSONObject parm = box.getJSONArray("params").getJSONObject(l);
+								if(this.searchValue(annotation.optionalv(), parm.getString("key"))) {
+									this.setProperty(parm.getString("key"), "generated optional from editor", parm.getString("value"), groupo);	
+								}
+							}	
 						}
-						String groupo = jarname+"."+idope+"."+typeope+".opts";
-						this.deletePropsByGroup(groupo);
-						for (int l = 0; l < box.getJSONArray("params").length(); l++) {
-							JSONObject parm = box.getJSONArray("params").getJSONObject(l);
-							if(this.searchValue(annotation.optionalv(), parm.getString("key"))) {
-								this.setProperty(parm.getString("key"), "generated optional from editor", parm.getString("value"), groupo);	
-							}
-						}	
 					}
 				}
-			}
+			}	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
 	}
 	private void deletePropsByGroup(String group) {
@@ -307,19 +317,28 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
     }
 	
 	@Override
-	public String createInternalStatus(JSONObject data) throws Exception {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-		String name = sdf.format(new Date())+"_data.json";
-		InternalStorage storage = new InternalStorage(pathfolder+name);
-		storage.put(data);
-		return storage.getLocatedb();
+	public String createInternalStatus(JSONObject data) throws DomainException {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+			String name = sdf.format(new Date())+"_data.json";
+			InternalStorage storage = new InternalStorage(pathfolder+name);
+			storage.put(data);
+			return storage.getLocatedb();	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+		
 	}
 
 	@Override
-	public JSONObject readXcom(String locatedAt) throws Exception {
-		InternalStorage storage = new InternalStorage(locatedAt);
-		var rv = storage.get();
-		return rv;
+	public JSONObject readXcom(String locatedAt) throws DomainException {
+		try {
+			InternalStorage storage = new InternalStorage(locatedAt);
+			var rv = storage.get();
+			return rv;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -372,7 +391,6 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		var founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+groupname+"'");
 		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
 			PropertyParameter propertyParameter = iterator.next();
-			String paraf = ""; 
 			for (int i = 0; i < bindata.length(); i++) {
 				JSONObject b = bindata.getJSONObject(i);
 				if(b.getString("key").equals(propertyParameter.getName())) {

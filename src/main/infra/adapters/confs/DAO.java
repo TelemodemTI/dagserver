@@ -20,7 +20,7 @@ public class DAO
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private final static Logger logger = Logger.getLogger(DAO.class);
+	private static final Logger logger = Logger.getLogger(DAO.class);
 	
 	@SuppressWarnings("unchecked")
 	@Transactional

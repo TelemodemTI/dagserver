@@ -20,7 +20,7 @@ import main.application.ports.output.SchedulerRepositoryOutputPort;
 @ImportResource("classpath:properties-config.xml")
 public class LoginService implements LoginUseCase ,Function<List<String>,String> {
 
-	private final static Logger logger = Logger.getLogger(LoginService.class);
+	private static final Logger logger = Logger.getLogger(LoginService.class);
 	
 	@Autowired
 	private SchedulerRepositoryOutputPort repository;

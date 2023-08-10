@@ -2,7 +2,6 @@ package main.infra.adapters.output.scheduler;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
+import main.domain.exceptions.DomainException;
 import main.domain.model.DagDTO;
 
 import main.infra.adapters.confs.QuartzConfig;
@@ -46,7 +46,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private List<File> jars = new ArrayList<File>();
 	private Map<String,List<Map<String,String>>> classMap = new HashMap<String,List<Map<String,String>>>();
 	
-	public JarSchedulerAdapter init () throws Exception {
+	public JarSchedulerAdapter init () throws DomainException {
 		classMap =  new HashMap<String,List<Map<String,String>>>();
 		File folder = new File(pathfolder);
 		File[] listOfFiles = folder.listFiles();	
@@ -118,7 +118,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		return classMap;
 	}
 	@Override
-	public void scheduler(String dagname,String jarname) throws Exception {
+	public void scheduler(String dagname,String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
 		if(jarfileO!= null) {
@@ -156,16 +156,18 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		return jar;
 	}
 	@Override
-	public void unschedule(String dagname, String jarname) throws IOException {
+	public void unschedule(String dagname, String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
-		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {		
-			for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-				String classname = iterator.next().get("classname");
-				activateDeactivate(dagname, cl, classname);
-			}		
-		} catch (Exception e) {
-			log.error(e);
+		if(jarfileO!=null) {
+			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {		
+				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+					String classname = iterator.next().get("classname");
+					activateDeactivate(dagname, cl, classname);
+				}		
+			} catch (Exception e) {
+				throw new DomainException(e.getMessage());
+			}	
 		}
 	}	
 	private void activateDeactivate(String dagname,URLClassLoader cl,String classname) {
@@ -184,7 +186,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			log.error(e);
 		}
 	}
-	public List<DagDTO> getDagDetail(String jarname) throws Exception {
+	public List<DagDTO> getDagDetail(String jarname) throws DomainException {
 		if(jarname.toLowerCase().equals("system")) {
 			return this.getDefaultsSYSTEMS();
 		} else {
@@ -219,60 +221,76 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		defs.add(evt);
 		return defs;
 	}
-	private List<DagDTO> getDagDetailJAR(String jarname) throws Exception {
+	private List<DagDTO> getDagDetailJAR(String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		var result = new ArrayList<DagDTO>();
 		File jarfileO = this.findJarFile(jarname);
-		try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
-			for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-				String classname = iterator.next().get("classname");	
-				Class<?> clazz = cl.loadClass(classname);
-				Dag scheduled = clazz.getAnnotation(Dag.class);
-				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
-				DagDTO dto = new DagDTO();
-				dto.setDagname(scheduled.name());
-				dto.setCronExpr(scheduled.cronExpr());
-				dto.setGroup(scheduled.group());
-				dto.setOnEnd(scheduled.onEnd());
-				dto.setOnStart(scheduled.onStart());
-				dto.setOps(dag.getDagGraph());
-				result.add(dto);
+		if(jarfileO != null) {
+			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
+				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+					String classname = iterator.next().get("classname");	
+					Class<?> clazz = cl.loadClass(classname);
+					Dag scheduled = clazz.getAnnotation(Dag.class);
+					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
+					DagDTO dto = new DagDTO();
+					dto.setDagname(scheduled.name());
+					dto.setCronExpr(scheduled.cronExpr());
+					dto.setGroup(scheduled.group());
+					dto.setOnEnd(scheduled.onEnd());
+					dto.setOnStart(scheduled.onStart());
+					dto.setOps(dag.getDagGraph());
+					result.add(dto);
+				}	
+			} catch (Exception e) {
+				log.error(e);
 			}	
-		} catch (Exception e) {
-			log.error(e);
 		}
 		return result;
 	}
 	
 	@SuppressWarnings("resource")
-	public void execute(String jarname, String dagname) throws Exception {
-		List<Map<String,String>> classNames = classMap.get(jarname);
-		log.debug(jarname);
-		File jarfileO = this.findJarFile(jarname);
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
-		Boolean founded = false;
-		
-		for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-			String classname = iterator.next().get("classname");
-			Class<?> clazz = cl.loadClass(classname);
-			Dag toschedule = clazz.getAnnotation(Dag.class);
-			if(toschedule.name().equals(dagname)) {
-				founded = true;
-				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
-				quartz.executeInmediate(dag);
-				break;
-			}
+	public void execute(String jarname, String dagname) throws DomainException {
+		try {
+			List<Map<String,String>> classNames = classMap.get(jarname);
+			log.debug(jarname);
+			File jarfileO = this.findJarFile(jarname);
+			if(jarfileO!= null) {
+				URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
+				Boolean founded = false;
+				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
+					String classname = iterator.next().get("classname");
+					Class<?> clazz = cl.loadClass(classname);
+					Dag toschedule = clazz.getAnnotation(Dag.class);
+					if(toschedule.name().equals(dagname)) {
+						founded = true;
+						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+						quartz.executeInmediate(dag);
+						break;
+					}
+				}
+				if(!founded) {
+					throw new Exception("dagname not found");
+				}	
+			}	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		if(!founded) {
-			throw new Exception("dagname not found");
-		} 
 	}
 	
-	public List<Map<String,Object>> listScheduled() throws Exception {
-		 return quartz.listScheduled();
+	public List<Map<String,Object>> listScheduled() throws DomainException {
+		try {
+			return quartz.listScheduled();	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		} 
+		
 	}
-	public String getIcons(String type) throws Exception {
-		OperatorStage instance = (OperatorStage) Class.forName(type).getDeclaredConstructor().newInstance();
-		return instance.getIconImage();
+	public String getIcons(String type) throws DomainException {
+		try {
+			OperatorStage instance = (OperatorStage) Class.forName(type).getDeclaredConstructor().newInstance();
+			return instance.getIconImage();	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
 }

@@ -17,6 +17,7 @@ import main.application.ports.output.CompilerOutputPort;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
+import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
 import main.domain.model.DagDTO;
 import main.domain.model.EventListenerDTO;
@@ -61,7 +62,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	private static Logger log = Logger.getLogger(SchedulerQueryHandlerService.class);
 	
 	@Override
-	public List<Map<String,Object>> listScheduledJobs() throws Exception {
+	public List<Map<String,Object>> listScheduledJobs() throws DomainException {
 		List<Map<String,Object>> realscheduled = scanner.listScheduled();
 		var list = repository.listEventListeners();
 		for (Iterator<EventListenerDTO> iterator = list.iterator(); iterator.hasNext();) {
@@ -77,12 +78,12 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		return realscheduled;
 	}
 	@Override
-	public Map<String,List<Map<String,String>>> availableJobs() throws Exception {
+	public Map<String,List<Map<String,String>>> availableJobs() throws DomainException {
 		var rv = scanner.init().getOperators();
 		return rv;
 	}
 	@Override
-	public List<LogDTO> getLogs(String dagname) throws Exception {
+	public List<LogDTO> getLogs(String dagname) throws DomainException {
 		List<LogDTO> newrv = new ArrayList<>();
 		var list = repository.getLogs(dagname);
 		for (Iterator<LogDTO> iterator = list.iterator(); iterator.hasNext();) {
@@ -97,7 +98,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		return scanner.init().getDagDetail(jarname);
 	}
 	@Override
-	public List<PropertyDTO> properties() throws Exception {
+	public List<PropertyDTO> properties() throws DomainException {
 		List<PropertyDTO> res = new ArrayList<PropertyDTO>();
 		var sollection = repository.getProperties(null);
 		for (Iterator<PropertyParameterDTO> iterator = sollection.iterator(); iterator.hasNext();) {
@@ -115,26 +116,34 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 		return repository.getAgents();
 	}
 	@Override
-	public List<UncompiledDTO> getUncompileds(String token) throws Exception {
-		TokenEngine.untokenize(token, jwt_secret, jwt_signer);
-		return repository.getUncompileds();
+	public List<UncompiledDTO> getUncompileds(String token) throws DomainException {
+		try {
+			TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+			return repository.getUncompileds();	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
 	@Override
-	public JSONArray operators() throws Exception {
+	public JSONArray operators() throws DomainException {
 		return compiler.operators();
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<UserDTO> credentials(String token) throws Exception {
-		Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
-		if(claims.get("typeAccount").equals("ADMIN")) {
-			return repository.getUsers();	
-		} else {
-			return new ArrayList<UserDTO>();
+	public List<UserDTO> credentials(String token) throws DomainException {
+		try {
+			Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+			if(claims.get("typeAccount").equals("ADMIN")) {
+				return repository.getUsers();	
+			} else {
+				return new ArrayList<UserDTO>();
+			}	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
 	}
 	@Override
-	public String getIcons(String type) throws Exception {
+	public String getIcons(String type) throws DomainException {
 		return scanner.getIcons(type);
 	}
 }

@@ -34,7 +34,7 @@ import main.infra.adapters.input.graphql.mappers.QueryResolverMapper;
 public class QueryResolver implements GraphQLQueryResolver {
 	
 	@SuppressWarnings("unused")
-	private final static Logger logger = Logger.getLogger(QueryResolver.class);
+	private static final Logger logger = Logger.getLogger(QueryResolver.class);
 	
 	@Autowired
 	SchedulerQueryUseCase handler;

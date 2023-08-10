@@ -23,6 +23,7 @@ import main.application.ports.output.CompilerOutputPort;
 import main.domain.annotations.Dag;
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
@@ -50,23 +51,27 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static Logger log = Logger.getLogger(CompilerHandler.class);
 	
 	@Override
-	public void createJar(String bin,Boolean force) throws Exception {
-		ByteBuddyAgent.install();
-		ClassReloadingStrategy.fromInstalledAgent().reset(DagExecutable.class);
-		JSONObject def = new JSONObject(bin);
-		String jarname = def.getString("jarname");
-		validateOverwrtire(jarname,force);
-		for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
-			JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
-			String crondef = dag.getString("cron");
-			String triggerv = dag.getString("trigger");
-			String loc = dag.getString("loc");
-			String classname = dag.getString("class");
-			String group = dag.getString("group");
-			validateParams(dag.getJSONArray("boxes"));
-			var dagdef1 = this.getClassDefinition(jarname,classname, classname, triggerv ,crondef, group,loc ,dag.getJSONArray("boxes"));
-			this.packageJar(jarname, classname, dagdef1.getBytes());
+	public void createJar(String bin,Boolean force) throws DomainException {
+		try {
+			ByteBuddyAgent.install();
+			ClassReloadingStrategy.fromInstalledAgent().reset(DagExecutable.class);
+			JSONObject def = new JSONObject(bin);
+			String jarname = def.getString("jarname");
+			validateOverwrtire(jarname,force);
+			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
+				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
+				String crondef = dag.getString("cron");
+				String triggerv = dag.getString("trigger");
+				String loc = dag.getString("loc");
+				String classname = dag.getString("class");
+				String group = dag.getString("group");
+				validateParams(dag.getJSONArray("boxes"));
+				var dagdef1 = this.getClassDefinition(jarname,classname, classname, triggerv ,crondef, group,loc ,dag.getJSONArray("boxes"));
+				this.packageJar(jarname, classname, dagdef1.getBytes());
 
+			}	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
 	}
 	private void validateParams(JSONArray jsonArray) throws Exception {
@@ -182,18 +187,23 @@ public class CompilerHandler implements CompilerOutputPort {
         return transformedString;
     }
 	@Override
-	public JSONArray operators() throws Exception {		
-		Reflections reflections = new Reflections("main.infra.adapters.operators", new SubTypesScanner(false));
-		var lista = reflections.getSubTypesOf(OperatorStage.class).stream().collect(Collectors.toSet());
-		JSONArray arr = new JSONArray();
-		for (Iterator<Class<? extends OperatorStage>> iterator = lista.iterator(); iterator.hasNext();) {
-			Class<? extends OperatorStage> class1 = iterator.next();
-			OperatorStage op = class1.getDeclaredConstructor().newInstance();
-			var item = op.getMetadataOperator(); 
-			if(item != null) {
-				arr.put(item);	
+	public JSONArray operators() throws DomainException {	
+		try {
+			Reflections reflections = new Reflections("main.infra.adapters.operators", new SubTypesScanner(false));
+			var lista = reflections.getSubTypesOf(OperatorStage.class).stream().collect(Collectors.toSet());
+			JSONArray arr = new JSONArray();
+			for (Iterator<Class<? extends OperatorStage>> iterator = lista.iterator(); iterator.hasNext();) {
+				Class<? extends OperatorStage> class1 = iterator.next();
+				OperatorStage op = class1.getDeclaredConstructor().newInstance();
+				var item = op.getMetadataOperator(); 
+				if(item != null) {
+					arr.put(item);	
+				}
 			}
+			return arr;	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		return arr;
+		
 	}
 }

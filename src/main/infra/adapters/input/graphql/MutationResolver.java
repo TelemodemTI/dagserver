@@ -16,7 +16,7 @@ import main.application.ports.input.SchedulerMutationUseCase;
 @Component
 public class MutationResolver implements GraphQLMutationResolver {
 	
-	private final static Logger logger = Logger.getLogger(MutationResolver.class);
+	private static final Logger logger = Logger.getLogger(MutationResolver.class);
 	
 	@Autowired
 	SchedulerMutationUseCase handler;

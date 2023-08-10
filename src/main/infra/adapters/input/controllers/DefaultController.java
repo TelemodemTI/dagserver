@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class DefaultController {
 	
 	@SuppressWarnings("unused")
-	private final static Logger logger = Logger.getLogger(DefaultController.class);
+	private static final Logger logger = Logger.getLogger(DefaultController.class);
 	
 	@RequestMapping(value="/version",method = RequestMethod.GET)
     public ResponseEntity<?> version(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
