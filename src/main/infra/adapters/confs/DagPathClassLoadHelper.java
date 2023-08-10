@@ -33,21 +33,9 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		if(srv != null) {
 			try {
 				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(srv);
-				var ctx = springContext.getClassLoader();
+				var ctx = (springContext != null)? springContext.getClassLoader():null;
 				if(ctx !=null) {
-					prop.load(ctx.getResourceAsStream("application.properties"));	
-					String pathfolder = prop.getProperty("param.folderpath");
-					File folder = new File(pathfolder);
-					File[] listOfFiles = folder.listFiles();	
-					for (int i = 0; i < listOfFiles.length; i++) {
-						if(listOfFiles[i].getName().endsWith(".jar")) {
-							Class<?> rv = this.search(listOfFiles[i], name);
-							if(rv != null) {
-								return rv;	
-							} 
-						}
-					}
-					return super.loadClass(name);	
+					return this.getClassForLoad(prop, getClassLoader(), name);	
 				} else {
 					log.error("no existe contexto??");
 					return null;
@@ -57,6 +45,21 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 				return null;
 			}	
 		} else return null;
+	}
+	private Class<?> getClassForLoad(Properties prop,ClassLoader ctx, String name) throws Exception {
+		prop.load(ctx.getResourceAsStream("application.properties"));	
+		String pathfolder = prop.getProperty("param.folderpath");
+		File folder = new File(pathfolder);
+		File[] listOfFiles = folder.listFiles();	
+		for (int i = 0; i < listOfFiles.length; i++) {
+			if(listOfFiles[i].getName().endsWith(".jar")) {
+				Class<?> rv = this.search(listOfFiles[i], name);
+				if(rv != null) {
+					return rv;	
+				} 
+			}
+		}
+		return super.loadClass(name);
 	}
 	private Class<?> search(File jarFile,String searched) throws Exception {
 		Class<?> rvclazz = null;
