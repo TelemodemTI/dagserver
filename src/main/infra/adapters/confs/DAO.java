@@ -34,7 +34,7 @@ public class DAO
     		session.saveOrUpdate(o);
     		tx.commit();
         } catch (HibernateException ex) {
-        	ex.printStackTrace();
+        	logger.error(ex);
         } 
         return o;
     }
@@ -48,7 +48,7 @@ public class DAO
 			session.delete(object);
 			tx.commit();
         } catch (HibernateException ex) {
-        	ex.printStackTrace();
+        	logger.error(ex);
         } 
     }
     public void execute (final String query, Map<String,Object> params){

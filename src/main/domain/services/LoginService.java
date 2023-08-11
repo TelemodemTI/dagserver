@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import main.domain.core.TokenEngine;
-import main.domain.exceptions.DomainException;
 import main.domain.model.UserDTO;
 
 import main.application.ports.input.LoginUseCase;
@@ -40,7 +39,7 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 	
 	
 	
-	private String login(String username,String hash) throws DomainException {
+	private String login(String username,String hash) {
 		List<UserDTO> list = repository.findUser(username);
 		if(list.size() > 0) {
 			UserDTO user = list.get(0);

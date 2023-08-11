@@ -16,6 +16,7 @@ import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 
 import main.application.ports.input.LoginUseCase;
 import main.application.ports.input.SchedulerQueryUseCase;
+import main.domain.exceptions.DomainException;
 import main.domain.model.DagDTO;
 import main.domain.model.LogDTO;
 import main.infra.adapters.input.graphql.types.Account;
@@ -45,16 +46,16 @@ public class QueryResolver implements GraphQLQueryResolver {
 	@Autowired
 	QueryResolverMapper mapper;
 	
-	public String login(String username,String pwdhash) throws Exception {
+	public String login(String username,String pwdhash) throws DomainException {
 		String token = login.apply(Arrays.asList(username, pwdhash));
 		return token;
 	}
 	
-	public String operatorsMetadata() throws Exception {
+	public String operatorsMetadata() throws DomainException {
 		return handler.operators().toString();
 	}
 	
-	public List<Scheduled> scheduledJobs() throws Exception {
+	public List<Scheduled> scheduledJobs() throws DomainException {
         var rv = new ArrayList<Scheduled>();
 		var list = handler.listScheduledJobs();
         for (Iterator<Map<String, Object>> iterator = list.iterator(); iterator.hasNext();) {
@@ -73,7 +74,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}
         return rv;
     }	
-	public List<Available> availableJobs() throws Exception{
+	public List<Available> availableJobs() throws DomainException{
 		var operators = handler.availableJobs();
 		var keys = operators.keySet();
 		var rv = new ArrayList<Available>();
@@ -138,7 +139,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}		
 		return rv;
 	}
-	public DetailStatus detail(String jarname) throws Exception{
+	public DetailStatus detail(String jarname) throws DomainException{
 		
 		DetailStatus status = new DetailStatus();
 		var rv = new ArrayList<Detail>();
@@ -171,17 +172,17 @@ public class QueryResolver implements GraphQLQueryResolver {
 		status.setDetail(rv);
 		return status;
 	}
-	public List<Property> properties() throws Exception{
+	public List<Property> properties() throws DomainException{
 		return handler.properties().stream().map(elt -> mapper.toProperty(elt)).collect(Collectors.toList());
 	}
 	public List<Agent> agents(){
 		return handler.agents().stream().map(elt -> mapper.toAgent(elt)).collect(Collectors.toList());
 	}
 	
-	public List<Uncompiled> getUncompileds(String token) throws Exception{
+	public List<Uncompiled> getUncompileds(String token) throws DomainException{
 		return handler.getUncompileds(token).stream().map(elt -> mapper.toUncompiled(elt)).collect(Collectors.toList());
 	}
-	public List<Account> credentials(String token) throws Exception{
+	public List<Account> credentials(String token) throws DomainException{
 		return handler.credentials(token).stream().map(elt -> mapper.toAccount(elt)).collect(Collectors.toList());
 	}
 	public String getIcons(String type) {

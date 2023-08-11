@@ -22,6 +22,9 @@ import net.bytebuddy.implementation.MethodCall;
 
 @Operator(args={"url","user","pwd","driver","query"},optionalv = { "xcom" })
 public class JdbcOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
+	
+	private static final String QUERY = "query";
+	
 	@Override
 	public List<Map<String, Object>> call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
@@ -37,16 +40,16 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
 				Object[][] objList = data.stream().map(m -> m.values().toArray()).toArray(Object[][]::new);
-				if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {
-					result = queryRunner.query(con, this.args.getProperty("query"), new MapListHandler(),data.get(0));	
+				if(this.args.getProperty(QUERY).split(" ")[0].toLowerCase().equals("select")) {
+					result = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler(),data.get(0));	
 				} else {
-					queryRunner.batch(con,this.args.getProperty("query"), objList);
+					queryRunner.batch(con,this.args.getProperty(QUERY), objList);
 				}	
 			} else {
-					if(this.args.getProperty("query").split(" ")[0].toLowerCase().equals("select")) {
-						result = queryRunner.query(con, this.args.getProperty("query"), new MapListHandler());	
+					if(this.args.getProperty(QUERY).split(" ")[0].toLowerCase().equals("select")) {
+						result = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());	
 					} else {
-						queryRunner.update(con, this.args.getProperty("query"));
+						queryRunner.update(con, this.args.getProperty(QUERY));
 					}
 			}	
 		} catch (Exception e) {

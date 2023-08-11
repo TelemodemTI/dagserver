@@ -42,6 +42,9 @@ import net.bytebuddy.pool.TypePool.CacheProvider;
 @ImportResource("classpath:properties-config.xml")
 public class CompilerHandler implements CompilerOutputPort {
 
+	private static final String GROUP = "group";
+	private static final String PARAMS = "params";
+	
 	@Value("${param.folderpath}")
 	private String pathfolder;
 	
@@ -64,7 +67,7 @@ public class CompilerHandler implements CompilerOutputPort {
 				String triggerv = dag.getString("trigger");
 				String loc = dag.getString("loc");
 				String classname = dag.getString("class");
-				String group = dag.getString("group");
+				String group = dag.getString(GROUP);
 				validateParams(dag.getJSONArray("boxes"));
 				var dagdef1 = this.getClassDefinition(jarname,classname, classname, triggerv ,crondef, group,loc ,dag.getJSONArray("boxes"));
 				this.packageJar(jarname, classname, dagdef1.getBytes());
@@ -81,18 +84,16 @@ public class CompilerHandler implements CompilerOutputPort {
 			Class<?> clazz = Class.forName(type);
 	        // Obtener las anotaciones de la clase
 			Operator annotation = clazz.getAnnotation(Operator.class);
-	        if(item.has("params")) {
-	        	for (int j = 0; j < item.getJSONArray("params").length(); j++) {
-					JSONObject param = item.getJSONArray("params").getJSONObject(j);
-					if(!searchValue(annotation.args(), param.getString("key"))) {
-						if(!searchValue(annotation.optionalv(), param.getString("key"))) {
-							throw new IOException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
-						}
+	        if(item.has(PARAMS)) {
+	        for (int j = 0; j < item.getJSONArray(PARAMS).length(); j++) {
+					JSONObject param = item.getJSONArray(PARAMS).getJSONObject(j);
+					if(!searchValue(annotation.args(), param.getString("key")) && !searchValue(annotation.optionalv(), param.getString("key"))) {
+						throw new IOException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
 					}
-				}
-				if(item.getJSONArray("params").length() < annotation.args().length ) {
-					throw new IOException(item.getJSONArray("params").toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
-				}	
+			}
+			if(item.getJSONArray(PARAMS).length() < annotation.args().length ) {
+				throw new IOException(item.getJSONArray(PARAMS).toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
+			}	
 	        }
 		}
 	}
@@ -130,14 +131,14 @@ public class CompilerHandler implements CompilerOutputPort {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define("name", name)
 	                .define("cronExpr", value)
-	                .define("group", group)
+	                .define(GROUP, group)
 	                .build())
 			.make(pool);	
 		} else {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define("name", name)
 	                .define(listenerLabel, value)
-	                .define("group", group)
+	                .define(GROUP, group)
 	                .build())
 			.make(pool);	
 		}

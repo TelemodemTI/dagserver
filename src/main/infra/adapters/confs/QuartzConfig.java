@@ -42,6 +42,9 @@ public class QuartzConfig {
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(QuartzConfig.class);
 	
+	private static final String APP_JDBC_URL = "APP_JDBC_URL";
+	private static final String APP_JDBC_USER = "APP_JDBC_USER";
+	
 	private static final String PREFIX_JOB_DB = "";
 	private Scheduler scheduler;
 	
@@ -68,7 +71,8 @@ public class QuartzConfig {
 	public void scheduleRecurrente(Job jobType,String key,Map<?,?> map,String cronExpr) throws Exception{
 		String jobName = key + "_cb_" + new Date().getTime();
 		JobKey jobKey = new JobKey(jobName);
-		TriggerKey triggerKey = new TriggerKey(TriggerKey.DEFAULT_GROUP + jobName);
+		
+		TriggerKey triggerKey = new TriggerKey(Key.DEFAULT_GROUP + jobName);
 		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(CronScheduleBuilder.cronSchedule(cronExpr)).build();
 		JobBuilder jobBuilder = JobBuilder.newJob(jobType.getClass()).withIdentity(jobKey);
 		jobBuilder.withDescription(jobName);
@@ -101,7 +105,7 @@ public class QuartzConfig {
 		Dag type = jobType.getClass().getAnnotation(Dag.class); 
 		String jobName = PREFIX_JOB_DB + type.name();
 		JobKey jobKey = new JobKey(jobName,group);
-		TriggerKey triggerKey = new TriggerKey(TriggerKey.DEFAULT_GROUP + jobName);
+		TriggerKey triggerKey = new TriggerKey(Key.DEFAULT_GROUP + jobName);
 		Trigger trigger = this.createOrGetTrigger(triggerKey,type.cronExpr());
 		this.createOrUpdateJob(jobKey, jobType.getClass(), trigger,type.cronExpr());
 	}
@@ -210,13 +214,13 @@ public class QuartzConfig {
 		InputStream stream = loader.getResourceAsStream("quartz.properties");
 		Properties p = new Properties();
 		p.load(stream);
-		if(System.getenv("APP_JDBC_URL") != null) {
-			p.setProperty("org.quartz.dataSource.quartzDS.URL", System.getenv("APP_JDBC_URL"));	
+		if(System.getenv(APP_JDBC_URL) != null) {
+			p.setProperty("org.quartz.dataSource.quartzDS.URL", System.getenv(APP_JDBC_URL));	
 		}
-		if(System.getenv("APP_JDBC_USER") != null) {
-			p.setProperty("org.quartz.dataSource.quartzDS.user", System.getenv("APP_JDBC_USER"));
+		if(System.getenv(APP_JDBC_USER) != null) {
+			p.setProperty("org.quartz.dataSource.quartzDS.user", System.getenv(APP_JDBC_USER));
 		}
-		if(System.getenv("APP_JDBC_USER") != null) {
+		if(System.getenv(APP_JDBC_USER) != null) {
 			p.setProperty("org.quartz.dataSource.quartzDS.password", System.getenv("APP_JDBC_PASSWORD"));
 		}
 		return p;

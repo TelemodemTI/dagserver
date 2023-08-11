@@ -1,6 +1,7 @@
 package main.infra.adapters.operators;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.Callable;
 
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import main.domain.annotations.Operator;
@@ -21,6 +23,8 @@ import net.bytebuddy.implementation.MethodCall;
 @Operator(args={"host","user","pwd","port", "cmd"})
 public class SshOperator extends OperatorStage implements Callable<String> {
 
+	private static final String UTF8 = "UTF-8";
+	
 	@Override
 	public String call() throws DomainException {		
 		try {
@@ -30,38 +34,7 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 			session.connect();
 			ChannelExec channel = (ChannelExec) session.openChannel("shell");
 			channel.setCommand("pwd");
-
-			ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
-			ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
-
-			InputStream in = channel.getInputStream();
-			InputStream err = channel.getExtInputStream();
-
-			channel.connect();
-
-			byte[] tmp = new byte[1024];
-			while (true) {
-			    while (in.available() > 0) {
-			        int i = in.read(tmp, 0, 1024);
-			        if (i < 0) break;
-			        outputBuffer.write(tmp, 0, i);
-			    }
-			    while (err.available() > 0) {
-			        int i = err.read(tmp, 0, 1024);
-			        if (i < 0) break;
-			        errorBuffer.write(tmp, 0, i);
-			    }
-			    if (channel.isClosed()) {
-			        if ((in.available() > 0) || (err.available() > 0)) continue; 
-			        break;
-			    }
-			    Thread.sleep(1000);
-			}
-			channel.disconnect();
-			if(!errorBuffer.toString("UTF-8").equals("")) {
-				throw new DomainException(errorBuffer.toString("UTF-8"));
-			}
-			return outputBuffer.toString("UTF-8");
+			return this.sendToChannel(channel);
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();
@@ -70,6 +43,39 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 			throw new DomainException(e.getMessage());
 		}
 	}
+	
+	private String sendToChannel(ChannelExec channel) throws IOException, InterruptedException, DomainException, JSchException {
+		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+		ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
+
+		InputStream in = channel.getInputStream();
+		InputStream err = channel.getExtInputStream();
+		channel.connect();
+		byte[] tmp = new byte[1024];
+		while (true) {
+		    while (in.available() > 0) {
+		        int i = in.read(tmp, 0, 1024);
+		        if (i < 0) break;
+		        outputBuffer.write(tmp, 0, i);
+		    }
+		    while (err.available() > 0) {
+		        int i = err.read(tmp, 0, 1024);
+		        if (i < 0) break;
+		        errorBuffer.write(tmp, 0, i);
+		    }
+		    if (channel.isClosed()) {
+		        if ((in.available() > 0) || (err.available() > 0)) continue; 
+		        break;
+		    }
+		    Thread.sleep(1000);
+		}
+		channel.disconnect();
+		if(!errorBuffer.toString(UTF8).equals("")) {
+			throw new DomainException(errorBuffer.toString(UTF8));
+		}
+		return outputBuffer.toString(UTF8);
+	}
+	
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
 		try {

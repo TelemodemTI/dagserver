@@ -1,12 +1,15 @@
 package main.infra.adapters.output.repositories;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
-
 
 public class InternalStorage {
 
+	private static final Logger logger = Logger.getLogger(InternalStorage.class);
+	
 	private String locatedb = null;
 
 	public InternalStorage(String path ) {
@@ -22,7 +25,7 @@ public class InternalStorage {
 			    file.write(json.toString());
 			    file.flush();
 			} catch (IOException e) {
-			    e.printStackTrace();
+			    logger.error(e);
 			}	
 		}
 	}

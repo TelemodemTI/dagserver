@@ -33,69 +33,74 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 	public List<Map<String, String>> call() throws DomainException {		
 		try {
 			List<Map<String, String>> result = new ArrayList<>();
-			
 			log.debug(this.getClass()+" init "+this.name);
 			log.debug("args");
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
-			
 			Integer mode = this.getMode(this.args.getProperty("mode"));
 			String xcomname = this.args.getProperty("xcom");
 			String filepath = this.args.getProperty("filepath");
 			Boolean firstrow = Boolean.valueOf(this.args.getProperty("firstRowTitles"));
 			String rowDelimiter = this.args.getProperty("rowDelimiter");
-			
 			if(mode.equals(0)) {
 				 log.debug("mode:read");
-		         String line;
-		         Integer lineNumber = 0;
-		         List<String> titles = new ArrayList<>();
-		         try(
-		        		 FileReader fileReader = new FileReader(filepath);
-		        		 BufferedReader bufferedReader = new BufferedReader(fileReader);
-		        	) {
-		        	 while ((line = bufferedReader.readLine()) != null) {
-			        	 Map<String, String> row = new HashMap<String,String>();
-			        	 String[] fields = line.split(rowDelimiter);
-			        	 if(lineNumber.equals(0)) {
-			        		 if(firstrow) {
-			        			 titles = Arrays.asList(fields);	 
-			        		 } else {
-			        			 titles = this.generateTitleList(fields.length);
-			        		 }
-			        	 }
-			        	 for (int i = 0; i < fields.length; i++) {
-			 				String string = fields[i];
-			 				row.put(titles.get(i), string);
-			 			 }	 
-			        	 lineNumber++;
-			        	 result.add(row);
-			         }	
-		         } catch (Exception e) {
-					log.error(e);
-		         }
-		         log.debug("readed "+filepath+"--lines:"+lineNumber);
+				 this.read(filepath, rowDelimiter, firstrow, result);
 			} else {
 				log.debug("mode:write");
 				List<Map<String, String>> data = (List<Map<String, String>>) this.xcom.get(xcomname);
-				Integer lines = 0;
-				try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
-			        for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
-						Map<String, String> map =  iterator.next();
-						String resultLine = String.join(rowDelimiter, map.values());
-						writer.write(resultLine);
-		                writer.newLine();
-		                lines ++;
-					}	
-				} catch (Exception e) {
-					log.error(e);
-				}
-		        log.debug("write "+filepath+"--lines:"+lines);
+				this.write(filepath, rowDelimiter, data);
 			}
 			return result;	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
+	}
+	
+	private void write(String filepath,String rowDelimiter,List<Map<String, String>> data) {
+		Integer lines = 0;
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
+	        for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
+				Map<String, String> map =  iterator.next();
+				String resultLine = String.join(rowDelimiter, map.values());
+				writer.write(resultLine);
+                writer.newLine();
+                lines ++;
+			}	
+		} catch (Exception e) {
+			log.error(e);
+		}
+		log.debug("write "+filepath+"--lines:"+lines);
+	}
+	
+	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String, String>> result) {
+		String line;
+		Integer lineNumber = 0;
+		List<String> titles = new ArrayList<>();
+		try(
+       		 FileReader fileReader = new FileReader(filepath);
+       		 BufferedReader bufferedReader = new BufferedReader(fileReader);
+       	) {
+       	 while ((line = bufferedReader.readLine()) != null) {
+	        	 Map<String, String> row = new HashMap<String,String>();
+	        	 String[] fields = line.split(rowDelimiter);
+	        	 if(lineNumber.equals(0)) {
+	        		 if(firstrow) {
+	        			 titles = Arrays.asList(fields);	 
+	        		 } else {
+	        			 titles = this.generateTitleList(fields.length);
+	        		 }
+	        	 }
+	        	 for (int i = 0; i < fields.length; i++) {
+	 				String string = fields[i];
+	 				row.put(titles.get(i), string);
+	 			 }	 
+	        	 lineNumber++;
+	        	 result.add(row);
+	         }	
+        } catch (Exception e) {
+			log.error(e);
+        }
+		log.debug("readed "+filepath+"--lines:"+lineNumber);
 	}
 	
 	private Integer getMode(String mode) {

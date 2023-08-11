@@ -37,6 +37,9 @@ import main.domain.core.DagExecutable;
 @ImportResource("classpath:properties-config.xml")
 public class WebConfig implements WebMvcConfigurer {
 
+	private static final String APP_JDBC_URL = "APP_JDBC_URL";
+	private static final String APP_JDBC_USER = "APP_JDBC_USER";
+	
 	@Value( "${org.quartz.dataSource.quartzDS.URL}" )
 	private String db_host;
 	
@@ -114,18 +117,18 @@ public class WebConfig implements WebMvcConfigurer {
 	public DataSource dataSource() {
 		BasicDataSource  dataSource = new BasicDataSource();
 		dataSource.setDriverClassName(this.db_driver);
-		if(System.getenv("APP_JDBC_USER") != null) {
-			dataSource.setUsername(System.getenv("APP_JDBC_USER"));
+		if(System.getenv(APP_JDBC_USER) != null) {
+			dataSource.setUsername(System.getenv(APP_JDBC_USER));
 		} else {
 			dataSource.setUsername(this.db_user);
 		}
-		if(System.getenv("APP_JDBC_USER") != null) {
+		if(System.getenv(APP_JDBC_USER) != null) {
 			dataSource.setPassword(System.getenv("APP_JDBC_PASSWORD"));
 		} else {
 			dataSource.setPassword(this.db_pass);
 		}
-		if(System.getenv("APP_JDBC_URL") != null) {
-			dataSource.setUrl(System.getenv("APP_JDBC_URL"));
+		if(System.getenv(APP_JDBC_URL) != null) {
+			dataSource.setUrl(System.getenv(APP_JDBC_URL));
 		} else {
 			dataSource.setUrl(this.db_host);
 		}

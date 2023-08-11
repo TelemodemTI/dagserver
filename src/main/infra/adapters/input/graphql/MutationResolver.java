@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import main.application.ports.input.SchedulerMutationUseCase;
+import main.domain.exceptions.DomainException;
 
 
 
@@ -27,7 +28,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 	    public String value;
 	}
 	
-	public Status scheduleDag(String token,String dagname,String jarname) throws Exception {
+	public Status scheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {
 			handler.scheduleDag(token,dagname,jarname);
 			return ok();	
@@ -36,7 +37,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
     }
-	public Status unscheduleDag(String token,String dagname,String jarname) throws Exception {
+	public Status unscheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {
 			handler.unscheduleDag(token,dagname, jarname);
 			return ok();	

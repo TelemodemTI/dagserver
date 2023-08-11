@@ -18,7 +18,7 @@ public class DefaultController {
 	private static final Logger logger = Logger.getLogger(DefaultController.class);
 	
 	@RequestMapping(value="/version",method = RequestMethod.GET)
-    public ResponseEntity<?> version(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
+    public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
 		return new ResponseEntity<String>("dagserver is running!", HttpStatus.OK);
 	}
 

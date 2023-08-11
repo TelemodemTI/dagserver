@@ -269,30 +269,34 @@ public class DagExecutable implements Job,JobListener {
 		this.eventname = eventname;
 	}
 	
-	public List<List<String>> getDagGraph()  throws Exception {
-		var info = new ArrayList<List<String>>();
-		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
-		Integer index = 1;
-		while (breadthFirstIterator.hasNext()) {
-			var detail = new ArrayList<String>();
-			DagNode node = (DagNode) breadthFirstIterator.next();
-			detail.add(node.name);
-			detail.add(node.operator.getCanonicalName());
-			
+	public List<List<String>> getDagGraph()  throws DomainException {
+		try {
+			var info = new ArrayList<List<String>>();
+			BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
+			Integer index = 1;
+			while (breadthFirstIterator.hasNext()) {
+				var detail = new ArrayList<String>();
+				DagNode node = (DagNode) breadthFirstIterator.next();
+				detail.add(node.name);
+				detail.add(node.operator.getCanonicalName());
+				
 
-			Class<?> clase = Class.forName(node.operator.getCanonicalName());
-			Constructor<?> constructor = clase.getDeclaredConstructor();
-			OperatorStage instancia = (OperatorStage) constructor.newInstance();
+				Class<?> clase = Class.forName(node.operator.getCanonicalName());
+				Constructor<?> constructor = clase.getDeclaredConstructor();
+				OperatorStage instancia = (OperatorStage) constructor.newInstance();
 
-			JSONObject props = new JSONObject(node.args);
-			JSONObject opts = new JSONObject(node.optionals);
-			detail.add(props.toString());
-			detail.add(opts.toString());
-			detail.add(instancia.getMetadataOperator().toString());
-			info.add(detail);
-			index++;
+				JSONObject props = new JSONObject(node.args);
+				JSONObject opts = new JSONObject(node.optionals);
+				detail.add(props.toString());
+				detail.add(opts.toString());
+				detail.add(instancia.getMetadataOperator().toString());
+				info.add(detail);
+				index++;
+			}
+			return info;
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		return info;
 	}
 	
 	protected Properties getDagProperties(String string) throws Exception {
