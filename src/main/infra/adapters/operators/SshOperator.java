@@ -59,7 +59,7 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 			}
 			channel.disconnect();
 			if(!errorBuffer.toString("UTF-8").equals("")) {
-				throw new Exception(errorBuffer.toString("UTF-8"));
+				throw new DomainException(errorBuffer.toString("UTF-8"));
 			}
 			return outputBuffer.toString("UTF-8");
 		} catch (Exception e) {
