@@ -40,7 +40,7 @@ public class RegisterSchedulerOperator extends OperatorStage implements Callable
 		}
 	}
 	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws Exception {
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
     	return null;
     }
 	@Override
