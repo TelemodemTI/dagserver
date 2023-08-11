@@ -47,11 +47,13 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 			
 			if(mode.equals(0)) {
 				 log.debug("mode:read");
-		         FileReader fileReader = new FileReader(filepath);
 		         String line;
 		         Integer lineNumber = 0;
 		         List<String> titles = new ArrayList<>();
-		         try(BufferedReader bufferedReader = new BufferedReader(fileReader);) {
+		         try(
+		        		 FileReader fileReader = new FileReader(filepath);
+		        		 BufferedReader bufferedReader = new BufferedReader(fileReader);
+		        	) {
 		        	 while ((line = bufferedReader.readLine()) != null) {
 			        	 Map<String, String> row = new HashMap<String,String>();
 			        	 String[] fields = line.split(rowDelimiter);

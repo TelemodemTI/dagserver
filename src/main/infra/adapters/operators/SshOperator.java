@@ -62,6 +62,10 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 				throw new DomainException(errorBuffer.toString("UTF-8"));
 			}
 			return outputBuffer.toString("UTF-8");
+		} catch (InterruptedException ie) {
+		    log.error("InterruptedException: ", ie);
+		    Thread.currentThread().interrupt();
+		    return null;
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
