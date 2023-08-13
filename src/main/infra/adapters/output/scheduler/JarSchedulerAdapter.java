@@ -43,6 +43,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Autowired
 	QuartzConfig quartz;
 		
+	private static final String CLASSNAME = "classname";
 	private static final String CLASSEXT = ".class";
 	private static Logger log = Logger.getLogger(JarSchedulerAdapter.class);
 	
@@ -112,7 +113,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				        String className = ze.getName().replace('/', '.'); 
 				        String finalname = className.substring(0, className.length() - CLASSEXT.length());
 				        if(finalname != null && !finalname.startsWith("bin")) {
-				        	map.put("classname", finalname);	
+				        	map.put(CLASSNAME, finalname);	
 				        }
 				        classNames.add(map);
 				    }
@@ -133,7 +134,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		if(jarfileO!= null) {
 			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-					String classname = iterator.next().get("classname");
+					String classname = iterator.next().get(CLASSNAME);
 					
 						Class<?> clazz = cl.loadClass(classname);
 						Dag toschedule = clazz.getAnnotation(Dag.class);
@@ -171,7 +172,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		if(jarfileO!=null) {
 			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {		
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-					String classname = iterator.next().get("classname");
+					String classname = iterator.next().get(CLASSNAME);
 					activateDeactivate(dagname, cl, classname);
 				}		
 			} catch (Exception e) {
@@ -210,22 +211,18 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		item.setDagname("background_system_dag");
 		item.setCronExpr("0 0/10 * * * ?");
 		item.setGroup("system_dags");
-		item.setOps(new ArrayList<List<String>>() {
-			private static final long serialVersionUID = 1L;
-		{
-			add(ops);
-			add(register);
-		}});
+		List<List<String>> list = new ArrayList<>();
+		list.add(ops);
+		list.add(register);
+		item.setOps(list);
 		List<String> step1 = Arrays.asList("local_testing",Junit5SuiteOperator.class.getCanonicalName());
 		DagDTO evt = new DagDTO();
 		evt.setDagname("event_system_dag");
 		evt.setGroup("system_dags");
 		evt.setOnEnd("background_system_dag");
-		evt.setOps(new ArrayList<List<String>>() {
-			private static final long serialVersionUID = 1L;
-		{
-			add(step1);
-		}});
+		List<List<String>> etvlist = new ArrayList<>();
+		etvlist.add(step1);
+		evt.setOps(etvlist);
 		defs.add(item);
 		defs.add(evt);
 		return defs;
@@ -237,7 +234,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		if(jarfileO != null) {
 			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-					String classname = iterator.next().get("classname");	
+					String classname = iterator.next().get(CLASSNAME);	
 					Class<?> clazz = cl.loadClass(classname);
 					Dag scheduled = clazz.getAnnotation(Dag.class);
 					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
@@ -267,7 +264,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
 				Boolean founded = false;
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-					String classname = iterator.next().get("classname");
+					String classname = iterator.next().get(CLASSNAME);
 					Class<?> clazz = cl.loadClass(classname);
 					Dag toschedule = clazz.getAnnotation(Dag.class);
 					if(toschedule.name().equals(dagname)) {
@@ -278,7 +275,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					}
 				}
 				if(!founded) {
-					throw new Exception("dagname not found");
+					throw new DomainException("dagname not found");
 				}	
 			}	
 		} catch (Exception e) {

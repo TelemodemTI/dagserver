@@ -40,6 +40,8 @@ import main.infra.adapters.output.repositories.mappers.SchedulerMapper;
 @ImportResource("classpath:properties-config.xml")
 public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
+	private static final String QUERYPROPS =  "select props from PropertyParameter as props where props.group = '";
+	
 	@Autowired
 	DAO dao;
 
@@ -59,11 +61,9 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 	
 	public void removeListener(String name) {
-		dao.execute("delete from EventListener where listenerName = :name",new HashMap<String, Object>(){
-			private static final long serialVersionUID = 1L;
-		{
-			put("name", name);
-		}});
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("name", name);
+		dao.execute("delete from EventListener where listenerName = :name",param);
 	}
 	
 	public List<EventListenerDTO> listEventListeners(){
@@ -81,9 +81,9 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 	
 	public LogDTO getLog(Integer logid){
-		var log = dao.read(Log.class, "select log from Log as log where log.id = :logid",new HashMap<String,Object>(){
-			private static final long serialVersionUID = 1L;
-		{put("logid",logid);}}).get(0);
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("logid",logid);
+		var log = dao.read(Log.class, "select log from Log as log where log.id = :logid",param).get(0);
 		return mapper.toLogDTO(log);
 	}
 	
@@ -99,9 +99,9 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 
 	public void deleteLogsBy(Date rolldate) {
-		dao.execute("delete from Log where execDt < :rolldate",new HashMap<String,Object>(){
-			private static final long serialVersionUID = 1L;
-		{put("rolldate",rolldate);}});
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("rolldate",rolldate);
+		dao.execute("delete from Log where execDt < :rolldate",param);
 	}
 	
 	public List<UserDTO> findUser(String username) {
@@ -112,8 +112,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		try {
 			List<PropertyParameter> founded;
 			if(groupname != null) {
-				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+groupname+"'");
-				if(founded.size() == 0) throw new Exception("DAG properties "+groupname+ " not found");
+				founded = dao.read(PropertyParameter.class,QUERYPROPS+groupname+"'");
+				if(founded.size() == 0) throw new DomainException("DAG properties "+groupname+ " not found");
 			} else {
 				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
 			}
@@ -143,7 +143,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 
 	public void delProperty(String name,String group) {
-		var founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+group+"' and props.name = '"+name+"'");
+		var founded = dao.read(PropertyParameter.class,QUERYPROPS+group+"' and props.name = '"+name+"'");
 		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
 			PropertyParameter propertyParameter = iterator.next();
 			dao.delete(propertyParameter);
@@ -182,7 +182,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	
 	public void insertIfNotExists(String jarname,String propertiesFile, Properties properties) {
-	    List<PropertyParameter> existingProperties = dao.read(PropertyParameter.class, "SELECT props FROM PropertyParameter AS props WHERE props.group = '" + jarname+"."+propertiesFile + "'");
+	    List<PropertyParameter> existingProperties = dao.read(PropertyParameter.class,QUERYPROPS + jarname+"."+propertiesFile + "'");
 	    
 	    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 	        String key = (String) entry.getKey();
@@ -291,31 +291,31 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private void boxHasParams(JSONObject box,Operator annotation,String group,String jarname) {
 		String typeope = box.getString("type");
 		String idope = box.getString("id");
-		if(box.has("params")) {
-			for (int l = 0; l < box.getJSONArray("params").length(); l++) {
-				JSONObject parm = box.getJSONArray("params").getJSONObject(l);
-				if(this.searchValue(annotation.args(), parm.getString("key"))) {
-					this.setProperty(parm.getString("key"), "generated parameter from editor", parm.getString("value"), group);	
+		String params = "params";
+		String value = "value";
+		String key = "key";
+		if(box.has(params)) {
+			for (int l = 0; l < box.getJSONArray(params).length(); l++) {
+				JSONObject parm = box.getJSONArray(params).getJSONObject(l);
+				if(this.searchValue(annotation.args(), parm.getString(key))) {
+					this.setProperty(parm.getString(key), "generated parameter from editor", parm.getString(value), group);	
 				}
 			}
 			String groupo = jarname+"."+idope+"."+typeope+".opts";
 			this.deletePropsByGroup(groupo);
-			for (int l = 0; l < box.getJSONArray("params").length(); l++) {
-				JSONObject parm = box.getJSONArray("params").getJSONObject(l);
-				if(this.searchValue(annotation.optionalv(), parm.getString("key"))) {
-					this.setProperty(parm.getString("key"), "generated optional from editor", parm.getString("value"), groupo);	
+			for (int l = 0; l < box.getJSONArray(params).length(); l++) {
+				JSONObject parm = box.getJSONArray(params).getJSONObject(l);
+				if(this.searchValue(annotation.optionalv(), parm.getString(key))) {
+					this.setProperty(parm.getString(key), "generated optional from editor", parm.getString(value), groupo);	
 				}
 			}	
 		}
 	}
 	
 	private void deletePropsByGroup(String group) {
-		dao.execute("delete from PropertyParameter where group = :group",new HashMap<String, Object>(){
-			private static final long serialVersionUID = 1L;
-		{
-			put("group", group);
-		}});
-		
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("group", group);
+		dao.execute("delete from PropertyParameter where group = :group",params);
 	}
 
 	private boolean searchValue(String[] array, String value) {
@@ -354,7 +354,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	@Override
 	public void delGroupProperty(String group) {
-		var founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+group+"'");
+		var founded = dao.read(PropertyParameter.class,QUERYPROPS+group+"'");
 		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
 			PropertyParameter propertyParameter = iterator.next();
 			dao.delete(propertyParameter);
@@ -399,7 +399,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
         String cadenaDecodificada = new String(bytesDecodificados);
         JSONArray bindata = new JSONArray(cadenaDecodificada);
         var groupname = jarname+"."+idope+"."+typeope+".props";
-		var founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props where props.group = '"+groupname+"'");
+		var founded = dao.read(PropertyParameter.class,QUERYPROPS+groupname+"'");
 		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
 			PropertyParameter propertyParameter = iterator.next();
 			for (int i = 0; i < bindata.length(); i++) {

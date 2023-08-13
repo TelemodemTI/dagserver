@@ -29,7 +29,7 @@ public class InternalStorage {
 			}	
 		}
 	}
-	public JSONObject get() throws Exception {
+	public JSONObject get() {
 		StringBuilder content = new StringBuilder();
 		try(FileReader reader = new FileReader(locatedb);) {
 	        int character;

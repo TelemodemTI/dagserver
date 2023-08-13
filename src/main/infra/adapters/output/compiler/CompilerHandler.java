@@ -2,9 +2,10 @@ package main.infra.adapters.output.compiler;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -69,7 +70,15 @@ public class CompilerHandler implements CompilerOutputPort {
 				String classname = dag.getString("class");
 				String group = dag.getString(GROUP);
 				validateParams(dag.getJSONArray("boxes"));
-				var dagdef1 = this.getClassDefinition(jarname,classname, classname, triggerv ,crondef, group,loc ,dag.getJSONArray("boxes"));
+				Map<String,String> dtomap = new HashMap<>();
+				dtomap.put("jarname", jarname);
+				dtomap.put("classname", classname);
+				dtomap.put("name", classname);
+				dtomap.put("type", triggerv);
+				dtomap.put("value", crondef);
+				dtomap.put("group", group);
+				dtomap.put("listenerLabel", loc);
+				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
 				this.packageJar(jarname, classname, dagdef1.getBytes());
 
 			}	
@@ -77,24 +86,29 @@ public class CompilerHandler implements CompilerOutputPort {
 			throw new DomainException(e.getMessage());
 		}
 	}
-	private void validateParams(JSONArray jsonArray) throws Exception {
+	private void validateParams(JSONArray jsonArray) throws DomainException {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject item = jsonArray.getJSONObject(i);
 			String type = item.getString("type");
-			Class<?> clazz = Class.forName(type);
-	        // Obtener las anotaciones de la clase
-			Operator annotation = clazz.getAnnotation(Operator.class);
-	        if(item.has(PARAMS)) {
-	        for (int j = 0; j < item.getJSONArray(PARAMS).length(); j++) {
-					JSONObject param = item.getJSONArray(PARAMS).getJSONObject(j);
-					if(!searchValue(annotation.args(), param.getString("key")) && !searchValue(annotation.optionalv(), param.getString("key"))) {
-						throw new IOException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
+			try {
+				Class<?> clazz = Class.forName(type);	
+			
+		        // Obtener las anotaciones de la clase
+				Operator annotation = clazz.getAnnotation(Operator.class);
+		        if(item.has(PARAMS)) {
+			        for (int j = 0; j < item.getJSONArray(PARAMS).length(); j++) {
+							JSONObject param = item.getJSONArray(PARAMS).getJSONObject(j);
+							if(!searchValue(annotation.args(), param.getString("key")) && !searchValue(annotation.optionalv(), param.getString("key"))) {
+								throw new DomainException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
+							}
 					}
+					if(item.getJSONArray(PARAMS).length() < annotation.args().length ) {
+						throw new DomainException(item.getJSONArray(PARAMS).toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
+					}	
+		        }
+			} catch (Exception e) {
+				throw new DomainException(e.getMessage());
 			}
-			if(item.getJSONArray(PARAMS).length() < annotation.args().length ) {
-				throw new IOException(item.getJSONArray(PARAMS).toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
-			}	
-	        }
 		}
 	}
 	private boolean searchValue(String[] array, String value) {
@@ -105,50 +119,48 @@ public class CompilerHandler implements CompilerOutputPort {
         }
         return false;
     }
-	private void validateOverwrtire(String jarname, Boolean force) throws Exception {
+	private void validateOverwrtire(String jarname, Boolean force) throws DomainException {
 		File file = new File(pathfolder+jarname);
-        if (file.exists()) {
-            if (!force) {
-                throw new IOException("File exists");
-            } 
+        if (file.exists() && Boolean.FALSE.equals(force)) {
+            throw new DomainException("File exists");
         }
 	}
-	private Unloaded<DagExecutable> getClassDefinition(String jarname, String classname, String name, String type, String value, String group, String listenerLabel,JSONArray boxes) throws Exception {
+	private Unloaded<DagExecutable> getClassDefinition(Map<String,String> dtomap,JSONArray boxes) throws Exception {
+
 		log.error(boxes);
-		
 		
 		ClassFileLocator classFileLocator = new DirectoryClassFileLocator(pathfolder+"/testingbb/");
 		var pool = new TypePool.Default(new CacheProvider.Simple(),classFileLocator,TypePool.Default.ReaderMode.FAST);
 		
 		var byteBuddy = new ByteBuddy();
 		
-		Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.   NO_CONSTRUCTORS).name(classname);
+		Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.   NO_CONSTRUCTORS).name(dtomap.get("classname"));
 		Initial<DagExecutable> inicial = builderbb.defineConstructor(Visibility.PUBLIC);
 		
-		ReceiverTypeDefinition<DagExecutable>  receiver = inicial.intercept(builder.build(jarname,boxes));
+		ReceiverTypeDefinition<DagExecutable>  receiver = inicial.intercept(builder.build(dtomap.get("jarname"),boxes));
 		Unloaded<DagExecutable> varu = null;
-		if(type.equals("cron")) {
+		if(dtomap.get("type").equals("cron")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
-	                .define("name", name)
-	                .define("cronExpr", value)
-	                .define(GROUP, group)
+	                .define("name", dtomap.get("name"))
+	                .define("cronExpr", dtomap.get("value"))
+	                .define(GROUP, dtomap.get("group"))
 	                .build())
 			.make(pool);	
 		} else {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
-	                .define("name", name)
-	                .define(listenerLabel, value)
-	                .define(GROUP, group)
+	                .define("name", dtomap.get("name"))
+	                .define(dtomap.get("listenerLabel"), dtomap.get("value"))
+	                .define(GROUP, dtomap.get("group"))
 	                .build())
 			.make(pool);	
 		}
 		return varu;
 	}
-	private void packageJar(String jarname,String classname, byte[] bytes) throws Exception {
+	private void packageJar(String jarname,String classname, byte[] bytes) throws DomainException {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream fis = classloader.getResourceAsStream("basedag.zip");
-        FileOutputStream fos = new FileOutputStream(pathfolder+jarname);
         try(
+        		InputStream fis = classloader.getResourceAsStream("basedag.zip");
+        		FileOutputStream fos = new FileOutputStream(pathfolder+jarname);
         		ZipOutputStream zos = new ZipOutputStream(fos);
         		ZipInputStream zis = new ZipInputStream(fis);
         		) {

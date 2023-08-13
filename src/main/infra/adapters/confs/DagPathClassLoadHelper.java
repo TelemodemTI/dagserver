@@ -56,20 +56,25 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			}	
 		} else return null;
 	}
-	private Class<?> getClassForLoad(Properties prop,ClassLoader ctx, String name) throws Exception {
-		prop.load(ctx.getResourceAsStream("application.properties"));	
-		String pathfolder = prop.getProperty("param.folderpath");
-		File folder = new File(pathfolder);
-		File[] listOfFiles = folder.listFiles();	
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if(listOfFiles[i].getName().endsWith(".jar")) {
-				Class<?> rv = this.search(listOfFiles[i], name);
-				if(rv != null) {
-					return rv;	
-				} 
+	private Class<?> getClassForLoad(Properties prop,ClassLoader ctx, String name) throws DomainException {
+		try {
+			prop.load(ctx.getResourceAsStream("application.properties"));	
+			String pathfolder = prop.getProperty("param.folderpath");
+			File folder = new File(pathfolder);
+			File[] listOfFiles = folder.listFiles();	
+			for (int i = 0; i < listOfFiles.length; i++) {
+				if(listOfFiles[i].getName().endsWith(".jar")) {
+					Class<?> rv = this.search(listOfFiles[i], name);
+					if(rv != null) {
+						return rv;	
+					} 
+				}
 			}
+			return super.loadClass(name);	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		return super.loadClass(name);
+		
 	}
 	private Class<?> search(File jarFile,String searched) throws DomainException {
 		Class<?> rvclazz = null;
