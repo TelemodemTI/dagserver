@@ -38,7 +38,7 @@ public class DAO
         } 
         return o;
     }
-    public <T> void delete(Object object){
+    public void delete(Object object){
         try(Session session = sessionFactory.openSession();) {
             if(!session.contains(object)){
             	object = session.merge(object);
@@ -72,16 +72,16 @@ public class DAO
         }
     }
     public <T> List<T> read(final Class<T> returnType,final String query ){
-    	return this.read(returnType, query,new HashMap<String,Object>(){
-			private static final long serialVersionUID = 1L;
-		{}},null,null);
+    	Map<String,Object> params = new HashMap<>();
+    	return this.read(returnType, query,params,null,null);
     }
     public <T> List<T> read(final Class<T> returnType,final String query,final Map<String,Object> params ){
     	return this.read(returnType, query,params,null,null);
     }
     @SuppressWarnings("unchecked")
 	public <T> List<T> read(final Class<T> returnType,final String query,final Map<String,Object> params,final Integer firstResult,final Integer limit ){
-        List<T> list = null;
+        logger.debug("return type::" + returnType.getCanonicalName());
+    	List<T> list = null;
         try(Session session = this.getCreateSession()) {
         	Query queryO = session.createQuery(query);
         	var keys = params.keySet();

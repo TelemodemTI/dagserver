@@ -41,26 +41,26 @@ public class WebConfig implements WebMvcConfigurer {
 	private static final String APP_JDBC_USER = "APP_JDBC_USER";
 	
 	@Value( "${org.quartz.dataSource.quartzDS.URL}" )
-	private String db_host;
+	private String dbHost;
 	
 	@Value( "${org.quartz.dataSource.quartzDS.driver}" )
-	private String db_driver;
+	private String dbDriver;
 	
 	@Value( "${org.quartz.dataSource.quartzDS.user}" )
-	private String db_user;
+	private String dbUser;
 	
 	@Value( "${org.quartz.dataSource.quartzDS.password}" )
-	private String db_pass;
+	private String dbPass;
 	
 	@Value("${param.hibernate.dialect}")
-	private String db_dialect;
+	private String dbDialect;
 	
 	@Value("${param.flyway.migrations}")
-	private String db_migrations;
+	private String dbMigrations;
 	
 	
 	
-	private final static Logger logger = Logger.getLogger(WebConfig.class);
+	private static final Logger logger = Logger.getLogger(WebConfig.class);
 	private List<Job> defaultjobs;
 
 	@Autowired
@@ -116,21 +116,21 @@ public class WebConfig implements WebMvcConfigurer {
 	@Bean
 	public DataSource dataSource() {
 		BasicDataSource  dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(this.db_driver);
+		dataSource.setDriverClassName(this.dbDriver);
 		if(System.getenv(APP_JDBC_USER) != null) {
 			dataSource.setUsername(System.getenv(APP_JDBC_USER));
 		} else {
-			dataSource.setUsername(this.db_user);
+			dataSource.setUsername(this.dbUser);
 		}
 		if(System.getenv(APP_JDBC_USER) != null) {
 			dataSource.setPassword(System.getenv("APP_JDBC_PASSWORD"));
 		} else {
-			dataSource.setPassword(this.db_pass);
+			dataSource.setPassword(this.dbPass);
 		}
 		if(System.getenv(APP_JDBC_URL) != null) {
 			dataSource.setUrl(System.getenv(APP_JDBC_URL));
 		} else {
-			dataSource.setUrl(this.db_host);
+			dataSource.setUrl(this.dbHost);
 		}
 	    return dataSource;
 	}
@@ -138,13 +138,13 @@ public class WebConfig implements WebMvcConfigurer {
 	public LocalSessionFactoryBean sessionFactory() {
 	    LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 	    sessionFactory.setDataSource(dataSource());
-	    sessionFactory.setPackagesToScan(new String[] { "main" });
+	    sessionFactory.setPackagesToScan("main");
 	    sessionFactory.setHibernateProperties(hibernateProperties());
 	    return sessionFactory;
 	}
 	private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", db_dialect);
+        properties.put("hibernate.dialect", dbDialect);
         properties.put("hibernate.show_sql", false);
         return properties;        
     }

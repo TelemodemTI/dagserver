@@ -22,10 +22,10 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 	
 	private static final String CLAIMS = "claims";
 	
-	@Value( "${param.jwtSecret}" )
+	@Value( "${param.jwt_secret}" )
 	private String jwtSecret;
 
-	@Value( "${param.jwtSigner}" )
+	@Value( "${param.jwt_signer}" )
 	private String jwtSigner;
 	
 	@Value( "${param.jwt_subject}" )

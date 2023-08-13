@@ -71,7 +71,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		}
 		return super.loadClass(name);
 	}
-	private Class<?> search(File jarFile,String searched) throws Exception {
+	private Class<?> search(File jarFile,String searched) throws DomainException {
 		Class<?> rvclazz = null;
 		try(
 				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());

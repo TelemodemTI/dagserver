@@ -35,16 +35,16 @@ import main.domain.model.UserDTO;
 public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	
 	@Value( "${param.jwt_secret}" )
-	private String jwt_secret;
+	private String jwtSecret;
 
 	@Value( "${param.jwt_signer}" )
-	private String jwt_signer;
+	private String jwtSigner;
 	
 	@Value( "${param.jwt_subject}" )
-	private String jwt_subject;
+	private String jwtSubject;
 	
 	@Value( "${param.jwt_ttl}" )
-	private Integer jwt_ttl;
+	private Integer jwtTtl;
 	
 	@Value( "${param.folderpath}" )
 	private String path;
@@ -79,8 +79,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	}
 	@Override
 	public Map<String,List<Map<String,String>>> availableJobs() throws DomainException {
-		var rv = scanner.init().getOperators();
-		return rv;
+		return scanner.init().getOperators();
 	}
 	@Override
 	public List<LogDTO> getLogs(String dagname) throws DomainException {
@@ -99,7 +98,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	}
 	@Override
 	public List<PropertyDTO> properties() throws DomainException {
-		List<PropertyDTO> res = new ArrayList<PropertyDTO>();
+		List<PropertyDTO> res = new ArrayList<>();
 		var sollection = repository.getProperties(null);
 		for (Iterator<PropertyParameterDTO> iterator = sollection.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO type = iterator.next();
@@ -118,7 +117,7 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	@Override
 	public List<UncompiledDTO> getUncompileds(String token) throws DomainException {
 		try {
-			TokenEngine.untokenize(token, jwt_secret, jwt_signer);
+			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			return repository.getUncompileds();	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
@@ -132,11 +131,11 @@ public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
 	@Override
 	public List<UserDTO> credentials(String token) throws DomainException {
 		try {
-			Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwt_secret, jwt_signer).get("claims");
+			Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
 			if(claims.get("typeAccount").equals("ADMIN")) {
 				return repository.getUsers();	
 			} else {
-				return new ArrayList<UserDTO>();
+				return new ArrayList<>();
 			}	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());

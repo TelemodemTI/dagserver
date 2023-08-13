@@ -7,8 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
@@ -17,20 +16,13 @@ public class DefaultController {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(DefaultController.class);
 	
-	@RequestMapping(value="/version",method = RequestMethod.GET)
-    public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
-		return new ResponseEntity<String>("dagserver is running!", HttpStatus.OK);
+	
+	@GetMapping(path="/version")
+    public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
+		return new ResponseEntity<>("dagserver is running!", HttpStatus.OK);
 	}
-
-	@RequestMapping(value="/",method = RequestMethod.GET)
-    public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
-		RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("/dagserver/cli/index.html");
-        return redirectView;
-	}
-
-	@RequestMapping(value="/cli",method = RequestMethod.GET)
-    public RedirectView defaultCliGet(Model model,HttpServletRequest request,HttpServletResponse response) throws Exception {				
+	@GetMapping(path={"/","/cli"})
+    public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		RedirectView redirectView = new RedirectView();
         redirectView.setUrl("/dagserver/cli/index.html");
         return redirectView;

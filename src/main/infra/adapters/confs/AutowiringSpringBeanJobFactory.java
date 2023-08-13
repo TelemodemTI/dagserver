@@ -30,6 +30,7 @@ public final class AutowiringSpringBeanJobFactory extends SpringBeanJobFactory i
 		bw.setPropertyValues(pvs, true);
 		return job;
 	}
+	@Override
 	public void setSchedulerContext(SchedulerContext schedulerContext){
 		this.schedulerContext = schedulerContext;
 		super.setSchedulerContext(schedulerContext);

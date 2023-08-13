@@ -186,7 +186,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			if(toschedule.name().equals(dagname)) {
 				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
 				if(toschedule.cronExpr().equals("")) {
-					quartz.removeListener(toschedule, dag);
+					quartz.removeListener(toschedule);
 				} else {
 					quartz.deactivateJob(dag);	
 				}

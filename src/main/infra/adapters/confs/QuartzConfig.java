@@ -3,6 +3,7 @@ package main.infra.adapters.confs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import main.domain.core.DagExecutable;
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.output.repositories.SchedulerRepository;
 import main.domain.annotations.Dag;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -60,7 +62,7 @@ public class QuartzConfig {
 		JobBuilder jobBuilder = JobBuilder.newJob(jobType.getClass() ).withIdentity(jobKey);
 		jobBuilder.withDescription(jobName);
 		JobDetail job = jobBuilder.build();
-		Map<String,Object> params = new HashMap<String,Object>();
+		Map<String,Object> params = new HashMap<>();
 		params.put("item", map.get(key));
 		params.put("key", key);
 		params.put("map", map);
@@ -68,22 +70,27 @@ public class QuartzConfig {
 		this.scheduler.scheduleJob(job, trigger);
 	}
 	@SuppressWarnings("static-access")
-	public void scheduleRecurrente(Job jobType,String key,Map<?,?> map,String cronExpr) throws Exception{
-		String jobName = key + "_cb_" + new Date().getTime();
-		JobKey jobKey = new JobKey(jobName);
+	public void scheduleRecurrente(Job jobType,String key,Map<?,?> map,String cronExpr) throws DomainException{
+		try {
+			String jobName = key + "_cb_" + new Date().getTime();
+			JobKey jobKey = new JobKey(jobName);
+			
+			TriggerKey triggerKey = new TriggerKey(Key.DEFAULT_GROUP + jobName);
+			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(CronScheduleBuilder.cronSchedule(cronExpr)).build();
+			JobBuilder jobBuilder = JobBuilder.newJob(jobType.getClass()).withIdentity(jobKey);
+			jobBuilder.withDescription(jobName);
+			JobDetail job = jobBuilder.build();
+			Map<String,Object> params = new HashMap<>();
+			params.put("item", map.get(key));
+			params.put("cronExpr", cronExpr);
+			params.put("key", key);
+			params.put("map", map);
+			job.getJobDataMap().putAll(params);
+			this.scheduler.scheduleJob(job, trigger);	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 		
-		TriggerKey triggerKey = new TriggerKey(Key.DEFAULT_GROUP + jobName);
-		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(CronScheduleBuilder.cronSchedule(cronExpr)).build();
-		JobBuilder jobBuilder = JobBuilder.newJob(jobType.getClass()).withIdentity(jobKey);
-		jobBuilder.withDescription(jobName);
-		JobDetail job = jobBuilder.build();
-		Map<String,Object> params = new HashMap<String,Object>();
-		params.put("item", map.get(key));
-		params.put("cronExpr", cronExpr);
-		params.put("key", key);
-		params.put("map", map);
-		job.getJobDataMap().putAll(params);
-		this.scheduler.scheduleJob(job, trigger);
 	}
 	
 	@SuppressWarnings("static-access")
@@ -94,11 +101,14 @@ public class QuartzConfig {
 		}
 	}
 	
-	public void executeInmediate(Job jobType) throws Exception {
-	    Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
-	    JobDetail jobDetail = JobBuilder.newJob(jobType.getClass()).withIdentity(jobType.getClass().getName()).build();
-	    this.scheduler.scheduleJob(jobDetail,trigger);
-	    
+	public void executeInmediate(Job jobType) throws DomainException {
+	    try {
+	    	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
+		    JobDetail jobDetail = JobBuilder.newJob(jobType.getClass()).withIdentity(jobType.getClass().getName()).build();
+		    this.scheduler.scheduleJob(jobDetail,trigger);	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
 	}
 	
 	public void activateJob(Job jobType,String group) throws SchedulerException {	
@@ -157,30 +167,35 @@ public class QuartzConfig {
 		}
 	}
 	@SuppressWarnings("static-access")
-	public void init(List<Job> defaultjobs) throws Exception {
-		Properties p = this.getQuartzProperties();
-		StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
-		schedulerFactory.initialize(p);
-		this.scheduler = schedulerFactory.getScheduler();
-		if (this.scheduler == null)
-			throw new SchedulerException("QUARTZ not initialized!.");
-		for (Job jobType : defaultjobs) {
-			Dag type = jobType.getClass().getAnnotation(Dag.class); 
-			DagExecutable executable = (DagExecutable) jobType;
-			executable.setName(type.name());
-			if(!type.cronExpr().equals("")){
-				this.activateJob(executable,type.group());	
-			} else {
-				this.configureListener(type,executable);
+	public void init(List<Job> defaultjobs) throws DomainException {
+		try {
+			Properties p = this.getQuartzProperties();
+			StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+			schedulerFactory.initialize(p);
+			this.scheduler = schedulerFactory.getScheduler();
+			if (this.scheduler == null)
+				throw new SchedulerException("QUARTZ not initialized!.");
+			for (Job jobType : defaultjobs) {
+				Dag type = jobType.getClass().getAnnotation(Dag.class); 
+				DagExecutable executable = (DagExecutable) jobType;
+				executable.setName(type.name());
+				if(!type.cronExpr().equals("")){
+					this.activateJob(executable,type.group());	
+				} else {
+					this.configureListener(type,executable);
+				}
 			}
+			this.scheduler.start();	
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
 		}
-		this.scheduler.start();
+		
 	}
 	public void configureListener(Dag annotation,DagExecutable executable) throws SchedulerException {
 		String eventname = annotation.onEnd().equals("") ? "onStart" : "onEnd";
 		executable.setEventname(eventname);
 		executable.setName(annotation.name());
-		JobListener listener = (JobListener) executable;
+		JobListener listener = executable;
 		String jobkey = annotation.onEnd().equals("") ? annotation.onStart() : annotation.onEnd();
 		JobKey jobKey1 = new JobKey(jobkey, annotation.group());
 		var list = new ArrayList<Matcher<JobKey>>();
@@ -189,7 +204,7 @@ public class QuartzConfig {
 		this.scheduler.getListenerManager().addJobListener(listener,list);
 		this.repo.addEventListener(listener.getName(), annotation.onStart(), annotation.onEnd(), annotation.group());
 	}
-	public void removeListener(Dag annotation,DagExecutable executable) throws SchedulerException {
+	public void removeListener(Dag annotation) throws SchedulerException {
 		this.scheduler.getListenerManager().removeJobListener(annotation.name());
 		repo.removeListener(annotation.name());
 	}
@@ -226,10 +241,9 @@ public class QuartzConfig {
 		return p;
 	}
 	public void validate(String jarname,Map<String, Properties> analizeJarProperties) {
-		// iterar sobre el mapa		
-		for (String propertiesFile : analizeJarProperties.keySet()) {
-	        Properties properties = analizeJarProperties.get(propertiesFile);
-	        repo.insertIfNotExists(jarname,propertiesFile,properties);
+		for (Entry<String, Properties> entry : analizeJarProperties.entrySet() ) {
+			Properties properties = analizeJarProperties.get(entry.getKey());
+	        repo.insertIfNotExists(jarname,entry.getKey(),properties);
 		}
 	}
 }

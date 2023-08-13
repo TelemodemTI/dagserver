@@ -36,7 +36,7 @@ public class TokenEngine {
 	}
 
 	
-	public static Map<String,Object> untokenize(String token,String secret,String issuer) throws DomainException{
+	public static Map<String,Object> untokenize(String token,String secret,String issuer){
 		Map<String,Object> result = new HashMap<>();
 		Map<String,String> claims = new HashMap<>();
 
