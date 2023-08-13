@@ -18,7 +18,7 @@ public class EventSystemDag extends DagExecutable {
 		super();
 		var prop = new Properties();
 		Boolean localTest = Boolean.parseBoolean(prop.getProperty("param.junit.local"));
-		if(localTest) {
+		if(Boolean.TRUE.equals(localTest)) {
 			var propop = new Properties();
 			propop.setProperty("suiteClass", "main.BasicTest");
 			this.addOperator("local_testing",Junit5SuiteOperator.class,propop);	

@@ -39,14 +39,38 @@ public class DagExecutable implements Job,JobListener {
 	private static Logger log = Logger.getLogger(DagExecutable.class);
 	
 	protected class DagNode {
-		public Class<?> operator;
-		public String name;
-		public Properties args;
-		public Properties optionals;
+		private Class<?> operator;
+		private String name;
+		private Properties args;
+		private Properties optionals;
 		DagNode(String name,Class<?> operator,Properties args,Properties optionals){
 			this.name = name;
 			this.operator = operator;
 			this.args = args;
+			this.optionals = optionals;
+		}
+		public Class<?> getOperator() {
+			return operator;
+		}
+		public void setOperator(Class<?> operator) {
+			this.operator = operator;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public Properties getArgs() {
+			return args;
+		}
+		public void setArgs(Properties args) {
+			this.args = args;
+		}
+		public Properties getOptionals() {
+			return optionals;
+		}
+		public void setOptionals(Properties optionals) {
 			this.optionals = optionals;
 		}
 	}
@@ -57,9 +81,7 @@ public class DagExecutable implements Job,JobListener {
 	private Map<String,DagNode> nodeList = new HashMap<>();
 	private Map<String,OperatorStatus> constraints = new HashMap<>();
 	protected Graph<DagNode, DefaultEdge> g;
-	//protected Map<String,Object> xcom = new HashMap<String,Object>();
-	
-	
+		
 	protected JobDetail jobDetail;
 	
 	public DagExecutable() {
@@ -138,7 +160,9 @@ public class DagExecutable implements Job,JobListener {
 				try {
 					String locatedAt = repo.createInternalStatus(xcom);
 					repo.setLog(dagname, fa.getResult(),locatedAt,status);	
-				} catch (Exception e2) {}
+				} catch (Exception e2) {
+					log.error(e2);
+				}
 				throw new JobExecutionException(e);	
 			}
 		}
@@ -220,7 +244,9 @@ public class DagExecutable implements Job,JobListener {
 		this.constraints.put(name1, status);
 		try {
 			this.g.addEdge(node1, node2);
-		} catch (Exception e) {}	
+		} catch (Exception e) {
+			log.error(e);
+		}	
 	}
 
 	public void setName(String dagname) {
@@ -273,10 +299,9 @@ public class DagExecutable implements Job,JobListener {
 		try {
 			var info = new ArrayList<List<String>>();
 			BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
-			Integer index = 1;
 			while (breadthFirstIterator.hasNext()) {
 				var detail = new ArrayList<String>();
-				DagNode node = (DagNode) breadthFirstIterator.next();
+				DagNode node = breadthFirstIterator.next();
 				detail.add(node.name);
 				detail.add(node.operator.getCanonicalName());
 				
@@ -291,7 +316,6 @@ public class DagExecutable implements Job,JobListener {
 				detail.add(opts.toString());
 				detail.add(instancia.getMetadataOperator().toString());
 				info.add(detail);
-				index++;
 			}
 			return info;
 		} catch (Exception e) {

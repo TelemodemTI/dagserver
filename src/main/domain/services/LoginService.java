@@ -26,31 +26,29 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 	private SchedulerRepositoryOutputPort repository;
 	
 	@Value( "${param.jwt_secret}" )
-	private String jwt_secret;
+	private String jwtSecret;
 	
 	@Value( "${param.jwt_signer}" )
-	private String jwt_signer;
+	private String jwtSigner;
 	
 	@Value( "${param.jwt_subject}" )
-	private String jwt_subject;
+	private String jwtSubject;
 	
 	@Value( "${param.jwt_ttl}" )
-	private Integer jwt_ttl;
+	private Integer jwtTtl;
 	
 	
 	
 	private String login(String username,String hash) {
 		List<UserDTO> list = repository.findUser(username);
-		if(list.size() > 0) {
+		if(list.isEmpty() ) {
 			UserDTO user = list.get(0);
-			//String hash = TokenEngine.sha256(pwdhash);
 			if(hash.equals(user.getPwdhash())) {
-				Map<String,String> claims = new HashMap<String,String>();
+				Map<String,String> claims = new HashMap<>();
 				claims.put("typeAccount", user.getTypeAccount());
 				claims.put("username", username);
 				claims.put("userid", user.getId().toString());
-				String token = TokenEngine.tokenize(jwt_secret, jwt_signer, jwt_subject, jwt_ttl, claims);
-				return token;
+				return TokenEngine.tokenize(jwtSecret, jwtSigner, jwtSubject, jwtTtl, claims);
 			} else {
 				return "";
 			}

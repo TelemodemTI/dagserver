@@ -43,6 +43,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Autowired
 	QuartzConfig quartz;
 		
+	private static final String CLASSEXT = ".class";
 	private static Logger log = Logger.getLogger(JarSchedulerAdapter.class);
 	
 	private List<File> jars = new ArrayList<File>();
@@ -99,8 +100,8 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			while(entries.hasMoreElements()) {
 				 ZipEntry ze = entries.nextElement();
 				 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
-				 if (!ze.isDirectory() && ze.getName().endsWith(".class")) {
-				    	Class<?> clazz = cl.loadClass(ze.getName().replace("/", ".").replace(".class", ""));
+				 if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
+				    	Class<?> clazz = cl.loadClass(ze.getName().replace("/", ".").replace(CLASSEXT, ""));
 				    	Dag dag = clazz.getAnnotation(Dag.class);
 				        var map = new HashMap<String,String>();
 				        map.put("dagname", dag.name());
@@ -108,8 +109,8 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				        map.put("cronExpr", dag.cronExpr());
 				        map.put("onStart", dag.onStart());
 				        map.put("onEnd", dag.onEnd());
-				        String className = ze.getName().replace('/', '.'); // including ".class"
-				        String finalname = className.substring(0, className.length() - ".class".length());
+				        String className = ze.getName().replace('/', '.'); 
+				        String finalname = className.substring(0, className.length() - CLASSEXT.length());
 				        if(finalname != null && !finalname.startsWith("bin")) {
 				        	map.put("classname", finalname);	
 				        }

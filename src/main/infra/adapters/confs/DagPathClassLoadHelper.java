@@ -104,9 +104,15 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		}
 	}
 	public static void verificationZipFile(ZipEntry ze,ZipFile zipFile) throws DomainException {
-		int THRESHOLD_ENTRIES = 10000;
-		int THRESHOLD_SIZE = 1000000000; // 1 GB
-		double THRESHOLD_RATIO = 10;
+		int thresholdEntries = 10000;
+		int thresholdSize = 1000000000; // 1 GB
+		double thresholdRatio = 10;
+		
+		
+		
+		
+		
+		
 		int totalSizeArchive = 0;
 		int totalEntryArchive = 0;
 		try(
@@ -116,26 +122,26 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 
 				  int nBytes = -1;
 				  byte[] buffer = new byte[2048];
-				  int totalSizeEntry = 0;
+				  double totalSizeEntry = 0;
 
 				  while((nBytes = in.read(buffer)) > 0) { // Compliant
 				      out.write(buffer, 0, nBytes);
 				      totalSizeEntry += nBytes;
 				      totalSizeArchive += nBytes;
-
-				      double compressionRatio = totalSizeEntry / ze.getCompressedSize();
-				      if(compressionRatio > THRESHOLD_RATIO) {
+				      Long tmpv = ze.getCompressedSize();
+				      double compressionRatio = totalSizeEntry / tmpv.doubleValue();
+				      if(compressionRatio > thresholdRatio) {
 				        // ratio between compressed and uncompressed data is highly suspicious, looks like a Zip Bomb Attack
 				    	throw new DomainException("invalid zip file");
 				      }
 				  }
 
-				  if(totalSizeArchive > THRESHOLD_SIZE) {
+				  if(totalSizeArchive > thresholdSize) {
 				      // the uncompressed data size is too much for the application resource capacity
 					  throw new DomainException("zip file invalid size");
 				  }
 
-				  if(totalEntryArchive > THRESHOLD_ENTRIES) {
+				  if(totalEntryArchive > thresholdEntries) {
 				      // too much entries in this archive, can lead to inodes exhaustion of the system
 					  throw new DomainException("zip file invalid entries");
 				  }
