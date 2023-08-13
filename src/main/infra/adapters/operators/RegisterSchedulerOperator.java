@@ -2,7 +2,6 @@ package main.infra.adapters.operators;
 
 import java.util.Properties;
 import java.util.concurrent.Callable;
-import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -10,7 +9,6 @@ import main.domain.annotations.Operator;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import main.infra.adapters.output.repositories.SchedulerRepository;
-import net.bytebuddy.implementation.Implementation;
 
 @Operator(args={})
 public class RegisterSchedulerOperator extends OperatorStage implements Callable<Void> {
@@ -38,17 +36,5 @@ public class RegisterSchedulerOperator extends OperatorStage implements Callable
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
-	}
-	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-    	return null;
-    }
-	@Override
-	public JSONObject getMetadataOperator() {
-		return null;
-	}
-	@Override
-	public String getIconImage() {
-		return "internal.png";
 	}
 }

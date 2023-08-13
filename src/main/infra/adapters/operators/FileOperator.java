@@ -11,10 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import main.domain.annotations.Operator;
 import main.domain.core.DagExecutable;
 import main.domain.exceptions.DomainException;
@@ -139,16 +136,15 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 	}
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"mode\",type:\"list\",opt:[\"read\",\"write\"]}"));
-		params.put(new JSONObject("{name:\"filepath\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"rowDelimiter\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"firstRowTitles\",type:\"boolean\"}"));
-		params.put(new JSONObject("{name:\"xcom\",type:\"text\"}"));
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.FileOperator");
-		tag.put("name", "FileOperator");
-		tag.put("params", params);
-		return tag;
+		Map<String,List<String>> opt = new HashMap<>();
+		List<String> optl = Arrays.asList("read","write");
+		opt.put("mode", optl);
+		JSONObject par = new JSONObject();
+		par.put("mode", "list");
+		par.put("filepath", "text");
+		par.put("rowDelimiter", "text");
+		par.put("firstRowTitles", "boolean");
+		par.put("xcom", "text");
+		return this.generateMetadata(par, "main.infra.adapters.operators.FileOperator", opt);
 	}
 }

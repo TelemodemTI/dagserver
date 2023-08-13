@@ -5,24 +5,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import main.domain.annotations.Operator;
-import main.domain.core.DagExecutable;
+import main.domain.core.BaseOperator;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
+
 
 @Operator(args={"host","user","pwd","port", "cmd"})
-public class SshOperator extends OperatorStage implements Callable<String> {
+public class SshOperator extends BaseOperator implements Callable<String> {
 
 	
 	@Override
@@ -76,26 +71,14 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 	}
 	
 	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, SshOperator.class,propkey);
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-    }
-	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"host\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"user\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"pwd\",type:\"password\"}"));
-		params.put(new JSONObject("{name:\"port\",type:\"number\"}"));
-		params.put(new JSONObject("{name:\"cmd\",type:\"sourcecode\"}"));
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.SshOperator");
-		tag.put("name", "SshOperator");
-		tag.put("params", params);
-		return tag;
+		JSONObject par = new JSONObject();
+		par.put("host", "text");
+		par.put("user", "text");
+		par.put("pwd", "password");
+		par.put("port", "number");
+		par.put("cmd", "sourcecode");
+		return this.generateMetadata(par,"main.infra.adapters.operators.SshOperator");
 	}
 	@Override
 	public String getIconImage() {

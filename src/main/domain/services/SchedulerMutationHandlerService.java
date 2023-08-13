@@ -4,48 +4,20 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import main.application.ports.input.SchedulerMutationUseCase;
-import main.application.ports.output.CompilerOutputPort;
-import main.application.ports.output.JarSchedulerOutputPort;
-import main.application.ports.output.SchedulerRepositoryOutputPort;
+import main.domain.core.BaseServiceComponent;
 import main.domain.core.TokenEngine;
 import main.domain.exceptions.DomainException;
 
 
 @Component
 @ImportResource("classpath:properties-config.xml")
-public class SchedulerMutationHandlerService implements SchedulerMutationUseCase {
+public class SchedulerMutationHandlerService extends BaseServiceComponent implements SchedulerMutationUseCase {
 	
 	private static final String CLAIMS = "claims";
 	
-	@Value( "${param.jwt_secret}" )
-	private String jwtSecret;
-
-	@Value( "${param.jwt_signer}" )
-	private String jwtSigner;
-	
-	@Value( "${param.jwt_subject}" )
-	private String jwtSubject;
-	
-	@Value( "${param.jwt_ttl}" )
-	private Integer jwtTtl;
-	
-	@Value( "${param.folderpath}" )
-	private String path;
-	
-	@Autowired
-	SchedulerRepositoryOutputPort repository;
-	
-	@Autowired 
-	JarSchedulerOutputPort scanner;
-	
-	@Autowired
-	CompilerOutputPort compiler;
-		
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerMutationHandlerService.class);
 	
@@ -147,6 +119,7 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 		}
 	}
 	@Override
+	@SuppressWarnings("unchecked")
 	public void createAccount(String token, String username, String accountType, String pwdHash) throws DomainException {
 		try {
 			var claims = TokenEngine.untokenize(token, jwtSecret, jwtSigner);
@@ -161,6 +134,7 @@ public class SchedulerMutationHandlerService implements SchedulerMutationUseCase
 		}
 	}
 	@Override
+	@SuppressWarnings("unchecked")
 	public void deleteAccount(String token, String username) throws DomainException {
 		try {
 			var claims = TokenEngine.untokenize(token, jwtSecret, jwtSigner);

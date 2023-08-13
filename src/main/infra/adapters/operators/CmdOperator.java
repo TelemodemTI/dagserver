@@ -3,19 +3,13 @@ package main.infra.adapters.operators;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import main.domain.annotations.Operator;
-import main.domain.core.DagExecutable;
+import main.domain.core.BaseOperator;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
 
 @Operator(args={"prefix","c","cmd"})
-public class CmdOperator extends OperatorStage implements Callable<StringBuilder> {
+public class CmdOperator extends BaseOperator implements Callable<StringBuilder> {
 
 	@Override
 	public StringBuilder call() throws DomainException {		
@@ -36,30 +30,18 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 			throw new DomainException(e.getMessage());
 		}
 	}
-	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, CmdOperator.class,propkey);
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-		
-    }
+	
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"prefix\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"c\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"cmd\",type:\"sourcecode\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.CmdOperator");
-		tag.put("name", "CmdOperator");
-		tag.put("params", params);
-		return tag;
+		JSONObject par = new JSONObject();
+		par.put("prefix", "text");
+		par.put("c", "text");
+		par.put("cmd", "sourcecode");
+		return this.generateMetadata(par,"main.infra.adapters.operators.CmdOperator");
 	}
 	@Override
 	public String getIconImage() {
 		return "cmd.png";
 	}
+
 }

@@ -8,14 +8,10 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import main.application.ports.input.SchedulerQueryUseCase;
-import main.application.ports.output.CompilerOutputPort;
-import main.application.ports.output.JarSchedulerOutputPort;
-import main.application.ports.output.SchedulerRepositoryOutputPort;
+import main.domain.core.BaseServiceComponent;
 import main.domain.core.TokenEngine;
 import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
@@ -32,32 +28,8 @@ import main.domain.model.UserDTO;
 
 @Service
 @ImportResource("classpath:properties-config.xml")
-public class SchedulerQueryHandlerService implements SchedulerQueryUseCase {
+public class SchedulerQueryHandlerService extends BaseServiceComponent implements SchedulerQueryUseCase {
 	
-	@Value( "${param.jwt_secret}" )
-	private String jwtSecret;
-
-	@Value( "${param.jwt_signer}" )
-	private String jwtSigner;
-	
-	@Value( "${param.jwt_subject}" )
-	private String jwtSubject;
-	
-	@Value( "${param.jwt_ttl}" )
-	private Integer jwtTtl;
-	
-	@Value( "${param.folderpath}" )
-	private String path;
-	
-	@Autowired
-	SchedulerRepositoryOutputPort repository;
-	
-	@Autowired 
-	JarSchedulerOutputPort scanner;
-	
-	@Autowired
-	CompilerOutputPort compiler;
-
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerQueryHandlerService.class);
 	
