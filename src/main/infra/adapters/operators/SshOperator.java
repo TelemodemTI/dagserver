@@ -55,10 +55,8 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		while (true) {
 			this.writeToOut(in, outputBuffer, tmp);
 		    this.writeToOut(err, errorBuffer, tmp);
-		    if (channel.isClosed()) {	
-		    	if (!((in.available() > 0) || (err.available() > 0))) {
-		    		break;
-		    	} 
+		    if (channel.isClosed() && !((in.available() > 0) || (err.available() > 0))) {	
+		    	break;
 		    }
 		    Thread.sleep(1000);
 		}
