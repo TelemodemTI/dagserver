@@ -47,8 +47,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 	QueryResolverMapper mapper;
 	
 	public String login(String username,String pwdhash) {
-		String token = login.apply(Arrays.asList(username, pwdhash));
-		return token;
+		return login.apply(Arrays.asList(username, pwdhash));
 	}
 	
 	public String operatorsMetadata() throws DomainException {
@@ -153,7 +152,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 				det.setGroup(detail.getGroup());
 				det.setOnEnd(detail.getOnEnd());
 				det.setOnStart(detail.getOnStart());
-				List<Node> nodes = new ArrayList<Node>();
+				List<Node> nodes = new ArrayList<>();
 				int i = 1;
 				for (Iterator<List<String>> iterator2 = detail.getOps().iterator(); iterator2.hasNext();i++) {
 					Node node = new Node();

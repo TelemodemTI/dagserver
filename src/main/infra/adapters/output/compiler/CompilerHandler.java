@@ -12,6 +12,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -45,6 +46,9 @@ public class CompilerHandler implements CompilerOutputPort {
 
 	private static final String GROUP = "group";
 	private static final String PARAMS = "params";
+	private static final String JARNAME = "jarname";
+	private static final String VALUE = "value";
+	private static final String NAME = "name";
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
@@ -60,7 +64,7 @@ public class CompilerHandler implements CompilerOutputPort {
 			ByteBuddyAgent.install();
 			ClassReloadingStrategy.fromInstalledAgent().reset(DagExecutable.class);
 			JSONObject def = new JSONObject(bin);
-			String jarname = def.getString("jarname");
+			String jarname = def.getString(JARNAME);
 			validateOverwrtire(jarname,force);
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
@@ -71,12 +75,12 @@ public class CompilerHandler implements CompilerOutputPort {
 				String group = dag.getString(GROUP);
 				validateParams(dag.getJSONArray("boxes"));
 				Map<String,String> dtomap = new HashMap<>();
-				dtomap.put("jarname", jarname);
+				dtomap.put(JARNAME, jarname);
 				dtomap.put("classname", classname);
-				dtomap.put("name", classname);
+				dtomap.put(NAME, classname);
 				dtomap.put("type", triggerv);
-				dtomap.put("value", crondef);
-				dtomap.put("group", group);
+				dtomap.put(VALUE, crondef);
+				dtomap.put(GROUP, group);
 				dtomap.put("listenerLabel", loc);
 				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
 				this.packageJar(jarname, classname, dagdef1.getBytes());
@@ -92,25 +96,29 @@ public class CompilerHandler implements CompilerOutputPort {
 			String type = item.getString("type");
 			try {
 				Class<?> clazz = Class.forName(type);	
-			
 		        // Obtener las anotaciones de la clase
 				Operator annotation = clazz.getAnnotation(Operator.class);
-		        if(item.has(PARAMS)) {
-			        for (int j = 0; j < item.getJSONArray(PARAMS).length(); j++) {
-							JSONObject param = item.getJSONArray(PARAMS).getJSONObject(j);
-							if(!searchValue(annotation.args(), param.getString("key")) && !searchValue(annotation.optionalv(), param.getString("key"))) {
-								throw new DomainException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
-							}
-					}
-					if(item.getJSONArray(PARAMS).length() < annotation.args().length ) {
-						throw new DomainException(item.getJSONArray(PARAMS).toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
-					}	
-		        }
+		        this.validateHasParams(item, annotation);
 			} catch (Exception e) {
 				throw new DomainException(e.getMessage());
 			}
 		}
 	}
+	
+	private void validateHasParams(JSONObject item,Operator annotation) throws JSONException, DomainException {
+		if(item.has(PARAMS)) {
+	        for (int j = 0; j < item.getJSONArray(PARAMS).length(); j++) {
+					JSONObject param = item.getJSONArray(PARAMS).getJSONObject(j);
+					if(!searchValue(annotation.args(), param.getString("key")) && !searchValue(annotation.optionalv(), param.getString("key"))) {
+						throw new DomainException(param.getString("key")+" not found in args "+annotation.args()+ " with opts "+annotation.optionalv());	
+					}
+			}
+			if(item.getJSONArray(PARAMS).length() < annotation.args().length ) {
+				throw new DomainException(item.getJSONArray(PARAMS).toString()+"not enough params "+annotation.args()+ "with opts "+annotation.optionalv());
+			}	
+        }
+	}
+	
 	private boolean searchValue(String[] array, String value) {
         for (String element : array) {
             if (element.equals(value)) {
@@ -125,7 +133,7 @@ public class CompilerHandler implements CompilerOutputPort {
             throw new DomainException("File exists");
         }
 	}
-	private Unloaded<DagExecutable> getClassDefinition(Map<String,String> dtomap,JSONArray boxes) throws Exception {
+	private Unloaded<DagExecutable> getClassDefinition(Map<String,String> dtomap,JSONArray boxes) throws DomainException {
 
 		log.error(boxes);
 		
@@ -137,26 +145,26 @@ public class CompilerHandler implements CompilerOutputPort {
 		Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.   NO_CONSTRUCTORS).name(dtomap.get("classname"));
 		Initial<DagExecutable> inicial = builderbb.defineConstructor(Visibility.PUBLIC);
 		
-		ReceiverTypeDefinition<DagExecutable>  receiver = inicial.intercept(builder.build(dtomap.get("jarname"),boxes));
+		ReceiverTypeDefinition<DagExecutable>  receiver = inicial.intercept(builder.build(dtomap.get(JARNAME),boxes));
 		Unloaded<DagExecutable> varu = null;
 		if(dtomap.get("type").equals("cron")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
-	                .define("name", dtomap.get("name"))
-	                .define("cronExpr", dtomap.get("value"))
-	                .define(GROUP, dtomap.get("group"))
+	                .define(NAME, dtomap.get(NAME))
+	                .define("cronExpr", dtomap.get(VALUE))
+	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
 			.make(pool);	
 		} else {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
-	                .define("name", dtomap.get("name"))
-	                .define(dtomap.get("listenerLabel"), dtomap.get("value"))
-	                .define(GROUP, dtomap.get("group"))
+	                .define(NAME, dtomap.get(NAME))
+	                .define(dtomap.get("listenerLabel"), dtomap.get(VALUE))
+	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
 			.make(pool);	
 		}
 		return varu;
 	}
-	private void packageJar(String jarname,String classname, byte[] bytes) throws DomainException {
+	private void packageJar(String jarname,String classname, byte[] bytes) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try(
         		InputStream fis = classloader.getResourceAsStream("basedag.zip");

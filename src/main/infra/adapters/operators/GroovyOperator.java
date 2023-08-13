@@ -27,9 +27,6 @@ public class GroovyOperator extends OperatorStage implements Callable<Object> {
 	    binding.setVariable("log", log);
 	    binding.setVariable("xcom", xcom);
 	    GroovyShell shell = new GroovyShell(binding);
-		
-	    
-	    
 		return shell.evaluate(source);
 	}
 	
@@ -37,8 +34,7 @@ public class GroovyOperator extends OperatorStage implements Callable<Object> {
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
 		try {
-			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class )).with(stepName, GroovyOperator.class,propkey);
-			return implementation;	
+			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class )).with(stepName, GroovyOperator.class,propkey);	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

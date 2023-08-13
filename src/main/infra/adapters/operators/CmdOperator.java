@@ -39,8 +39,7 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
 		try {
-			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, CmdOperator.class,propkey);
-			return implementation;	
+			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, CmdOperator.class,propkey);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

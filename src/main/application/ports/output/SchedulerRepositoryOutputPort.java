@@ -31,8 +31,8 @@ public interface SchedulerRepositoryOutputPort {
 	public void setMetadata(String hostname,String name); 
 	public List<AgentDTO> getAgents();
 	public void insertIfNotExists(String jarname,String propertiesFile, Properties properties);
-	public void addUncompiled(String name, JSONObject json);
-	public void updateUncompiled(Integer uncompiled,JSONObject json);
+	public void addUncompiled(String name, JSONObject json) throws DomainException;
+	public void updateUncompiled(Integer uncompiled,JSONObject json) throws DomainException;
 	public List<UncompiledDTO> getUncompileds();
 	public String getUncompiledBin(Integer uncompiled);
 	public void deleteUncompiled(Integer uncompiled);

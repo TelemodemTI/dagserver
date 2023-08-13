@@ -23,9 +23,28 @@ public class MutationResolver implements GraphQLMutationResolver {
 	SchedulerMutationUseCase handler;
 	
 	public class Status {
-		public String status;
-	    public Integer code;
-	    public String value;
+		private String status;
+	    private Integer code;
+	    private String value;
+		public String getStatus() {
+			return status;
+		}
+		public void setStatus(String status) {
+			this.status = status;
+		}
+		public Integer getCode() {
+			return code;
+		}
+		public void setCode(Integer code) {
+			this.code = code;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	    
 	}
 	
 	public Status scheduleDag(String token,String dagname,String jarname) throws DomainException {
@@ -104,8 +123,8 @@ public class MutationResolver implements GraphQLMutationResolver {
 	public Status compile(String token, Integer uncompiled,Integer force) {
 		try {
 			Boolean forceb = false;
-			if(force != null) {
-				forceb = force.equals(0)?false:true;	
+			if(force != null && !force.equals(0)) {
+				forceb = true;	
 			}
 			
 			handler.compile(token, uncompiled,forceb);

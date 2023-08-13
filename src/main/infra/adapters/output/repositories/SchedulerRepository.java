@@ -113,7 +113,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			List<PropertyParameter> founded;
 			if(groupname != null) {
 				founded = dao.read(PropertyParameter.class,QUERYPROPS+groupname+"'");
-				if(founded.size() == 0) throw new DomainException("DAG properties "+groupname+ " not found");
+				if(founded.isEmpty()) throw new DomainException("DAG properties "+groupname+ " not found");
 			} else {
 				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
 			}
@@ -167,7 +167,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	public List<AgentDTO> getAgents() {
 		List<Metadata> list = dao.read(Metadata.class, "select meta from Metadata meta");
-		List<AgentDTO> res = new ArrayList<AgentDTO>();
+		List<AgentDTO> res = new ArrayList<>();
 		for (Iterator<Metadata> iterator = list.iterator(); iterator.hasNext();) {
 			Metadata metadata = iterator.next();
 			AgentDTO agent = new AgentDTO();
@@ -208,7 +208,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	    }
 	}
 
-	public void addUncompiled(String name, JSONObject json) {
+	public void addUncompiled(String name, JSONObject json) throws DomainException {
 		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.name = '"+name+"'");
 		if(list.isEmpty()) {
 			ScheUncompiledDags existingProperties = new ScheUncompiledDags(); 
@@ -217,18 +217,18 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			existingProperties.setName(name);
 			dao.save(existingProperties);	
 		} else {
-			throw new RuntimeException("jarname already exists");
+			throw new DomainException("jarname already exists");
 		}
 	}
 	
-	public void updateUncompiled(Integer uncompiled,JSONObject json) {
+	public void updateUncompiled(Integer uncompiled,JSONObject json) throws DomainException {
 		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.id = "+uncompiled);
 		if(!list.isEmpty()) {
 			ScheUncompiledDags existingProperties = list.get(0);
 			existingProperties.setBin(json.toString());
 			dao.save(existingProperties);	
 		} else {
-			throw new RuntimeException("uncompiled not exists");
+			throw new DomainException("uncompiled not exists");
 		}
 	}
 
@@ -249,8 +249,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	@Override
 	public String getUncompiledBin(Integer uncompiled) {
 		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = "+uncompiled);
-		String bin = list.get(0).getBin();
-		return bin;
+		return list.get(0).getBin();
 	}
 
 	@Override
@@ -345,8 +344,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	public JSONObject readXcom(String locatedAt) throws DomainException {
 		try {
 			InternalStorage storage = new InternalStorage(locatedAt);
-			var rv = storage.get();
-			return rv;	
+			return storage.get();
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
@@ -364,7 +362,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	@Override
 	public List<UserDTO> getUsers() {
-		List<UserDTO> list = new ArrayList<UserDTO>();
+		List<UserDTO> list = new ArrayList<>();
 		var users = dao.read(User.class, "select creds from User as creds");
 		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
 			User user = iterator.next();

@@ -26,8 +26,7 @@ public class DummyOperator extends OperatorStage implements Callable<Void> {
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
 		try {
-			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class)).with(stepName, DummyOperator.class);
-			return implementation;	
+			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class)).with(stepName, DummyOperator.class);	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

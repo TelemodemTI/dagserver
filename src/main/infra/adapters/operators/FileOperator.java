@@ -81,10 +81,10 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
        		 BufferedReader bufferedReader = new BufferedReader(fileReader);
        	) {
        	 while ((line = bufferedReader.readLine()) != null) {
-	        	 Map<String, String> row = new HashMap<String,String>();
+	        	 Map<String, String> row = new HashMap<>();
 	        	 String[] fields = line.split(rowDelimiter);
 	        	 if(lineNumber.equals(0)) {
-	        		 if(firstrow) {
+	        		 if(Boolean.TRUE.equals(firstrow)) {
 	        			 titles = Arrays.asList(fields);	 
 	        		 } else {
 	        			 titles = this.generateTitleList(fields.length);
@@ -127,8 +127,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
 		try {
-			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, FileOperator.class,propkey,optkey);
-			return implementation;	
+			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, FileOperator.class,propkey,optkey);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

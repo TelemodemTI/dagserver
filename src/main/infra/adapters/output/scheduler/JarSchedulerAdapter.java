@@ -16,7 +16,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
-import org.quartz.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -47,11 +46,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private static final String CLASSEXT = ".class";
 	private static Logger log = Logger.getLogger(JarSchedulerAdapter.class);
 	
-	private List<File> jars = new ArrayList<File>();
-	private Map<String,List<Map<String,String>>> classMap = new HashMap<String,List<Map<String,String>>>();
+	private List<File> jars = new ArrayList<>();
+	private Map<String,List<Map<String,String>>> classMap = new HashMap<>();
 	
 	public JarSchedulerAdapter init () throws DomainException {
-		classMap =  new HashMap<String,List<Map<String,String>>>();
 		File folder = new File(pathfolder);
 		File[] listOfFiles = folder.listFiles();	
 		for (int i = 0; i < listOfFiles.length; i++) {
@@ -66,7 +64,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	}	
 	
 	private Map<String,Properties> analizeJarProperties(File jarFile){
-		Map<String,Properties> props = new HashMap<String,Properties>();
+		Map<String,Properties> props = new HashMap<>();
 		try(
 				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
@@ -91,7 +89,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	
 	private List<Map<String,String>> analizeJar(File jarFile) {
-		List<Map<String,String>> classNames = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> classNames = new ArrayList<>();
 		try(
 				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
@@ -143,7 +141,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 							if(toschedule.cronExpr().equals("")) {
 								quartz.configureListener(toschedule,dag);	
 							} else {
-								quartz.activateJob((Job) dag, toschedule.group());	
+								quartz.activateJob( dag, toschedule.group());	
 							}
 							log.debug("job scheduled!::");
 						}
@@ -197,7 +195,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		}
 	}
 	public List<DagDTO> getDagDetail(String jarname) throws DomainException {
-		if(jarname.toLowerCase().equals("system")) {
+		if(jarname.equalsIgnoreCase("system")) {
 			return this.getDefaultsSYSTEMS();
 		} else {
 			return this.getDagDetailJAR(jarname);
@@ -274,7 +272,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 						break;
 					}
 				}
-				if(!founded) {
+				if(Boolean.FALSE.equals(founded)) {
 					throw new DomainException("dagname not found");
 				}	
 			}	

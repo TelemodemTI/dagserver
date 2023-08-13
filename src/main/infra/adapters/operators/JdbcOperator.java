@@ -61,8 +61,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
 		try {
-			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey);
-			return implementation;	
+			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey);	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

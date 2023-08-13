@@ -55,9 +55,10 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		while (true) {
 			this.writeToOut(in, outputBuffer, tmp);
 		    this.writeToOut(err, errorBuffer, tmp);
-		    if (channel.isClosed()) {
-		        if ((in.available() > 0) || (err.available() > 0)) continue; 
-		        break;
+		    if (channel.isClosed()) {	
+		    	if (!((in.available() > 0) || (err.available() > 0))) {
+		    		break;
+		    	} 
 		    }
 		    Thread.sleep(1000);
 		}
@@ -79,8 +80,7 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 	@Override
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
 		try {
-			Implementation implementation = MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, SshOperator.class,propkey);
-			return implementation;	
+			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, SshOperator.class,propkey);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

@@ -28,8 +28,8 @@ public class Junit5SuiteOperator extends OperatorStage implements Callable<List<
     @Override
     public List<Map<String, Object>> call() throws DomainException {
     	try {
-    		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-        	Map<String, Object> item = new HashMap<String, Object>();
+    		List<Map<String, Object>> result = new ArrayList<>();
+        	Map<String, Object> item = new HashMap<>();
         	result.add(item);
         	
             String suiteClassName = args.getProperty("suiteClass");

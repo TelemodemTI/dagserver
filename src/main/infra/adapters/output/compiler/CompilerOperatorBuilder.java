@@ -16,7 +16,7 @@ public class CompilerOperatorBuilder {
 	@SuppressWarnings("unchecked")
 	public Implementation build(String jarname,JSONArray boxes) throws DomainException {
 		try {
-			Composable implementation = (Composable) MethodCall.invoke(DagExecutable.class.getConstructor());
+			Composable implementation = MethodCall.invoke(DagExecutable.class.getConstructor());
 			for (int i = 0; i < boxes.length(); i++) {
 				var box = boxes.getJSONObject(i);
 				String typeope = box.getString("type");
