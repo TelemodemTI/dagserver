@@ -51,6 +51,7 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 	public JSONObject getMetadataOperator() {
 		return null;
 	}
+	@Override
 	public String getIconImage() {
 		return "internal.png";
 	}

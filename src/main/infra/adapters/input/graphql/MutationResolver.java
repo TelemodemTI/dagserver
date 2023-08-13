@@ -22,7 +22,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 	@Autowired
 	SchedulerMutationUseCase handler;
 	
-	public class Status {
+	public class StatusOp {
 		private String status;
 	    private Integer code;
 	    private String value;
@@ -47,7 +47,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 	    
 	}
 	
-	public Status scheduleDag(String token,String dagname,String jarname) throws DomainException {
+	public StatusOp scheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {
 			handler.scheduleDag(token,dagname,jarname);
 			return ok();	
@@ -56,7 +56,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
     }
-	public Status unscheduleDag(String token,String dagname,String jarname) throws DomainException {
+	public StatusOp unscheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {
 			handler.unscheduleDag(token,dagname, jarname);
 			return ok();	
@@ -66,7 +66,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 		
 	}
 	
-	public Status createProperty(String token, String name, String description, String value,String group) {
+	public StatusOp createProperty(String token, String name, String description, String value,String group) {
 		try {
 			handler.createProperty(token, name, description, value,group);
 			return ok();
@@ -74,7 +74,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	public Status deleteProperty(String token,String name,String group){
+	public StatusOp deleteProperty(String token,String name,String group){
 		try {
 			handler.deleteProperty(token, name,group);
 			return ok();
@@ -82,7 +82,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	public Status deleteGroupProperty(String token,String name,String group){
+	public StatusOp deleteGroupProperty(String token,String name,String group){
 		try {
 			handler.deleteGroupProperty(token, name,group);
 			return ok();
@@ -91,7 +91,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
-	public Status executeDag(String token,String dagname,String jarname) {
+	public StatusOp executeDag(String token,String dagname,String jarname) {
 		try {
 			handler.execute(token,jarname, dagname);
 			return ok();
@@ -100,7 +100,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
-	public Status saveUncompiled(String token, String bin) {
+	public StatusOp saveUncompiled(String token, String bin) {
 		try {
 			var defobj = this.decodeBase64JSON(bin);
 			handler.saveUncompiled(token,defobj);
@@ -110,7 +110,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
-	public Status updateUncompiled(String token, Integer uncompiled ,String bin) {
+	public StatusOp updateUncompiled(String token, Integer uncompiled ,String bin) {
 		try {
 			var defobj = this.decodeBase64JSON(bin);
 			handler.updateUncompiled(token, uncompiled, defobj);
@@ -120,7 +120,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
-	public Status compile(String token, Integer uncompiled,Integer force) {
+	public StatusOp compile(String token, Integer uncompiled,Integer force) {
 		try {
 			Boolean forceb = false;
 			if(force != null && !force.equals(0)) {
@@ -133,7 +133,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	public Status deleteUncompiled(String token, Integer uncompiled) {
+	public StatusOp deleteUncompiled(String token, Integer uncompiled) {
 		try {
 			handler.deleteUncompiled(token, uncompiled);
 			return ok();
@@ -143,7 +143,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 	}
 	
 	
-	public Status createAccount(String token,String username,String accountType,String pwdHash) {
+	public StatusOp createAccount(String token,String username,String accountType,String pwdHash) {
 		try {
 			handler.createAccount(token,username,accountType,pwdHash);
 			return ok();
@@ -151,7 +151,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	public Status deleteAccount(String token,String username) {
+	public StatusOp deleteAccount(String token,String username) {
 		try {
 			handler.deleteAccount(token,username);
 			return ok();
@@ -160,7 +160,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 
-	public Status updateParamsCompiled(String token, String idope, String typeope, String jarname, String bin) {
+	public StatusOp updateParamsCompiled(String token, String idope, String typeope, String jarname, String bin) {
 		try {
 			handler.updateParamsCompiled(token, idope, typeope, jarname, bin);
 			return ok();
@@ -169,15 +169,15 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 
-	private Status ok() {
-		Status status = new Status();
+	private StatusOp ok() {
+		StatusOp status = new StatusOp();
 		status.code = 200;
 		status.status = "ok";
 		status.value = "ok";
 		return status;
 	}
-	private Status error(Exception e) {
-		Status status = new Status();
+	private StatusOp error(Exception e) {
+		StatusOp status = new StatusOp();
 		status.code = 503;
 		status.status = "error";
 		status.value = ExceptionUtils.getRootCauseMessage(e);

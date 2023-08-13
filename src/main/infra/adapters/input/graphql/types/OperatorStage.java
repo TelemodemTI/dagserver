@@ -6,17 +6,26 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
+import main.domain.exceptions.DomainException;
 import main.infra.adapters.output.repositories.SchedulerRepository;
 import net.bytebuddy.implementation.Implementation;
 
-public abstract class OperatorStage {
+public class OperatorStage {
 	protected static Logger log = Logger.getLogger("DAG");
 	protected String name;
 	
-	public abstract Implementation getDinamicInvoke(String stepName, String propkey, String optkey) throws Exception;
-	public abstract JSONObject getMetadataOperator();
-	public abstract String getIconImage() throws Exception;
+
+	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
+    	return null;
+    }
 	
+	public JSONObject getMetadataOperator() {
+		return null;
+	}
+	public String getIconImage() {
+		return "internal.png";
+	}
+		
 	public String getName() {
 		return name;
 	}

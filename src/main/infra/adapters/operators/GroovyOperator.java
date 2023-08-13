@@ -50,6 +50,7 @@ public class GroovyOperator extends OperatorStage implements Callable<Object> {
 		tag.put("params", params);
 		return tag;
 	}
+	@Override
 	public String getIconImage() {
 		return "groovy.png";
 	}

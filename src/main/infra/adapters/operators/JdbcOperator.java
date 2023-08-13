@@ -86,6 +86,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 
 		return tag;
 	}
+	@Override
 	public String getIconImage() {
 		return "jdbc.png";
 	}

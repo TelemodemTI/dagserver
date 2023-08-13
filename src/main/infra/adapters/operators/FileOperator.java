@@ -133,7 +133,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 		}
 	}
 
-	
+	@Override
 	public String getIconImage() {
 		return "file.png";
 	}

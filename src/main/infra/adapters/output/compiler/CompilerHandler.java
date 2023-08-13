@@ -183,7 +183,7 @@ public class CompilerHandler implements CompilerOutputPort {
                 }
                 zos.closeEntry();
             }
-            var strcom = classname.replaceAll("\\.", "/");
+            var strcom = classname.replace(".", "/");
             zos.putNextEntry(new ZipEntry(this.getPackageDef(classname)));
             zos.closeEntry();
 
@@ -206,7 +206,7 @@ public class CompilerHandler implements CompilerOutputPort {
         String secondSegment = segments[1];
         
         String transformedString = firstSegment.toLowerCase() + "." + secondSegment.toLowerCase();
-        transformedString = transformedString.replaceAll("\\.", "/") + "/";
+        transformedString = transformedString.replace(".", "/") + "/";
         
         return transformedString;
     }

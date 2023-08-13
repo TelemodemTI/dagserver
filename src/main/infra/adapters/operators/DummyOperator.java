@@ -40,6 +40,7 @@ public class DummyOperator extends OperatorStage implements Callable<Void> {
 		tag.put("params", new JSONArray());
 		return tag;
 	}
+	@Override
 	public String getIconImage() {
 		return "dummy.png";
 	}
