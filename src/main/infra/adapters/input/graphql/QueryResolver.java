@@ -46,7 +46,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 	@Autowired
 	QueryResolverMapper mapper;
 	
-	public String login(String username,String pwdhash) throws DomainException {
+	public String login(String username,String pwdhash) {
 		String token = login.apply(Arrays.asList(username, pwdhash));
 		return token;
 	}

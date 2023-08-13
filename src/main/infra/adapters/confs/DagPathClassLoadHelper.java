@@ -1,11 +1,19 @@
 package main.infra.adapters.confs;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
 import org.quartz.simpl.CascadingClassLoadHelper;
@@ -14,6 +22,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import main.domain.exceptions.DomainException;
 
 public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements ClassLoadHelper {
 
@@ -67,19 +77,70 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
 		) {
-			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
-			    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-			        // This ZipEntry represents a class. Now, what class does it represent?
-			    	Class<?> clazz = cl.loadClass(entry.getName().replace("/", ".").replace(".class", ""));
-			    	if(clazz.getName().equals(searched)) {
-			    		rvclazz = clazz;
-			    		break;
-			    	}
-			    }
-			}	
+			rvclazz = this.validate(jarFile,searched,cl);
 		} catch (Exception e) {
 			log.error(e);
 		}
 		return rvclazz;
+	}	
+	private Class<?> validate(File f,String searched,URLClassLoader cl) throws IOException, DomainException {
+		Class<?> rvclazz = null;
+		try(ZipFile zipFile = new ZipFile(f);) {
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			while(entries.hasMoreElements()) {
+			  ZipEntry ze = entries.nextElement();
+			  DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+			  if (!ze.isDirectory() && ze.getName().endsWith(".class")) {
+			    	Class<?> clazz = cl.loadClass(ze.getName().replace("/", ".").replace(".class", ""));
+			    	if(clazz.getName().equals(searched)) {
+			    		rvclazz = clazz;
+			    		break;
+			    	}
+			   }
+			}
+			return rvclazz;
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+	}
+	public static void verificationZipFile(ZipEntry ze,ZipFile zipFile) throws DomainException {
+		int THRESHOLD_ENTRIES = 10000;
+		int THRESHOLD_SIZE = 1000000000; // 1 GB
+		double THRESHOLD_RATIO = 10;
+		int totalSizeArchive = 0;
+		int totalEntryArchive = 0;
+		try(
+				InputStream in = new BufferedInputStream(zipFile.getInputStream(ze));
+				OutputStream out = new BufferedOutputStream(new FileOutputStream("./output_onlyfortesting.txt"));) {
+				  totalEntryArchive ++;
+
+				  int nBytes = -1;
+				  byte[] buffer = new byte[2048];
+				  int totalSizeEntry = 0;
+
+				  while((nBytes = in.read(buffer)) > 0) { // Compliant
+				      out.write(buffer, 0, nBytes);
+				      totalSizeEntry += nBytes;
+				      totalSizeArchive += nBytes;
+
+				      double compressionRatio = totalSizeEntry / ze.getCompressedSize();
+				      if(compressionRatio > THRESHOLD_RATIO) {
+				        // ratio between compressed and uncompressed data is highly suspicious, looks like a Zip Bomb Attack
+				    	throw new DomainException("invalid zip file");
+				      }
+				  }
+
+				  if(totalSizeArchive > THRESHOLD_SIZE) {
+				      // the uncompressed data size is too much for the application resource capacity
+					  throw new DomainException("zip file invalid size");
+				  }
+
+				  if(totalEntryArchive > THRESHOLD_ENTRIES) {
+				      // too much entries in this archive, can lead to inodes exhaustion of the system
+					  throw new DomainException("zip file invalid entries");
+				  }
+			  } catch (Exception e) {
+				  throw new DomainException(e.getMessage());
+			  }
 	}
 }

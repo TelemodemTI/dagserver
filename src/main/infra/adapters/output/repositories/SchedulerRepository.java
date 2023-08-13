@@ -266,38 +266,49 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
 				JSONArray boxes = dag.getJSONArray("boxes");
-				for (int j = 0; j < boxes.length(); j++) {
-					for (int k = 0; k < boxes.length(); k++) {
-						var box = boxes.getJSONObject(k);
-						String typeope = box.getString("type");
-						String idope = box.getString("id");
-						String group = jarname+"."+idope+"."+typeope+".props";
-						Class<?> clazz = Class.forName(typeope);
-						Operator annotation = clazz.getAnnotation(Operator.class);
-						this.deletePropsByGroup(group);
-						if(box.has("params")) {
-							for (int l = 0; l < box.getJSONArray("params").length(); l++) {
-								JSONObject parm = box.getJSONArray("params").getJSONObject(l);
-								if(this.searchValue(annotation.args(), parm.getString("key"))) {
-									this.setProperty(parm.getString("key"), "generated parameter from editor", parm.getString("value"), group);	
-								}
-							}
-							String groupo = jarname+"."+idope+"."+typeope+".opts";
-							this.deletePropsByGroup(groupo);
-							for (int l = 0; l < box.getJSONArray("params").length(); l++) {
-								JSONObject parm = box.getJSONArray("params").getJSONObject(l);
-								if(this.searchValue(annotation.optionalv(), parm.getString("key"))) {
-									this.setProperty(parm.getString("key"), "generated optional from editor", parm.getString("value"), groupo);	
-								}
-							}	
-						}
-					}
-				}
+				this.processBoxes(boxes, jarname);
 			}	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
 	}
+	
+	private void processBoxes(JSONArray boxes,String jarname) throws ClassNotFoundException {
+		for (int j = 0; j < boxes.length(); j++) {
+			for (int k = 0; k < boxes.length(); k++) {
+				var box = boxes.getJSONObject(k);
+				String typeope = box.getString("type");
+				String idope = box.getString("id");
+				String group = jarname+"."+idope+"."+typeope+".props";
+				Class<?> clazz = Class.forName(typeope);
+				Operator annotation = clazz.getAnnotation(Operator.class);
+				this.deletePropsByGroup(group);
+				this.boxHasParams(box, annotation, group, jarname);
+			}
+		}
+	}
+	
+	private void boxHasParams(JSONObject box,Operator annotation,String group,String jarname) {
+		String typeope = box.getString("type");
+		String idope = box.getString("id");
+		if(box.has("params")) {
+			for (int l = 0; l < box.getJSONArray("params").length(); l++) {
+				JSONObject parm = box.getJSONArray("params").getJSONObject(l);
+				if(this.searchValue(annotation.args(), parm.getString("key"))) {
+					this.setProperty(parm.getString("key"), "generated parameter from editor", parm.getString("value"), group);	
+				}
+			}
+			String groupo = jarname+"."+idope+"."+typeope+".opts";
+			this.deletePropsByGroup(groupo);
+			for (int l = 0; l < box.getJSONArray("params").length(); l++) {
+				JSONObject parm = box.getJSONArray("params").getJSONObject(l);
+				if(this.searchValue(annotation.optionalv(), parm.getString("key"))) {
+					this.setProperty(parm.getString("key"), "generated optional from editor", parm.getString("value"), groupo);	
+				}
+			}	
+		}
+	}
+	
 	private void deletePropsByGroup(String group) {
 		dao.execute("delete from PropertyParameter where group = :group",new HashMap<String, Object>(){
 			private static final long serialVersionUID = 1L;

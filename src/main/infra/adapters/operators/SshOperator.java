@@ -3,6 +3,7 @@ package main.infra.adapters.operators;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
 import org.json.JSONArray;
@@ -23,7 +24,6 @@ import net.bytebuddy.implementation.MethodCall;
 @Operator(args={"host","user","pwd","port", "cmd"})
 public class SshOperator extends OperatorStage implements Callable<String> {
 
-	private static final String UTF8 = "UTF-8";
 	
 	@Override
 	public String call() throws DomainException {		
@@ -53,16 +53,8 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		channel.connect();
 		byte[] tmp = new byte[1024];
 		while (true) {
-		    while (in.available() > 0) {
-		        int i = in.read(tmp, 0, 1024);
-		        if (i < 0) break;
-		        outputBuffer.write(tmp, 0, i);
-		    }
-		    while (err.available() > 0) {
-		        int i = err.read(tmp, 0, 1024);
-		        if (i < 0) break;
-		        errorBuffer.write(tmp, 0, i);
-		    }
+			this.writeToOut(in, outputBuffer, tmp);
+		    this.writeToOut(err, errorBuffer, tmp);
 		    if (channel.isClosed()) {
 		        if ((in.available() > 0) || (err.available() > 0)) continue; 
 		        break;
@@ -70,10 +62,18 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		    Thread.sleep(1000);
 		}
 		channel.disconnect();
-		if(!errorBuffer.toString(UTF8).equals("")) {
-			throw new DomainException(errorBuffer.toString(UTF8));
+		if(!errorBuffer.toString(StandardCharsets.UTF_8).equals("")) {
+			throw new DomainException(errorBuffer.toString(StandardCharsets.UTF_8));
 		}
-		return outputBuffer.toString(UTF8);
+		return outputBuffer.toString(StandardCharsets.UTF_8);
+	}
+	
+	private void writeToOut(InputStream in,ByteArrayOutputStream outputBuffer,byte[] tmp) throws IOException {
+		 while (in.available() > 0) {
+		        int i = in.read(tmp, 0, 1024);
+		        if (i < 0) break;
+		        outputBuffer.write(tmp, 0, i);
+		 }
 	}
 	
 	@Override

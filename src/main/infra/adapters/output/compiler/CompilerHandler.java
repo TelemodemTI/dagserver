@@ -148,7 +148,10 @@ public class CompilerHandler implements CompilerOutputPort {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream fis = classloader.getResourceAsStream("basedag.zip");
         FileOutputStream fos = new FileOutputStream(pathfolder+jarname);
-        try(ZipOutputStream zos = new ZipOutputStream(fos);ZipInputStream zis = new ZipInputStream(fis);) {
+        try(
+        		ZipOutputStream zos = new ZipOutputStream(fos);
+        		ZipInputStream zis = new ZipInputStream(fis);
+        		) {
             ZipEntry entrada;
             while ((entrada = zis.getNextEntry()) != null) {
                 String nombreArchivo = entrada.getName();

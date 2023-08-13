@@ -299,7 +299,7 @@ public class DagExecutable implements Job,JobListener {
 		}
 	}
 	
-	protected Properties getDagProperties(String string) throws Exception {
+	protected Properties getDagProperties(String string) throws DomainException {
 		return repo.getPropertiesFromDb(string);
 	}
 

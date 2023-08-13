@@ -60,11 +60,10 @@ export class DagOpsComponent {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
   async getimageByType(typeop:any){
-    return "./assets/images/operators/" + await this.service.getIcons(typeop)
+    return "/dagserver/cli/assets/images/operators/" + await this.service.getIcons(typeop)
   }
   getsource(id:any){
     if(id){
-      console.log(this.boxes)
       let founded = this.boxes.filter((event:any)=>{
         return event.id == id
       })

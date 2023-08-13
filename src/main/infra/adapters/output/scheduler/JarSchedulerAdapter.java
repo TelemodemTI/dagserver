@@ -6,12 +6,14 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
@@ -24,7 +26,7 @@ import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
 import main.domain.exceptions.DomainException;
 import main.domain.model.DagDTO;
-
+import main.infra.adapters.confs.DagPathClassLoadHelper;
 import main.infra.adapters.confs.QuartzConfig;
 import main.infra.adapters.input.graphql.types.OperatorStage;
 import main.infra.adapters.operators.Junit5SuiteOperator;
@@ -66,18 +68,22 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		try(
 				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
-				) {
-			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
-				if (!entry.isDirectory() && entry.getName().endsWith(".properties")) {
-			    	var prop = new Properties();
-			    	prop.load(cl.getResourceAsStream(entry.getName()));
-			    	String[] name = entry.getName().replace(".properties", "").split("/");
-			    	props.put(name[name.length-1], prop);
-			    }
-			}	
+				ZipFile zipFile = new ZipFile(jarFile);) {
+				Enumeration<? extends ZipEntry> entries = zipFile.entries();
+				while(entries.hasMoreElements()) {
+					 ZipEntry ze = entries.nextElement();
+					 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+					 if (!ze.isDirectory() && ze.getName().endsWith(".properties")) {
+					    	var prop = new Properties();
+					    	prop.load(cl.getResourceAsStream(ze.getName()));
+					    	String[] name = ze.getName().replace(".properties", "").split("/");
+					    	props.put(name[name.length-1], prop);
+					  }	 
+				}
 		} catch (Exception e) {
 			log.error(e);
-		} 
+		}
+		
 		return props;
 	}
 	
@@ -87,27 +93,29 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		try(
 				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+				ZipFile zipFile = new ZipFile(jarFile);
 				) {
-			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
-			    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-			        // This ZipEntry represents a class. Now, what class does it represent?
-			    	Class<?> clazz = cl.loadClass(entry.getName().replace("/", ".").replace(".class", ""));
-			        
-			    	Dag dag = clazz.getAnnotation(Dag.class);
-			        var map = new HashMap<String,String>();
-			        map.put("dagname", dag.name());
-			        map.put("groupname", dag.group());
-			        map.put("cronExpr", dag.cronExpr());
-			        map.put("onStart", dag.onStart());
-			        map.put("onEnd", dag.onEnd());
-			        String className = entry.getName().replace('/', '.'); // including ".class"
-			        String finalname = className.substring(0, className.length() - ".class".length());
-			        if(finalname != null && !finalname.startsWith("bin")) {
-			        	map.put("classname", finalname);	
-			        }
-			        classNames.add(map);
-			    }
-			}	
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			while(entries.hasMoreElements()) {
+				 ZipEntry ze = entries.nextElement();
+				 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+				 if (!ze.isDirectory() && ze.getName().endsWith(".class")) {
+				    	Class<?> clazz = cl.loadClass(ze.getName().replace("/", ".").replace(".class", ""));
+				    	Dag dag = clazz.getAnnotation(Dag.class);
+				        var map = new HashMap<String,String>();
+				        map.put("dagname", dag.name());
+				        map.put("groupname", dag.group());
+				        map.put("cronExpr", dag.cronExpr());
+				        map.put("onStart", dag.onStart());
+				        map.put("onEnd", dag.onEnd());
+				        String className = ze.getName().replace('/', '.'); // including ".class"
+				        String finalname = className.substring(0, className.length() - ".class".length());
+				        if(finalname != null && !finalname.startsWith("bin")) {
+				        	map.put("classname", finalname);	
+				        }
+				        classNames.add(map);
+				    }
+			}
 		} catch (Exception e) {
 			log.error(e);
 		}
