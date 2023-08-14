@@ -3,7 +3,6 @@ package main.application.ports.input;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
-
 import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
 import main.domain.model.DagDTO;
@@ -25,4 +24,5 @@ public interface SchedulerQueryUseCase {
 	JSONArray operators() throws DomainException;
 	List<UserDTO> credentials(String token) throws DomainException;
 	String getIcons(String type) throws DomainException;
+	List<List<String>> getDependencies(String jarname,String dagname) throws DomainException;
 }

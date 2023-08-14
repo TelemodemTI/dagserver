@@ -38,7 +38,6 @@ export class JardetailComponent {
     this.dagname = this.route.snapshot.paramMap.get("dagname")
     try {
       this.result = await this.service.getDetail(this.jarname);  
-      console.log(this.result)
       this.initui(this.result);
     } catch (error) {
       this.error_msje = error

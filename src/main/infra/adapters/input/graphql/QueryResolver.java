@@ -22,6 +22,7 @@ import main.domain.model.LogDTO;
 import main.infra.adapters.input.graphql.types.Account;
 import main.infra.adapters.input.graphql.types.Agent;
 import main.infra.adapters.input.graphql.types.Available;
+import main.infra.adapters.input.graphql.types.Deps;
 import main.infra.adapters.input.graphql.types.Detail;
 import main.infra.adapters.input.graphql.types.DetailStatus;
 import main.infra.adapters.input.graphql.types.LogEntry;
@@ -191,5 +192,12 @@ public class QueryResolver implements GraphQLQueryResolver {
 			logger.error(e);
 			return e.getMessage();
 		}
+	}
+	public Deps getDependencies(String jarname,String dagname) throws DomainException {
+		var returned = handler.getDependencies(jarname, dagname);
+		Deps deps = new Deps();
+		deps.setOnStart(returned.get(0));
+		deps.setOnEnd(returned.get(1));
+		return deps; 
 	}
 }

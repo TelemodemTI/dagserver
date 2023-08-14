@@ -49,6 +49,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String JARNAME = "jarname";
 	private static final String VALUE = "value";
 	private static final String NAME = "name";
+	private static final String BASEOPPKG = "main.infra.adapters.operators";
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
@@ -213,19 +214,22 @@ public class CompilerHandler implements CompilerOutputPort {
 	@Override
 	public JSONArray operators() throws DomainException {	
 		try {
-			Reflections reflections = new Reflections("main.infra.adapters.operators", new SubTypesScanner(false));
+			Reflections reflections = new Reflections(BASEOPPKG, new SubTypesScanner(false));
 			var lista = reflections.getSubTypesOf(OperatorStage.class).stream().collect(Collectors.toSet());
 			JSONArray arr = new JSONArray();
 			for (Iterator<Class<? extends OperatorStage>> iterator = lista.iterator(); iterator.hasNext();) {
 				Class<? extends OperatorStage> class1 = iterator.next();
-				OperatorStage op = class1.getDeclaredConstructor().newInstance();
-				var item = op.getMetadataOperator(); 
-				if(item != null) {
-					arr.put(item);	
+				if(class1.getCanonicalName().startsWith(BASEOPPKG)) {
+					OperatorStage op = class1.getDeclaredConstructor().newInstance();
+					var item = op.getMetadataOperator(); 
+					if(item != null) {
+						arr.put(item);	
+					}	
 				}
 			}
 			return arr;	
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new DomainException(e.getMessage());
 		}
 		

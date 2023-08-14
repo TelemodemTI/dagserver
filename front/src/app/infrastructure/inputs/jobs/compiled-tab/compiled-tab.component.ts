@@ -89,4 +89,7 @@ export class CompiledTabComponent {
   viewLogs(dagname:any){
     this.router.navigateByUrl(`auth/jobs/${dagname}`);
   }
+  dependencies(jarname:any,dagname:any){
+    this.router.navigateByUrl(`auth/dependencies/${jarname}/${dagname}`);
+  }
 }

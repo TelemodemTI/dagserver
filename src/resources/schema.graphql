@@ -1,3 +1,7 @@
+type Deps {
+	onStart: [String],
+	onEnd: [String]
+}
 
 type Agent {
 	id: Int,
@@ -88,7 +92,8 @@ type Query {
 	agents : [Agent],
 	getUncompileds(token:String) : [Uncompiled],
 	operatorsMetadata : String,
-	credentials(token: String) : [Account]
+	credentials(token: String) : [Account],
+	getDependencies(jarname: String, dagname: String) : Deps
 }
 
 type Mutation { 

@@ -30,6 +30,7 @@ import { DagOpsInputPort } from './application/inputs/dagops.input.port';
 import { DagPropsInputPort } from './application/inputs/dagprops.input.port';
 import { JardetailpInputPort } from './application/inputs/jardetailp.input.port';
 import { APP_BASE_HREF } from '@angular/common';
+import { DependenciesInputPort } from './application/inputs/dependencies.input.port';
 
 
 declare var window: any;
@@ -68,7 +69,8 @@ declare var window: any;
     { provide: ExistingJInputPort, useClass: FrontEndDomainService},
     { provide: CredentialsInputPort, useClass: FrontEndDomainService},
     { provide: JardetailpInputPort, useClass: FrontEndDomainService},
-    
+    { provide: DependenciesInputPort, useClass: FrontEndDomainService},
+ 
   ],
   bootstrap: [AppComponent]
 })

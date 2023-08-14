@@ -33,4 +33,5 @@ export abstract class GraphQLOutputPort {
     public abstract compile(uncompiledId: number):Promise<String>;
     public abstract getCredentials(): Promise<Credential[]>;
     public abstract updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void>;
+    public abstract getDependencies(jarname: string,dagname:string):Promise<any>;
   }

@@ -28,6 +28,7 @@
                                                     <ng-container *ngIf="item.jarname != 'SYSTEM'">
                                                         <button type="button" (click)="hasScheduled(item)" class="btn btn-default btn-circle" title="Toggle Dag"><i class="fa fa-cog"></i></button>
                                                     </ng-container>
+                                                    <button type="button" (click)="dependencies(item.jarname,item.dagname)" class="btn btn-default btn-circle" title="Dependencies"><i class="fa fa-chain"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>

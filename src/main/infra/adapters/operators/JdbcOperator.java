@@ -70,7 +70,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	public JSONObject getMetadataOperator() {
 		JSONArray params = new JSONArray();
 		params.put(new JSONObject("{name:\"url\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"name\",type:\"text\"}"));
+		params.put(new JSONObject("{name:\"user\",type:\"text\"}"));
 		params.put(new JSONObject("{name:\"pwd\",type:\"password\"}"));
 		params.put(new JSONObject("{name:\"driver\",type:\"text\"}"));
 		params.put(new JSONObject("{name:\"query\",type:\"sourcecode\"}"));

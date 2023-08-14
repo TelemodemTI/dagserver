@@ -41,7 +41,7 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 	
 	private String login(String username,String hash) {
 		List<UserDTO> list = repository.findUser(username);
-		if(list.isEmpty() ) {
+		if(!list.isEmpty() ) {
 			UserDTO user = list.get(0);
 			if(hash.equals(user.getPwdhash())) {
 				Map<String,String> claims = new HashMap<>();

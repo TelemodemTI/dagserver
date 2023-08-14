@@ -12,6 +12,7 @@ import { NewjComponent } from './infrastructure/inputs/jobs/newj/newj.component'
 import { ExistingjComponent } from './infrastructure/inputs/jobs/existingj/existingj.component';
 import { LogsComponent } from './infrastructure/inputs/logs/logs/logs.component';
 import { CredentialsComponent } from './infrastructure/inputs/credentials/credentials/credentials.component';
+import { DependenciesComponent } from './infrastructure/inputs/jobs/dependencies/dependencies.component';
 
 
 const routes: Routes = [
@@ -25,7 +26,8 @@ const routes: Routes = [
     { path: "njob/:uncompiledId" , component: ExistingjComponent },
     { path: 'jobs/jarname/:jarname/:dagname', component: JardetailComponent },
     { path: 'jobs/:dagname', component: LogsComponent },
-    { path: 'jobs/:dagname/:logid', component: LogdetailComponent }
+    { path: 'jobs/:dagname/:logid', component: LogdetailComponent },
+    { path: 'dependencies/:jarname/:dagname', component: DependenciesComponent },
   ] },
   
 ];

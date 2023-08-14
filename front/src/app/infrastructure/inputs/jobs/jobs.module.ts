@@ -9,6 +9,7 @@ import { CompiledTabComponent } from './compiled-tab/compiled-tab.component';
 import { UncompiledTabComponent } from './uncompiled-tab/uncompiled-tab.component';
 import { ParamExistingjComponent } from './param-existingj/param-existingj.component';
 import { JardetailpComponent } from './jardetailp/jardetailp.component';
+import { DependenciesComponent } from './dependencies/dependencies.component';
 
 
 
@@ -21,7 +22,8 @@ import { JardetailpComponent } from './jardetailp/jardetailp.component';
     CompiledTabComponent,
     UncompiledTabComponent,
     ParamExistingjComponent,
-    JardetailpComponent
+    JardetailpComponent,
+    DependenciesComponent
   ],
   imports: [
     CommonModule,
@@ -31,7 +33,8 @@ import { JardetailpComponent } from './jardetailp/jardetailp.component';
     JardetailComponent,
     JobsComponent,
     NewjComponent,
-    ExistingjComponent
+    ExistingjComponent,
+    DependenciesComponent
   ]
 })
 export class JobsModule { }

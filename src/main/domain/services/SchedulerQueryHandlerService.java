@@ -1,10 +1,13 @@
 package main.domain.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -116,5 +119,40 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Override
 	public String getIcons(String type) throws DomainException {
 		return scanner.getIcons(type);
+	}
+	@Override
+	public List<List<String>> getDependencies(String jarname, String dagname) throws DomainException {
+		var list = repository.listEventListeners();
+		List<String> onEnd = new ArrayList<>();
+		List<String> onStart = new ArrayList<>();
+		for (Iterator<EventListenerDTO> iterator = list.iterator(); iterator.hasNext();) {
+			EventListenerDTO eventListenerDTO = iterator.next();
+			if(eventListenerDTO.getOnEnd().equals(dagname)) {			
+				onEnd.add(this.getCanonicalname(eventListenerDTO.getListenerName()));
+			}
+			if(eventListenerDTO.getOnStart().equals(dagname)) {
+				onStart.add(this.getCanonicalname(eventListenerDTO.getListenerName()));
+			}
+		}
+		return Arrays.asList(onStart,onEnd);
+	}
+	private String getCanonicalname(String dagname) throws DomainException {
+		var listop = scanner.init().getOperators();
+		
+		String returnv = "";
+		for (Entry<String, List<Map<String, String>>> entrada : listop.entrySet()) {
+            String clave = entrada.getKey();
+            var dags = entrada.getValue();
+            for (Iterator<Map<String, String>> iterator = dags.iterator(); iterator.hasNext();) {
+				Map<String, String> map = iterator.next();
+				String namev = map.get("dagname");
+				if(namev.equals(dagname)) {
+					returnv = clave;
+					break;
+				}
+			}
+        }
+		returnv = (returnv.isBlank())?"SYSTEM":returnv;
+		return returnv+"."+dagname;
 	}
 }

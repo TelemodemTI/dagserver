@@ -19,6 +19,18 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
   
+  
+  getDependencies(jarname: string, dagname: string): Promise<any[]> {
+    return new Promise<any>((resolve,reject)=>{
+      var string = "query getDependencies($jarname:String,$dagname:String) {   getDependencies(jarname:$jarname,dagname:$dagname) {     onStart,onEnd   } }"
+      this.query(string,{jarname:jarname,dagname:dagname}).subscribe((result:any)=>{
+        if(result && result.getDependencies){
+          resolve(result.getDependencies)
+        } 
+      })
+    })
+  }
+  
 
   getIcons(type: string): Promise<string> {
     return new Promise<string>((resolve,reject)=>{
