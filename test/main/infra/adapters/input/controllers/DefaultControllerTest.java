@@ -28,4 +28,20 @@ class DefaultControllerTest {
 			assertTrue(false,e.getMessage());
 		}
     }
+    
+    @Test
+    void defaultGetTest() {
+    	Model model = mock(Model.class);
+    	HttpServletRequest request = mock(HttpServletRequest.class);
+    	HttpServletResponse response = mock(HttpServletResponse.class);
+    	try {
+    		if(controller.defaultGet(model, request, response).isRedirectView()) {
+        		assertTrue(true); 	
+        	} else {
+        		assertTrue(false);
+        	}	
+		} catch (Exception e) {
+			assertTrue(false,e.getMessage());
+		}
+    }
 }

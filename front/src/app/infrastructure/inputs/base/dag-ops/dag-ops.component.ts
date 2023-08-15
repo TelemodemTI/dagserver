@@ -34,7 +34,7 @@ export class DagOpsComponent {
       $("#stepinput-"+tabname).val("")
       this.createNewStepEvent.emit(tabname)
     } else {
-      alert("invalid")
+      alert("invalid step name")
     }
   }
 
