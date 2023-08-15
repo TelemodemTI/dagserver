@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { DagOpsInputPort } from 'src/app/application/inputs/dagops.input.port';
 declare var $:any
 declare var joint:any;
@@ -17,6 +17,26 @@ export class DagOpsComponent {
   @Output() createNewStepEvent = new EventEmitter<string>();
   
   constructor(private service: DagOpsInputPort){}
+
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(this.parameters)
+  }
+  
+  async add(operator:any,tabname:string){
+    let founded = this.boxes.filter((event:any)=>{
+      return event.id == $("#stepinput-"+tabname).val()
+    })
+    if(founded.length == 0 && $("#stepinput-"+tabname).val()){
+      let rect = this.getShapeWithImage($("#stepinput-"+tabname).val(),await this.getimageByType( operator))
+      this.boxes.push({id:$("#stepinput-"+tabname).val(),type: operator,status:$("#status-"+tabname).val(),rect:rect, source: this.getsource( $("#sourcestep-"+tabname).val())});
+      rect.addTo(this.diagram);
+      $("#stepinput-"+tabname).val("")
+      this.createNewStepEvent.emit(tabname)
+    } else {
+      alert("invalid")
+    }
+  }
 
 
   async createNewStep(tabname:string){
@@ -74,6 +94,17 @@ export class DagOpsComponent {
       }
     } else {
       return undefined
+    }
+  }
+  collapse(dagname:any){
+    let flag = ($("#props-collapser").attr("aria-expanded").toLowerCase() === 'true')?true:false;
+    let flags = ($("#props-collapser-son").attr("aria-expanded").toLowerCase() === 'true')?true:false;
+    console.log(flag)
+    if(flag && !flags){
+      setTimeout(()=>{
+        $("#props-collapser").trigger("click");
+      },50)
+
     }
   }
 }

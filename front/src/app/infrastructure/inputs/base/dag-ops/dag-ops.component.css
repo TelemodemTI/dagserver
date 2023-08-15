@@ -1,0 +1,36 @@
+.opbtn {
+    width: 5em;
+    height: 5em;
+    border: 0;
+}
+.CmdOperator {
+    height: 5.5em;
+    background: url('/dagserver/cli/assets/images/operators/cmd.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+.SshOperator {
+    background: url('/dagserver/cli/assets/images/operators/ssh.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+.DummyOperator {
+    background: url('/dagserver/cli/assets/images/operators/dummy.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+.FileOperator {
+    background: url('/dagserver/cli/assets/images/operators/file.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+.GroovyOperator {
+    background: url('/dagserver/cli/assets/images/operators/groovy.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+.JdbcOperator{
+    background: url('/dagserver/cli/assets/images/operators/jdbc.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}

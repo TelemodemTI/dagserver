@@ -1,26 +1,47 @@
-<a data-toggle="collapse" href="#collapseOne{{dagName}}" aria-expanded="false" class="collapsed">Create new operator</a>
+<a data-toggle="collapse" id="props-collapser-son" href="#collapseOne{{dagName}}" aria-expanded="false" class="collapsed"  (click)="collapse(dagName)">Create new operator</a>
 <div id="collapseOne{{dagName}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
                                             <div class="panel-body">
-                                                <div class="form-group">
-                                                    <label>Name</label>
-                                                    <input id="stepinput-{{dagName}}" class="form-control dagname inputc {{dagName}}" placeholder="new Operator name" value="step1">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Name</label>
+                                                        <input id="stepinput-{{dagName}}" class="form-control dagname inputc {{dagName}}" placeholder="new Operator name" value="step1">
+                                                    </div>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>Source Step</label>
-                                                    <select id="sourcestep-{{dagName}}" class="form-control dagname {{dagName}}">
-                                                        <option *ngFor="let item of boxes" value="{{item.id}}">{{item.id}}</option>    
-                                                    </select>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Source Step</label>
+                                                        <select id="sourcestep-{{dagName}}" class="form-control dagname {{dagName}}">
+                                                            <option *ngFor="let item of boxes" value="{{item.id}}">{{item.id}}</option>    
+                                                        </select>
+                                                    </div>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>Status</label>
-                                                    <select id="status-{{dagName}}" class="form-control dagname {{dagName}}">
-                                                        <option value="ANY">ANY</option>    
-                                                        <option value="OK">OK</option>    
-                                                        <option value="ERROR">ERROR</option>    
-                                                    </select>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Status</label>
+                                                        <select id="status-{{dagName}}" class="form-control dagname {{dagName}}">
+                                                            <option value="ANY">ANY</option>    
+                                                            <option value="OK">OK</option>    
+                                                            <option value="ERROR">ERROR</option>    
+                                                        </select>
+                                                    </div>
                                                 </div>
+                                                
                                                 <div class="form-group">
-                                                    <label>Type</label>
+                                                    <label>Operators</label><br>
+                                                    <button type="submit" class="DummyOperator opbtn" (click)="add('main.infra.adapters.operators.DummyOperator',dagName)" title="Dummy Operator"><img></button>
+                                                    <button type="submit" class="CmdOperator opbtn" (click)="add('main.infra.adapters.operators.CmdOperator',dagName)" title="Windows CMD Operator"><img></button>
+                                                    <button type="submit" class="SshOperator opbtn" (click)="add('main.infra.adapters.operators.SshOperator',dagName)" title="Remote SSh Operator"><img></button>
+                                                    <button type="submit" class="FileOperator opbtn" (click)="add('main.infra.adapters.operators.FileOperator',dagName)" title="File Operator"><img></button>
+                                                    <button type="submit" class="GroovyOperator opbtn" (click)="add('main.infra.adapters.operators.GroovyOperator',dagName)" title="Groovy Script Operator"><img></button>
+                                                    <button type="submit" class="JdbcOperator opbtn" (click)="add('main.infra.adapters.operators.JdbcOperator',dagName)" title="Jdbc Operator"><img></button>
+                                                    
+                                                    
+                                                    
+                                                </div>
+                                                
+                                                
+                                                <div class="form-group">
+                                                    <label>Or select by list</label>
                                                     <select id="steptype-{{dagName}}" class="form-control dagname {{dagName}}">
                                                         <option *ngFor="let item of parameters" value="{{item.class}}">{{item.name}}</option>
                                                     </select>
@@ -30,3 +51,4 @@
                                                 </a>
                                             </div>
                                         </div>
+                                  

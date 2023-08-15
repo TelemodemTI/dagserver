@@ -24,6 +24,10 @@ export class DagPropsComponent {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+      setTimeout(()=>{
+        $("#props-collapser").trigger("click");
+      },50)
+      
       let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.dagName;})[0]
       if(obj.trigger){
         this.changeTrigger(obj.trigger)
@@ -65,5 +69,18 @@ export class DagPropsComponent {
       let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]
       obj.name = newname
       this.changeDagNameEvent.emit(obj)
+    }
+    collapse(dagname:any){
+      
+      let flag = ($("#props-collapser").attr("aria-expanded").toLowerCase() === 'true')?true:false;
+      let flags = ($("#props-collapser-son").attr("aria-expanded").toLowerCase() === 'true')?true:false;
+
+      if(flags && !flag){
+  
+        setTimeout(()=>{
+          $("#props-collapser-son").trigger("click");
+        },50)
+  
+      }
     }
 }

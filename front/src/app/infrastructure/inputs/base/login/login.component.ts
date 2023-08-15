@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { LoginInputPort } from 'src/app/application/inputs/login.input.port';
 
 
-
+declare var $:any
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -20,6 +20,11 @@ export class LoginComponent {
   }
 
   ngOnInit(): void {
+    $(document).on('keypress',(e:any)=> {
+      if(e.which == 13) {
+          this.login()
+      }
+    });
     if(localStorage.getItem("dagserver_token")){
       this.router.navigateByUrl("auth")
     }

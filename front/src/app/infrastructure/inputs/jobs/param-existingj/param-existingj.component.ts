@@ -31,8 +31,11 @@ export class ParamExistingjComponent {
       if(this.editor && this.data){  
         let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
         let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
-        let value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]
-        this.editor.setValue(value.value) 
+        let value;
+        try {
+          value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
+          this.editor.setValue(value.value) 
+        } catch (error) {}
       }
     })
 
