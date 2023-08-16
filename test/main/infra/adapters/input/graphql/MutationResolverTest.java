@@ -1,6 +1,8 @@
 package main.infra.adapters.input.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,17 @@ public class MutationResolverTest {
 	@Test
 	public void scheduleDagTest() throws DomainException {
 		var resp = mutation.scheduleDag("test", "etst", "test");
+		assertNotNull(resp);
+	}
+	@Test
+	public void scheduleDagErrorTest() throws DomainException {
+		doThrow(new DomainException("test")).when(handler).scheduleDag(anyString(),anyString(),anyString());
+		var resp = mutation.scheduleDag("test", "etst", "test");
+		assertNotNull(resp);
+	}
+	@Test
+	public void unscheduleDagTest() throws DomainException {
+		var resp = mutation.unscheduleDag(anyString(),anyString(), anyString());
 		assertNotNull(resp);
 	}
 }
