@@ -25,6 +25,9 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.19.1</version>
+        <configuration>
+	        <argLine>${surefireArgLine}</argLine>
+	    </configuration>
         <dependencies>
             <dependency>
                 <groupId>org.junit.platform</groupId>
@@ -89,12 +92,18 @@
 		            <goals>
 		                <goal>prepare-agent</goal>
 		            </goals>
+		            <configuration>
+		                <propertyName>surefireArgLine</propertyName>
+		            </configuration>
 		        </execution>
 		        <execution>
 		            <id>report</id>
 		            <goals>
 		                <goal>report</goal>
 		            </goals>
+		            <configuration>
+		                <outputDirectory>${jacoco.path}</outputDirectory>
+		            </configuration>
 		        </execution>
 		    </executions>
 </plugin>
@@ -110,7 +119,9 @@
         <jwt.version>3.10.2</jwt.version>
 		<sonar.organization>maximolira</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.coverage.jacoco.xmlReportPaths>target</sonar.coverage.jacoco.xmlReportPaths>
+		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
+    	<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		
 		<sonar.exclusions>
 			**/graphql/types/**,
 			**/domain/annotations/**,
