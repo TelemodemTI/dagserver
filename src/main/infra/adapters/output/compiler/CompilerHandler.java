@@ -138,12 +138,12 @@ public class CompilerHandler implements CompilerOutputPort {
 
 		log.error(boxes);
 		
-		ClassFileLocator classFileLocator = new DirectoryClassFileLocator(pathfolder+"/testingbb/");
+		ClassFileLocator classFileLocator = new DirectoryClassFileLocator(pathfolder);
 		var pool = new TypePool.Default(new CacheProvider.Simple(),classFileLocator,TypePool.Default.ReaderMode.FAST);
 		
 		var byteBuddy = new ByteBuddy();
 		
-		Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.   NO_CONSTRUCTORS).name(dtomap.get("classname"));
+		Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.NO_CONSTRUCTORS).name(dtomap.get("classname"));
 		Initial<DagExecutable> inicial = builderbb.defineConstructor(Visibility.PUBLIC);
 		
 		ReceiverTypeDefinition<DagExecutable>  receiver = inicial.intercept(builder.build(dtomap.get(JARNAME),boxes));

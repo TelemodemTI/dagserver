@@ -6,14 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.Type;
 
-import main.application.pojos.LogPOJO;
 
 @Entity
 @Table(name="sche_logs")
-public class Log extends LogPOJO {
+public class Log {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="log_id",nullable=false)
@@ -35,5 +33,41 @@ public class Log extends LogPOJO {
 	@Column(name = "status", nullable = false)
 	private String status;
 	
-	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getDagname() {
+		return dagname;
+	}
+	public void setDagname(String dagname) {
+		this.dagname = dagname;
+	}
+	public Date getExecDt() {
+		return execDt;
+	}
+	public void setExecDt(Date execDt) {
+		this.execDt = execDt;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public String getOutputxcom() {
+		return outputxcom;
+	}
+	public void setOutputxcom(String outputxcom) {
+		this.outputxcom = outputxcom;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 }

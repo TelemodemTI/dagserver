@@ -13,7 +13,7 @@ public abstract class BaseOperator extends OperatorStage {
     @Override
     public Implementation getDinamicInvoke(String stepName, String propkey, String optkey) throws DomainException {
         try {
-            return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, getClass(), propkey);
+            return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class, String.class)).with(stepName, getClass(), propkey,optkey);
         } catch (Exception e) {
             throw new DomainException(e.getMessage());
         }

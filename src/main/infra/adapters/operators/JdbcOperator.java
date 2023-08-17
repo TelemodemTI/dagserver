@@ -11,17 +11,14 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import main.domain.annotations.Operator;
-import main.domain.core.DagExecutable;
+import main.domain.core.BaseOperator;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
+
 
 
 @Operator(args={"url","user","pwd","driver","query"},optionalv = { "xcom" })
-public class JdbcOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
+public class JdbcOperator extends BaseOperator implements Callable<List<Map<String, Object>>> {
 	
 	private static final String QUERY = "query";
 	
@@ -58,14 +55,6 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		}
 		return result;
 	}
-	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, JdbcOperator.class,propkey,optkey);	
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-    }
 	@Override
 	public JSONObject getMetadataOperator() {
 		JSONArray params = new JSONArray();
