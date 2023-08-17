@@ -1,27 +1,11 @@
 package main.infra.adapters.input.graphql.types;
 
-public class Uncompiled {
+import java.io.Serializable;
 
-	private Integer uncompiledId;
-	private String bin;
-	private Long createdDt;
-	public Integer getUncompiledId() {
-		return uncompiledId;
-	}
-	public void setUncompiledId(Integer uncompiledId) {
-		this.uncompiledId = uncompiledId;
-	}
-	public String getBin() {
-		return bin;
-	}
-	public void setBin(String bin) {
-		this.bin = bin;
-	}
-	public Long getCreatedDt() {
-		return createdDt;
-	}
-	public void setCreatedDt(Long createdDt) {
-		this.createdDt = createdDt;
-	}
-	
+import main.application.pojos.UncompiledPOJO;
+
+public class Uncompiled extends UncompiledPOJO implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 }

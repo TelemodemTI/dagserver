@@ -14,13 +14,19 @@ import org.springframework.context.ApplicationContext;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.output.repositories.SchedulerRepository;
 import net.bytebuddy.implementation.Implementation;
-
+ 
 public class OperatorStage {
 	protected static Logger log = Logger.getLogger("DAG");
 	protected String name;
 
 	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-    	return null;
+    	log.debug(stepName);
+    	log.debug(propkey);
+    	log.debug(optkey);
+    	if(stepName == null && propkey == null && optkey == null) {
+    		throw new DomainException("null dinamic invoke");
+    	}
+		return null;
     }
 	
 	public JSONObject getMetadataOperator() {

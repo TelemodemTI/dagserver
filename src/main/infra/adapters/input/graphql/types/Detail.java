@@ -3,12 +3,12 @@ package main.infra.adapters.input.graphql.types;
 import java.util.List;
 
 public class Detail {
-	public String dagname;
-	public String cronExpr;
-	public String group;
-	public String onStart;
-	public String onEnd;
-	public List<Node> node;
+	private String dagname;
+	private String cronExpr;
+	private String group;
+	private String onStart;
+	private String onEnd;
+	private List<Node> node;
 	public String getDagname() {
 		return dagname;
 	}

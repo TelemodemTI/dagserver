@@ -121,14 +121,7 @@
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
     	<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-		
-		<sonar.exclusions>
-			**/graphql/types/**,
-			**/domain/annotations/**,
-			**/domain/enums/**,
-			**/domain/model/**,
-			**/repositories/entities/**
-		</sonar.exclusions>
+		<sonar.exclusions></sonar.exclusions>
   </properties>
   
   

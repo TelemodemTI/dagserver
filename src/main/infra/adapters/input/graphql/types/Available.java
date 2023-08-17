@@ -2,13 +2,13 @@ package main.infra.adapters.input.graphql.types;
 
 public class Available {
 	
-	public String jarname;
-	public String classname;
-	public String groupname;
-	public String dagname;
-	public String cronExpr;
-	public String triggerEvent;
-	public String targetDagname;
+	private String jarname;
+	private String classname;
+	private String groupname;
+	private String dagname;
+	private String cronExpr;
+	private String triggerEvent;
+	private String targetDagname;
 	
 	
 	public String getJarname() {

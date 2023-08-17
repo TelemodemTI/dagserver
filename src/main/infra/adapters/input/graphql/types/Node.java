@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Node {
 
-	public Integer index;
-	public List<String> operations;
+	private Integer index;
+	private List<String> operations;
 	public Integer getIndex() {
 		return index;
 	}

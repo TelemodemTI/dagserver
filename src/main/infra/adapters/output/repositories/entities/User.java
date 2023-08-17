@@ -9,9 +9,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
+import main.application.pojos.UserPOJO;
+
 @Entity
 @Table(name="sche_users")
-public class User {
+public class User extends UserPOJO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="user_id",nullable=false)
@@ -30,44 +32,5 @@ public class User {
 	@Type(type="timestamp")
 	private Date createdAt;
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPwdhash() {
-		return pwdhash;
-	}
-
-	public void setPwdhash(String pwdhash) {
-		this.pwdhash = pwdhash;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public String getTypeAccount() {
-		return typeAccount;
-	}
-
-	public void setTypeAccount(String typeAccount) {
-		this.typeAccount = typeAccount;
-	}
-
+	
 }

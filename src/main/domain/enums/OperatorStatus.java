@@ -10,7 +10,7 @@ public enum OperatorStatus {
     private OperatorStatus(String s) {
         name = s;
     }
-    
+    @Override
     public String toString() {
         return this.name;
     }

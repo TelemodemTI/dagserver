@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 import main.application.ports.input.SchedulerMutationUseCase;
 import main.domain.exceptions.DomainException;
-public class MutationResolverTest {
+class MutationResolverTest {
 
 	private MutationResolver mutation = new MutationResolver();
 	
@@ -19,23 +19,23 @@ public class MutationResolverTest {
 	SchedulerMutationUseCase handler;
 	
 	@BeforeEach
-    public void init() {
+    void init() {
 		handler = mock(SchedulerMutationUseCase.class);
 		ReflectionTestUtils.setField(mutation, "handler", handler);
 	}
 	@Test
-	public void scheduleDagTest() throws DomainException {
+	void scheduleDagTest() throws DomainException {
 		var resp = mutation.scheduleDag("test", "etst", "test");
 		assertNotNull(resp);
 	}
 	@Test
-	public void scheduleDagErrorTest() throws DomainException {
+	void scheduleDagErrorTest() throws DomainException {
 		doThrow(new DomainException("test")).when(handler).scheduleDag(anyString(),anyString(),anyString());
 		var resp = mutation.scheduleDag("test", "etst", "test");
 		assertNotNull(resp);
 	}
 	@Test
-	public void unscheduleDagTest() throws DomainException {
+	void unscheduleDagTest() throws DomainException {
 		var resp = mutation.unscheduleDag(anyString(),anyString(), anyString());
 		assertNotNull(resp);
 	}
