@@ -50,6 +50,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private Map<String,List<Map<String,String>>> classMap = new HashMap<>();
 	
 	public JarSchedulerAdapter init () throws DomainException {
+		this.classMap = new HashMap<>();
 		File folder = new File(pathfolder);
 		File[] listOfFiles = folder.listFiles();	
 		for (int i = 0; i < listOfFiles.length; i++) {

@@ -18,6 +18,19 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+
+  updateProp(group:String, name: String, value: String): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation updateProp($token:String,$group:String,$key:String,$value:String) { updateProp(token:$token,group:$group,key:$key,value:$value) { status, code, value } }"
+      this.query(string,{token:token,group:group,key:name,value:value}).subscribe((result:any)=>{
+        if(result && result.updateProp){
+          resolve(result.getDependencies)
+        } 
+      })
+      resolve();
+    })
+  }
   
   
   getDependencies(jarname: string, dagname: string): Promise<any[]> {

@@ -157,6 +157,16 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			throw new DomainException(e.getMessage());
 		}
 	}
+	@Override
+	public void updateProp(String token, String group, String key, String value) throws DomainException {
+		try {
+			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+			repository.updateprop(group,key,value);
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+		
+	}
 	
 	
 }

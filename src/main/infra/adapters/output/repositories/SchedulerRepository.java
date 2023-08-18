@@ -412,4 +412,17 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			}
 		}
 	}
+
+	@Override
+	public void updateprop(String group, String key, String value) {
+		var founded = dao.read(PropertyParameter.class,QUERYPROPS+group+"'");
+		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
+			PropertyParameter propertyParameter = iterator.next();
+			if(propertyParameter.getName().equals(key)) {
+				propertyParameter.setValue(value);
+				dao.save(propertyParameter);
+				break;
+			}
+		}
+	}
 }

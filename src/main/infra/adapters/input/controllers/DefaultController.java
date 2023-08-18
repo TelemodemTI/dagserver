@@ -19,7 +19,7 @@ public class DefaultController {
 	
 	@GetMapping(path="/version")
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
-		return new ResponseEntity<>("dagserver is running!", HttpStatus.OK);
+		return new ResponseEntity<>("dagserver is running! v0.1.20230818", HttpStatus.OK);
 	}
 	@GetMapping(path={"/","/cli"})
     public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {				

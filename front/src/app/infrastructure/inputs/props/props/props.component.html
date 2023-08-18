@@ -43,7 +43,8 @@
                                         <td>
                                             <button (click)="deleteProp(item)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-trash"></i></button>&nbsp;
                                             <button (click)="deleteGroup(item)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-clone"></i></button>&nbsp;
-                                            <button (click)="viewProp(item,i)" type="button" class="btn btn-circle"><i class="fa fa-eye"></i></button>
+                                            <button (click)="viewProp(item,i)" type="button" class="btn btn-default btn-circle"><i class="fa fa-eye"></i></button>
+                                            <button (click)="edit(item,i)" type="button" class="btn btn-default btn-circle"><i class="fa fa-edit"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -91,3 +92,4 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<app-value-modal #valuemodal [param]="newvalue" [actualValue]="oldv" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>

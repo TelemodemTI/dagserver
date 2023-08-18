@@ -168,6 +168,15 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
+	
+	public StatusOp updateProp(String token,String group,String key,String value) {
+		try {
+			handler.updateProp(token,group,key,value);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();

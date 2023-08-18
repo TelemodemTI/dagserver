@@ -8,6 +8,7 @@ import { AppRoutingModule } from 'src/app/app-routing.module';
 import { DagPropsComponent } from './dag-props/dag-props.component';
 import { DagOpsComponent } from './dag-ops/dag-ops.component';
 import { DagCanvasComponent } from './dag-canvas/dag-canvas.component';
+import { ValueModalComponent } from './value-modal/value-modal.component';
 
 
 
@@ -19,7 +20,8 @@ import { DagCanvasComponent } from './dag-canvas/dag-canvas.component';
     ErrorMondalComponent,
     DagPropsComponent,
     DagOpsComponent,
-    DagCanvasComponent
+    DagCanvasComponent,
+    ValueModalComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +35,8 @@ import { DagCanvasComponent } from './dag-canvas/dag-canvas.component';
     DagPropsComponent,
     DagOpsComponent,
     DagCanvasComponent,
-    DagCanvasComponent
+    DagCanvasComponent,
+    ValueModalComponent
   ]
 })
 export class BaseModule { }

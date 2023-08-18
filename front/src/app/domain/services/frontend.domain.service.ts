@@ -47,6 +47,11 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private encryptor: EncryptionOutputPort) { }
   
+  
+  updateProp(group: String,name: String, value: String): Promise<void> {
+    return this.adapter.updateProp(group,name,value);
+  }
+  
   getDependencies(jarname:string,dagname:string): Promise<any[]> {
     return this.adapter.getDependencies(jarname,dagname)
   }

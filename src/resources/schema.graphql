@@ -110,4 +110,5 @@ type Mutation {
 	createAccount(token:String,username:String,accountType:String, pwdHash:String) : StatusOp,
 	deleteAccount(token:String,username:String) : StatusOp
 	updateParamsCompiled(token:String, idope:String,typeope:String, jarname:String. bin:String) : StatusOp
+	updateProp(token:String,group:String,key:String,value:String) : StatusOp
 }

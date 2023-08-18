@@ -44,4 +44,5 @@ public interface SchedulerRepositoryOutputPort {
 	public void createAccount(String username, String accountType, String pwdHash);
 	public void delAccount(String username);
 	public void updateParams(String idope, String typeope, String jarname, String bin);
+	public void updateprop(String group, String key, String value);
 }
