@@ -13,6 +13,7 @@ export class JardetailpComponent {
   @Input("selectedDag") selectedDag:any
   @Input("selectedStep") selectedStep:any
   @Input("selectedStepParams") selectedStepParams:any
+  @Input("selectedStepOpts") selectedStepOpts:any
   @Input("selectedStepMetadata") selectedStepMetadata:any
   @Input("jarname") jarname:any
   
@@ -68,6 +69,18 @@ export class JardetailpComponent {
         paramarr.push({key:key.name,value:vlue,type:key.type})
       }
     }
+    console.log(this.selectedStepMetadata)
+    for (let index = 0; index < this.selectedStepMetadata.opt.length; index++) {
+      const key = this.selectedStepMetadata.opt[index];
+      if(key.type != "sourcecode"){
+        let vlue = $("#param-"+key.name+"-value").val()
+        paramarr.push({key:key.name,value:vlue,type:key.type})
+      } else {
+        let vlue:string = this.editor.getValue()
+        paramarr.push({key:key.name,value:vlue,type:key.type})
+      }
+    }
+    console.log(paramarr)
     let bin = btoa(JSON.stringify(paramarr))
     await this.service.updateParamsCompiled(this.jarname,this.selectedStep,this.selectedStepMetadata.class,bin)
     this.close()

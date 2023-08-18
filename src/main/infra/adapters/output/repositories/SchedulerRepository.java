@@ -396,7 +396,10 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		byte[] bytesDecodificados = Base64.getDecoder().decode(bin);
         String cadenaDecodificada = new String(bytesDecodificados);
         JSONArray bindata = new JSONArray(cadenaDecodificada);
-        var groupname = jarname+"."+idope+"."+typeope+".props";
+		this.updateItems(jarname+"."+idope+"."+typeope+".props", bindata);
+		this.updateItems(jarname+"."+idope+"."+typeope+".opts", bindata);
+	}
+	private void updateItems(String groupname,JSONArray bindata) {
 		var founded = dao.read(PropertyParameter.class,QUERYPROPS+groupname+"'");
 		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
 			PropertyParameter propertyParameter = iterator.next();
@@ -409,5 +412,4 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			}
 		}
 	}
-	
 }

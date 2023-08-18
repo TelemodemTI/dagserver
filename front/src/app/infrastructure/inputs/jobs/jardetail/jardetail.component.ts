@@ -23,6 +23,7 @@ export class JardetailComponent {
 
   selectedDag!:any
   selectedStep!:any
+  selectedStepOpts!:any
   selectedStepParams!:any
   selectedStepMetadata!:any
 
@@ -195,12 +196,14 @@ export class JardetailComponent {
           let node = dag.node.filter((node1:any)=>{
             return node1.operations[0] == selectedStep
           })[0]
+          console.log(node)
           let params = JSON.parse(node.operations[2])
+          let opts = JSON.parse(node.operations[3])
           let metadata = JSON.parse(node.operations[4])
-          
           this.selectedStepMetadata = metadata
           this.selectedDag = dag
           this.selectedStep = selectedStep
+          this.selectedStepOpts = opts
           this.selectedStepParams = params
           this.modalp.show();
         })
