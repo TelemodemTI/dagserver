@@ -28,7 +28,6 @@ import main.domain.model.DagDTO;
 import main.infra.adapters.confs.DagPathClassLoadHelper;
 import main.infra.adapters.confs.QuartzConfig;
 import main.infra.adapters.input.graphql.types.OperatorStage;
-import main.infra.adapters.operators.Junit5SuiteOperator;
 import main.infra.adapters.operators.LogsRollupOperator;
 import main.infra.adapters.operators.RegisterSchedulerOperator;
 
@@ -214,16 +213,8 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		list.add(ops);
 		list.add(register);
 		item.setOps(list);
-		List<String> step1 = Arrays.asList("local_testing",Junit5SuiteOperator.class.getCanonicalName());
-		DagDTO evt = new DagDTO();
-		evt.setDagname("event_system_dag");
-		evt.setGroup("system_dags");
-		evt.setOnEnd("background_system_dag");
-		List<List<String>> etvlist = new ArrayList<>();
-		etvlist.add(step1);
-		evt.setOps(etvlist);
+		
 		defs.add(item);
-		defs.add(evt);
 		return defs;
 	}
 	private List<DagDTO> getDagDetailJAR(String jarname) throws DomainException {
