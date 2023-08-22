@@ -167,6 +167,20 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		}
 		
 	}
+	@Override
+	public void deleteJarfile(String token, String jarname) throws DomainException {
+		try {
+			var claims = TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+			Map<String,String> claimsmap = (Map<String, String>) claims.get(CLAIMS);
+			if(claimsmap.get("typeAccount").equals("ADMIN")) {
+				compiler.deleteJarfile(jarname);
+			} else {
+				throw new DomainException("unauthorized");
+			}
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+	}
 	
 	
 }

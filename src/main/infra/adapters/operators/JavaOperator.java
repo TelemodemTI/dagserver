@@ -1,6 +1,8 @@
 package main.infra.adapters.operators;
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.Callable;
@@ -35,20 +37,44 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
 	private <T> T runCallableFromJar(String jarPath, String className) throws Exception {
         File jarFile = new File(jarPath);
         URL jarUrl = jarFile.toURI().toURL();
-
-        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl});
-        Class<?> loadedClass = classLoader.loadClass(className);
-
-        if (Callable.class.isAssignableFrom(loadedClass)) {
-            @SuppressWarnings("unchecked")
-            Callable<T> callableInstance = (Callable<T>) loadedClass.getDeclaredConstructor().newInstance();
-            T result = callableInstance.call();
-            classLoader.close();
-            return result;
-        } else {
-            classLoader.close();
-            throw new IllegalArgumentException("Class must implement Callable and Serializable.");
+        try(
+        		URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl});
+        	) {
+        	Class<?> loadedClass = classLoader.loadClass(className);
+        	if (Callable.class.isAssignableFrom(loadedClass)) {
+                @SuppressWarnings("unchecked")
+                Callable<T> callableInstance = (Callable<T>) loadedClass.getDeclaredConstructor().newInstance();
+                if(this.methodExist(callableInstance, "setXcom")){
+                	this.execSetParams(callableInstance,"setXcom" , this.xcom);
+                }
+                if(this.methodExist(callableInstance, "setArgs")){
+                	this.execSetParams(callableInstance,"setArgs" , this.args);
+                }
+                T result = callableInstance.call();
+                return result;
+            } else {
+                throw new IllegalArgumentException("Class must implement Callable and Serializable.");
+            }
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+    }
+	
+	
+	 public void execSetParams(Object objeto, String nombreMetodo, Object data) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	        Class<?> clase = objeto.getClass();
+	        Method metodo = clase.getMethod(nombreMetodo, Object.class);
+	        metodo.invoke(objeto, data);
+	}
+	
+	public boolean methodExist(Object objeto, String nombreMetodo) {
+        Class<?> clase = objeto.getClass();
+        for (Method metodo : clase.getMethods()) {
+            if (metodo.getName().equals(nombreMetodo)) {
+                return true;
+            }
         }
+        return false;
     }
 	
 	@Override

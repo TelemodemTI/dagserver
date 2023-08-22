@@ -20,4 +20,5 @@ public interface SchedulerMutationUseCase {
 	void deleteAccount(String token, String username) throws DomainException;
 	void updateParamsCompiled(String token, String idope, String typeope, String jarname, String bin) throws DomainException;
 	void updateProp(String token, String group, String key, String value) throws DomainException;
+	void deleteJarfile(String token, String jarname) throws DomainException;
 }

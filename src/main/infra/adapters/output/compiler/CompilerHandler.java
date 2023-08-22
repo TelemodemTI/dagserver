@@ -233,4 +233,10 @@ public class CompilerHandler implements CompilerOutputPort {
 		}
 		
 	}
+	@Override
+	public void deleteJarfile(String jarname) throws DomainException {
+		File remove = new File(pathfolder + jarname);
+		remove.delete();
+	}
+	
 }

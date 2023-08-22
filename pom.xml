@@ -320,5 +320,34 @@
 		    <version>1.8.2</version>
 		</dependency>
 		
+		
+		<!-- SmtpClient -->
+	  	<dependency>
+				  <groupId>com.sun.mail</groupId>
+				  <artifactId>javax.mail</artifactId>
+				  <version>1.5.2</version>
+		</dependency>
+		<dependency>
+				  <groupId>javax.mail</groupId>
+				  <artifactId>javax.mail-api</artifactId>
+				  <version>1.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>smtp</artifactId>
+			<version>1.6.3</version>
+		</dependency>
+		<!-- apache commons-net -->
+		<dependency>
+		    <groupId>commons-net</groupId>
+		    <artifactId>commons-net</artifactId>
+		    <version>3.9.0</version>
+		</dependency>
+		<!-- Samba2Connector -->
+	  	<dependency>
+			  <groupId>com.hierynomus</groupId>
+			  <artifactId>smbj</artifactId>
+			  <version>0.10.0</version>
+		</dependency>
   </dependencies>
 </project>

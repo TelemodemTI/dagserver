@@ -46,7 +46,11 @@ export class FrontEndDomainService implements
   constructor(private adapter: GraphQLOutputPort,
     private jwtadapter:JWTOutputPort,
     private encryptor: EncryptionOutputPort) { }
-  
+
+
+  remove(jarname: any): Promise<void> {
+    return this.adapter.removeJarfile(jarname);
+  }
   
   updateProp(group: String,name: String, value: String): Promise<void> {
     return this.adapter.updateProp(group,name,value);

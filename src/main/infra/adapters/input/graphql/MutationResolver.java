@@ -177,6 +177,16 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
+	
+	
+	public StatusOp deleteJarfile(String token, String jarname) {
+		try {
+			handler.deleteJarfile(token,jarname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();

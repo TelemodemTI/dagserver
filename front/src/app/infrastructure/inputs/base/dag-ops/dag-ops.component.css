@@ -34,3 +34,13 @@
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
+.JavaOperator{
+    background: url('/dagserver/cli/assets/images/operators/jar.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+.MailOperator{
+    background: url('/dagserver/cli/assets/images/operators/mail.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}

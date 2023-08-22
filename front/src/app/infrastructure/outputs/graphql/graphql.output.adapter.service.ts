@@ -19,6 +19,19 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
 
+  removeJarfile(jarname: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation deleteJarfile($token:String,$jarname:String) { deleteJarfile(token:$token,jarname:$jarname) { status, code, value } }"
+      this.query(string,{token:token,jarname:jarname}).subscribe((result:any)=>{
+        if(result && result.deleteJarfile){
+          resolve(result.deleteJarfile)
+        } 
+      })
+      resolve();
+    })
+  }
+
   updateProp(group:String, name: String, value: String): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

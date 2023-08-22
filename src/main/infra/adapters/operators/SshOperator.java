@@ -1,9 +1,13 @@
 package main.infra.adapters.operators;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import org.json.JSONArray;
@@ -31,7 +35,10 @@ public class SshOperator extends BaseOperator implements Callable<String> {
 				session.setPassword(this.args.getProperty("pwd"));
 			}
 			if(this.optionals.getProperty("knowhostfile") != null) {
-				InputStream is = new ByteArrayInputStream(this.optionals.getProperty("knowhostfile").getBytes());
+				File initialFile = new File(this.optionals.getProperty("knowhostfile"));
+			    InputStream targetStream = new FileInputStream(initialFile);
+				String content = this.readFromInputStream(targetStream);
+				InputStream is = new ByteArrayInputStream(content.getBytes());
 				jsch.setKnownHosts(is);	
 			}
 			if(this.optionals.getProperty("privateKeyFile") != null) {
@@ -49,6 +56,18 @@ public class SshOperator extends BaseOperator implements Callable<String> {
 			throw new DomainException(e.getMessage());
 		}
 	}
+	
+	private String readFromInputStream(InputStream inputStream)
+			  throws IOException {
+			    StringBuilder resultStringBuilder = new StringBuilder();
+			    try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+			        String line;
+			        while ((line = br.readLine()) != null) {
+			            resultStringBuilder.append(line).append("\n");
+			        }
+			    }
+			  return resultStringBuilder.toString();
+			}
 	
 	private String sendToChannel(ChannelExec channel) throws IOException, InterruptedException, DomainException, JSchException {
 		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();

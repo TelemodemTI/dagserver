@@ -14,6 +14,7 @@ export class CompiledTabComponent {
   jobs:AvailableJobs[] = []
   title_msje:any = "Error"
   error_msje:any = ""
+  table!:any
 
   constructor(private router: Router, 
     private service: JobsInputPort){
@@ -23,7 +24,9 @@ export class CompiledTabComponent {
     this.jobs = await this.service.getAvailableJobs()
     this.calculateActive()
     setTimeout(()=>{
-      $('#dataTables-jobs').DataTable({ responsive: true });
+      if(!this.table){
+        this.table = $('#dataTables-jobs').DataTable({ responsive: true });
+      }
     },500)
   }
 
@@ -91,5 +94,18 @@ export class CompiledTabComponent {
   }
   dependencies(jarname:any,dagname:any){
     this.router.navigateByUrl(`auth/dependencies/${jarname}/${dagname}`);
+  }
+  refresh(){
+    this.scheduled = []
+    this.jobs = []
+    this.title_msje = "Error"
+    this.error_msje = ""
+    this.ngOnInit();
+  }
+  async remove(jarname:any){
+    await this.service.remove(jarname);
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['auth',"jobs"]);
+    });   
   }
 }

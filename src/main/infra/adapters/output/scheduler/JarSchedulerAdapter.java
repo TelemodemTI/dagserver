@@ -102,18 +102,20 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				 if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
 				    	Class<?> clazz = cl.loadClass(ze.getName().replace("/", ".").replace(CLASSEXT, ""));
 				    	Dag dag = clazz.getAnnotation(Dag.class);
-				        var map = new HashMap<String,String>();
-				        map.put("dagname", dag.name());
-				        map.put("groupname", dag.group());
-				        map.put("cronExpr", dag.cronExpr());
-				        map.put("onStart", dag.onStart());
-				        map.put("onEnd", dag.onEnd());
-				        String className = ze.getName().replace('/', '.'); 
-				        String finalname = className.substring(0, className.length() - CLASSEXT.length());
-				        if(finalname != null && !finalname.startsWith("bin")) {
-				        	map.put(CLASSNAME, finalname);	
+				        if(dag!=null) {
+				        	var map = new HashMap<String,String>();
+					        map.put("dagname", dag.name());
+					        map.put("groupname", dag.group());
+					        map.put("cronExpr", dag.cronExpr());
+					        map.put("onStart", dag.onStart());
+					        map.put("onEnd", dag.onEnd());
+					        String className = ze.getName().replace('/', '.'); 
+					        String finalname = className.substring(0, className.length() - CLASSEXT.length());
+					        if(finalname != null && !finalname.startsWith("bin")) {
+					        	map.put(CLASSNAME, finalname);	
+					        }
+					        classNames.add(map);	
 				        }
-				        classNames.add(map);
 				    }
 			}
 		} catch (Exception e) {

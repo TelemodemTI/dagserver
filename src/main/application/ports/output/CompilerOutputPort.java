@@ -8,5 +8,6 @@ public interface CompilerOutputPort {
 
 	void createJar(String bin, Boolean force) throws DomainException;
 	JSONArray operators() throws DomainException;
+	void deleteJarfile(String jarname) throws DomainException;
 	
 }
