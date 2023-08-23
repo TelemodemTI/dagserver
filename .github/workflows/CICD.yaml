@@ -15,6 +15,8 @@ jobs:
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.8.2
+      - name: Maven clean install
+        run: mvn clean install
       - name: Build with test
         run: mvn test
       - name: Analize Sonarcloud

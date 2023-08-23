@@ -20,6 +20,15 @@
           <release>11</release>
           <source>11</source>
           <target>11</target>
+          
+          <annotationProcessorPaths>
+                <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>${org.mapstruct.version}</version>
+                </path>
+          </annotationProcessorPaths>
+          
         </configuration>
       </plugin>
       <plugin>
@@ -120,6 +129,7 @@
 		<sonar.organization>maximolira</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
+		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
     	<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.exclusions></sonar.exclusions>
   </properties>
@@ -349,5 +359,18 @@
 			  <artifactId>smbj</artifactId>
 			  <version>0.10.0</version>
 		</dependency>
+		
+
+	    <dependency>
+	        <groupId>org.mapstruct</groupId>
+	        <artifactId>mapstruct</artifactId>
+	        <version>${org.mapstruct.version}</version>
+	    </dependency>
+		<dependency>
+		    <groupId>org.mapstruct</groupId>
+		    <artifactId>mapstruct-processor</artifactId>
+		    <version>${org.mapstruct.version}</version>
+		</dependency>
+		
   </dependencies>
 </project>
