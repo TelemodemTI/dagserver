@@ -46,6 +46,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 	
 	@Autowired
 	QueryResolverMapper mapper;
+
 	
 	public String login(String username,String pwdhash) {
 		return login.apply(Arrays.asList(username, pwdhash));
