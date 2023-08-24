@@ -1,17 +1,13 @@
 package main.infra.adapters.operators;
+
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import main.domain.annotations.Operator;
-import main.domain.core.BaseOperator;
-import main.domain.core.DagExecutable;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -22,7 +18,7 @@ import javax.mail.internet.MimeMessage;
 
 
 @Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom"})
-public class MailOperator extends BaseOperator implements Callable<String> {
+public class MailOperator extends OperatorStage implements Callable<String> {
 
 	private static final String FROMMAIL = "fromMail";
 	
@@ -80,38 +76,20 @@ public class MailOperator extends BaseOperator implements Callable<String> {
 	    }
 	}
 	
-	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class)).with(stepName, MailOperator.class);	
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-	}
-
+	
 	@Override
 	public JSONObject getMetadataOperator() {
-		
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"host\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"port\",type:\"number\"}"));
-		params.put(new JSONObject("{name:\"userSmtp\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"pwdSmtp\",type:\"password\"}"));
-		params.put(new JSONObject("{name:\"fromMail\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"toEmail\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"subject\",type:\"text\"}"));
-		
-		JSONArray opts = new JSONArray();
-		opts.put(new JSONObject("{name:\"xcom\",type:\"text\"}"));
-		opts.put(new JSONObject("{name:\"body\",type:\"sourcecode\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.MailOperator");
-		tag.put("name", "MailOperator");
-		tag.put("params", params);
-		tag.put("opt", opts);
-
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.JdbcOperator");
+		metadata.setParameter("host", "text");
+		metadata.setParameter("port", "number");
+		metadata.setParameter("userSmtp", "text");
+		metadata.setParameter("pwdSmtp", "password");
+		metadata.setParameter("fromMail", "text");
+		metadata.setParameter("toEmail", "text");
+		metadata.setParameter("subject", "text");
+		metadata.setOpts("xcom", "text");
+		metadata.setOpts("body", "sourcecode");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

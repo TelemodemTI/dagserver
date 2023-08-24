@@ -18,7 +18,8 @@ import java.util.concurrent.Callable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
-import main.domain.core.BaseOperator;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -36,7 +37,7 @@ import com.hierynomus.smbj.share.File;
 
 
 @Operator(args={"host","smbUser","smbPass","smbDomain","smbSharename","commands"})
-public class Samba2Operator extends BaseOperator implements Callable<List<String>> {
+public class Samba2Operator extends OperatorStage implements Callable<List<String>> {
 
 	private static final String SMBSHARENAME = "smbSharename";
 	
@@ -163,22 +164,14 @@ public class Samba2Operator extends BaseOperator implements Callable<List<String
 	
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-
-		params.put(new JSONObject("{name:\"host\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"smbUser\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"smbPass\",type:\"password\"}"));
-		params.put(new JSONObject("{name:\"smbDomain\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"smbSharename\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"commands\",type:\"sourcecode\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.Samba2Operator");
-		tag.put("name", "Samba2Operator");
-		tag.put("params", params);
-		tag.put("opt", new JSONArray());
-
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.Samba2Operator");
+		metadata.setParameter("host", "text");
+		metadata.setParameter("smbUser", "text");
+		metadata.setParameter("smbPass", "password");
+		metadata.setParameter("smbDomain", "text");
+		metadata.setParameter("smbSharename", "text");
+		metadata.setParameter("commands", "sourcecode");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

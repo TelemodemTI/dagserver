@@ -29,7 +29,6 @@ import main.domain.annotations.Operator;
 import main.domain.enums.OperatorStatus;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.confs.InMemoryLoggerAppender;
-import main.infra.adapters.input.graphql.types.OperatorStage;
 
 
 

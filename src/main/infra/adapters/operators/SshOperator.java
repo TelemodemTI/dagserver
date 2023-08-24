@@ -10,20 +10,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import main.domain.annotations.Operator;
-import main.domain.core.BaseOperator;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
 
 
 @Operator(args={"host","user","port", "cmd"},optionalv = { "pwd","knowhostfile","privateKeyFile" })
-public class SshOperator extends BaseOperator implements Callable<String> {
+public class SshOperator extends OperatorStage implements Callable<String> {
 
 	
 	@Override
@@ -102,26 +102,15 @@ public class SshOperator extends BaseOperator implements Callable<String> {
 	
 	@Override
 	public JSONObject getMetadataOperator() {	
-
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"host\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"user\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"port\",type:\"number\"}"));
-		params.put(new JSONObject("{name:\"cmd\",type:\"sourcecode\"}"));
-		
-		JSONArray opts = new JSONArray();
-		opts.put(new JSONObject("{name:\"knowhostfile\",type:\"text\"}"));
-		opts.put(new JSONObject("{name:\"privateKeyFile\",type:\"text\"}"));
-		opts.put(new JSONObject("{name:\"pwd\",type:\"password\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.SshOperator");
-		tag.put("name", "SshOperator");
-		tag.put("params", params);
-		tag.put("opt", opts);
-
-		return tag;
-
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.SshOperator");
+		metadata.setParameter("host", "text");
+		metadata.setParameter("user", "text");
+		metadata.setParameter("port", "number");
+		metadata.setParameter("cmd", "sourcecode");
+		metadata.setOpts("knowhostfile", "text");
+		metadata.setOpts("privateKeyFile", "text");
+		metadata.setOpts("pwd", "password");
+		return metadata.generate();
 	}
 	
 	@Override

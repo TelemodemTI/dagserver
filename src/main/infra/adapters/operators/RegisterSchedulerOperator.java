@@ -2,12 +2,14 @@ package main.infra.adapters.operators;
 
 import java.util.Properties;
 import java.util.concurrent.Callable;
+
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import main.domain.annotations.Operator;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
 import main.infra.adapters.output.repositories.SchedulerRepository;
 
 @Operator(args={})
@@ -36,5 +38,10 @@ public class RegisterSchedulerOperator extends OperatorStage implements Callable
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
+	}
+
+	@Override
+	public JSONObject getMetadataOperator() {
+		return null;
 	}
 }

@@ -146,4 +146,20 @@ class MutationResolverTest {
 		var resp2 = mutation.updateParamsCompiled("token", "idope", "typeope", "jarname", "bin");
 		assertNotNull(resp2);
 	}
+	@Test
+	void updatePropTest() throws DomainException {
+		var resp = mutation.updateProp("test","group","key", "value");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).updateProp(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.updateProp("test","group","key", "value");
+		assertNotNull(resp2);
+	}
+	@Test
+	void deleteJarfileTest() throws DomainException {
+		var resp = mutation.deleteJarfile("test","group");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteJarfile(anyString(),anyString());
+		var resp2 = mutation.deleteJarfile("test","group");
+		assertNotNull(resp2);
+	}
 }

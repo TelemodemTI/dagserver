@@ -4,8 +4,8 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Component;
 
 import main.domain.core.DagExecutable;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.Implementation.Composable;

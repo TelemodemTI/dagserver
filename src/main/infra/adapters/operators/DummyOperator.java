@@ -1,15 +1,12 @@
 package main.infra.adapters.operators;
+
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import main.domain.annotations.Operator;
-import main.domain.core.DagExecutable;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
+
 
 @Operator(args={})
 public class DummyOperator extends OperatorStage implements Callable<Void> {
@@ -23,22 +20,11 @@ public class DummyOperator extends OperatorStage implements Callable<Void> {
 		return null;
 	}
 	
-	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class)).with(stepName, DummyOperator.class);	
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-	}
 
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.DummyOperator");
-		tag.put("name", "DummyOperator");
-		tag.put("params", new JSONArray());
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.DummyOperator");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

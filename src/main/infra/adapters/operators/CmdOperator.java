@@ -5,11 +5,12 @@ import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
-import main.domain.core.BaseOperator;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
 @Operator(args={"prefix","c","cmd"})
-public class CmdOperator extends BaseOperator implements Callable<StringBuilder> {
+public class CmdOperator extends OperatorStage implements Callable<StringBuilder> {
 
 	@Override
 	public StringBuilder call() throws DomainException {		
@@ -33,11 +34,11 @@ public class CmdOperator extends BaseOperator implements Callable<StringBuilder>
 	
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONObject par = new JSONObject();
-		par.put("prefix", "text");
-		par.put("c", "text");
-		par.put("cmd", "sourcecode");
-		return this.generateMetadata(par,"main.infra.adapters.operators.CmdOperator");
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.CmdOperator");
+		metadata.setParameter("prefix", "text");
+		metadata.setParameter("c", "text");
+		metadata.setParameter("cmd", "sourcecode");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

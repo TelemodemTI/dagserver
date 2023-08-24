@@ -13,11 +13,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
-import main.domain.core.DagExecutable;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
 
 @Operator(args={"mode","filepath","rowDelimiter","firstRowTitles"},optionalv = {"xcom"})
 public class FileOperator extends OperatorStage implements Callable<List<Map<String, String>>> {
@@ -122,29 +120,17 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
     }
 	
 	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class , String.class)).with(stepName, FileOperator.class,propkey,optkey);
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-	}
-
-	@Override
 	public String getIconImage() {
 		return "file.png";
 	}
 	@Override
 	public JSONObject getMetadataOperator() {
-		Map<String,List<String>> opt = new HashMap<>();
-		List<String> optl = Arrays.asList("read","write");
-		opt.put("mode", optl);
-		JSONObject par = new JSONObject();
-		par.put("mode", "list");
-		par.put("filepath", "text");
-		par.put("rowDelimiter", "text");
-		par.put("firstRowTitles", "boolean");
-		par.put("xcom", "text");
-		return this.generateMetadata(par, "main.infra.adapters.operators.FileOperator", opt);
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.FileOperator");
+		metadata.setParameter("mode", "list", Arrays.asList("read","write"));
+		metadata.setParameter("filepath", "text");
+		metadata.setParameter("rowDelimiter", "text");
+		metadata.setParameter("firstRowTitles", "boolean");
+		metadata.setOpts("xcom", "text");
+		return metadata.generate();
 	}
 }

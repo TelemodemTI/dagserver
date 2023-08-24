@@ -15,7 +15,8 @@ import java.util.concurrent.Callable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
-import main.domain.core.BaseOperator;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -24,7 +25,7 @@ import org.apache.commons.net.ftp.FTPReply;
 
 
 @Operator(args={"host","port","ftpUser","ftpPass","commands"})
-public class FTPOperator extends BaseOperator implements Callable<List<String>> {
+public class FTPOperator extends OperatorStage implements Callable<List<String>> {
 
 	@Override
 	public List<String> call() throws DomainException {		
@@ -77,17 +78,14 @@ public class FTPOperator extends BaseOperator implements Callable<List<String>> 
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
-	}
-
-	
+	}	
 
 	private void disconnect(FTPClient ftp) throws IOException {
 		if (ftp.isConnected()) {
 			ftp.logout();
 			ftp.disconnect();
 		}	
-	}
-	
+	}	
 	
 	private JSONArray list(FTPClient ftp,String directory) throws IOException {
 		ftp.cwd(directory);
@@ -99,7 +97,6 @@ public class FTPOperator extends BaseOperator implements Callable<List<String>> 
 		ftp.enterLocalPassiveMode();
 		return content;	
 	}
-
 	
 	private void download(FTPClient ftp, String remoteFilePath, String localPath) throws DomainException {
 		ByteArrayOutputStream outputStream1 = new ByteArrayOutputStream();
@@ -118,23 +115,15 @@ public class FTPOperator extends BaseOperator implements Callable<List<String>> 
 		ftp.enterLocalPassiveMode();	
 	}
 
-	
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"host\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"port\",type:\"number\"}"));
-		params.put(new JSONObject("{name:\"ftpUser\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"ftpPass\",type:\"password\"}"));
-		params.put(new JSONObject("{name:\"commands\",type:\"sourcecode\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.FTPOperator");
-		tag.put("name", "FTPOperator");
-		tag.put("params", params);
-		tag.put("opt", new JSONArray());
-
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.FTPOperator");
+		metadata.setParameter("host", "text");
+		metadata.setParameter("port", "number");
+		metadata.setParameter("ftpUser", "text");
+		metadata.setParameter("ftpPass", "password");
+		metadata.setParameter("commands", "sourcecode");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

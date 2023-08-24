@@ -3,20 +3,14 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-
 import main.domain.annotations.Operator;
-import main.domain.core.DagExecutable;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
 
 @Operator(args={"template"})
 public class TemplateOperator extends OperatorStage implements Callable<String> {
@@ -42,25 +36,12 @@ public class TemplateOperator extends OperatorStage implements Callable<String> 
 	    return templateOutput;
 	}
 	
-	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class,String.class)).with(stepName, TemplateOperator.class,propkey);	
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-	}
 
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"template\",type:\"sourcecode\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.TemplateOperator");
-		tag.put("name", "TemplateOperator");
-		tag.put("params", params);
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.TemplateOperator");
+		metadata.setParameter("template", "sourcecode");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

@@ -9,16 +9,16 @@ import java.util.concurrent.Callable;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
-import main.domain.core.BaseOperator;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
 
 
 @Operator(args={"url","user","pwd","driver","query"},optionalv = { "xcom" })
-public class JdbcOperator extends BaseOperator implements Callable<List<Map<String, Object>>> {
+public class JdbcOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
 	
 	private static final String QUERY = "query";
 	
@@ -57,23 +57,14 @@ public class JdbcOperator extends BaseOperator implements Callable<List<Map<Stri
 	}
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"url\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"user\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"pwd\",type:\"password\"}"));
-		params.put(new JSONObject("{name:\"driver\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"query\",type:\"sourcecode\"}"));
-		
-		JSONArray opts = new JSONArray();
-		opts.put(new JSONObject("{name:\"xcom\",type:\"text\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.JdbcOperator");
-		tag.put("name", "JdbcOperator");
-		tag.put("params", params);
-		tag.put("opt", opts);
-
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.JdbcOperator");
+		metadata.setParameter("url", "text");
+		metadata.setParameter("user", "text");
+		metadata.setParameter("pwd", "password");
+		metadata.setParameter("driver", "text");
+		metadata.setParameter("query", "sourcecode");
+		metadata.setOpts("xcom","text");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

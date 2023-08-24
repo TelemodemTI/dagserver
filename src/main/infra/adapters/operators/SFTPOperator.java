@@ -24,13 +24,14 @@ import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import main.domain.annotations.Operator;
-import main.domain.core.BaseOperator;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
 
 
 @Operator(args={"host","port","sftpUser","sftpPass","commands"})
-public class SFTPOperator extends BaseOperator implements Callable<List<String>> {
+public class SFTPOperator extends OperatorStage implements Callable<List<String>> {
 
 	@Override
 	public List<String> call() throws DomainException {		
@@ -134,20 +135,13 @@ public class SFTPOperator extends BaseOperator implements Callable<List<String>>
 	
 	@Override
 	public JSONObject getMetadataOperator() {
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"host\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"port\",type:\"number\"}"));
-		params.put(new JSONObject("{name:\"sftpUser\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"sftpPass\",type:\"password\"}"));
-		params.put(new JSONObject("{name:\"commands\",type:\"sourcecode\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.SFTPOperator");
-		tag.put("name", "SFTPOperator");
-		tag.put("params", params);
-		tag.put("opt", new JSONArray());
-
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.SFTPOperator");
+		metadata.setParameter("host", "text");
+		metadata.setParameter("port", "number");
+		metadata.setParameter("sftpUser", "text");
+		metadata.setParameter("sftpPass", "password");
+		metadata.setParameter("commands", "sourcecode");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {

@@ -6,16 +6,11 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import main.domain.annotations.Operator;
-import main.domain.core.DagExecutable;
+import main.domain.core.MetadataManager;
+import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
-import main.infra.adapters.input.graphql.types.OperatorStage;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.MethodCall;
 
 @Operator(args={"jarPath","className"})
 public class JavaOperator extends OperatorStage implements Callable<Serializable> {
@@ -60,14 +55,13 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
 		}
     }
 	
-	
-	 public void execSetParams(Object objeto, String nombreMetodo, Object data) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private void execSetParams(Object objeto, String nombreMetodo, Object data) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 	        Class<?> clase = objeto.getClass();
 	        Method metodo = clase.getMethod(nombreMetodo, Object.class);
 	        metodo.invoke(objeto, data);
 	}
 	
-	public boolean methodExist(Object objeto, String nombreMetodo) {
+	private boolean methodExist(Object objeto, String nombreMetodo) {
         Class<?> clase = objeto.getClass();
         for (Method metodo : clase.getMethods()) {
             if (metodo.getName().equals(nombreMetodo)) {
@@ -76,28 +70,13 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
         }
         return false;
     }
-	
-	@Override
-	public Implementation getDinamicInvoke(String stepName,String propkey, String optkey) throws DomainException {
-		try {
-			return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class)).with(stepName, JavaOperator.class,propkey);	
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-	}
 
 	@Override
 	public JSONObject getMetadataOperator() {
-		
-		JSONArray params = new JSONArray();
-		params.put(new JSONObject("{name:\"jarPath\",type:\"text\"}"));
-		params.put(new JSONObject("{name:\"className\",type:\"text\"}"));
-		
-		JSONObject tag = new JSONObject();
-		tag.put("class", "main.infra.adapters.operators.JavaOperator");
-		tag.put("name", "JavaOperator");
-		tag.put("params", params);
-		return tag;
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.JavaOperator");
+		metadata.setParameter("jarPath", "text");
+		metadata.setParameter("className", "text");
+		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {
