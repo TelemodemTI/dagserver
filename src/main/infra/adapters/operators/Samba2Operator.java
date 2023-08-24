@@ -38,13 +38,16 @@ import com.hierynomus.smbj.share.File;
 @Operator(args={"host","smbUser","smbPass","smbDomain","smbSharename","commands"})
 public class Samba2Operator extends BaseOperator implements Callable<List<String>> {
 
+	private static final String SMBSHARENAME = "smbSharename";
+	
+	
 	@Override
 	public List<String> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
-		try {
-			var client = new SMBClient();
+		try(var client = new SMBClient();) {
+			
 			Connection connection = client.connect(this.args.getProperty("host"));
 		    AuthenticationContext ac = new AuthenticationContext(this.args.getProperty("smbUser"), this.args.getProperty("smbPass").toCharArray(), this.args.getProperty("smbDomain"));
 		    var smb2session = connection.authenticate(ac);
@@ -60,17 +63,19 @@ public class Samba2Operator extends BaseOperator implements Callable<List<String
 				String[] cmd = iterator.next().split(" ");
 				switch (cmd[0]) {
 				case "list":
-					var result = this.list(smb2session, cmd[1],this.args.getProperty("smbSharename"));
+					var result = this.list(smb2session, cmd[1],this.args.getProperty(SMBSHARENAME));
 					results.add(result.toString());
 					break;
 				case "upload":
-					this.upload(null, cmd[1], cmd[2],this.args.getProperty("smbSharename"));
+					this.upload(null, cmd[1], cmd[2],this.args.getProperty(SMBSHARENAME));
 					results.add(status1.toString());
 					break;
 				case "download":
-					this.download(smb2session, cmd[1], cmd[2],this.args.getProperty("smbSharename"));
+					this.download(smb2session, cmd[1], cmd[2],this.args.getProperty(SMBSHARENAME));
 					results.add(status1.toString());
 					break;
+				default:
+					throw new DomainException("command invalid");
 				}
 			}
 		    
@@ -105,8 +110,10 @@ public class Samba2Operator extends BaseOperator implements Callable<List<String
 		
 		try(
 				OutputStream outputStream = new FileOutputStream(localPath);
-				ByteArrayOutputStream bos = new ByteArrayOutputStream(maxReadSize);) {
-			File smbFileRead = share.openFile(remoteFilePath, EnumSet.of(AccessMask.MAXIMUM_ALLOWED), null, SMB2ShareAccess.ALL,SMB2CreateDisposition.FILE_OPEN, null);
+				ByteArrayOutputStream bos = new ByteArrayOutputStream(maxReadSize);
+				File smbFileRead = share.openFile(remoteFilePath, EnumSet.of(AccessMask.MAXIMUM_ALLOWED), null, SMB2ShareAccess.ALL,SMB2CreateDisposition.FILE_OPEN, null);
+				) {
+			
 			byte[] buffer = new byte[maxReadSize];
 			long offset = 0;
 			long remaining = smbFileRead.getFileInformation(FileStandardInformation.class).getEndOfFile();
@@ -128,18 +135,17 @@ public class Samba2Operator extends BaseOperator implements Callable<List<String
 	}
 
 	private void upload(Session smb2session, String fileInput, String remoteFilePath,String smb2sharename) throws DomainException {
-		try {
-			var file = new java.io.File(fileInput);
-			InputStream input = new FileInputStream(file);
-			Set<FileAttributes> fileAttributes = new HashSet<>();
-		    fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
-		    Set<SMB2CreateOptions> createOptions = new HashSet<>();
-		    createOptions.add(SMB2CreateOptions.FILE_RANDOM_ACCESS);
-		    DiskShare share = (DiskShare) smb2session.connectShare(smb2sharename);
-		    //File f = share.openFile(remoteFilePath, new HashSet(Arrays.asList(new AccessMask[]{AccessMask.GENERIC_ALL})), fileAttributes, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OVERWRITE_IF, createOptions);
-		    File f = share.openFile(remoteFilePath, new HashSet<AccessMask>(Arrays.asList(new AccessMask[]{AccessMask.MAXIMUM_ALLOWED})), fileAttributes, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OVERWRITE_IF, createOptions);
+		var file = new java.io.File(fileInput);
+		Set<FileAttributes> fileAttributes = new HashSet<>();
+	    fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
+	    Set<SMB2CreateOptions> createOptions = new HashSet<>();
+	    createOptions.add(SMB2CreateOptions.FILE_RANDOM_ACCESS);
+	    DiskShare share = (DiskShare) smb2session.connectShare(smb2sharename);
+		try(
+				InputStream input = new FileInputStream(file);
+				File f = share.openFile(remoteFilePath, new HashSet<AccessMask>(Arrays.asList(new AccessMask[]{AccessMask.MAXIMUM_ALLOWED})), fileAttributes, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OVERWRITE_IF, createOptions);
+				) {
 		    OutputStream oStream = f.getOutputStream();		
-			
 			
 		    byte[] buffer = new byte[1024];
 		    int len;

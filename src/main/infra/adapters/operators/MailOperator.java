@@ -24,6 +24,8 @@ import javax.mail.internet.MimeMessage;
 @Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom"})
 public class MailOperator extends BaseOperator implements Callable<String> {
 
+	private static final String FROMMAIL = "fromMail";
+	
 	@Override
 	public String call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -51,8 +53,8 @@ public class MailOperator extends BaseOperator implements Callable<String> {
 	      msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
 	      msg.addHeader("format", "flowed");
 	      msg.addHeader("Content-Transfer-Encoding", "8bit");
-	      msg.setFrom(new InternetAddress(this.args.getProperty("fromMail"), this.args.getProperty("fromMail")));
-	      msg.setReplyTo(InternetAddress.parse(this.args.getProperty("fromMail"), false));
+	      msg.setFrom(new InternetAddress(this.args.getProperty(FROMMAIL), this.args.getProperty(FROMMAIL)));
+	      msg.setReplyTo(InternetAddress.parse(this.args.getProperty(FROMMAIL), false));
 	      msg.setSubject(this.args.getProperty("subject"), "UTF-8");
 	      StringBuilder body = new StringBuilder(); 
 	      if(this.optionals.getProperty("body") != null) {

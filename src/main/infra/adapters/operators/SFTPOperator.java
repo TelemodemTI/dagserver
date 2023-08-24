@@ -73,6 +73,8 @@ public class SFTPOperator extends BaseOperator implements Callable<List<String>>
 					this.download(null, cmd[1], cmd[2]);
 					results.add(status1.toString());
 					break;
+				default:
+					throw new DomainException("command invalid");
 				}
 			}
 			

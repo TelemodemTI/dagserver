@@ -17,6 +17,8 @@ import main.domain.exceptions.DomainException;
 public class SchedulerMutationHandlerService extends BaseServiceComponent implements SchedulerMutationUseCase {
 	
 	private static final String CLAIMS = "claims";
+	private static final String ADMIN = "ADMIN";
+	private static final String TYPEACCOUNT = "typeAccount";
 	
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerMutationHandlerService.class);
@@ -124,7 +126,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		try {
 			var claims = TokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			Map<String,String> claimsmap = (Map<String, String>) claims.get(CLAIMS);
-			if(claimsmap.get("typeAccount").equals("ADMIN")) {
+			if(claimsmap.get(TYPEACCOUNT).equals(ADMIN)) {
 				repository.createAccount(username,accountType,pwdHash);
 			} else {
 				throw new DomainException("insufficient privileges");
@@ -139,7 +141,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		try {
 			var claims = TokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			Map<String,String> claimsmap = (Map<String, String>) claims.get(CLAIMS);
-			if(claimsmap.get("typeAccount").equals("ADMIN")) {
+			if(claimsmap.get(TYPEACCOUNT).equals(ADMIN)) {
 				repository.delAccount(username);
 			} else {
 				throw new DomainException("insufficient privileges");
@@ -168,11 +170,12 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		
 	}
 	@Override
+	@SuppressWarnings("unchecked")
 	public void deleteJarfile(String token, String jarname) throws DomainException {
 		try {
 			var claims = TokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			Map<String,String> claimsmap = (Map<String, String>) claims.get(CLAIMS);
-			if(claimsmap.get("typeAccount").equals("ADMIN")) {
+			if(claimsmap.get(TYPEACCOUNT).equals(ADMIN)) {
 				compiler.deleteJarfile(jarname);
 			} else {
 				throw new DomainException("unauthorized");
