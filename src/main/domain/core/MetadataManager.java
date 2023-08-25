@@ -44,7 +44,7 @@ public class MetadataManager {
 	}
 	
 	public JSONObject generate() {
-		String[] namearr = this.canonicalName.split(".");
+		String[] namearr = this.canonicalName.split("\\.");
 		JSONObject tag = new JSONObject();
 		tag.put("class", this.canonicalName);
 		tag.put("name", namearr[namearr.length - 1]);
