@@ -22,6 +22,7 @@ import main.domain.model.LogDTO;
 import main.infra.adapters.input.graphql.types.Account;
 import main.infra.adapters.input.graphql.types.Agent;
 import main.infra.adapters.input.graphql.types.Available;
+import main.infra.adapters.input.graphql.types.Channel;
 import main.infra.adapters.input.graphql.types.Deps;
 import main.infra.adapters.input.graphql.types.Detail;
 import main.infra.adapters.input.graphql.types.DetailStatus;
@@ -200,5 +201,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 		deps.setOnStart(returned.get(0));
 		deps.setOnEnd(returned.get(1));
 		return deps; 
+	}
+	public List<Channel> channelStatus(String token) throws DomainException {
+		return handler.getChannels(token).stream().map(elt -> mapper.toChannel(elt)).collect(Collectors.toList());
 	}
 }

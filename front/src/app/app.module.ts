@@ -31,6 +31,8 @@ import { DagPropsInputPort } from './application/inputs/dagprops.input.port';
 import { JardetailpInputPort } from './application/inputs/jardetailp.input.port';
 import { APP_BASE_HREF } from '@angular/common';
 import { DependenciesInputPort } from './application/inputs/dependencies.input.port';
+import { InputsChannelsInputPort } from './application/inputs/inputschannels.input.port';
+import { InputsModule } from './infrastructure/inputs/inputs/inputs.module';
 
 
 declare var window: any;
@@ -48,10 +50,11 @@ declare var window: any;
     JobsModule,
     LogsModule,
     PropsModule,
-    CredentialsModule
+    CredentialsModule,
+    InputsModule
   ],
   providers: [
-    {provide: APP_BASE_HREF, useValue: window["base-href"]},
+    { provide: APP_BASE_HREF, useValue: window["base-href"]},
     { provide: GraphQLOutputPort , useClass: GraphQLOutputPortAdapterService },
     { provide: JWTOutputPort, useClass: JwtOutputPortAdapterService },
     { provide: EncryptionOutputPort, useClass: EncryptionOutputPortAdapterService },
@@ -70,6 +73,7 @@ declare var window: any;
     { provide: CredentialsInputPort, useClass: FrontEndDomainService},
     { provide: JardetailpInputPort, useClass: FrontEndDomainService},
     { provide: DependenciesInputPort, useClass: FrontEndDomainService},
+    { provide: InputsChannelsInputPort, useClass: FrontEndDomainService }
  
   ],
   bootstrap: [AppComponent]

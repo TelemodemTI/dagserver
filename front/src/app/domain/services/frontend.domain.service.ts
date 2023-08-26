@@ -25,6 +25,7 @@ import { EncryptionOutputPort } from 'src/app/application/outputs/encryption.out
 import { environment  } from 'src/environments/environment';
 import { JardetailpInputPort } from 'src/app/application/inputs/jardetailp.input.port';
 import { DependenciesInputPort } from 'src/app/application/inputs/dependencies.input.port';
+import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
 
 @Injectable({
   providedIn: 'root'
@@ -41,13 +42,13 @@ export class FrontEndDomainService implements
     ExistingJInputPort,
     CredentialsInputPort,
     JardetailpInputPort,
-    DependenciesInputPort {
+    DependenciesInputPort,
+    InputsChannelsInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
     private jwtadapter:JWTOutputPort,
     private encryptor: EncryptionOutputPort) { }
-
-
+  
   remove(jarname: any): Promise<void> {
     return this.adapter.removeJarfile(jarname);
   }
@@ -152,5 +153,8 @@ export class FrontEndDomainService implements
   }
   updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void> {
     return this.adapter.updateParamsCompiled(jarname,idope,typeope,bin);
+  }
+  getChannels(): Promise<any[]> {
+    return this.adapter.getChannels();
   }
 }

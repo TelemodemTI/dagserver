@@ -50,7 +50,7 @@ CREATE TABLE `sche_properties` (
   PRIMARY KEY (`prop_id`)
 ) ENGINE=InnoDB;
 
-
+INSERT INTO `sche_properties` VALUES ('1','STATUS','GITHUB_WEBHOOK_PROPS','ACTIVE','github channel status');
 
 DROP TABLE IF EXISTS `sche_metadata`;
 CREATE TABLE `sche_metadata` (

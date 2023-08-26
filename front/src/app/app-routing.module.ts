@@ -13,6 +13,7 @@ import { ExistingjComponent } from './infrastructure/inputs/jobs/existingj/exist
 import { LogsComponent } from './infrastructure/inputs/logs/logs/logs.component';
 import { CredentialsComponent } from './infrastructure/inputs/credentials/credentials/credentials.component';
 import { DependenciesComponent } from './infrastructure/inputs/jobs/dependencies/dependencies.component';
+import { InputsChannelsComponent } from './infrastructure/inputs/inputs/inputs-channels/inputs-channels.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
     { path: 'jobs', component: JobsComponent },
     { path: 'props', component: PropsComponent },
     { path: "njob" , component: NewjComponent },
+    { path: 'channels' , component: InputsChannelsComponent },
     { path: "admin/credentials", component: CredentialsComponent },
     { path: "njob/:uncompiledId" , component: ExistingjComponent },
     { path: 'jobs/jarname/:jarname/:dagname', component: JardetailComponent },

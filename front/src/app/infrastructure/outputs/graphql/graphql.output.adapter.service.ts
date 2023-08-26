@@ -19,6 +19,18 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
 
+  getChannels(): Promise<any[]> {
+    return new Promise<any[]>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "query channelStatus($token:String) { channelStatus(token:$token) { name,status } }"
+      this.query(string,{token:token}).subscribe((result:any)=>{
+        if(result && result.channelStatus){
+          resolve(result.channelStatus)
+        } 
+      })
+    })
+  }
+
   removeJarfile(jarname: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

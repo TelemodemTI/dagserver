@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import main.application.ports.input.SchedulerQueryUseCase;
@@ -18,6 +19,7 @@ import main.domain.core.BaseServiceComponent;
 import main.domain.core.TokenEngine;
 import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
+import main.domain.model.ChannelDTO;
 import main.domain.model.DagDTO;
 import main.domain.model.EventListenerDTO;
 import main.domain.model.LogDTO;
@@ -35,6 +37,10 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerQueryHandlerService.class);
+	
+	@Value( "${param.git_hub.propkey}" )
+	private String gitHubPropkey;
+	
 	
 	@Override
 	public List<Map<String,Object>> listScheduledJobs() throws DomainException {
@@ -154,5 +160,36 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
         }
 		returnv = (returnv.isBlank())?"SYSTEM":returnv;
 		return returnv+"."+dagname;
+	}
+	@Override
+	public List<ChannelDTO> getChannels(String token) throws DomainException {
+		Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
+		if(!claims.get("typeAccount").equals("ADMIN")) {
+			throw new DomainException("unauthorized");
+		}
+		Map<String,String> props = new HashMap<>();
+		String githubStatus = "INACTIVE";
+		var propertyList = repository.getProperties(gitHubPropkey);
+		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			if(propertyParameterDTO.getName().equals("STATUS")){
+				githubStatus = propertyParameterDTO.getValue();
+			}
+			if(propertyParameterDTO.getName().equals("GITHUB_SECRET")){
+				props.put("GITHUB_SECRET", propertyParameterDTO.getValue());
+			}
+		}
+		ChannelDTO github = new ChannelDTO();
+		github.setName("GITHUB_CHANNEL");
+		github.setStatus(githubStatus);
+		github.setProps(props);
+		ChannelDTO scheduler = new ChannelDTO();
+		scheduler.setName("SCHEDULER");
+		scheduler.setStatus("ACTIVE");
+		List<ChannelDTO> list = new ArrayList<>();
+		list.add(scheduler);
+		list.add(github);
+		
+		return list;
 	}
 }

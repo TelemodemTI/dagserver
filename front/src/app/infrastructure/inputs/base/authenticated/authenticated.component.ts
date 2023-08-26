@@ -51,6 +51,9 @@ export class AuthenticatedComponent {
   viewProps(){
     this.router.navigateByUrl("auth/props");
   }
+  viewChannels(){
+    this.router.navigateByUrl("auth/channels")
+  }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
   }

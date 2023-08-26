@@ -5,6 +5,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
+import main.domain.model.ChannelDTO;
 import main.domain.model.DagDTO;
 import main.domain.model.LogDTO;
 import main.domain.model.PropertyDTO;
@@ -25,4 +26,5 @@ public interface SchedulerQueryUseCase {
 	List<UserDTO> credentials(String token) throws DomainException;
 	String getIcons(String type) throws DomainException;
 	List<List<String>> getDependencies(String jarname,String dagname) throws DomainException;
+	List<ChannelDTO> getChannels(String token) throws DomainException;
 }
