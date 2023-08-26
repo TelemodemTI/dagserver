@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
-
+declare var $:any;
 @Component({
   selector: 'app-inputs-channels',
   templateUrl: './inputs-channels.component.html',
@@ -23,6 +23,6 @@ export class InputsChannelsComponent {
     })
   }
   options(item:any){
-
+    $("#githubModal").show();
   }
 }
