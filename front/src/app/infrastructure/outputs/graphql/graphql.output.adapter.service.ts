@@ -18,11 +18,39 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+  
+  removeGithubWebhook(name: string): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation removeGithubWebhook($token:String,$name:String) { removeGithubWebhook(token:$token,name:$name) { status,code,value }}"
+      this.query(string,{token:token,name:name}).subscribe((result:any)=>{
+        if(result && result.removeGithubWebhook && result.removeGithubWebhook.status == "ok"){
+          resolve()
+        } else if(result && result.removeGithubWebhook) {
+          reject(result.removeGithubWebhook.status)
+        }      
+      })
+    })
+  }
+  
+  createGithubWebhook(name:string,repourl:string,secret:string,jarname:string,dagname:string): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation addGitHubWebhook($token:String,$name:String,$repository:String,$secret:String,$dagname:String, $jarname:String) { addGitHubWebhook(token:$token,name:$name,repository:$repository,secret:$secret,dagname:$dagname, jarname:$jarname) { status,code,value }}"
+      this.query(string,{token:token,name:name,repository:repourl,secret:secret,jarname:jarname,dagname:dagname}).subscribe((result:any)=>{
+        if(result && result.addGitHubWebhook && result.addGitHubWebhook.status == "ok"){
+          resolve()
+        } else if(result && result.addGitHubWebhook) {
+          reject(result.addGitHubWebhook.status)
+        }      
+      })
+    })
+  }
 
   getChannels(): Promise<any[]> {
     return new Promise<any[]>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")
-      var string = "query channelStatus($token:String) { channelStatus(token:$token) { name,status } }"
+      var string = "query channelStatus($token:String) { channelStatus(token:$token) { name,status,props { key,value,descr } } }"
       this.query(string,{token:token}).subscribe((result:any)=>{
         if(result && result.channelStatus){
           resolve(result.channelStatus)

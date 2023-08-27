@@ -49,6 +49,14 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private encryptor: EncryptionOutputPort) { }
   
+  removeGithubWebhook(name: string): Promise<void> {
+    return this.adapter.removeGithubWebhook(name);
+  }
+
+  createGithubWebhook(name:string,repourl:string,secret:string,jarname:string,dagname:string): Promise<void> {
+    return this.adapter.createGithubWebhook(name,repourl,secret,jarname,dagname);
+  }
+  
   remove(jarname: any): Promise<void> {
     return this.adapter.removeJarfile(jarname);
   }

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
-import { Uncompileds } from 'src/app/domain/models/uncompiled.model';
 declare var $:any;
 @Component({
   selector: 'app-jobs',

@@ -188,6 +188,23 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 
+	public StatusOp addGitHubWebhook(String token,String name,String repository,String secret,String dagname, String jarname) {
+		try {
+			handler.addGitHubWebhook(token,name,repository,secret,dagname,jarname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp removeGithubWebhook(String token, String name) {
+		try {
+			handler.removeGithubWebhook(token,name);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
 		status.code = 200;

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import main.application.ports.input.SchedulerMutationUseCase;
@@ -19,6 +20,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	private static final String CLAIMS = "claims";
 	private static final String ADMIN = "ADMIN";
 	private static final String TYPEACCOUNT = "typeAccount";
+	
+	@Value( "${param.git_hub.propkey}" )
+	private String gitHubPropkey;
 	
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerMutationHandlerService.class);
@@ -180,6 +184,30 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			} else {
 				throw new DomainException("unauthorized");
 			}
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+	}
+
+	@Override
+	public void addGitHubWebhook(String token, String name, String repositoryUrl, String secret, String dagname,String jarname) throws DomainException {
+		try {
+			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+			repository.setProperty(name,repositoryUrl,secret,this.gitHubPropkey);
+			repository.setProperty("dagname", "GENERATED", dagname, name);
+			repository.setProperty("jarname", "GENERATED", jarname, name);
+		} catch (Exception e) {
+			throw new DomainException(e.getMessage());
+		}
+		
+	}
+	@Override
+	public void removeGithubWebhook(String token, String name) throws DomainException {
+		try {
+			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+			repository.delProperty(name, this.gitHubPropkey);
+			repository.delProperty("dagname", name);
+			repository.delProperty("jarname", name);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

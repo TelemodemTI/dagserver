@@ -1,12 +1,12 @@
 package main.domain.model;
 
-import java.util.Map;
+import java.util.List;
 
 public class ChannelDTO {
 
 	private String name;
 	private String status;
-	private Map<String,String> props;
+	private List<ChannelPropsDTO> props;
 	public String getName() {
 		return name;
 	}
@@ -19,10 +19,11 @@ public class ChannelDTO {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Map<String, String> getProps() {
+	public List<ChannelPropsDTO> getProps() {
 		return props;
 	}
-	public void setProps(Map<String, String> props) {
+	public void setProps(List<ChannelPropsDTO> props) {
 		this.props = props;
 	}
+	
 }

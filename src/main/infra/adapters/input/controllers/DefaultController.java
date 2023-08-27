@@ -34,6 +34,9 @@ public class DefaultController {
 	@PostMapping(value = "/github-webhook")
 	public ResponseEntity<String> githubEvent(Model model,HttpServletRequest request,HttpServletResponse response){
 		logger.debug(request);
+		
+		
+		
 		var ndate = new Date();
 		var sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		return new ResponseEntity<>("event raised at "+sdf.format(ndate), HttpStatus.OK);

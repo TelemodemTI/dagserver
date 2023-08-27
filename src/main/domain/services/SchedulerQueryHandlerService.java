@@ -20,6 +20,7 @@ import main.domain.core.TokenEngine;
 import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
 import main.domain.model.ChannelDTO;
+import main.domain.model.ChannelPropsDTO;
 import main.domain.model.DagDTO;
 import main.domain.model.EventListenerDTO;
 import main.domain.model.LogDTO;
@@ -167,16 +168,19 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		if(!claims.get("typeAccount").equals("ADMIN")) {
 			throw new DomainException("unauthorized");
 		}
-		Map<String,String> props = new HashMap<>();
+		List<ChannelPropsDTO> props = new ArrayList<>();
 		String githubStatus = "INACTIVE";
 		var propertyList = repository.getProperties(gitHubPropkey);
 		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO propertyParameterDTO = iterator.next();
 			if(propertyParameterDTO.getName().equals("STATUS")){
 				githubStatus = propertyParameterDTO.getValue();
-			}
-			if(propertyParameterDTO.getName().equals("GITHUB_SECRET")){
-				props.put("GITHUB_SECRET", propertyParameterDTO.getValue());
+			} else {
+				ChannelPropsDTO prop1 = new ChannelPropsDTO();
+				prop1.setKey(propertyParameterDTO.getName());
+				prop1.setDescr(propertyParameterDTO.getDescription());
+				prop1.setValue(propertyParameterDTO.getValue());
+				props.add(prop1);
 			}
 		}
 		ChannelDTO github = new ChannelDTO();
