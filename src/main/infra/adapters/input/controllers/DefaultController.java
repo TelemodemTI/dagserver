@@ -47,7 +47,7 @@ public class DefaultController {
 		String requestData = request.getReader().lines().collect(Collectors.joining());
 		JSONObject payload = new JSONObject(requestData);
 		var configs = payload.getJSONObject("hook").getJSONObject("config");
-		String repourl =configs.getString("url");
+		String repourl = payload.getJSONObject("repository").getString("html_url");
 		String secret = configs.getString("secret");
 		ChannelPropsDTO secretConfigured = handler.getChannelPropsFromRepo(repourl);
 		if(secret.equals(secretConfigured.getValue())) {
