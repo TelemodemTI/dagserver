@@ -13,7 +13,7 @@ export class UncompiledTabComponent {
   uncompileds:Uncompileds[] = []
   title_msje:any = "Error"
   error_msje:any = ""
-
+  
   constructor(private router: Router, 
     private service: JobsInputPort){
   }

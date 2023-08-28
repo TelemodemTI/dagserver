@@ -15,9 +15,17 @@
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
-
-                        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addPropModal">
-                            Add Property
+                        <button type="button" title="add property" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#addPropModal">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        <button type="button" title="export properties" class="btn btn-primary btn-circle" (click)="exportProps()">
+                            <i class="fa fa-download"></i>
+                        </button>
+                        <ng-container *ngIf="downloadText">
+                            <a class="btn btn-clear" title="Download JSON" [href]="downloadJsonHref" download="download.json">{{downloadText}}</a>
+                        </ng-container>
+                        <button type="button" title="import properties" class="btn btn-primary btn-circle" (click)="importProps()">
+                            <i class="fa fa-upload"></i>
                         </button>
                         <br><br>
                         <div class="table-responsive">
@@ -41,10 +49,10 @@
                                         </td>
                                         <td>{{item.description}}</td>
                                         <td>
-                                            <button (click)="deleteProp(item)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-trash"></i></button>&nbsp;
-                                            <button (click)="deleteGroup(item)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-clone"></i></button>&nbsp;
-                                            <button (click)="viewProp(item,i)" type="button" class="btn btn-default btn-circle"><i class="fa fa-eye"></i></button>
-                                            <button (click)="edit(item,i)" type="button" class="btn btn-default btn-circle"><i class="fa fa-edit"></i></button>
+                                            <button (click)="deleteProp(item)" title="Delete property" type="button" class="btn btn-danger btn-circle"><i class="fa fa-trash"></i></button>&nbsp;
+                                            <button (click)="deleteGroup(item)" title="Delete property by Group"  type="button" class="btn btn-danger btn-circle"><i class="fa fa-clone"></i></button>&nbsp;
+                                            <button (click)="viewProp(item,i)" title="Show value of property"  type="button" class="btn btn-default btn-circle"><i class="fa fa-eye"></i></button>
+                                            <button (click)="edit(item,i)" title="Edit value of property"  type="button" class="btn btn-default btn-circle"><i class="fa fa-edit"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -52,6 +60,28 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importPropertiesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Import JSON Property file</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>File input</label>
+                    <input #propImporter type="file" (change)="upload($event)">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button (click)="importPropperties()" type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>

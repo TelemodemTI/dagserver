@@ -134,12 +134,22 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 
 	public void setProperty(String name, String description, String value,String group) {
-		PropertyParameter nuevo = new PropertyParameter();
-		nuevo.setDescription(description);
-		nuevo.setName(name);
-		nuevo.setValue(value);
-		nuevo.setGroup(group);
-		dao.save(nuevo);
+		var founded = dao.read(PropertyParameter.class,QUERYPROPS+group+"' and props.name = '"+name+"'");
+		if(founded.isEmpty()) {
+			PropertyParameter nuevo = new PropertyParameter();
+			nuevo.setDescription(description);
+			nuevo.setName(name);
+			nuevo.setValue(value);
+			nuevo.setGroup(group);
+			dao.save(nuevo);	
+		} else {
+			PropertyParameter nuevo = founded.get(0);
+			nuevo.setDescription(description);
+			nuevo.setName(name);
+			nuevo.setValue(value);
+			nuevo.setGroup(group);
+			dao.save(nuevo);
+		}
 	}
 
 	public void delProperty(String name,String group) {
