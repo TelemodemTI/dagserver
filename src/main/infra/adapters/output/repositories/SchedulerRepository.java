@@ -113,7 +113,6 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			List<PropertyParameter> founded;
 			if(groupname != null) {
 				founded = dao.read(PropertyParameter.class,QUERYPROPS+groupname+"'");
-				if(founded.isEmpty()) throw new DomainException("DAG properties "+groupname+ " not found");
 			} else {
 				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
 			}
