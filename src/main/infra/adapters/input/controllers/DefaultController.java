@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,9 +17,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
+import main.application.ports.input.GitHubWebHookUseCase;
+import main.domain.exceptions.DomainException;
+import main.domain.model.ChannelPropsDTO;
 
 @Controller
 public class DefaultController {
+	
+	@Autowired
+	private GitHubWebHookUseCase handler;
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(DefaultController.class);
@@ -35,15 +42,19 @@ public class DefaultController {
         return redirectView;
 	}
 	@PostMapping(value = "/github-webhook")
-	public ResponseEntity<String> githubEvent(Model model,HttpServletRequest request,HttpServletResponse response) throws IOException{
+	public ResponseEntity<String> githubEvent(Model model,HttpServletRequest request,HttpServletResponse response) throws IOException, DomainException{
 		logger.debug(request);
 		String requestData = request.getReader().lines().collect(Collectors.joining());
 		JSONObject payload = new JSONObject(requestData);
 		var configs = payload.getJSONObject("hook").getJSONObject("config");
 		String repourl =configs.getString("url");
 		String secret = configs.getString("secret");
+		ChannelPropsDTO secretConfigured = handler.getChannelPropsFromRepo(repourl);
+		if(secret.equals(secretConfigured.getValue())) {
+			handler.raiseEvent(repourl);
+		}
 		var ndate = new Date();
 		var sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
-		return new ResponseEntity<>("event raised at "+sdf.format(ndate)+ " for repo "+repourl+" and secret lenght "+secret.length(), HttpStatus.OK);
+		return new ResponseEntity<>("event raised at "+sdf.format(ndate)+ " for repo "+repourl, HttpStatus.OK);
 	}
 }
