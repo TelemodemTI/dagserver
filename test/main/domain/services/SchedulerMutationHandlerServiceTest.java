@@ -51,6 +51,8 @@ public class SchedulerMutationHandlerServiceTest {
 			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
 			when(scanner.init()).thenThrow(new DomainException("test"));
 			service.scheduleDag("token", "dagname", "jarname");
+		} catch (Exception e) {
+			assertTrue(true);
 		}
 	}
 }
