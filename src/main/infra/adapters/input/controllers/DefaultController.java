@@ -55,10 +55,7 @@ public class DefaultController {
 		String secret = request.getHeader("X-Hub-Signature");
 		ChannelPropsDTO secretConfigured = handler.getChannelPropsFromRepo(repourl);
 		builder.append("repo url::"+repourl+"\n");
-		builder.append("secret::"+secret+"\n");
-		builder.append("secreto::"+secretConfigured.getValue()+"\n");
 		String hashedcomp = this.calculeHashSecret(secretConfigured.getValue(),requestData);
-		builder.append("hashed secret::"+hashedcomp);
 		var ndate = new Date();
 		var sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		if(secret.equals(hashedcomp)) {
