@@ -23,34 +23,6 @@ services:
       vpcbr:
         ipv4_address: 10.5.0.3
   
-  
-
-
-  db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_DATABASE: 'scheduler'
-      # So you don't have to use root, but you can if you like
-      MYSQL_USER: 'scheduler_user'
-      # You can use whatever password you like
-      MYSQL_PASSWORD: 'password'
-      # Password for root access
-      MYSQL_ROOT_PASSWORD: 'password'
-    healthcheck:
-            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-            timeout: 20s
-            retries: 10
-    ports:
-      - '65306:3306'
-    expose:
-      - '3306'
-    volumes:
-      - my-db:/tmp/mysql
-    networks:
-      vpcbr:
-        ipv4_address: 10.5.0.4
-
 
 networks:
   vpcbr:
@@ -59,5 +31,3 @@ networks:
      config:
        - subnet: 10.5.0.0/16
          gateway: 10.5.0.1
-volumes:
-  my-db: 
