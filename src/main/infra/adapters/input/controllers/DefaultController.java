@@ -43,18 +43,22 @@ public class DefaultController {
 	}
 	@PostMapping(value = "/github-webhook")
 	public ResponseEntity<String> githubEvent(Model model,HttpServletRequest request,HttpServletResponse response) throws IOException, DomainException{
-		logger.debug(request);
+		StringBuilder builder = new StringBuilder();
 		String requestData = request.getReader().lines().collect(Collectors.joining());
 		JSONObject payload = new JSONObject(requestData);
 		var configs = payload.getJSONObject("hook").getJSONObject("config");
 		String repourl = payload.getJSONObject("repository").getString("html_url");
 		String secret = configs.getString("secret");
 		ChannelPropsDTO secretConfigured = handler.getChannelPropsFromRepo(repourl);
+		builder.append("repo url::"+repourl+"\n");
+		builder.append("secret::"+secret+"\n");
+		builder.append("secreto::"+secretConfigured.getValue()+"\n");
+		var ndate = new Date();
+		var sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		if(secret.equals(secretConfigured.getValue())) {
 			handler.raiseEvent(repourl);
+			builder.append("event raised at "+sdf.format(ndate)+ " for repo "+repourl);
 		}
-		var ndate = new Date();
-		var sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
-		return new ResponseEntity<>("event raised at "+sdf.format(ndate)+ " for repo "+repourl, HttpStatus.OK);
+		return new ResponseEntity<>(builder.toString(), HttpStatus.OK);
 	}
 }

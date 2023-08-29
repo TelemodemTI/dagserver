@@ -229,7 +229,6 @@ public class CompilerHandler implements CompilerOutputPort {
 			}
 			return arr;	
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new DomainException(e.getMessage());
 		}
 		

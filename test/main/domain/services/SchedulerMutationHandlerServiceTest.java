@@ -13,12 +13,11 @@ import main.domain.exceptions.DomainException;
 import main.infra.adapters.output.scheduler.JarSchedulerAdapter;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
-public class SchedulerMutationHandlerServiceTest {
+
+class SchedulerMutationHandlerServiceTest {
 
 	private SchedulerMutationHandlerService service = new SchedulerMutationHandlerService();
 	
