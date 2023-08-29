@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import com.jcraft.jsch.ChannelExec;
@@ -23,11 +25,11 @@ import main.domain.exceptions.DomainException;
 
 
 @Operator(args={"host","user","port", "cmd"},optionalv = { "pwd","knowhostfile","privateKeyFile" })
-public class SshOperator extends OperatorStage implements Callable<String> {
+public class SshOperator extends OperatorStage implements Callable<Map<String,String>> {
 
 	
 	@Override
-	public String call() throws DomainException {		
+	public Map<String, String> call() throws DomainException {		
 		try {
 			JSch jsch = new JSch();		
 			Session session = jsch.getSession(this.args.getProperty("user"), this.args.getProperty("host"), Integer.parseInt(this.args.getProperty("port")));
@@ -53,6 +55,7 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		    Thread.currentThread().interrupt();
 		    return null;
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new DomainException(e.getMessage());
 		}
 	}
@@ -69,7 +72,8 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 			  return resultStringBuilder.toString();
 			}
 	
-	private String sendToChannel(ChannelExec channel) throws IOException, InterruptedException, DomainException, JSchException {
+	private Map<String, String> sendToChannel(ChannelExec channel) throws IOException, InterruptedException, DomainException, JSchException {
+		Map<String, String> output = new HashMap<>();
 		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
 		ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
 
@@ -86,10 +90,9 @@ public class SshOperator extends OperatorStage implements Callable<String> {
 		    Thread.sleep(1000);
 		}
 		channel.disconnect();
-		if(!errorBuffer.toString(StandardCharsets.UTF_8).equals("")) {
-			throw new DomainException(errorBuffer.toString(StandardCharsets.UTF_8));
-		}
-		return outputBuffer.toString(StandardCharsets.UTF_8);
+		output.put("stdout", outputBuffer.toString(StandardCharsets.UTF_8));
+		output.put("err", errorBuffer.toString(StandardCharsets.UTF_8));
+		return output;
 	}
 	
 	private void writeToOut(InputStream in,ByteArrayOutputStream outputBuffer,byte[] tmp) throws IOException {
