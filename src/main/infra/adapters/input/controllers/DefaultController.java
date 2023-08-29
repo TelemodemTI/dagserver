@@ -17,6 +17,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
+
+import fr.brouillard.oss.security.xhub.XHub;
+import fr.brouillard.oss.security.xhub.XHub.XHubConverter;
+import fr.brouillard.oss.security.xhub.XHub.XHubDigest;
 import main.application.ports.input.GitHubWebHookUseCase;
 import main.domain.exceptions.DomainException;
 import main.domain.model.ChannelPropsDTO;
@@ -46,19 +50,27 @@ public class DefaultController {
 		StringBuilder builder = new StringBuilder();
 		String requestData = request.getReader().lines().collect(Collectors.joining());
 		JSONObject payload = new JSONObject(requestData);
-		var configs = payload.getJSONObject("hook").getJSONObject("config");
+		
 		String repourl = payload.getJSONObject("repository").getString("html_url");
-		String secret = configs.getString("secret");
+		String secret = request.getHeader("X-Hub-Signature");
 		ChannelPropsDTO secretConfigured = handler.getChannelPropsFromRepo(repourl);
 		builder.append("repo url::"+repourl+"\n");
 		builder.append("secret::"+secret+"\n");
 		builder.append("secreto::"+secretConfigured.getValue()+"\n");
+		String hashedcomp = this.calculeHashSecret(secretConfigured.getValue(),requestData);
+		builder.append("hashed secret::"+hashedcomp);
 		var ndate = new Date();
 		var sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		if(secret.equals(secretConfigured.getValue())) {
+		if(secret.equals(hashedcomp)) {
 			handler.raiseEvent(repourl);
 			builder.append("event raised at "+sdf.format(ndate)+ " for repo "+repourl);
 		}
 		return new ResponseEntity<>(builder.toString(), HttpStatus.OK);
+	}
+	
+	private String calculeHashSecret(String xhubsignature,String requestData) {
+		String generatedHeader = XHub.generateHeaderXHubToken(XHubConverter.HEXA_LOWERCASE, XHubDigest.SHA1, xhubsignature, requestData.getBytes());
+		return generatedHeader;
+		
 	}
 }
