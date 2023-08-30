@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -235,10 +237,13 @@ public class CompilerHandler implements CompilerOutputPort {
 	}
 	@Override
 	public void deleteJarfile(String jarname) throws DomainException {
-		File remove = new File(pathfolder + jarname);
-		var returned = remove.delete();
-		if(Boolean.FALSE.equals(returned)) {
-			throw new DomainException("file not deleted");
+		try {
+			System.gc();
+			File remove = new File(pathfolder + jarname);
+			FileDeleteStrategy.FORCE.delete(remove);
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			throw new DomainException("file sleep error");
 		}
 	}
 	

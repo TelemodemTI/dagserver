@@ -1,6 +1,7 @@
 package main.domain.enums;
 
 public enum OperatorStatus {
+	EXECUTING("EXECUTING"),
 	OK("OK"),
 	ERROR("ERROR"),
 	ANY("ANY");

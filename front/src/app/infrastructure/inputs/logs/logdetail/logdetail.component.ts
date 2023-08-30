@@ -26,7 +26,6 @@ export class LogdetailComponent {
     var result = await this.service.logs(this.dagname)
     this.item = result.filter((el:any)=>{ return el.id == this.logid})[0]
     this.status = JSON.parse(this.item.status)
-    this.xcom = JSON.parse(this.item.xcomoutput)
-    console.log(this.item)
+    this.xcom = JSON.parse(this.item.xcomoutput.replace(/\\n/g, "<br />"))
   }  
 }

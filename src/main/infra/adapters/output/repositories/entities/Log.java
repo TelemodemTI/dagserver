@@ -19,7 +19,10 @@ public class Log {
 	 
 	@Column(name = "dagname", nullable = false)
 	private String dagname;
-	 
+	
+	@Column(name = "evalkey", nullable = false)
+	private String evalkey;
+
 	@Column(name="exec_dt")
 	@Type(type="timestamp")
 	private Date execDt;
@@ -27,7 +30,7 @@ public class Log {
 	@Column(name = "text_value", nullable = false)
 	private String value;
 	
-	@Column(name = "outxcom", nullable = false)
+	@Column(name = "outxcom", nullable = true)
 	private String outputxcom;
 
 	@Column(name = "status", nullable = false)
@@ -68,6 +71,12 @@ public class Log {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getEvalkey() {
+		return evalkey;
+	}
+	public void setEvalkey(String evalkey) {
+		this.evalkey = evalkey;
 	}
 
 }

@@ -104,8 +104,11 @@ export class CompiledTabComponent {
   }
   async remove(jarname:any){
     await this.service.remove(jarname);
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['auth',"jobs"]);
-    });   
+    setTimeout(()=>{
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['auth',"jobs"]);
+      });   
+    },2000)
+    
   }
 }

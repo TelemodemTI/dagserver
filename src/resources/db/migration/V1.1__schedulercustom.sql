@@ -14,10 +14,11 @@ CREATE TABLE `sche_events_listeners` (
 DROP TABLE IF EXISTS `sche_logs`;
 CREATE TABLE `sche_logs` (
   `log_id` int NOT NULL AUTO_INCREMENT,
+  `evalkey` varchar(190) DEFAULT NULL,
   `dagname` varchar(190) DEFAULT NULL,
   `exec_dt` datetime DEFAULT NULL,
   `text_value` text,
-  `outxcom` text,
+  `outxcom` text DEFAULT NULL,
   `status` text,
   PRIMARY KEY (`log_id`)
 ) ENGINE=InnoDB;

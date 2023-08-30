@@ -1,11 +1,14 @@
 package main.domain.core;
 
 import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -116,9 +119,15 @@ public class DagExecutable implements Job,JobListener {
 		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
 		Map<String,OperatorStatus> status = new HashMap<>();
+		Date evalDt = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
+		repo.setLog(evalstring,dagname, fa.getResult(),null,status);
 		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		while (breadthFirstIterator.hasNext()) {
+			
 			DagNode node = (DagNode) breadthFirstIterator.next();
+			status.put(node.name, OperatorStatus.EXECUTING);
 			logdag.debug("executing node::"+node.name);
 			var statusToBe = this.constraints.get(node.name);
 			if(statusToBe != null) {
@@ -126,12 +135,13 @@ public class DagExecutable implements Job,JobListener {
 			} else {
 				logdag.debug("no constraint");
 			}
+			repo.setLog(evalstring,dagname, fa.getResult(),null,status);
 			Class<?> clazz = node.operator;
-			this.instanciateEvaluate(clazz,node,xcom,statusToBe,logdag,status,fa);
+			this.instanciateEvaluate(evalstring,clazz,node,xcom,statusToBe,logdag,status,fa);
 		}
-		return this.setLogEvaluate(fa, xcom, status);
+		return this.setLogEvaluate(evalstring,fa, xcom, status);
 	}
-	private void instanciateEvaluate(Class<?> clazz,DagNode node,JSONObject xcom,OperatorStatus statusToBe,Logger logdag,Map<String,OperatorStatus> status,InMemoryLoggerAppender fa) throws JobExecutionException {
+	private void instanciateEvaluate(String evalkey,Class<?> clazz,DagNode node,JSONObject xcom,OperatorStatus statusToBe,Logger logdag,Map<String,OperatorStatus> status,InMemoryLoggerAppender fa) throws JobExecutionException {
 		try {
 			OperatorStage op = (OperatorStage) clazz.getDeclaredConstructor().newInstance();
 			op.setArgs(node.args);
@@ -158,7 +168,7 @@ public class DagExecutable implements Job,JobListener {
 				Logger.getRootLogger().removeAppender(fa);
 				try {
 					String locatedAt = repo.createInternalStatus(xcom);
-					repo.setLog(dagname, fa.getResult(),locatedAt,status);	
+					repo.setLog(evalkey,dagname, fa.getResult(),locatedAt,status);	
 				} catch (Exception e2) {
 					log.error(e2);
 				}
@@ -166,11 +176,11 @@ public class DagExecutable implements Job,JobListener {
 			}
 		}
 	}
-	private OperatorStatus setLogEvaluate(InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status) throws JobExecutionException {
+	private OperatorStatus setLogEvaluate(String evaluatekey,InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status) throws JobExecutionException {
 		try {
 			Logger.getRootLogger().removeAppender(fa);
 			String locatedAt = repo.createInternalStatus(xcom);
-			repo.setLog(dagname, fa.getResult(),locatedAt,status);
+			repo.setLog(evaluatekey,dagname, fa.getResult(),locatedAt,status);
 			return OperatorStatus.OK;	
 		} catch (Exception e) {
 			throw new JobExecutionException(e);
@@ -339,5 +349,16 @@ public class DagExecutable implements Job,JobListener {
 	public JobDetail getDetail() {
 		return this.jobDetail;
 	}
-
+	private String generateRandomString(Integer targetStringLength) {
+		int leftLimit = 97; // letter 'a'
+	    int rightLimit = 122; // letter 'z'
+	    Random random = new Random();
+	    StringBuilder buffer = new StringBuilder(targetStringLength);
+	    for (int i = 0; i < targetStringLength; i++) {
+	        int randomLimitedInt = leftLimit + (int) 
+	          (random.nextFloat() * (rightLimit - leftLimit + 1));
+	        buffer.append((char) randomLimitedInt);
+	    }
+	    return buffer.toString();
+	}
 }

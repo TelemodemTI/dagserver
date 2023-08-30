@@ -87,15 +87,28 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return mapper.toLogDTO(log);
 	}
 	
-	public void setLog(String dagname,String value,String xcom, Map<String, OperatorStatus> status) {
-		var entry = new Log();
-		entry.setDagname(dagname);
-		entry.setExecDt(new Date());
-		entry.setValue(value);
-		entry.setOutputxcom(xcom);
-		JSONObject statusObj = new JSONObject(status);
-		entry.setStatus(statusObj.toString());
-		dao.save(entry);
+	public void setLog(String evalkey,String dagname,String value,String xcom, Map<String, OperatorStatus> status) {
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("evalkey",evalkey);
+		var founded = dao.read(Log.class, "select log from Log log where log.evalkey = :evalkey",param);
+		if(founded.isEmpty()) {
+			var entry = new Log();
+			entry.setDagname(dagname);
+			entry.setEvalkey(evalkey);
+			entry.setExecDt(new Date());
+			entry.setValue(value);
+			entry.setOutputxcom(xcom);
+			JSONObject statusObj = new JSONObject(status);
+			entry.setStatus(statusObj.toString());
+			dao.save(entry);	
+		} else {
+			JSONObject statusObj = new JSONObject(status);
+			var entry = founded.get(0);
+			entry.setValue(value);
+			entry.setStatus(statusObj.toString());
+			entry.setOutputxcom(xcom);
+			dao.save(entry);	
+		}
 	}
 
 	public void deleteLogsBy(Date rolldate) {
