@@ -28,4 +28,7 @@ export class LogdetailComponent {
     this.status = JSON.parse(this.item.status)
     this.xcom = JSON.parse(this.item.xcomoutput.replace(/\\n/g, "<br />"))
   }  
+  refresh(){
+    this.ngOnInit()
+  }
 }

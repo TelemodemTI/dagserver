@@ -20,19 +20,21 @@ export class LogsComponent {
   logs :any[] = []
   last !: any
   sort:any = "fa-angle-double-down";
-
+  table!:any
   async ngOnInit() {
     this.dagname = this.route.snapshot.paramMap.get('dagname');
     this.logs = await this.service.logs(this.dagname)
     this.logs.sort((a:number,b:number)=> a < b ? 1 : -1);
     this.last = this.logs.reduce((a, b) => (a.execDt > b.execDt ? a : b));
     setTimeout(()=>{
-          $('#dataTables-logs').DataTable({
-            responsive: true,
-            columnDefs: [
-              { "width": "20%", "targets": [0,1] }
-            ]
-          });
+      if(!this.table){
+        this.table = $('#dataTables-logs').DataTable({
+              responsive: true,
+              columnDefs: [
+                { "width": "20%", "targets": [0,1] }
+              ]
+        });
+      }
     },100)      
   }
   async refresh(){

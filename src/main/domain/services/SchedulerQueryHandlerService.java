@@ -163,6 +163,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		return returnv+"."+dagname;
 	}
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<ChannelDTO> getChannels(String token) throws DomainException {
 		Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
 		if(!claims.get("typeAccount").equals("ADMIN")) {
