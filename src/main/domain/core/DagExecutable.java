@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -113,15 +117,16 @@ public class DagExecutable implements Job,JobListener {
 	
 	@SuppressWarnings("rawtypes")
 	private OperatorStatus evaluate() throws JobExecutionException {
-		var fa = this.createDagMemoryAppender();
-		JSONObject xcom = new JSONObject();
-		Logger logdag = Logger.getLogger("DAG");
-		logdag.setLevel(Level.DEBUG);
-		logdag.debug("executing dag::"+this.dagname);
 		Map<String,OperatorStatus> status = new HashMap<>();
 		Date evalDt = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		String evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
+		
+		var fa = this.createDagMemoryAppender(evalstring);
+		JSONObject xcom = new JSONObject();
+		Logger logdag = Logger.getLogger(evalstring);
+		logdag.setLevel(Level.DEBUG);
+		logdag.debug("executing dag::"+this.dagname);
 		repo.setLog(evalstring,dagname, fa.getResult(),null,status);
 		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		while (breadthFirstIterator.hasNext()) {
@@ -137,6 +142,22 @@ public class DagExecutable implements Job,JobListener {
 			}
 			repo.setLog(evalstring,dagname, fa.getResult(),null,status);
 			Class<?> clazz = node.operator;
+			ExecutorService executorService = Executors.newSingleThreadExecutor();
+			Future<?> future = executorService.submit(() -> {
+			    try {
+					this.instanciateEvaluate(evalstring, clazz, node, xcom, statusToBe, logdag, status, fa);
+				} catch (JobExecutionException e) {
+					logdag.error(e);
+				}
+			});
+			while (!future.isDone()) {
+			    try {
+			    	repo.setLog(evalstring,dagname, fa.getResult(),null,status);
+			    	Thread.sleep(500);	
+				} catch (Exception e) {
+					throw new JobExecutionException(e.getMessage());
+				}
+			}
 			this.instanciateEvaluate(evalstring,clazz,node,xcom,statusToBe,logdag,status,fa);
 		}
 		return this.setLogEvaluate(evalstring,fa, xcom, status);
@@ -178,6 +199,7 @@ public class DagExecutable implements Job,JobListener {
 	}
 	private OperatorStatus setLogEvaluate(String evaluatekey,InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status) throws JobExecutionException {
 		try {
+			fa.close();
 			Logger.getRootLogger().removeAppender(fa);
 			String locatedAt = repo.createInternalStatus(xcom);
 			repo.setLog(evaluatekey,dagname, fa.getResult(),locatedAt,status);
@@ -186,9 +208,9 @@ public class DagExecutable implements Job,JobListener {
 			throw new JobExecutionException(e);
 		}
 	}
-	private InMemoryLoggerAppender createDagMemoryAppender() {
+	private InMemoryLoggerAppender createDagMemoryAppender(String name) {
 		InMemoryLoggerAppender fa = new InMemoryLoggerAppender();
-		fa.setName("DAG");
+		fa.setName(name);
 		fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
 		fa.setThreshold(Level.DEBUG);
 		fa.activateOptions();
