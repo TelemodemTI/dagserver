@@ -8,6 +8,7 @@ import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 import { Credential } from 'src/app/domain/models/credential.model';
 
 export abstract class GraphQLOutputPort {
+    public abstract exportUncompiled(uncompiledId: number): Promise<any>;
     public abstract createGithubWebhook(name:string,repourl:string,secret:string,jarname:string,dagname:string): Promise<void>;
     public abstract removeGithubWebhook(name:string): Promise<void>;
     public abstract getChannels(): Promise<any[]>;

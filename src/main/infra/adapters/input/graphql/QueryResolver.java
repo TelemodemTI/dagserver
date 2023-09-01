@@ -205,4 +205,12 @@ public class QueryResolver implements GraphQLQueryResolver {
 	public List<Channel> channelStatus(String token) throws DomainException {
 		return handler.getChannels(token).stream().map(elt -> mapper.toChannel(elt)).collect(Collectors.toList());
 	}
+	public String exportUncompiled(String token,Integer uncompiled) {
+		try {
+			return handler.exportUncompiled(token,uncompiled);
+		} catch (Exception e) {
+			logger.error(e);
+			return e.getMessage();
+		}
+	}
 }

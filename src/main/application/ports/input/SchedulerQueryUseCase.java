@@ -27,4 +27,5 @@ public interface SchedulerQueryUseCase {
 	String getIcons(String type) throws DomainException;
 	List<List<String>> getDependencies(String jarname,String dagname) throws DomainException;
 	List<ChannelDTO> getChannels(String token) throws DomainException;
+	String exportUncompiled(String token, Integer uncompiled) throws DomainException;
 }

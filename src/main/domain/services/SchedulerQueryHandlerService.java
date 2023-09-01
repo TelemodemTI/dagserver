@@ -197,4 +197,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		
 		return list;
 	}
+	@Override
+	public String exportUncompiled(String token, Integer uncompiled) throws DomainException {
+		TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		return repository.getUncompiledBin(uncompiled);
+	}
 }

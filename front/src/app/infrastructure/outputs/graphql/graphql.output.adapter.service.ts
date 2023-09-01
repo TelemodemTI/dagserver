@@ -18,6 +18,20 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+
+  exportUncompiled(uncompiledId: number): Promise<any> {
+    return new Promise<any>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "query exportUncompiled($token:String,$uncompiled:Int) { exportUncompiled(token:$token,uncompiled:$uncompiled) }"
+      this.query(string,{token:token,uncompiled:uncompiledId}).subscribe((result:any)=>{
+        if(result && result.exportUncompiled){
+          resolve(result.exportUncompiled)
+        } else if(result && result.exportUncompiled) {
+          reject(result.exportUncompiled.status)
+        }      
+      })
+    })
+  }
   
   removeGithubWebhook(name: string): Promise<void> {
     return new Promise<void>((resolve,reject)=>{

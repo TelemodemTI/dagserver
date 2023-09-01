@@ -4,6 +4,7 @@ import { Scheduled } from "src/app/domain/models/scheduled.modem";
 import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 
 export abstract class JobsInputPort {
+  public abstract exportUncompiled(uncompiledId: number):Promise<any>;
   public abstract remove(jarname: any):Promise<void>;
   public abstract deleteUncompiled(uncompiledId: number):Promise<void>;
   public abstract getAvailableJobs():Promise<AvailableJobs[]>;

@@ -107,6 +107,7 @@ type Query {
 	credentials(token: String) : [Account],
 	getDependencies(jarname: String, dagname: String) : Deps
 	channelStatus(token: String) : [Channel]
+	exportUncompiled(token: String,uncompiled:Int): String
 }
 
 type Mutation { 
