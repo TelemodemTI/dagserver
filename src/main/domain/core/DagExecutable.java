@@ -158,7 +158,6 @@ public class DagExecutable implements Job,JobListener {
 					throw new JobExecutionException(e.getMessage());
 				}
 			}
-			this.instanciateEvaluate(evalstring,clazz,node,xcom,statusToBe,logdag,status,fa);
 		}
 		return this.setLogEvaluate(evalstring,fa, xcom, status);
 	}
