@@ -212,6 +212,17 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			throw new DomainException(e.getMessage());
 		}
 	}
+	@Override
+	public void deleteLog(String token, Integer logid) throws DomainException {
+		TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.deleteLog(logid);
+	}
+	@Override
+	public void deleteAllLogs(String token, String dagname) throws DomainException {
+		TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.deleteAllLogs(dagname);
+		
+	}
 	
 	
 }

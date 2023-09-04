@@ -10,7 +10,8 @@ import { LogDetailInputPort } from 'src/app/application/inputs/logdetail.input.p
 })
 export class LogdetailComponent {
 
-  constructor(private route: ActivatedRoute, 
+  constructor(private router: Router, 
+    private route: ActivatedRoute, 
     private service: LogDetailInputPort){
   }
 
@@ -30,5 +31,8 @@ export class LogdetailComponent {
   }  
   refresh(){
     this.ngOnInit()
+  }
+  back(){
+    this.router.navigateByUrl(`auth/jobs/${this.dagname}`);
   }
 }

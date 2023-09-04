@@ -14,6 +14,8 @@ export class InputsChannelsComponent {
   items:any[] = []
   propsSelected:any[] =[]
   jobs:AvailableJobs[] = []
+  jars:any[] = []
+  dags:any[] = []
   
   @ViewChild("reponame") reponame!:ElementRef;
   @ViewChild("repourl") repourl!:ElementRef;
@@ -30,11 +32,12 @@ export class InputsChannelsComponent {
     this.items = []
     this.items = await this.service.getChannels()
     this.jobs = await this.service2.getAvailableJobs()
+    let jarsf = this.jobs.map((eleme:any)=>{return eleme.jarname })
+    this.jars = [...new Set(jarsf)];
   }
   options(item:any){
     $("#githubModal").modal('show');
     this.propsSelected = item.props
-    console.log(this.propsSelected)
   }
   async createGithubWebhook(){
     let name = this.reponame.nativeElement.value
@@ -53,5 +56,9 @@ export class InputsChannelsComponent {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigateByUrl(`auth/channels`);
     });
+  }
+  selectJarFile(){
+    this.dags = this.jobs.filter((ele:any)=>{ return ele.jarname == this.jarfile.nativeElement.value})
+    console.log(this.dags)
   }
 }

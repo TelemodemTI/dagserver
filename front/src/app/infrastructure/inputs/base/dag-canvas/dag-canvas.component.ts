@@ -45,16 +45,17 @@ export class DagCanvasComponent {
               let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
               defval = parit.value
             }
-            this.generatedIdParams.push({key:el.name,type:el.type,value:defval, domid:this.generateRandomString(5),opt:opt})
+            this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})
           })
           if(this.selectedStepParams.opt){
             this.selectedStepParams.opt.forEach((el:any)=>{
               let defval = undefined
+              let opt = el.opt?el.opt:[]
               if(step.params){
                 let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
                 defval = parit.value
               }
-              this.generatedIdParams.push({key:el.name,type:el.type, value:defval, domid:this.generateRandomString(5)})
+              this.generatedIdParams.push({key:el.name,type:el.type, value:defval,source:"OPT", domid:this.generateRandomString(5),opt:opt})
             })
           }
           this.selectedStep = step.id

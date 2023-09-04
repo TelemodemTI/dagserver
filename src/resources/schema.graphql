@@ -128,4 +128,6 @@ type Mutation {
 	deleteJarfile(token:String, jarname:String) : StatusOp
 	addGitHubWebhook(token:String,name:String,repository:String,secret:String,dagname:String, jarname:String) : StatusOp
 	removeGithubWebhook(token:String,name:String) : StatusOp
+	deleteLog(token:String,logid: Int) : StatusOp
+	deleteAllLogs(token:String,dagname:String) : StatusOp
 }

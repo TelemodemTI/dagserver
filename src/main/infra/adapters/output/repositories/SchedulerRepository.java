@@ -447,4 +447,18 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			}
 		}
 	}
+
+	@Override
+	public void deleteLog(Integer logid) {
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("logid",logid);
+		dao.execute("delete from Log where id = :logid",param);
+	}
+
+	@Override
+	public void deleteAllLogs(String dagname) {
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("dagname",dagname);
+		dao.execute("delete from Log where dagname = :dagname",param);
+	}
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 declare var $:any
 declare var CodeMirror:any
 @Component({
@@ -22,8 +22,15 @@ export class ParamExistingjComponent {
   @Output() removeStepEvent = new EventEmitter<any>();
 
   editor!:any
+  disabledChanges:any = {}
+  disabledChecklist:any = {}
+
+  constructor(private cd: ChangeDetectorRef){
+
+  }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log(this.generatedIdParams)
     this.initCodemirror().then((flag)=>{
       console.log("onchanges") 
       this.loader?.nativeElement.classList.add("invisible");
@@ -57,7 +64,6 @@ export class ParamExistingjComponent {
       if(!this.editor){
         this.initCodemirror().then((flag)=>{
           console.log("wtf")
-          
         })
       }
       $('#param-modalexistingj').modal('show');    
@@ -68,7 +74,6 @@ export class ParamExistingjComponent {
     let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
     let paramarr = []
     
-
     for (let index = 0; index < this.selectedStepParams.params.length; index++) {
       const key = this.selectedStepParams.params[index];
       if(key.type != "sourcecode"){
@@ -152,5 +157,52 @@ export class ParamExistingjComponent {
       },1)
     })
   }
-
+  isDisabled(item:any){
+    if(item.source == "OPT"){
+      if(item.value){
+          return false
+      } else { 
+          if(this.disabledChanges[item.key]){
+            return false
+          } else {
+            return true
+          }
+      }
+    } else {
+      return false
+    }
+  }
+  check(item:any,ischecked:any){
+    if(ischecked){
+      console.log("poraki1")
+      $("#param-"+item.name+"-value").val("")
+      item.value = ""
+      delete this.disabledChanges[item.key]
+    } else {
+      if(this.disabledChanges[item.key]){
+        console.log("poraki2")
+        $("#param-"+item.name+"-value").val("")
+        item.value = ""
+        console.log(item)
+        delete this.disabledChanges[item.key]
+      } else {
+        if(item.value){
+          console.log("poraki3")
+          $("#param-"+item.name+"-value").val("")
+          item.value = ""
+          delete this.disabledChanges[item.key]
+        } else {
+          console.log("poraki")
+          this.disabledChanges[item.key]=true
+        }
+      }
+    }
+  }
+  isChecked(item:any){
+    let vl :string = item.value
+    return item.source == 'PAR' || vl != ""
+  }
+  isChlDisabled(item:any){
+    return item.source == 'PAR'
+  }
 }

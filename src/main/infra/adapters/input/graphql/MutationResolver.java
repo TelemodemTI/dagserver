@@ -204,6 +204,22 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
+	public StatusOp deleteLog(String token, Integer logid) {
+		try {
+			handler.deleteLog(token,logid);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp deleteAllLogs(String token, String dagname) {
+		try {
+			handler.deleteAllLogs(token,dagname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();

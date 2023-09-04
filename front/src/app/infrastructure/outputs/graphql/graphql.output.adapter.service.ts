@@ -19,6 +19,32 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
 
+  removeLog(id: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation deleteLog($token:String,$logid:Int) { deleteLog(token:$token,logid:$logid) {status,code,value} }"
+      this.query(string,{token:token,logid:id}).subscribe((result:any)=>{
+        if(result && result.deleteLog && result.deleteLog.status == "ok"){
+          resolve()
+        } else if(result && result.deleteLog) {
+          reject(result.deleteLog.status)
+        }      
+      })
+    })
+  }
+  removeAllLog(dagname: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation deleteAllLogs($token:String,$dagname:String) { deleteAllLogs(token:$token,dagname:$dagname) {status,code,value} }"
+      this.query(string,{token:token,dagname:dagname}).subscribe((result:any)=>{
+        if(result && result.deleteAllLogs && result.deleteAllLogs.status == "ok"){
+          resolve()
+        } else if(result && result.deleteAllLogs) {
+          reject(result.deleteAllLogs.status)
+        }      
+      })
+    })
+  }
   exportUncompiled(uncompiledId: number): Promise<any> {
     return new Promise<any>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

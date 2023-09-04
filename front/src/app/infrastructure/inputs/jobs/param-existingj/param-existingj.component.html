@@ -16,19 +16,21 @@
                 <div #loader class="loader"></div>
                 <div #form class="tab-content">
                     <div class="tab-pane fade in active" id="home">
-                        
                         <div class="form-group" *ngFor="let item of generatedIdParams">
                             <ng-container *ngIf="item.type == 'text'">
                                 <label>{{item.key}}</label>
                                 <input class="form-control param-value-input" id="param-{{item.key}}-value" value="{{item.value}}">
+                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'password'">
                                 <label>{{item.key}}</label>
                                 <input class="form-control param-value-input" type="password" id="param-{{item.key}}-value" value="{{item.value}}">
+                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'number'">
                                 <label>{{item.key}}</label>
                                 <input class="form-control param-value-input" type="number" id="param-{{item.key}}-value" value="{{item.value}}">
+                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'boolean'">
                                 <label>{{item.key}}</label>
@@ -36,12 +38,14 @@
                                     <option value="true">True</option>
                                     <option value="false">False</option>
                                 </select>
+                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'list'">
                                 <label>{{item.key}}</label>
                                 <select class="form-control param-value-input" id="param-{{item.key}}-value">
                                     <option *ngFor="let opt of item.opt" value="{{opt}}">{{opt}}</option>
                                 </select>
+                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>
                         </div>
                     </div>

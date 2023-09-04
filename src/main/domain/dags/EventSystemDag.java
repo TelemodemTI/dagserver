@@ -12,6 +12,5 @@ public class EventSystemDag extends DagExecutable {
 	public EventSystemDag() throws DomainException {
 		super();
 		this.addOperator("dummy",DummyOperator.class);
-		
 	}
 }

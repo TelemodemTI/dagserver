@@ -16,9 +16,10 @@
                     <!-- /.panel-heading -->
                     <div class="panel-body">
 
-                        
+                        <button type="button" (click)="back()" class="btn btn-primary btn-circle" title="Back to Jobs"><i class="fa fa-arrow-circle-left"></i></button>          
                         <button type="button" (click)="logDEtail(last)" class="btn btn-primary btn-circle" title="View last Log"><i class="fa fa-ellipsis-h"></i></button>
                         <button type="button" (click)="refresh()" class="btn btn-primary btn-circle" title="Refresh Logs list"><i class="fa fa-refresh"></i></button>
+                        <button type="button" (click)="removeAll()" class="btn btn-danger btn-circle" title="Delete all logs"><i class="fa fa-trash"></i></button>
                         
                         <br><br>
 
@@ -39,6 +40,7 @@
                                         <td class="execlogtime">{{item.execDt | date: 'yyy-MM-dd HH:mm:ss' }}</td>
                                         <td>
                                             <button type="button" (click)="logDEtail(item)" class="btn btn-default btn-circle" title="View Log"><i class="fa fa-object-group"></i></button>
+                                            <button type="button" (click)="remove(item)" class="btn btn-danger btn-circle" title="Delete Log"><i class="fa fa-trash"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
