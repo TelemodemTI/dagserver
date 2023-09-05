@@ -2,6 +2,7 @@ package main.infra.adapters.output.compiler;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -238,12 +239,13 @@ public class CompilerHandler implements CompilerOutputPort {
 	@Override
 	public void deleteJarfile(String jarname) throws DomainException {
 		try {
-			System.gc();
 			File remove = new File(pathfolder + jarname);
 			FileDeleteStrategy.FORCE.delete(remove);
 			Thread.sleep(2000);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new DomainException("file sleep error");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
 	

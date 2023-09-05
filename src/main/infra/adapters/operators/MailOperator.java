@@ -37,7 +37,7 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 		//create Authenticator object to pass in Session.getInstance argument
 		var args = this.args;
 		Authenticator auth = new Authenticator() {
-			//override the getPasswordAuthentication method
+			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(args.getProperty("userSmtp"), args.getProperty("pwdSmtp"));
 			}
@@ -84,7 +84,7 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 		metadata.setParameter("port", "number");
 		metadata.setParameter("userSmtp", "text");
 		metadata.setParameter("pwdSmtp", "password");
-		metadata.setParameter("fromMail", "text");
+		metadata.setParameter(FROMMAIL, "text");
 		metadata.setParameter("toEmail", "text");
 		metadata.setParameter("subject", "text");
 		metadata.setOpts("xcom", "text");

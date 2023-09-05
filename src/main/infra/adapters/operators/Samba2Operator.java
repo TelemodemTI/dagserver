@@ -142,11 +142,12 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 	    Set<SMB2CreateOptions> createOptions = new HashSet<>();
 	    createOptions.add(SMB2CreateOptions.FILE_RANDOM_ACCESS);
 	    DiskShare share = (DiskShare) smb2session.connectShare(smb2sharename);
-		try(
+	    var am = new AccessMask[]{AccessMask.MAXIMUM_ALLOWED};
+	    try(
 				InputStream input = new FileInputStream(file);
-				File f = share.openFile(remoteFilePath, new HashSet<AccessMask>(Arrays.asList(new AccessMask[]{AccessMask.MAXIMUM_ALLOWED})), fileAttributes, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OVERWRITE_IF, createOptions);
-				) {
-		    OutputStream oStream = f.getOutputStream();		
+				File f = share.openFile(remoteFilePath, new HashSet<>(Arrays.asList(am)), fileAttributes, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OVERWRITE_IF, createOptions);
+	    		OutputStream oStream = f.getOutputStream();
+	    		) {
 			
 		    byte[] buffer = new byte[1024];
 		    int len;
@@ -154,8 +155,7 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 		    	oStream.write(buffer, 0, len);
 		    }
 		    oStream.flush();
-		    input.close();
-		    oStream.close();	
+		    
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
@@ -169,7 +169,7 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 		metadata.setParameter("smbUser", "text");
 		metadata.setParameter("smbPass", "password");
 		metadata.setParameter("smbDomain", "text");
-		metadata.setParameter("smbSharename", "text");
+		metadata.setParameter(SMBSHARENAME, "text");
 		metadata.setParameter("commands", "sourcecode");
 		return metadata.generate();
 	}

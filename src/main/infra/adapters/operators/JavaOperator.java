@@ -45,8 +45,7 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
                 if(this.methodExist(callableInstance, "setArgs")){
                 	this.execSetParams(callableInstance,"setArgs" , this.args);
                 }
-                T result = callableInstance.call();
-                return result;
+                return callableInstance.call();
             } else {
                 throw new IllegalArgumentException("Class must implement Callable and Serializable.");
             }

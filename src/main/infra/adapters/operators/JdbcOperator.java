@@ -62,7 +62,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		metadata.setParameter("user", "text");
 		metadata.setParameter("pwd", "password");
 		metadata.setParameter("driver", "text");
-		metadata.setParameter("query", "sourcecode");
+		metadata.setParameter(QUERY, "sourcecode");
 		metadata.setOpts("xcom","text");
 		return metadata.generate();
 	}

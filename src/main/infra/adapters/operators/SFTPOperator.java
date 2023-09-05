@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.concurrent.Callable;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -87,7 +86,7 @@ public class SFTPOperator extends OperatorStage implements Callable<List<String>
 	}
 	
 	private JSONArray list(ChannelSftp sftp,String directory) throws SftpException {
-		Vector<?> vect = sftp.ls(directory);
+		List<?> vect = sftp.ls(directory);
 		JSONArray content = new JSONArray();
 		for (Iterator<?> iterator = vect.iterator(); iterator.hasNext();) {
 			LsEntry entry = (LsEntry) iterator.next();

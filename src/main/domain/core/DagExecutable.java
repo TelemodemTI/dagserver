@@ -1,6 +1,7 @@
 package main.domain.core;
 
 import java.lang.reflect.Constructor;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -86,8 +87,8 @@ public class DagExecutable implements Job,JobListener {
 	private SchedulerRepositoryOutputPort repo;
 	private Map<String,DagNode> nodeList = new HashMap<>();
 	private Map<String,OperatorStatus> constraints = new HashMap<>();
+	private SecureRandom random = new SecureRandom();
 	protected Graph<DagNode, DefaultEdge> g;
-		
 	protected JobDetail jobDetail;
 	
 	public DagExecutable() {
@@ -145,7 +146,16 @@ public class DagExecutable implements Job,JobListener {
 			ExecutorService executorService = Executors.newSingleThreadExecutor();
 			Future<?> future = executorService.submit(() -> {
 			    try {
-					this.instanciateEvaluate(evalstring, clazz, node, xcom, statusToBe, logdag, status, fa);
+			    	Map<String,Object> args = new HashMap<>();
+			    	args.put("evalstring", evalstring);
+			    	args.put("clazz", clazz);
+			    	args.put("node", node);
+			    	args.put("xcom", xcom);
+			    	args.put("statusToBe", statusToBe);
+			    	args.put("logdag", logdag);
+			    	args.put("status", status);
+			    	args.put("fa", fa);
+					this.instanciateEvaluate(args);
 				} catch (JobExecutionException e) {
 					logdag.error(e);
 				}
@@ -154,14 +164,23 @@ public class DagExecutable implements Job,JobListener {
 			    try {
 			    	repo.setLog(evalstring,dagname, fa.getResult(),null,status);
 			    	Thread.sleep(500);	
-				} catch (Exception e) {
-					throw new JobExecutionException(e.getMessage());
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 				}
 			}
 		}
 		return this.setLogEvaluate(evalstring,fa, xcom, status);
 	}
-	private void instanciateEvaluate(String evalkey,Class<?> clazz,DagNode node,JSONObject xcom,OperatorStatus statusToBe,Logger logdag,Map<String,OperatorStatus> status,InMemoryLoggerAppender fa) throws JobExecutionException {
+	@SuppressWarnings("unchecked")
+	private void instanciateEvaluate(Map<String,Object> args) throws JobExecutionException {
+		String evalkey = (String) args.get("evalkey");
+		Class<?> clazz = (Class<?>) args.get("clazz");
+		DagNode node = (DagNode) args.get("node");
+		JSONObject xcom = (JSONObject) args.get("xcom");
+		OperatorStatus statusToBe = (OperatorStatus) args.get("statusToBe");
+		Logger logdag = (Logger) args.get("logdag");
+		Map<String,OperatorStatus> status = (Map<String, OperatorStatus>) args.get("status");
+		InMemoryLoggerAppender fa = (InMemoryLoggerAppender) args.get("fa");
 		try {
 			OperatorStage op = (OperatorStage) clazz.getDeclaredConstructor().newInstance();
 			op.setArgs(node.args);
@@ -373,11 +392,10 @@ public class DagExecutable implements Job,JobListener {
 	private String generateRandomString(Integer targetStringLength) {
 		int leftLimit = 97; // letter 'a'
 	    int rightLimit = 122; // letter 'z'
-	    Random random = new Random();
 	    StringBuilder buffer = new StringBuilder(targetStringLength);
 	    for (int i = 0; i < targetStringLength; i++) {
 	        int randomLimitedInt = leftLimit + (int) 
-	          (random.nextFloat() * (rightLimit - leftLimit + 1));
+	          (this.random.nextFloat() * (rightLimit - leftLimit + 1));
 	        buffer.append((char) randomLimitedInt);
 	    }
 	    return buffer.toString();

@@ -19,6 +19,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	
 	private static final String CLAIMS = "claims";
 	private static final String ADMIN = "ADMIN";
+	private static final String JARNAME = "jarname";
 	private static final String TYPEACCOUNT = "typeAccount";
 	
 	@Value( "${param.git_hub.propkey}" )
@@ -79,7 +80,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	public void saveUncompiled(String token, JSONObject json) throws DomainException {
 		try {
 			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
-			repository.addUncompiled(json.getString("jarname"),json);	
+			repository.addUncompiled(json.getString(JARNAME),json);	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
@@ -99,7 +100,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			String bin = repository.getUncompiledBin(uncompiled);
 			JSONObject def = new JSONObject(bin);
-			String jarname = def.getString("jarname");
+			String jarname = def.getString(JARNAME);
 			compiler.createJar(bin,force);
 			repository.createParams(jarname,bin);	
 		} catch (Exception e) {
@@ -195,7 +196,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			repository.setProperty(name,repositoryUrl,secret,this.gitHubPropkey);
 			repository.setProperty("dagname", "GENERATED", dagname, name);
-			repository.setProperty("jarname", "GENERATED", jarname, name);
+			repository.setProperty(JARNAME, "GENERATED", jarname, name);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
@@ -207,7 +208,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			repository.delProperty(name, this.gitHubPropkey);
 			repository.delProperty("dagname", name);
-			repository.delProperty("jarname", name);
+			repository.delProperty(JARNAME, name);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}

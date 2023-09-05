@@ -16,6 +16,7 @@ import main.domain.exceptions.DomainException;
 @Operator(args={"url","method","timeout","contentType"},optionalv = {"bodyxcom","authorizationHeader"})
 public class HttpOperator extends OperatorStage implements Callable<String> {
 
+	private static final String AUTHORIZATION_HEADER = "authorizationHeader";
 	
 	@Override
 	public String call() throws DomainException {		
@@ -27,8 +28,8 @@ public class HttpOperator extends OperatorStage implements Callable<String> {
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod(this.args.getProperty("method"));
 			
-			if(this.optionals.get("authorizationHeader") != null) {
-				con.setRequestProperty("Authorization", this.optionals.getProperty("authorizationHeader"));	
+			if(this.optionals.get(AUTHORIZATION_HEADER) != null) {
+				con.setRequestProperty("Authorization", this.optionals.getProperty(AUTHORIZATION_HEADER));	
 			}
 			con.setRequestProperty("Content-Type", this.args.getProperty("contentType"));
 			Integer timeout = Integer.parseInt(this.args.getProperty("timeout"));
@@ -51,7 +52,7 @@ public class HttpOperator extends OperatorStage implements Callable<String> {
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				String inputLine;
-				StringBuffer response = new StringBuffer();
+				StringBuilder response = new StringBuilder();
 				while ((inputLine = in.readLine()) != null) {
 					response.append(inputLine);
 				}
@@ -75,7 +76,7 @@ public class HttpOperator extends OperatorStage implements Callable<String> {
 		metadata.setParameter("timeout", "number");
 		metadata.setParameter("contentType", "text");
 		metadata.setOpts("bodyxcom", "text");
-		metadata.setOpts("authorizationHeader", "text");
+		metadata.setOpts(AUTHORIZATION_HEADER, "text");
 		return metadata.generate();
 	}
 	@Override

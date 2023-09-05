@@ -66,8 +66,6 @@ public class DefaultController {
 	}
 	
 	private String calculeHashSecret(String xhubsignature,String requestData) {
-		String generatedHeader = XHub.generateHeaderXHubToken(XHubConverter.HEXA_LOWERCASE, XHubDigest.SHA1, xhubsignature, requestData.getBytes());
-		return generatedHeader;
-		
+		return XHub.generateHeaderXHubToken(XHubConverter.HEXA_LOWERCASE, XHubDigest.SHA1, xhubsignature, requestData.getBytes());
 	}
 }

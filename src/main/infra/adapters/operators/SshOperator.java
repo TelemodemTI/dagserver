@@ -27,6 +27,8 @@ import main.domain.exceptions.DomainException;
 @Operator(args={"host","user","port", "cmd"},optionalv = { "pwd","knowhostfile","privateKeyFile" })
 public class SshOperator extends OperatorStage implements Callable<Map<String,String>> {
 
+	private static final String KNOWHOSTFILE = "knowhostfile";
+	private static final String PRIVATEKEYFILE = "privateKeyFile";
 	
 	@Override
 	public Map<String, String> call() throws DomainException {		
@@ -36,15 +38,15 @@ public class SshOperator extends OperatorStage implements Callable<Map<String,St
 			if(this.optionals.getProperty("pwd") != null) {
 				session.setPassword(this.args.getProperty("pwd"));
 			}
-			if(this.optionals.getProperty("knowhostfile") != null) {
-				File initialFile = new File(this.optionals.getProperty("knowhostfile"));
+			if(this.optionals.getProperty(KNOWHOSTFILE) != null) {
+				File initialFile = new File(this.optionals.getProperty(KNOWHOSTFILE));
 			    InputStream targetStream = new FileInputStream(initialFile);
 				String content = this.readFromInputStream(targetStream);
 				InputStream is = new ByteArrayInputStream(content.getBytes());
 				jsch.setKnownHosts(is);	
 			}
-			if(this.optionals.getProperty("privateKeyFile") != null) {
-				jsch.addIdentity(this.optionals.getProperty("privateKeyFile"));
+			if(this.optionals.getProperty(PRIVATEKEYFILE) != null) {
+				jsch.addIdentity(this.optionals.getProperty(PRIVATEKEYFILE));
 			}
 			session.connect();
 			ChannelExec channel = (ChannelExec) session.openChannel("exec");
@@ -53,9 +55,8 @@ public class SshOperator extends OperatorStage implements Callable<Map<String,St
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();
-		    return null;
+		    return new HashMap<>();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new DomainException(e.getMessage());
 		}
 	}
@@ -72,7 +73,7 @@ public class SshOperator extends OperatorStage implements Callable<Map<String,St
 			  return resultStringBuilder.toString();
 			}
 	
-	private Map<String, String> sendToChannel(ChannelExec channel) throws IOException, InterruptedException, DomainException, JSchException {
+	private Map<String, String> sendToChannel(ChannelExec channel) throws IOException, InterruptedException, JSchException {
 		Map<String, String> output = new HashMap<>();
 		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
 		ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
@@ -110,8 +111,8 @@ public class SshOperator extends OperatorStage implements Callable<Map<String,St
 		metadata.setParameter("user", "text");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("cmd", "sourcecode");
-		metadata.setOpts("knowhostfile", "text");
-		metadata.setOpts("privateKeyFile", "text");
+		metadata.setOpts(KNOWHOSTFILE, "text");
+		metadata.setOpts(PRIVATEKEYFILE, "text");
 		metadata.setOpts("pwd", "password");
 		return metadata.generate();
 	}

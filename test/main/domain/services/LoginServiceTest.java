@@ -18,7 +18,7 @@ import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.model.UserDTO;
 import static org.mockito.Mockito.when;
 
-public class LoginServiceTest {
+class LoginServiceTest {
 
 	private LoginService login = new LoginService();
 	
