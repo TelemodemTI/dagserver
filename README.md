@@ -42,14 +42,25 @@ These last three variables can be overridden using the following environment var
 	  
 ## Basic Usage
 
-The DAG implementation must be compiled into a JAR file (Maven Project) and sent to the path configured in folderpath param, then it will be visible to the scheduler engine.  
-The Front-End of this application includes a web editor that allows you to design, implement, and compile DAGs (Directed Acyclic Graphs) in an intuitive and efficient way, search the logs and see the detail of each DAG.
+Dagserver provides a user-friendly web-based interface accessible at http://localhost:8080/dagserver/cli, allowing you to streamline your DAG (Directed Acyclic Graph) workflow management. With this interface, you can:
 
+1. **Create and Compile DAGs:** Easily design, implement, and compile DAGs into standard Java JAR files. These JAR files contain the DAG implementations ready for execution.
+
+2. **Schedule DAGs:** Utilize Quartz expressions or Cron schedules to schedule the execution of your DAGs. This powerful feature allows you to automate and manage when your DAGs run.
+
+3. **Chain DAG Executions:** Similar to the functionality provided by the Quartz framework, you can chain the execution of DAGs by configuring Listeners. These listeners can be triggered at the start or end of the execution of other DAGs, enabling complex workflow orchestration.
+
+4. **Flexible Execution Channels:** Dagserver supports multiple execution channels. While currently, the primary channel involves scheduling processes using Quartz, it also offers an event-based execution channel. You can trigger a DAG execution when a specific event occurs in a particular GitHub repository. This flexibility enhances the versatility of your DAG workflows.
+
+The web-based editor provided by the Front-End makes designing, implementing, and managing DAGs intuitive and efficient. It also provides easy access to logs and detailed DAG execution information.
+
+These features empower you to create, schedule, and manage your DAGs seamlessly, adapting to various use cases and execution scenarios.
 
 ## Credentials:
 
 GraphQL Endpoint:  
   
+- Front-End: http://<serverhost>:<serverport>/dagserver/cli
 - URL: http://<serverhost>:<serverport>/server/query  
 - Username: dagserver  
 - Password: dagserver  
@@ -58,7 +69,7 @@ The current graphql schema can be checked in the schema.graphql file located at 
 
 ## Run as Container
 
-docker-compose.yml file is provided for running the server within a container environment.
+docker-compose.yml example file is provided for running the server within a container environment.
 
 ## License
 

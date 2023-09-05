@@ -8,13 +8,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import main.application.ports.output.CompilerOutputPort;
 import main.application.ports.output.JarSchedulerOutputPort;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.output.scheduler.JarSchedulerAdapter;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
@@ -32,12 +36,17 @@ class SchedulerMutationHandlerServiceTest {
 	@Mock 
 	protected SchedulerRepositoryOutputPort repository;
 	
+	@Mock
+	protected CompilerOutputPort compiler;
+	
 	@BeforeEach
     public void init() {
 		scanner = mock(JarSchedulerOutputPort.class);
 		repository = mock(SchedulerRepositoryOutputPort.class);
+		compiler = mock(CompilerOutputPort.class);
 		ReflectionTestUtils.setField(service, "scanner", scanner);
 		ReflectionTestUtils.setField(service, "repository", repository);
+		ReflectionTestUtils.setField(service, "compiler", compiler);
 	}
 	
 	@Test
@@ -130,7 +139,7 @@ class SchedulerMutationHandlerServiceTest {
 		}
 	}
 	@Test
-	public void execute() throws DomainException {
+	void execute() throws DomainException {
 		Map<String,Object> ret = new HashMap<>();
 		JarSchedulerAdapter adapter = mock(JarSchedulerAdapter.class);
 		when(scanner.init()).thenReturn(adapter);
@@ -141,7 +150,7 @@ class SchedulerMutationHandlerServiceTest {
 		}
 	}
 	@Test
-	public void executeTest() throws DomainException {
+	void executeTest() throws DomainException {
 		Map<String,Object> ret = new HashMap<>();
 		JarSchedulerAdapter adapter = mock(JarSchedulerAdapter.class);
 		when(scanner.init()).thenReturn(adapter);
@@ -178,5 +187,46 @@ class SchedulerMutationHandlerServiceTest {
 			assertTrue(true);
 		}
 	}
-
+	@Test
+	void updateUncompiledTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.updateUncompiled("token", 1, new JSONObject());
+			assertTrue(true);
+		}
+	}
+	@Test
+	void updateUncompiledErrorTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		doThrow(new RuntimeException("Test")).when(repository).updateUncompiled(anyInt(), any());
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);	
+			service.updateUncompiled("token", 1, new JSONObject());
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	@Test
+	void compileTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		var json = "{\"jarname\":\"test\"}";
+		when(repository.getUncompiledBin(anyInt())).thenReturn(json);
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.compile("token", 1, true);
+			assertTrue(true);
+		}
+	}
+	@Test
+	void compileErrorTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		doThrow(new DomainException("test")).when(compiler).createJar(anyString(),any());
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.compile("token", 1, true);
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
 }
