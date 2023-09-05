@@ -1,4 +1,4 @@
-![Dagserver](https://github.com/maximolira/dagserver/raw/front/src/assets/favicon.png)
+![Dagserver](https://github.com/maximolira/dagserver/blob/00d8ea73307ee900288aba8d851c81a728528e33/front/src/assets/favicon.png?raw=true)
 
 
 # dagserver
