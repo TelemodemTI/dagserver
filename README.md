@@ -1,5 +1,5 @@
-![Dagserver](https://github.com/maximolira/dagserver/blob/00d8ea73307ee900288aba8d851c81a728528e33/front/src/assets/favicon.png?raw=true){width=50%}
-
+<img src="https://github.com/maximolira/dagserver/blob/00d8ea73307ee900288aba8d851c81a728528e33/front/src/assets/favicon.png?raw=true"
+         alt="Sponsored by Evil Martians" width="300" height="300">
 
 # dagserver
 Dag server based on quartz, allows to execute batch processes modeled as DAG (Direct Acyclic graph). Inspired by Apache Airflow and IBM Datastage.
