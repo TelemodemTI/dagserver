@@ -391,5 +391,12 @@
 		    <version>2.13.0</version>
 		</dependency>
 
+		<dependency>
+		    <groupId>com.linkedin.cytodynamics</groupId>
+		    <artifactId>cytodynamics-nucleus</artifactId>
+		    <version>0.2.0</version>
+		</dependency>
+
+
   </dependencies>
 </project>

@@ -3,24 +3,34 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
 import main.domain.core.MetadataManager;
 import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
+import main.infra.adapters.confs.DagPathClassLoadHelper;
 
 @Operator(args={"jarPath","className"})
 public class JavaOperator extends OperatorStage implements Callable<Serializable> {
 
+	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
+	
 	@Override
 	public Serializable call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		try {
-			Serializable result = this.runCallableFromJar(this.args.getProperty("jarPath"), this.args.getProperty("className"));
+			String[] jars = this.args.getProperty("jarPath").split(";");
+			List<URI> list = new ArrayList<>();
+			for (int i = 0; i < jars.length; i++) {
+				String string = jars[i];
+				list.add(new File(string).toURI());
+			}
+			Serializable result = this.runCallableFromJar(this.args.getProperty("className"),list);
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
 			return result;	
@@ -29,13 +39,9 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
 		}
 	}
 
-	private <T> T runCallableFromJar(String jarPath, String className) throws Exception {
-        File jarFile = new File(jarPath);
-        URL jarUrl = jarFile.toURI().toURL();
-        try(
-        		URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl});
-        	) {
-        	Class<?> loadedClass = classLoader.loadClass(className);
+	private <T> T runCallableFromJar(String className, List<URI> list) throws Exception {
+        try {
+        	Class<?> loadedClass = helper.loadFromOperatorJar(className,list);
         	if (Callable.class.isAssignableFrom(loadedClass)) {
                 @SuppressWarnings("unchecked")
                 Callable<T> callableInstance = (Callable<T>) loadedClass.getDeclaredConstructor().newInstance();

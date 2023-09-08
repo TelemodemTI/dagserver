@@ -2,8 +2,6 @@ package main.infra.adapters.output.scheduler;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -44,7 +42,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private static final String CLASSNAME = "classname";
 	private static final String CLASSEXT = ".class";
 	private static Logger log = Logger.getLogger(JarSchedulerAdapter.class);
-	
+	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	private List<File> jars = new ArrayList<>();
 	private Map<String,List<Map<String,String>>> classMap = new HashMap<>();
 	
@@ -66,7 +64,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private Map<String,Properties> analizeJarProperties(File jarFile){
 		Map<String,Properties> props = new HashMap<>();
 		try(
-				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
 				ZipFile zipFile = new ZipFile(jarFile);) {
 				Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -75,7 +72,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
 					 if (!ze.isDirectory() && ze.getName().endsWith(".properties")) {
 					    	var prop = new Properties();
-					    	prop.load(cl.getResourceAsStream(ze.getName()));
+					    	prop.load(helper.loadResourceFromJar(jarFile, ze.getName()));
 					    	String[] name = ze.getName().replace(".properties", "").split("/");
 					    	props.put(name[name.length-1], prop);
 					  }	 
@@ -91,7 +88,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private List<Map<String,String>> analizeJar(File jarFile) {
 		List<Map<String,String>> classNames = new ArrayList<>();
 		try(
-				URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()},this.getClass().getClassLoader());
 				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
 				ZipFile zipFile = new ZipFile(jarFile);
 				) {
@@ -100,7 +96,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				 ZipEntry ze = entries.nextElement();
 				 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
 				 if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
-				    	Class<?> clazz = cl.loadClass(ze.getName().replace("/", ".").replace(CLASSEXT, ""));
+					 	Class<?> clazz = helper.loadFromJar(jarFile, ze.getName()); 
 				    	Dag dag = clazz.getAnnotation(Dag.class);
 				        if(dag!=null) {
 				        	var map = new HashMap<String,String>();
@@ -132,11 +128,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
 		if(jarfileO!= null) {
-			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
+			try {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);
-					
-						Class<?> clazz = cl.loadClass(classname);
+						Class<?> clazz = helper.loadFromJar(jarfileO, classname);
 						Dag toschedule = clazz.getAnnotation(Dag.class);
 						if(toschedule.name().equals(dagname)) {
 							DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
@@ -170,19 +165,19 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
 		if(jarfileO!=null) {
-			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {		
+			try {		
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);
-					activateDeactivate(dagname, cl, classname);
+					Class<?> clazz = helper.loadFromJar(jarfileO, classname);
+					activateDeactivate(dagname, clazz, classname);
 				}		
 			} catch (Exception e) {
 				throw new DomainException(e.getMessage());
 			}	
 		}
 	}	
-	private void activateDeactivate(String dagname,URLClassLoader cl,String classname) {
+	private void activateDeactivate(String dagname,Class<?> clazz,String classname) {
 		try {
-			Class<?> clazz = cl.loadClass(classname);
 			Dag toschedule = clazz.getAnnotation(Dag.class);
 			if(toschedule.name().equals(dagname)) {
 				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
@@ -224,10 +219,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		var result = new ArrayList<DagDTO>();
 		File jarfileO = this.findJarFile(jarname);
 		if(jarfileO != null) {
-			try(URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());) {
+			try {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);	
-					Class<?> clazz = cl.loadClass(classname);
+					Class<?> clazz = helper.loadFromJar(jarfileO, classname);
 					Dag scheduled = clazz.getAnnotation(Dag.class);
 					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
 					DagDTO dto = new DagDTO();
@@ -253,11 +248,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			log.debug(jarname);
 			File jarfileO = this.findJarFile(jarname);
 			if(jarfileO!= null) {
-				URLClassLoader cl = new URLClassLoader(new URL[]{jarfileO.toURI().toURL()},this.getClass().getClassLoader());
 				Boolean founded = false;
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);
-					Class<?> clazz = cl.loadClass(classname);
+					Class<?> clazz = this.helper.loadFromJar(jarfileO, classname);
 					Dag toschedule = clazz.getAnnotation(Dag.class);
 					if(toschedule.name().equals(dagname)) {
 						founded = true;
