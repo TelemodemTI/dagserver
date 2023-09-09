@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
@@ -14,7 +15,7 @@ import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.confs.DagPathClassLoadHelper;
 
-@Operator(args={"jarPath","className"})
+@Operator(args={"classpath","className"})
 public class JavaOperator extends OperatorStage implements Callable<Serializable> {
 
 	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
@@ -24,11 +25,13 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		try {
-			String[] jars = this.args.getProperty("jarPath").split(";");
+			List<String> fJar = new ArrayList<>();
+			String fpath = this.args.getProperty("classpath");
+			this.searchJarFiles(new File(fpath),fJar );
 			List<URI> list = new ArrayList<>();
-			for (int i = 0; i < jars.length; i++) {
-				String string = jars[i];
-				list.add(new File(string).toURI());
+			for (Iterator<String> iterator = fJar.iterator(); iterator.hasNext();) {
+				String jarpath = iterator.next();
+				list.add(new File(jarpath).toURI());
 			}
 			Serializable result = this.runCallableFromJar(this.args.getProperty("className"),list);
 			log.debug(this.args);
@@ -39,6 +42,23 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
 		}
 	}
 
+	
+	private void searchJarFiles(File directorio, List<String> archivosJar) {
+        File[] archivos = directorio.listFiles();
+
+        if (archivos != null) {
+            for (File archivo : archivos) {
+                if (archivo.isFile() && archivo.getName().endsWith(".jar")) {
+                    archivosJar.add(archivo.getAbsolutePath());
+                } else if (archivo.isDirectory()) {
+                	searchJarFiles(archivo, archivosJar);
+                }
+            }
+        }
+    }
+
+	
+	
 	private <T> T runCallableFromJar(String className, List<URI> list) throws Exception {
         try {
         	Class<?> loadedClass = helper.loadFromOperatorJar(className,list);

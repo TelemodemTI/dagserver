@@ -39,10 +39,16 @@ public class DefaultController {
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		return new ResponseEntity<>("dagserver is running! v0.1.20230826", HttpStatus.OK);
 	}
-	@GetMapping(path={"/","/cli"})
+	@GetMapping(path={"/","/cli","/cli/"})
     public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		RedirectView redirectView = new RedirectView();
         redirectView.setUrl("/dagserver/cli/index.html");
+        return redirectView;
+	}
+	@GetMapping(path={"/","/docs","/docs/"})
+    public RedirectView docsGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
+		RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/dagserver/docs/index.html");
         return redirectView;
 	}
 	@PostMapping(value = "/github-webhook")

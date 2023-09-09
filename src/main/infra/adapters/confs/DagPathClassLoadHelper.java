@@ -209,13 +209,24 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			  }
 	}
 
+	public ClassLoader getClassLoader(List<URI> list) {
+		return LoaderBuilder
+			    .anIsolatingLoader()
+			    .withOriginRestriction(OriginRestriction.allowByDefault())
+			    .withClasspath(list)
+			    .withParentRelationship(DelegateRelationshipBuilder.builder()
+			        .withIsolationLevel(IsolationLevel.NONE)
+			        .build())
+			    .build();
+	}
+	
 	public Class<?> loadFromOperatorJar(String name, List<URI> list) throws DomainException{
 		ClassLoader loader = LoaderBuilder
 			    .anIsolatingLoader()
 			    .withOriginRestriction(OriginRestriction.allowByDefault())
 			    .withClasspath(list)
 			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.FULL)
+			        .withIsolationLevel(IsolationLevel.NONE)
 			        .build())
 			    .build();
 		try {

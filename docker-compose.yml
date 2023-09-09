@@ -4,9 +4,6 @@ services:
   dagserver:
     image: maximolira/dagserver:latest
     container_name: dagserver
-    depends_on:
-      db:
-        condition: service_healthy
     ports:
       - "65002:8080"
       - "65003:2587"

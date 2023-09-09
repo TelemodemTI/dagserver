@@ -44,3 +44,8 @@
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
+.SFTPOperator{
+    background: url('/dagserver/cli/assets/images/operators/sftp.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}

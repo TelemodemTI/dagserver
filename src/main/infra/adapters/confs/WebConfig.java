@@ -161,6 +161,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
           .addResourceHandler("/cli/**")
-          .addResourceLocations("/WEB-INF/cli/");	
+          .addResourceLocations("/WEB-INF/cli/");
+        registry
+          .addResourceHandler("/docs/**")
+          .addResourceLocations("/WEB-INF/docs/");	
     }
 }

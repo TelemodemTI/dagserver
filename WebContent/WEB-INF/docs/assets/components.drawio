@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net" modified="2023-09-09T17:00:36.536Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36" etag="FsDUEC-Lzqh6YvXjP1sz" version="21.6.6" type="device">
+  <diagram name="Página-1" id="VJwL5GibWaHsEQNbdw6k">
+    <mxGraphModel dx="2288" dy="622" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-1" value="GraphQL Endpoint" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-2" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-3" value="GitHub webhook" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-4" value="Scheduler service" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-5" value="Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="355" y="70" width="90" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="NZV_CwUrICDlUk8V-MGf-7" target="NZV_CwUrICDlUk8V-MGf-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-7" value="Operator Adapter" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-8" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-9" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="230" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-10" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-11" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="770" y="250" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-12" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-13" value="Impl" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="270" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-14" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="NZV_CwUrICDlUk8V-MGf-1" target="NZV_CwUrICDlUk8V-MGf-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="140" y="550" as="sourcePoint" />
+            <mxPoint x="190" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-15" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="NZV_CwUrICDlUk8V-MGf-2" target="NZV_CwUrICDlUk8V-MGf-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="230" y="470" as="sourcePoint" />
+            <mxPoint x="280" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-16" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="NZV_CwUrICDlUk8V-MGf-3" target="NZV_CwUrICDlUk8V-MGf-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="150" y="520" as="sourcePoint" />
+            <mxPoint x="200" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-17" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="NZV_CwUrICDlUk8V-MGf-4" target="NZV_CwUrICDlUk8V-MGf-5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="510" y="200" as="sourcePoint" />
+            <mxPoint x="560" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-18" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="NZV_CwUrICDlUk8V-MGf-4" target="NZV_CwUrICDlUk8V-MGf-7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="380" as="sourcePoint" />
+            <mxPoint x="430" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-19" value="Operators" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="160" width="270" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-21" value="Channels" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="80" width="230" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-22" value="Front end webapp" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-53" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NZV_CwUrICDlUk8V-MGf-23" value="" style="endArrow=none;dashed=1;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="NZV_CwUrICDlUk8V-MGf-22" target="NZV_CwUrICDlUk8V-MGf-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-180" y="450" as="sourcePoint" />
+            <mxPoint x="-130" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

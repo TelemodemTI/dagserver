@@ -1,0 +1,154 @@
+<div class="page-wrapper">
+    <!-- ******Header****** -->
+    <header id="header" class="header">
+        <div class="container">
+            <div class="branding">
+                <h1 class="logo">
+                    <a href="index.html">
+                        <span aria-hidden="true" class="icon_documents_alt icon"></span>
+                        <span class="text-highlight">Dagserver</span><span class="text-bold">Documentation</span>
+                    </a>
+                </h1>
+                
+            </div><!--//branding-->
+            
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active">Documentation</li>
+            </ol>
+            
+            <div class="top-search-box">
+                 <form class="form-inline search-form justify-content-center" action="" method="get">
+            
+                    <input type="text" placeholder="Search..." name="search" class="form-control search-input">
+                    
+                    <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
+                    
+                </form>
+            </div>
+            
+        </div><!--//container-->
+    </header><!--//header-->
+    <div class="doc-wrapper">
+        <div class="container">
+            <div id="doc-header" class="doc-header text-center">
+                <h1 class="doc-title"><i class="icon fa fa-book"></i> Documentation</h1>
+                <div class="meta"><i class="far fa-clock"></i> Last updated: 09 Sept 2023</div>
+            </div><!--//doc-header-->
+            <div class="doc-body row">
+                <div class="doc-content col-md-9 col-12 order-1">
+                    <div class="content-inner">
+                        <section id="download-section" class="doc-section">
+                            <h2 class="section-title">General</h2>
+                            <div class="section-block">
+                                <p>dagserver allows the execution of a DAGS flow in a decoupled manner in a java environment. It enables a variety of use cases, from data integration between repositories, to continuous integration flow control.</p>
+                            </div>
+                        </section><!--//doc-section-->
+                        <section id="installation-section" class="doc-section">
+                            <h2 class="section-title">Components</h2>
+                            <div id="step1"  class="section-block">
+                                <p>The following diagram illustrates the components within dagserver</p>
+                                <img src="assets/components.drawio.png"/>
+                            </div>
+                        </section><!--//doc-section-->
+                        <section id="channels-section" class="doc-section">
+                            <h2 class="section-title">Channels</h2>
+                            <div class="section-block">
+                                <p>
+                                    Channels are the means that allow an event to be executed within the dagserver scheduler. This event will trigger the execution of a DAG in which the business logic to be implemented will be carried out.
+                                </p>
+                                <p>
+                                    Currently there are three ways to trigger the execution of a DAG, the first is by activating an execution trigger. These triggers are configurable through cron/quartz statements that allow scheduled executions with complex logic.
+                                </p>
+                                <p>
+                                    The second is by executing via the graphql endpoint. This path is the one used within the front end application and allows a controlled execution of a particular DAG
+                                </p>
+                                <p>
+                                    The last is by configuring a github webhook, the latter allows triggering the execution of a DAG based on a push event made to a particular repository.
+                                </p>
+                                <img src="assets/images/fig001.PNG" class="center"/>
+                                <p>For this last configuration there is a view in the front end, with which you can manage the Github events that the dagserver listens to.</p>
+                                <img src="assets/images/fig002.PNG" class="center"/>
+                                <p>In this modal you can configure the repository that the dagserver will be listening to to generate the events</p>
+                                <img src="assets/images/fig003.PNG" class="center"/>
+                            </div>
+                        </section>
+                        <section id="scheduler-section" class="doc-section">
+                            <h2 class="section-title">Scheduler</h2>
+                            <div class="section-block">
+
+                            </div>
+                        </section>
+                        <section id="admin-section" class="doc-section">
+                            <h2 class="section-title">Administration</h2>
+                            <div class="section-block">
+
+                            </div>
+                        </section>
+                        <section id="basic-section" class="doc-section">
+                            <h2 class="section-title">Basic Example</h2>
+                            <div class="section-block">
+
+                            </div>
+                        </section>
+                        <section id="etl-section" class="doc-section">
+                            <h2 class="section-title">ETL Example</h2>
+                            <div class="section-block">
+
+                            </div>
+                        </section>
+                    </div><!--//content-inner-->
+                </div><!--//doc-content-->
+                <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                    <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#download-section">General</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#installation-section">Components
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#channels-section">Channels
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#scheduler-section">Scheduler
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#admin-section">Admin
+                                    </a>
+                                </li>
+                                
+                                
+                                
+                                
+                                <nav class="nav doc-sub-menu nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto" href="#basic-section">Basic Example</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto" href="#etl-section">ETL Example</a>
+                                    </li>
+                                </nav><!--//nav-->
+                                
+                                
+                            </nav><!--//doc-menu-->
+                        
+                    </div>
+                </div><!--//doc-sidebar-->
+            </div><!--//doc-body-->              
+        </div><!--//container-->
+    </div><!--//doc-wrapper-->
+    
+    
+    
+</div><!--//page-wrapper-->
+
+<footer class="footer text-center">
+    <div class="container">
+        <small class="copyright">docs by <a href="https://www.telemodem.cl/" target="_blank">Telemodem</a></small>
+    </div><!--//container-->
+</footer><!--//footer-->
