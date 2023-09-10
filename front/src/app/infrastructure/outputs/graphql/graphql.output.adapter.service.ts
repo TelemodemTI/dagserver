@@ -19,6 +19,19 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
 
+  renameUncompiled(uncompiled: any, arg1: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation renameUncompiled($token:String,$uncompiled:Int,$newname:String) { renameUncompiled(token:$token,uncompiled:$uncompiled,newname:$newname) {status,code,value} }"
+      this.query(string,{token:token,uncompiled:uncompiled,newname:arg1}).subscribe((result:any)=>{
+        if(result && result.renameUncompiled && result.renameUncompiled.status == "ok"){
+          resolve()
+        } else if(result && result.renameUncompiled) {
+          reject(result.renameUncompiled.status)
+        }      
+      })
+    })
+  }
   removeLog(id: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

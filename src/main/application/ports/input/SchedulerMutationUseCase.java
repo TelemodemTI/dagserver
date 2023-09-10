@@ -25,4 +25,5 @@ public interface SchedulerMutationUseCase {
 	void removeGithubWebhook(String token, String name) throws DomainException;
 	void deleteLog(String token, Integer logid) throws DomainException;
 	void deleteAllLogs(String token, String dagname) throws DomainException;
+	void renameUncompiled(String token, Integer uncompiled, String newname) throws DomainException;
 }

@@ -461,4 +461,15 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		param.put("dagname",dagname);
 		dao.execute("delete from Log where dagname = :dagname",param);
 	}
+
+	@Override
+	public void renameUncompiled(Integer uncompiled, String newname) {
+		var uncompiledObj = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = "+uncompiled).get(0);
+		uncompiledObj.setName(newname);
+		String bin = uncompiledObj.getBin();
+		JSONObject binobj = new JSONObject(bin);
+		binobj.put("jarname",newname);
+		uncompiledObj.setBin(binobj.toString());
+		dao.save(uncompiledObj);
+	}
 }

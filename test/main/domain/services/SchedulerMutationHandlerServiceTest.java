@@ -227,4 +227,44 @@ class SchedulerMutationHandlerServiceTest {
 			assertTrue(true);
 		}
 	}
+	@Test
+	void deleteUncompiledTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.deleteUncompiled("token", 1);
+			assertTrue(true);
+		}
+	}
+	@Test
+	void deleteUncompileErrorTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		doThrow(new RuntimeException("Test")).when(repository).deleteUncompiled(anyInt());
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);	
+			service.deleteUncompiled("token", 1);
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	@Test
+	void deleteGroupPropertyTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.deleteGroupProperty("token","name","group");
+			assertTrue(true);
+		}
+	}
+	@Test
+	void deleteGroupPropertyErrorTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		doThrow(new RuntimeException("Test")).when(repository).delGroupProperty(anyString());
+		try(MockedStatic<TokenEngine> utilities = Mockito.mockStatic(TokenEngine.class)){
+			utilities.when(() -> TokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);	
+			service.deleteGroupProperty("token","name","group");
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
 }

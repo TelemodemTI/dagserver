@@ -130,4 +130,5 @@ type Mutation {
 	removeGithubWebhook(token:String,name:String) : StatusOp
 	deleteLog(token:String,logid: Int) : StatusOp
 	deleteAllLogs(token:String,dagname:String) : StatusOp
+	renameUncompiled(token:String,uncompiled:Int,newname:String) : StatusOp
 }

@@ -4,10 +4,6 @@ import main.domain.enums.OperatorStatus;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.operators.LogsRollupOperator;
 import main.infra.adapters.operators.RegisterSchedulerOperator;
-import main.infra.adapters.operators.TestNGOperator;
-
-import java.util.Properties;
-
 import main.domain.annotations.Dag;
 
 
@@ -20,13 +16,6 @@ public class BackgroundSystemDag extends DagExecutable {
 		this.addOperator("register",RegisterSchedulerOperator.class);
 		this.addDependency("internal", "register", OperatorStatus.ANY);
 		
-		
-		var prop = new Properties();
-		
-		prop.setProperty("classpath", "C:\\tmp\\dagrags");
-		prop.setProperty("reportOutput", "C:\\tmp\\report-output");
-		this.addOperator("dummy",TestNGOperator.class,prop);
-		this.addDependency("register", "dummy", OperatorStatus.ANY);
 		
 	}
 	

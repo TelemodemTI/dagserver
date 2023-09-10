@@ -47,4 +47,5 @@ public interface SchedulerRepositoryOutputPort {
 	public void updateprop(String group, String key, String value);
 	public void deleteLog(Integer logid);
 	public void deleteAllLogs(String dagname);
+	public void renameUncompiled(Integer uncompiled, String newname);
 }

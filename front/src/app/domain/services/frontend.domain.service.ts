@@ -49,6 +49,10 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private encryptor: EncryptionOutputPort) { }
   
+  renameUncompiled(uncompiled: any, arg1: any): Promise<void> {
+    return this.adapter.renameUncompiled(uncompiled,arg1);
+  }
+  
   removeAllLog(dagname: any): Promise<void> {
     return this.adapter.removeAllLog(dagname);
   }

@@ -26,6 +26,10 @@
                                 <button type="button" class="btn btn-primary" (click)="saveJar()">
                                     <i class="fa fa-floppy-o">&nbsp;</i>
                                     Save
+                                </button>&nbsp;
+                                <button type="button" class="btn btn-primary" (click)="rename()">
+                                    <i class="fa fa-edit">&nbsp;</i>
+                                    Rename Jar
                                 </button>
                             </div>
                         </div>
@@ -91,3 +95,9 @@
     (removeStepEvent)="removeStepEvent($event)"
 >
 </app-param-existingj>
+<app-value-modal #modalparamv
+    [param]="'Jarfile name'"
+    [actualValue]="item.decoded.jarname"
+    (changeValueEvent)="changeValueEvent($event)"
+>
+</app-value-modal>

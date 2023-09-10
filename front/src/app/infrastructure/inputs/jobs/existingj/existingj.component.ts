@@ -7,6 +7,7 @@ import { DagPropsComponent } from '../../base/dag-props/dag-props.component';
 import { DagOpsComponent } from '../../base/dag-ops/dag-ops.component';
 import { DagCanvasComponent } from '../../base/dag-canvas/dag-canvas.component';
 import { ParamExistingjComponent } from '../param-existingj/param-existingj.component';
+import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
 declare var $:any
 declare var joint:any;
 declare var dagre:any
@@ -21,6 +22,8 @@ export class ExistingjComponent {
   @ViewChild("dagOpsComponent") dagOps!:DagOpsComponent;
   @ViewChild("dagCanvasComponent") dagCanvas!:DagCanvasComponent;
   @ViewChild("modalparam") modalparam!:ParamExistingjComponent;
+  @ViewChild("modalparamv") vlmod!:ValueModalComponent;  
+
 
   parameters: any[] = []
   boxes: any = []
@@ -41,6 +44,7 @@ export class ExistingjComponent {
     this.uncompiled = this.route.snapshot.paramMap.get('uncompiledId');
     let arr = await this.service.getUncompileds()
     this.item = arr.filter((el:Uncompileds)=>{ return (el.uncompiledId == this.uncompiled)})[0]
+    console.log(this.item)
     this.data = JSON.parse( this.item.bin)
     
     let r = await this.service.getOperatorMetadata();
@@ -160,5 +164,12 @@ export class ExistingjComponent {
   clickedStep(event:any){
     this.selectedObj = event
     this.modalparam.show()
+  }
+  rename(){
+    this.vlmod.show();
+  }
+  async changeValueEvent(event:any){
+    await this.service.renameUncompiled(this.uncompiled,event[1])
+    this.router.navigateByUrl("auth/jobs");
   }
 }

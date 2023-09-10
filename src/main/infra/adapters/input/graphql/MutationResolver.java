@@ -220,6 +220,14 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
+	public StatusOp renameUncompiled(String token,Integer uncompiled,String newname) {
+		try {
+			handler.renameUncompiled(token,uncompiled,newname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();

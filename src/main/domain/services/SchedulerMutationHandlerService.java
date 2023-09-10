@@ -224,6 +224,11 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.deleteAllLogs(dagname);
 		
 	}
+	@Override
+	public void renameUncompiled(String token, Integer uncompiled, String newname) throws DomainException {
+		TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.renameUncompiled(uncompiled,newname);
+	}
 	
 	
 }
