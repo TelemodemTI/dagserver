@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.domain.core.BaseServiceComponent;
-import main.domain.core.TokenEngine;
 import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
 import main.domain.model.ChannelDTO;
@@ -99,7 +97,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Override
 	public List<UncompiledDTO> getUncompileds(String token) throws DomainException {
 		try {
-			TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+			tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			return repository.getUncompileds();	
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
@@ -113,7 +111,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Override
 	public List<UserDTO> credentials(String token) throws DomainException {
 		try {
-			Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
+			Map<String,String> claims = (Map<String, String>) tokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
 			if(claims.get("typeAccount").equals("ADMIN")) {
 				return repository.getUsers();	
 			} else {
@@ -165,7 +163,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<ChannelDTO> getChannels(String token) throws DomainException {
-		Map<String,String> claims = (Map<String, String>) TokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
+		Map<String,String> claims = (Map<String, String>) tokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
 		if(!claims.get("typeAccount").equals("ADMIN")) {
 			throw new DomainException("unauthorized");
 		}
@@ -199,7 +197,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	@Override
 	public String exportUncompiled(String token, Integer uncompiled) throws DomainException {
-		TokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 		return repository.getUncompiledBin(uncompiled);
 	}
 }

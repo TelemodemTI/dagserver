@@ -23,6 +23,9 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 	private static final Logger logger = Logger.getLogger(LoginService.class);
 	
 	@Autowired
+	private TokenEngine tokenEngine;
+	
+	@Autowired
 	private SchedulerRepositoryOutputPort repository;
 	
 	@Value( "${param.jwt_secret}" )
@@ -48,7 +51,7 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 				claims.put("typeAccount", user.getTypeAccount());
 				claims.put("username", username);
 				claims.put("userid", user.getId().toString());
-				return TokenEngine.tokenize(jwtSecret, jwtSigner, jwtSubject, jwtTtl, claims);
+				return tokenEngine.tokenize(jwtSecret, jwtSigner, jwtSubject, jwtTtl, claims);
 			} else {
 				return "";
 			}

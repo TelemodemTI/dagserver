@@ -172,4 +172,10 @@ export class ExistingjComponent {
     await this.service.renameUncompiled(this.uncompiled,event[1])
     this.router.navigateByUrl("auth/jobs");
   }
+  loadFromStepEvent(event:any){
+    for (let index = 0; index < this.selectedObj.generatedIdParams.length; index++) {
+      const element = this.selectedObj.generatedIdParams[index];
+      element.value = event.params.filter((ele:any)=>{ return ele.key == element.key})[0].value
+    }
+  }
 }

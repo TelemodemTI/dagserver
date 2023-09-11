@@ -242,7 +242,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	}
 	
 	@SuppressWarnings("resource")
-	public void execute(String jarname, String dagname) throws DomainException {
+	public void execute(String jarname, String dagname, String type) throws DomainException {
 		try {
 			List<Map<String,String>> classNames = classMap.get(jarname);
 			log.debug(jarname);
@@ -256,6 +256,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					if(toschedule.name().equals(dagname)) {
 						founded = true;
 						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+						dag.setExecutionSource(type);
 						quartz.executeInmediate(dag);
 						break;
 					}

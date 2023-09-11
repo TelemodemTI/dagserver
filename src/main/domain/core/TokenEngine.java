@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -17,13 +19,11 @@ import main.domain.exceptions.DomainException;
 import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.JWTVerifier;
 
+@Component
 public class TokenEngine {
 	
-	private TokenEngine() {
-	    throw new IllegalStateException("Static class");
-	}
-	
-	public static String tokenize(String secret ,String issuer,String subject,Integer milisec,Map<String,String> claims ){
+
+	public String tokenize(String secret ,String issuer,String subject,Integer milisec,Map<String,String> claims ){
 		Algorithm algorithm = Algorithm.HMAC256(secret);
 		Builder builder = JWT.create().withIssuer(issuer); 
 		builder.withIssuedAt(new Date());
@@ -36,7 +36,7 @@ public class TokenEngine {
 	}
 
 	
-	public static Map<String,Object> untokenize(String token,String secret,String issuer){
+	public Map<String,Object> untokenize(String token,String secret,String issuer){
 		Map<String,Object> result = new HashMap<>();
 		Map<String,String> claims = new HashMap<>();
 
@@ -54,7 +54,7 @@ public class TokenEngine {
 		result.put("subject", jwt.getSubject());
 		return result;
 	}
-	public static String sha256(String base) throws DomainException  {
+	public String sha256(String base) throws DomainException  {
 	    try {
 	    	MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hash = digest.digest(base.getBytes(StandardCharsets.UTF_8));

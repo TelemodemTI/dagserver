@@ -87,7 +87,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return mapper.toLogDTO(log);
 	}
 	
-	public void setLog(String evalkey,String dagname,String value,String xcom, Map<String, OperatorStatus> status) {
+	public void setLog(String evalkey,String dagname,String value,String xcom, Map<String, OperatorStatus> status, String channel) {
 		HashMap<String, Object> param = new HashMap<>();
 		param.put("evalkey",evalkey);
 		var founded = dao.read(Log.class, "select log from Log log where log.evalkey = :evalkey",param);
@@ -98,6 +98,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			entry.setExecDt(new Date());
 			entry.setValue(value);
 			entry.setOutputxcom(xcom);
+			entry.setChannel(channel);
 			JSONObject statusObj = new JSONObject(status);
 			entry.setStatus(statusObj.toString());
 			dao.save(entry);	
@@ -107,6 +108,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			entry.setValue(value);
 			entry.setStatus(statusObj.toString());
 			entry.setOutputxcom(xcom);
+			entry.setChannel(channel);
 			dao.save(entry);	
 		}
 	}

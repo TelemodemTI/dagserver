@@ -36,6 +36,9 @@ public class Log {
 	@Column(name = "status", nullable = false)
 	private String status;
 	
+	@Column(name = "channel", nullable = false)
+	private String channel;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -77,6 +80,12 @@ public class Log {
 	}
 	public void setEvalkey(String evalkey) {
 		this.evalkey = evalkey;
+	}
+	public String getChannel() {
+		return channel;
+	}
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 }

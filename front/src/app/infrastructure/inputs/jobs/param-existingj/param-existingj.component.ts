@@ -20,17 +20,17 @@ export class ParamExistingjComponent {
   @Input("selectedStep") selectedStep:any
   @Input("selectedStepParams") selectedStepParams:any
   @Output() removeStepEvent = new EventEmitter<any>();
+  @Output() loadFromStepEvent = new EventEmitter<any>();
 
   editor!:any
   disabledChanges:any = {}
   disabledChecklist:any = {}
-
+  another:any[] = []
   constructor(private cd: ChangeDetectorRef){
 
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(this.generatedIdParams)
     this.initCodemirror().then((flag)=>{
       console.log("onchanges") 
       this.loader?.nativeElement.classList.add("invisible");
@@ -38,6 +38,7 @@ export class ParamExistingjComponent {
       if(this.editor && this.data){  
         let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
         let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
+        this.another = obj.boxes.filter((elem:any)=>{ return elem.type == step.type && elem.id != step.id})
         let value;
         try {
           value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
@@ -47,7 +48,10 @@ export class ParamExistingjComponent {
     })
 
   }
-
+  loadFrom(id:any){
+    let target = this.another.filter((elem:any)=>{ return elem.id == id})[0]
+    this.loadFromStepEvent.emit(target)
+  }
   refreshCodemirror(){
     let interval = setInterval(()=>{
       if(this.loader?.nativeElement.classList.contains("invisible")){
@@ -205,4 +209,5 @@ export class ParamExistingjComponent {
   isChlDisabled(item:any){
     return item.source == 'PAR'
   }
+  
 }

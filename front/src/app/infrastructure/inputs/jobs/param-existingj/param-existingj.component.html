@@ -7,6 +7,17 @@
             </div>
             <div class="modal-body">
 
+                <div class="btn-group pull-right" >
+                    <label></label>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    from another stage in DAG <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li *ngFor="let anot of another"><a class="pointer" (click)="loadFrom(anot.id)">{{anot.id}}</a></li>
+                    </ul>
+                </div>
+
+
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#home" data-toggle="tab">Parameters</a>
                     </li>
@@ -53,7 +64,7 @@
                         <div class="form-group" *ngFor="let item of generatedIdParams">
                             <ng-container *ngIf="item.type == 'sourcecode'">
                                 <label>{{item.key}}</label><br>
-                                <textarea id="queryTextqv" height="300" name="queryText"></textarea>
+                                <textarea id="queryTextqv" height="300" name="queryText">{{item.value}}</textarea>
                             </ng-container>
                         </div>
                     </div>

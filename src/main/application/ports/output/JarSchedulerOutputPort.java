@@ -13,7 +13,7 @@ public interface JarSchedulerOutputPort {
 	public void scheduler(String dagname, String jarname) throws DomainException;
 	public void unschedule(String dagname, String jarname) throws DomainException;
 	public List<DagDTO> getDagDetail(String jarname) throws DomainException;
-	public void execute(String jarname, String dagname) throws DomainException;
+	public void execute(String jarname, String dagname, String type) throws DomainException;
 	public List<Map<String,Object>> listScheduled() throws DomainException;
 	public String getIcons(String type) throws DomainException;
 }

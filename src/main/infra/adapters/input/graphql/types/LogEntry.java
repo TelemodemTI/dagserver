@@ -7,6 +7,7 @@ public class LogEntry {
 	private String value;
 	private String xcomoutput;
 	private String status;
+	private String channel;
 	public Integer getId() {
 		return id;
 	}
@@ -42,6 +43,12 @@ public class LogEntry {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getChannel() {
+		return channel;
+	}
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 	
 }

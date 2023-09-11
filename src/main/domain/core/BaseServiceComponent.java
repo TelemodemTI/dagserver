@@ -36,4 +36,6 @@ public class BaseServiceComponent {
 	@Autowired
 	protected CompilerOutputPort compiler;
 	
+	@Autowired
+	protected TokenEngine tokenEngine;
 }

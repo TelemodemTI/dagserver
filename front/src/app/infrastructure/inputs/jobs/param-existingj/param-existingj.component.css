@@ -36,3 +36,6 @@
   .modal-dialog {
     width: 50%;
   }
+  .pointer {
+    cursor: pointer;
+  }

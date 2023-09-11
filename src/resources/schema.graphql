@@ -83,7 +83,8 @@ type LogEntry {
 	execDt: Float,
 	value: String,
 	xcomoutput: String,
-	status: String
+	status: String,
+	channel: String
 }
 
 type Account {

@@ -94,6 +94,43 @@
                         <section id="etl-section" class="doc-section">
                             <h2 class="section-title">ETL Example</h2>
                             <div class="section-block">
+                                <p>
+                                    In the following example we carry out a typical ETL process that loads records. The design of the process will be the following:
+                                </p>
+                                <img src="assets/etl-example.drawio.png" class="center etl"/>
+                                <p>To read the file, the File Operator will be used with the following configuration:</p>
+                                <img src="assets/images/fig004.PNG" class="center"/>
+                                <p>The next step will be to configure the JDBC Operator to connect to the corresponding database. For the purposes of the example, we will connect to mysql, for this we must have the jar with the corresponding driver, in a path accessible from the dagserver</p>
+                                <p>The example configuration that will be used is the following</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <img src="assets/images/fig005.PNG" class="center"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <img src="assets/images/fig006.PNG" class="center"/>
+                                    </div>
+                                </div>
+                                <p>The third step of the flow will be the identification of new records. For this we will use a script that we will configure using the Groovy Operator</p>
+                                <img src="assets/images/fig004.PNG" class="center"/>
+                                <p>For the fourth step we will carry out the same procedure but we will identify the records that had changes</p>
+                                <img src="assets/images/fig004.PNG" class="center"/>
+                                <p>The next step is to put together the two insert/update statements using the JDBC Operator to insert the records into the table and perform the update.</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <img src="assets/images/fig005.PNG" class="center"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <img src="assets/images/fig006.PNG" class="center"/>
+                                    </div>
+                                </div>
+                                <p>Finally, the notification email will be sent using the following configuration using the SMTP Operator</p>
+                                <img src="assets/images/fig004.PNG" class="center"/>
+                                <p>The drawing on the DAG canvas will finally look like this in the following image</p>
+                                <img src="assets/images/fig007.PNG" class="center etl"/>
+                                <p>The DAG of the example must be saved and compiled, and we can execute it directly from the front</p>
+                                <img src="assets/images/fig007.PNG" class="center etl"/>
+                                <p>The details of the logs will show the following, in which you can see the log with the detailed steps, as well as all the variables and data used during the execution of the DAG</p>
+                                <img src="assets/images/fig007.PNG" class="center etl"/>
 
                             </div>
                         </section>

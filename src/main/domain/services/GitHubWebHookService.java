@@ -52,7 +52,7 @@ public class GitHubWebHookService extends BaseServiceComponent implements GitHub
 			}
 		}
 		if(!dagname.isEmpty() && !jarname.isEmpty()) {
-			scanner.init().execute(jarname, dagname);	
+			scanner.init().execute(jarname, dagname,"GITHUB_EVENT");	
 		}
 	}
 	

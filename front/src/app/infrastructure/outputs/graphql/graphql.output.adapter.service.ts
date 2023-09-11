@@ -300,7 +300,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   }
   logs(dagname: String): Promise<Log[]> {
     return new Promise<Log[]>((resolve, reject) => {
-      var string = "query logs($dagname:String!) {logs(dagname:$dagname) {id,dagname,execDt,value,xcomoutput,status}}"
+      var string = "query logs($dagname:String!) {logs(dagname:$dagname) {id,dagname,execDt,value,xcomoutput,status, channel}}"
       this.query(string,{dagname:dagname}).subscribe((result:any)=>{
         if(result && result.logs){
           resolve(result.logs as Log[]);

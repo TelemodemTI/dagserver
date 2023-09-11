@@ -93,7 +93,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 	
 	public StatusOp executeDag(String token,String dagname,String jarname) {
 		try {
-			handler.execute(token,jarname, dagname);
+			handler.execute(token,jarname, dagname,"GRAPHQL_ENDPOINT");
 			return ok();
 		} catch (Exception e) {
 			return error(e);

@@ -160,4 +160,10 @@ export class NewjComponent {
     this.diagram.clear()
     this.redraw(event,this.diagram)
   }
+  loadFromStepEvent(event:any){
+    for (let index = 0; index < this.selectedObj.generatedIdParams.length; index++) {
+      const element = this.selectedObj.generatedIdParams[index];
+      element.value = event.params.filter((ele:any)=>{ return ele.key == element.key})[0].value
+    }
+  }
 }

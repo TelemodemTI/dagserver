@@ -84,7 +84,7 @@ class MutationResolverTest {
 	void executeDagTest() throws DomainException {
 		var resp = mutation.executeDag("test", "test", "test");
 		assertNotNull(resp);
-		doThrow(new RuntimeException("test")).when(handler).execute(anyString(), anyString(), anyString());
+		doThrow(new RuntimeException("test")).when(handler).execute(anyString(), anyString(), anyString(),anyString());
 		var resp2 = mutation.executeDag("test", "test", "test");
 		assertNotNull(resp2);
 	}

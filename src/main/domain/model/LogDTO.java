@@ -9,6 +9,7 @@ public class LogDTO {
 	private String value;
 	private String outputxcom;
 	private String status;
+	private String channel;
 	public Integer getId() {
 		return id;
 	}
@@ -44,6 +45,12 @@ public class LogDTO {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getChannel() {
+		return channel;
+	}
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 }

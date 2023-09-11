@@ -1,0 +1,43 @@
+<mxfile host="app.diagrams.net" modified="2023-09-11T21:14:07.786Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36" etag="i7HeGAoGRbbHIi6hl2S1" version="21.7.4" type="device">
+  <diagram name="Página-1" id="IcqOuwOJz1CgvIPfQ3rY">
+    <mxGraphModel dx="1461" dy="622" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="CjgAfnbkM7CroxDSMDca-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CjgAfnbkM7CroxDSMDca-1" target="CjgAfnbkM7CroxDSMDca-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-1" value="Read File with File Operator" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CjgAfnbkM7CroxDSMDca-2" target="CjgAfnbkM7CroxDSMDca-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-2" value="Apply transformation using Groovy Operator to identify new rows, and updated ones" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="180" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CjgAfnbkM7CroxDSMDca-6" target="CjgAfnbkM7CroxDSMDca-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-6" value="Read data of actual table in database" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CjgAfnbkM7CroxDSMDca-9" target="CjgAfnbkM7CroxDSMDca-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-9" value="Write update existing rows" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="550" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CjgAfnbkM7CroxDSMDca-11" target="CjgAfnbkM7CroxDSMDca-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-11" value="Insert new rows" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CjgAfnbkM7CroxDSMDca-13" value="Send mail to notify" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

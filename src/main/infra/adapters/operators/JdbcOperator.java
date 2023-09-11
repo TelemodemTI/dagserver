@@ -1,8 +1,11 @@
 package main.infra.adapters.operators;
 
+import java.io.File;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -14,20 +17,28 @@ import main.domain.annotations.Operator;
 import main.domain.core.MetadataManager;
 import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
+import main.infra.adapters.confs.DagPathClassLoadHelper;
 
 
 
-@Operator(args={"url","user","pwd","driver","query"},optionalv = { "xcom" })
+@Operator(args={"url","user","pwd","driver","driverPath","query"},optionalv = { "xcom" })
 public class JdbcOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
 	
+	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	private static final String QUERY = "query";
 	
 	@Override
 	public List<Map<String, Object>> call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
 		List<Map<String, Object>> result = new ArrayList<>();
-		
-		DbUtils.loadDriver(this.getClass().getClassLoader(), this.args.getProperty("driver"));
+		List<String> archivosJar = new ArrayList<>();
+		this.searchJarFiles(new File(this.args.getProperty("driverPath")),archivosJar);
+		List<URI> list = new ArrayList<>();
+		for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
+			String jarpath = iterator.next();
+			list.add(new File(jarpath).toURI());
+		}
+		DbUtils.loadDriver(helper.getClassLoader(list), this.args.getProperty("driver"));
 		String xcomname = this.args.getProperty("xcom");
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
 			if(xcomname != null) {
@@ -62,6 +73,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 		metadata.setParameter("user", "text");
 		metadata.setParameter("pwd", "password");
 		metadata.setParameter("driver", "text");
+		metadata.setParameter("driverPath", "text");
 		metadata.setParameter(QUERY, "sourcecode");
 		metadata.setOpts("xcom","text");
 		return metadata.generate();
@@ -70,4 +82,18 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	public String getIconImage() {
 		return "jdbc.png";
 	}
+	private void searchJarFiles(File directorio, List<String> archivosJar) {
+        File[] archivos = directorio.listFiles();
+
+        if (archivos != null) {
+            for (File archivo : archivos) {
+                if (archivo.isFile() && archivo.getName().endsWith(".jar")) {
+                    archivosJar.add(archivo.getAbsolutePath());
+                } else if (archivo.isDirectory()) {
+                	searchJarFiles(archivo, archivosJar);
+                }
+            }
+        }
+    }
+
 }
