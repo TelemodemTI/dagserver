@@ -79,7 +79,7 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 	
 	@Override
 	public JSONObject getMetadataOperator() {
-		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.JdbcOperator");
+		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.MailOperator");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("userSmtp", "text");

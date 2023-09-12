@@ -78,6 +78,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					  }	 
 				}
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(e);
 		}
 		

@@ -178,4 +178,11 @@ export class ExistingjComponent {
       element.value = event.params.filter((ele:any)=>{ return ele.key == element.key})[0].value
     }
   }
+  updateStepEvent(event:any){
+    let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]    
+    let item = obj.boxes.filter((elem:any)=>{ return elem.id == event.old})[0]
+    item.id = event.name
+    item.status = event.statusLink
+    this.saveJar()
+  }
 }

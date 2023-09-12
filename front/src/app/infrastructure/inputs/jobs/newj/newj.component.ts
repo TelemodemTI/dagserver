@@ -166,4 +166,7 @@ export class NewjComponent {
       element.value = event.params.filter((ele:any)=>{ return ele.key == element.key})[0].value
     }
   }
+  updateStepEvent(event:any){
+    
+  }
 }

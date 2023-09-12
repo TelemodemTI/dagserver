@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -51,7 +53,22 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(srv);
 				var ctx = (springContext != null)? springContext.getClassLoader():null;
 				if(ctx !=null) {
-					return this.getClassForLoad(prop, getClassLoader(), name);	
+					prop.load(ctx.getResourceAsStream("application.properties"));	
+					String pathfolder = prop.getProperty("param.folderpath");
+					try {
+						return this.getClassForLoad(prop, pathfolder, name);	
+					} catch (Exception e) {
+						List<String> archivosJar = new ArrayList<>();
+						this.searchJarFiles(new File(pathfolder),archivosJar);
+						List<URI> list = new ArrayList<>();
+						for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
+							String jarpath = iterator.next();
+							list.add(new File(jarpath).toURI());
+						}
+						ClassLoader cls = this.getClassLoader(list);
+						return cls.loadClass(name);
+					}
+						
 				} else {
 					log.error("no existe contexto??");
 					return null;
@@ -62,10 +79,22 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			}	
 		} else return null;
 	}
-	private Class<?> getClassForLoad(Properties prop,ClassLoader ctx, String name) throws DomainException {
+	private void searchJarFiles(File directorio, List<String> archivosJar) {
+        File[] archivos = directorio.listFiles();
+
+        if (archivos != null) {
+            for (File archivo : archivos) {
+                if (archivo.isFile() && archivo.getName().endsWith(".jar")) {
+                    archivosJar.add(archivo.getAbsolutePath());
+                } else if (archivo.isDirectory()) {
+                	searchJarFiles(archivo, archivosJar);
+                }
+            }
+        }
+    }
+
+	private Class<?> getClassForLoad(Properties prop,String pathfolder, String name) throws DomainException {
 		try {
-			prop.load(ctx.getResourceAsStream("application.properties"));	
-			String pathfolder = prop.getProperty("param.folderpath");
 			File folder = new File(pathfolder);
 			File[] listOfFiles = folder.listFiles();	
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -246,7 +275,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			    .withOriginRestriction(OriginRestriction.allowByDefault())
 			    .withClasspath(Arrays.asList( new URI[]{ uri }))
 			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.FULL)
+			        .withIsolationLevel(IsolationLevel.NONE)
 			        .build())
 			    .build();
 		try {
@@ -267,6 +296,6 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			        .withIsolationLevel(IsolationLevel.FULL)
 			        .build())
 			    .build();
-		return loader.getResourceAsStream(resource.replace("/", ".").replace(CLASSEXT, ""));
+		return loader.getResourceAsStream(resource);
 	}
 }

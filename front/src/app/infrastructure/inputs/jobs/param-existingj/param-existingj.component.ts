@@ -12,7 +12,8 @@ export class ParamExistingjComponent {
 
   @ViewChild("loader") loader!:ElementRef;
   @ViewChild("form") form!:ElementRef;
-
+  @ViewChild("stagenameinput") stagenameinput!:ElementRef;
+  @ViewChild("linkstatusinput") linkstatusinput!:ElementRef;
 
   @Input("data") data:any
   @Input("selectedTab") selectedTab:any
@@ -21,24 +22,28 @@ export class ParamExistingjComponent {
   @Input("selectedStepParams") selectedStepParams:any
   @Output() removeStepEvent = new EventEmitter<any>();
   @Output() loadFromStepEvent = new EventEmitter<any>();
+  @Output() updateStepEvent = new EventEmitter<any>();
 
   editor!:any
   disabledChanges:any = {}
   disabledChecklist:any = {}
   another:any[] = []
+  name!:any
+  statusSel!:any
   constructor(private cd: ChangeDetectorRef){
 
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.initCodemirror().then((flag)=>{
-      console.log("onchanges") 
       this.loader?.nativeElement.classList.add("invisible");
       this.form?.nativeElement.classList.remove("invisible")
       if(this.editor && this.data){  
         let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
         let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
         this.another = obj.boxes.filter((elem:any)=>{ return elem.type == step.type && elem.id != step.id})
+        this.name = step.id
+        this.statusSel = step.status
         let value;
         try {
           value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
@@ -102,9 +107,11 @@ export class ParamExistingjComponent {
       }
     }
     step.params = paramarr
+    let stagename = this.stagenameinput.nativeElement.value
+    let statusLink = this.linkstatusinput.nativeElement.value
+    this.updateStepEvent.emit({name:stagename,statusLink:statusLink,old:this.name})
     $('.param-value-input').val('');
     $('#param-modalexistingj').modal('hide');
-    console.log(paramarr)
   }
   removeStep(){
     let obj = this.data.dags.filter(( obj:any )=> {return  obj.name == this.selectedTab;})[0]
