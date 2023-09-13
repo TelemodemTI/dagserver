@@ -42,8 +42,6 @@ export class DagCanvasComponent {
             let defval = undefined
             let opt = el.opt?el.opt:[]
             if(step.params){
-              console.log(step)
-              console.log(el)
               let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
               console.log(parit)
               defval = parit.value

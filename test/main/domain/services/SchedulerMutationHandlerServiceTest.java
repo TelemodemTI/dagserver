@@ -284,4 +284,41 @@ class SchedulerMutationHandlerServiceTest {
 		service.createAccount("token", "username", "type", "hash");
 		assertTrue(true);
 	}
+	@Test
+	void deleteAccountTest() throws DomainException {
+		Map<String,String> claimsmap = new HashMap<>();
+		claimsmap.put("typeAccount", "ADMIN");
+		Map<String,Object> ret = new HashMap<>();
+		ret.put("claims", claimsmap);
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.deleteAccount("token", "username");
+		assertTrue(true);
+	}
+	@Test
+	void deleteAccountUserTest() throws DomainException {
+		Map<String,String> claimsmap = new HashMap<>();
+		claimsmap.put("typeAccount", "USER");
+		Map<String,Object> ret = new HashMap<>();
+		ret.put("claims", claimsmap);
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		try {
+			service.deleteAccount("token", "username");	
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	@Test
+	void deleteAccountErrorTest() throws DomainException {
+		Map<String,String> claimsmap = new HashMap<>();
+		claimsmap.put("typeAccount", "ADMIN");
+		Map<String,Object> ret = new HashMap<>();
+		ret.put("claims", claimsmap);
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		doThrow(new RuntimeException("Test")).when(repository).delAccount(anyString());
+		try {
+			service.deleteAccount("token", "username");	
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
 }

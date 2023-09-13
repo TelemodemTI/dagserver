@@ -29,9 +29,12 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 		log.debug(this.args);
 		
 		Properties props = new Properties();
+		props.put("mail.transport.protocol", "smtp");
 		props.put("mail.smtp.host", this.args.getProperty("host")); //SMTP Host
 		props.put("mail.smtp.ssl.trust", this.args.getProperty("host"));
 		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+		props.put("mail.smtp.starttls.required","true");
 		props.put("mail.smtp.port", this.args.getProperty("port")); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
 		//create Authenticator object to pass in Session.getInstance argument
@@ -56,8 +59,8 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 	      if(this.optionals.getProperty("body") != null) {
 	    	 body.append(this.optionals.getProperty("body"));
 	      }
-	      if(this.optionals.getProperty("xcom") != null) {
-	    	  String xcomname = this.args.getProperty("xcom");
+	      if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
+	    	  String xcomname = this.optionals.getProperty("xcom");
 	    	  if(!this.xcom.has(xcomname)) {
 					throw new DomainException("xcom not exist for dagname::"+xcomname);
 	    	  }
@@ -67,7 +70,7 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 	      msg.setContent(body.toString(),"text/html; charset=UTF-8");
 	      msg.setSentDate(new Date());
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(this.args.getProperty("toEmail"), false));
-    	  Transport.send(msg);
+	      Transport.send(msg);
     	  log.debug(this.getClass()+" end "+this.name);
     	  return "ok";
 	    } catch (Exception e) {

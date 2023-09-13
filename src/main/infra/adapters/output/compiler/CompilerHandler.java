@@ -243,7 +243,7 @@ public class CompilerHandler implements CompilerOutputPort {
 			FileDeleteStrategy.FORCE.delete(remove);
 			Thread.sleep(2000);
 		} catch (IOException e) {
-			throw new DomainException("file sleep error");
+			throw new DomainException(e.getMessage());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}

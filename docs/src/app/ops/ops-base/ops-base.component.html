@@ -38,13 +38,13 @@
             <div class="doc-body row">
                 <div class="doc-content col-md-9 col-12 order-1">
                     <div class="content-inner">
-                        <section id="download-section" class="doc-section">
+                        <section id="operators-section" class="doc-section">
                             <h2 class="section-title">Operators</h2>
                             <div class="section-block">
                                 <p>Below is the detailed documentation of each of the operators implemented within dagserver.</p>
                             </div>
                         </section><!--//doc-section-->
-                        <section id="dummy-section" class="doc-section">
+                        <section id="dummy-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Dummy Operator</h2>
                             <div id="step1"  class="section-block">
                                 <p>Test operator, runs a test task that doesn't really do anything.</p>
@@ -54,7 +54,7 @@
                                 <img src="assets/images/icons/dummy002.PNG"/>
                             </div>
                         </section><!--//doc-section-->
-                        <section id="ssh-section" class="doc-section">
+                        <section id="ssh-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">SSH Operator</h2>
                             <div id="step1"  class="section-block">
                                 <p>This operator allows you to execute a command through a connection via SSH to the server. Supports private key and know host</p>
@@ -100,10 +100,10 @@
                     <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">Dummy Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('dummy-section')">Dummy Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#ssh-section">SSH Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('ssh-section')">SSH Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">File Operator</a>

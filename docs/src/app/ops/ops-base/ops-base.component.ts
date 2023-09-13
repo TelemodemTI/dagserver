@@ -6,5 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./ops-base.component.css']
 })
 export class OpsBaseComponent {
-
+  goTo(section:string){
+    var seccion = document.getElementById(section);
+    seccion?.focus()
+  }
 }

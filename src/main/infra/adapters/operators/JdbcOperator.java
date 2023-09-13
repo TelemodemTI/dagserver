@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
@@ -39,19 +42,37 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 			list.add(new File(jarpath).toURI());
 		}
 		DbUtils.loadDriver(helper.getClassLoader(list), this.args.getProperty("driver"));
-		String xcomname = this.args.getProperty("xcom");
+		String xcomname = this.optionals.getProperty("xcom");
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
-			if(xcomname != null) {
+			if(xcomname != null && !xcomname.isEmpty()) {
 				if(!this.xcom.has(xcomname)) {
 					throw new DomainException("xcom not exist for dagname::"+xcomname);
 				}
 				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
-				Object[][] objList = data.stream().map(m -> m.values().toArray()).toArray(Object[][]::new);
-				
 				if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 					result = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler(),data.get(0));	
+				} else if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("update")) {
+					String sql = this.args.getProperty(QUERY);
+					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
+						Map<String, Object> map =  iterator.next();
+					    Pattern pattern = Pattern.compile(":\\w+");
+					    Matcher matcher = pattern.matcher(sql);
+					    List<String> paramNames = new ArrayList<>();
+					    while (matcher.find()) {
+					        String paramName = matcher.group().substring(1); 
+					        paramNames.add(paramName);
+					    }
+					    Object[] objList = new Object[paramNames.size()];
+					    String sqlWithPlaceholders = sql.replaceAll(":\\w+", "?");
+					    for (int i = 0; i < paramNames.size(); i++) {
+					        String paramName = paramNames.get(i);
+					        objList[i] = map.get(paramName);
+					    }
+					    queryRunner.update(con, sqlWithPlaceholders, objList);
+					}
 				} else {
+					Object[][] objList = data.stream().map(m -> m.values().toArray()).toArray(Object[][]::new);
 					queryRunner.batch(con,this.args.getProperty(QUERY), objList);
 				}	
 			} else {

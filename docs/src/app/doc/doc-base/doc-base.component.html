@@ -38,20 +38,20 @@
             <div class="doc-body row">
                 <div class="doc-content col-md-9 col-12 order-1">
                     <div class="content-inner">
-                        <section id="download-section" class="doc-section">
+                        <section id="download-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">General</h2>
                             <div class="section-block">
                                 <p>dagserver allows the execution of a DAGS flow in a decoupled manner in a java environment. It enables a variety of use cases, from data integration between repositories, to continuous integration flow control.</p>
                             </div>
                         </section><!--//doc-section-->
-                        <section id="installation-section" class="doc-section">
+                        <section id="installation-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Components</h2>
                             <div id="step1"  class="section-block">
                                 <p>The following diagram illustrates the components within dagserver</p>
                                 <img src="assets/components.drawio.png"/>
                             </div>
                         </section><!--//doc-section-->
-                        <section id="channels-section" class="doc-section">
+                        <section id="channels-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Channels</h2>
                             <div class="section-block">
                                 <p>
@@ -73,25 +73,25 @@
                                 <img src="assets/images/fig003.PNG" class="center"/>
                             </div>
                         </section>
-                        <section id="scheduler-section" class="doc-section">
+                        <section id="scheduler-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Scheduler</h2>
                             <div class="section-block">
 
                             </div>
                         </section>
-                        <section id="admin-section" class="doc-section">
+                        <section id="admin-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Administration</h2>
                             <div class="section-block">
 
                             </div>
                         </section>
-                        <section id="basic-section" class="doc-section">
+                        <section id="basic-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Basic Example</h2>
                             <div class="section-block">
 
                             </div>
                         </section>
-                        <section id="etl-section" class="doc-section">
+                        <section id="etl-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">ETL Example</h2>
                             <div class="section-block">
                                 <p>
@@ -108,26 +108,23 @@
                                 <img src="assets/images/fig006.PNG" class="center etl"/>
                                 <br>
                                 <p>The third step of the flow will be the identification of new records. For this we will use a script that we will configure using the Groovy Operator</p>
-                                <img src="assets/images/fig004.PNG" class="center etl"/>
-                                <p>For the fourth step we will carry out the same procedure but we will identify the records that had changes</p>
-                                <img src="assets/images/fig004.PNG" class="center etl"/>
-                                <p>The next step is to put together the two insert/update statements using the JDBC Operator to insert the records into the table and perform the update.</p>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <img src="assets/images/fig005.PNG" class="center etl"/>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <img src="assets/images/fig006.PNG" class="center etl"/>
-                                    </div>
-                                </div>
-                                <p>Finally, the notification email will be sent using the following configuration using the SMTP Operator</p>
-                                <img src="assets/images/fig004.PNG" class="center"/>
+                                <img src="assets/images/fig008.PNG" class="center etl"/>
+                                <p>In the fourth step we will add the insert statement that will insert these new records into the database</p>
+                                <img src="assets/images/fig009.PNG" class="center etl"/>
+                                <img src="assets/images/fig016.PNG" class="center etl"/>
+                                <p>The next step will be to run a new Groovy script, to obtain the records that were updated</p>
+                                <img src="assets/images/fig010.PNG" class="center etl"/>
+                                <p>Then the update query will be performed that updates the records in the database</p>
+                                <img src="assets/images/fig011.PNG" class="center etl"/>
+                                <img src="assets/images/fig012.PNG" class="center etl"/>
+                                <p>Finally, using the Mail SMTP Operator, we can configure an email notification that is sent at the end of the execution of our flow</p>
+                                <img src="assets/images/fig013.PNG" class="center etl"/>
                                 <p>The drawing on the DAG canvas will finally look like this in the following image</p>
                                 <img src="assets/images/fig007.PNG" class="center etl"/>
                                 <p>The DAG of the example must be saved and compiled, and we can execute it directly from the front</p>
-                                <img src="assets/images/fig007.PNG" class="center etl"/>
+                                <img src="assets/images/fig014.PNG" class="center etl"/>
                                 <p>The details of the logs will show the following, in which you can see the log with the detailed steps, as well as all the variables and data used during the execution of the DAG</p>
-                                <img src="assets/images/fig007.PNG" class="center etl"/>
+                                <img src="assets/images/fig015.PNG" class="center etl"/>
 
                             </div>
                         </section>
@@ -137,22 +134,22 @@
                     <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#download-section">General</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('download-section')">General</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#installation-section">Components
+                                    <a class="nav-link scrollto pointer"  (click)="goTo('installation-section')">Components
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#channels-section">Channels
+                                    <a class="nav-link scrollto pointer" (click)="goTo('channels-section')">Channels
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#scheduler-section">Scheduler
+                                    <a class="nav-link scrollto pointer" (click)="goTo('scheduler-section')">Scheduler
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#admin-section">Admin
+                                    <a class="nav-link scrollto pointer" (click)="goTo('admin-section')">Admin
                                     </a>
                                 </li>
                                 
@@ -161,10 +158,28 @@
                                 
                                 <nav class="nav doc-sub-menu nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link scrollto" href="#basic-section">Basic Example</a>
+                                        <a class="nav-link scrollto pointer" (click)="goTo('basic-section')">Basic Example</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link scrollto" href="#etl-section">ETL Example</a>
+                                        <a class="nav-link scrollto pointer">Windows CMD example</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto pointer" (click)="goTo('etl-section')">ETL Example</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto pointer">File movements (FTP - SFTP - Samba2) Example</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto pointer">Save Request to Database Example</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto pointer">Mail templating</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto pointer">Execute custom Jar file</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto pointer">Execute TestNG Test Suite</a>
                                     </li>
                                 </nav><!--//nav-->
                                 

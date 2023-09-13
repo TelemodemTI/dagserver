@@ -38,15 +38,15 @@
             <div class="doc-body row">
                 <div class="doc-content col-md-9 col-12 order-1">
                     <div class="content-inner">
-                        <section id="download-section" class="doc-section">
+                        <section id="download-section" class="doc-section " tabindex="-1">
                             <h2 class="section-title">Requirements</h2>
                             <div class="section-block">
                                 <p>For the quick demo a docker image will be used to build and run the application, therefore, you must have a docker installation available</p>
                             </div>
                         </section><!--//doc-section-->
-                        <section id="installation-section" class="doc-section">
+                        <section id="installation-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Get Started</h2>
-                            <div id="step1"  class="section-block">
+                            <div id="step1"  class="section-block" tabindex="-1">
                                 <h3 class="block-title">Step One</h3>
                                 <p>Copy the docker-compose file included in the repository, to a path on your local machine, and then edit it, as follows</p>
                                 
@@ -138,7 +138,7 @@
                                       my-db: 
                                 </code></pre>
                             </div><!--//section-block-->
-                            <div id="step2"  class="section-block">
+                            <div id="step2"  class="section-block" tabindex="-1">
                                 <h3 class="block-title">Step Two</h3>
                                 <p>Run docker container.
                                 </p>
@@ -149,7 +149,7 @@
                             </div><!--//section-block-->
                         </section><!--//doc-section-->
                         
-                        <section id="code-section" class="doc-section">
+                        <section id="code-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Properties</h2>
                             <div class="section-block">
                                 <p>
@@ -201,7 +201,7 @@
                             </div>
                         </section><!--//doc-section-->
                         
-                        <section id="buttons-section" class="doc-section">
+                        <section id="buttons-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Credentials</h2>
                             <div class="section-block">
                                 <p>                                    
@@ -224,25 +224,25 @@
                     <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#download-section">Requirements</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('download-section')">Requirements</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#installation-section">Get Started
+                                    <a class="nav-link scrollto pointer" (click)="goTo('installation-section')">Get Started
                                     </a>
                                 </li>
                                 <nav class="nav doc-sub-menu nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link scrollto" href="#step1">Step One</a>
+                                        <a class="nav-link scrollto pointer" (click)="goTo('step1')">Step One</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link scrollto" href="#step2">Step Two</a>
+                                        <a class="nav-link scrollto pointer" (click)="goTo('step2')">Step Two</a>
                                     </li>
                                 </nav><!--//nav-->
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#code-section">Properties</a>
+                                    <a class="nav-link scrollto" (click)="goTo('code-section')">Properties</a>
                                 </li>
                                 <li class="nav-item">
-                                     <a class="nav-link scrollto" href="#buttons-section">Credentials</a>
+                                     <a class="nav-link scrollto" (click)="goTo('buttons-section')">Credentials</a>
                                 </li>
                                 
                             </nav><!--//doc-menu-->

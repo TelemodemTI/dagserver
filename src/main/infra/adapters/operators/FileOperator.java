@@ -84,13 +84,14 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 	        		 } else {
 	        			 titles = this.generateTitleList(fields.length);
 	        		 }
+	        	 } else {
+	        		 for (int i = 0; i < fields.length; i++) {
+	 	 				String string = fields[i];
+	 	 				row.put(titles.get(i), string);
+	 	 			 }
+	        		 result.add(row);
 	        	 }
-	        	 for (int i = 0; i < fields.length; i++) {
-	 				String string = fields[i];
-	 				row.put(titles.get(i), string);
-	 			 }	 
 	        	 lineNumber++;
-	        	 result.add(row);
 	         }	
         } catch (Exception e) {
 			log.error(e);
