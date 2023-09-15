@@ -33,6 +33,10 @@ import { APP_BASE_HREF } from '@angular/common';
 import { DependenciesInputPort } from './application/inputs/dependencies.input.port';
 import { InputsChannelsInputPort } from './application/inputs/inputschannels.input.port';
 import { InputsModule } from './infrastructure/inputs/inputs/inputs.module';
+import { DinamicOutputPort } from './application/outputs/dinamic.output.port';
+import { DinamicAdapterService } from './infrastructure/outputs/http/dinamic.services.adapter.service';
+import { SharedOutputPort } from './application/outputs/shared.output.port';
+import { SharedAdapterService } from './infrastructure/outputs/shared/shared.adapter.service';
 
 
 declare var window: any;
@@ -57,7 +61,9 @@ declare var window: any;
     { provide: APP_BASE_HREF, useValue: window["base-href"]},
     { provide: GraphQLOutputPort , useClass: GraphQLOutputPortAdapterService },
     { provide: JWTOutputPort, useClass: JwtOutputPortAdapterService },
+    { provide: DinamicOutputPort, useClass: DinamicAdapterService },
     { provide: EncryptionOutputPort, useClass: EncryptionOutputPortAdapterService },
+    { provide: SharedOutputPort, useClass: SharedAdapterService },
     { provide: LoginInputPort , useClass: FrontEndDomainService },
     { provide: AuthenticatedInputPort, useClass: FrontEndDomainService},
     { provide: DagOpsInputPort, useClass: FrontEndDomainService},

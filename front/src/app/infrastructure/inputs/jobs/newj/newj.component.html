@@ -36,7 +36,7 @@
                         </div>
                         
                         <div class="row">
-                            <div class="col-md-7">
+                            <div class="col-md-9">
                                 <app-dag-canvas #dagCanvasComponent
                                     [data]="data"
                                     [parameters]="parameters"
@@ -44,7 +44,7 @@
                                     (clickedStepEvent)="clickedStep($event)"
                                 ></app-dag-canvas>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-3">
 
                                 <ul class="nav nav-tabs">
                                     <li *ngFor="let tabs of data?.dags; let i = index;" id="canvas-{{tabs.name}}" class="tab-pane fade in {{tabs.name == selectedTab ? 'active':''}}">
@@ -98,5 +98,6 @@
     (removeStepEvent)="removeStepEvent($event)"
     (loadFromStepEvent)="loadFromStepEvent($event)"
     (updateStepEvent)="updateStepEvent($event)"
+    (execStepEvent)="execStepEvent($event)"
 >
 </app-param-existingj>

@@ -26,6 +26,8 @@ import { environment  } from 'src/environments/environment';
 import { JardetailpInputPort } from 'src/app/application/inputs/jardetailp.input.port';
 import { DependenciesInputPort } from 'src/app/application/inputs/dependencies.input.port';
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
+import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
+import { SharedOutputPort } from 'src/app/application/outputs/shared.output.port';
 
 @Injectable({
   providedIn: 'root'
@@ -46,8 +48,15 @@ export class FrontEndDomainService implements
     InputsChannelsInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
+    private httpd: DinamicOutputPort,
     private jwtadapter:JWTOutputPort,
+    private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+  
+  
+  executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string): Promise<any> {
+    return this.httpd.executeDagUncompiled(uncompiledId,dagname,stepname)
+  }
   
   renameUncompiled(uncompiled: any, arg1: any): Promise<void> {
     return this.adapter.renameUncompiled(uncompiled,arg1);
@@ -178,5 +187,11 @@ export class FrontEndDomainService implements
   }
   getChannels(): Promise<any[]> {
     return this.adapter.getChannels();
+  }
+  sendResultExecution(data:any): Promise<void>{
+    return this.shared.sendEventStart(data);
+  }
+  listenEvents(): any {
+    return this.shared.listenEvents();
   }
 }

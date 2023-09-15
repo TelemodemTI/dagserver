@@ -23,6 +23,7 @@ export class ParamExistingjComponent {
   @Output() removeStepEvent = new EventEmitter<any>();
   @Output() loadFromStepEvent = new EventEmitter<any>();
   @Output() updateStepEvent = new EventEmitter<any>();
+  @Output() execStepEvent = new EventEmitter<any>();
 
   editor!:any
   disabledChanges:any = {}
@@ -216,5 +217,11 @@ export class ParamExistingjComponent {
   isChlDisabled(item:any){
     return item.source == 'PAR'
   }
-  
+  execStep(){
+    let opt = confirm("you sure?")
+    if(opt){
+      this.execStepEvent.emit({dagname:this.selectedTab,step:this.selectedStep})
+      this.close()
+    }
+  }  
 }

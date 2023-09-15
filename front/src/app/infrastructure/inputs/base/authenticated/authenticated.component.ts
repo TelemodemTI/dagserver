@@ -24,6 +24,9 @@ export class AuthenticatedComponent {
     this.loadServerInfo()
     this.interval = setInterval(()=>{this.start();},3000);
     this.intervalServerInfo = setInterval(()=>{this.loadServerInfo();},60000) 
+    this.service.listenEvents().subscribe((data:any)=>{
+      console.log(data)
+    })
   }
 
   start(){
@@ -57,4 +60,5 @@ export class AuthenticatedComponent {
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
   }
+  
 }

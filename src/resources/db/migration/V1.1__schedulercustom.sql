@@ -16,6 +16,8 @@ CREATE TABLE `sche_logs` (
   `log_id` int NOT NULL AUTO_INCREMENT,
   `evalkey` varchar(190) DEFAULT NULL,
   `dagname` varchar(190) DEFAULT NULL,
+  `source_type` varchar(190) DEFAULT NULL,
+  `objetive` varchar(190) DEFAULT NULL,
   `exec_dt` datetime DEFAULT NULL,
   `text_value` text,
   `outxcom` text DEFAULT NULL,

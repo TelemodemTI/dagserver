@@ -9,6 +9,7 @@ import { DagPropsComponent } from './dag-props/dag-props.component';
 import { DagOpsComponent } from './dag-ops/dag-ops.component';
 import { DagCanvasComponent } from './dag-canvas/dag-canvas.component';
 import { ValueModalComponent } from './value-modal/value-modal.component';
+import { ResultStepModalComponent } from './result-step-modal/result-step-modal.component';
 
 
 
@@ -21,7 +22,8 @@ import { ValueModalComponent } from './value-modal/value-modal.component';
     DagPropsComponent,
     DagOpsComponent,
     DagCanvasComponent,
-    ValueModalComponent
+    ValueModalComponent,
+    ResultStepModalComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +38,8 @@ import { ValueModalComponent } from './value-modal/value-modal.component';
     DagOpsComponent,
     DagCanvasComponent,
     DagCanvasComponent,
-    ValueModalComponent
+    ValueModalComponent,
+    ResultStepModalComponent
   ]
 })
 export class BaseModule { }

@@ -39,6 +39,12 @@ public class Log {
 	@Column(name = "channel", nullable = false)
 	private String channel;
 	
+	@Column(name = "source_type", nullable = true)
+	private String sourceType;
+	
+	@Column(name = "objetive", nullable = true)
+	private String objetive;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -86,6 +92,18 @@ public class Log {
 	}
 	public void setChannel(String channel) {
 		this.channel = channel;
+	}
+	public String getSourceType() {
+		return sourceType;
+	}
+	public void setSourceType(String sourceType) {
+		this.sourceType = sourceType;
+	}
+	public String getObjetive() {
+		return objetive;
+	}
+	public void setObjetive(String objetive) {
+		this.objetive = objetive;
 	}
 
 }

@@ -8,13 +8,15 @@
             <div class="modal-body">
 
                 <div class="btn-group pull-right" >
-                    <label></label>
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     from another stage in DAG <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                       <li *ngFor="let anot of another"><a class="pointer" (click)="loadFrom(anot.id)">{{anot.id}}</a></li>
                     </ul>
+                    &nbsp;
+                    &nbsp;
+                    <button type="button" (click)="execStep()" class="btn btn-success"><i class="fa fa-play"></i></button>
                 </div>
 
 

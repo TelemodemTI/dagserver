@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExistingJInputPort } from 'src/app/application/inputs/existingj.input.port';
 import { Uncompileds } from 'src/app/domain/models/uncompiled.model';
@@ -8,6 +8,8 @@ import { DagOpsComponent } from '../../base/dag-ops/dag-ops.component';
 import { DagCanvasComponent } from '../../base/dag-canvas/dag-canvas.component';
 import { ParamExistingjComponent } from '../param-existingj/param-existingj.component';
 import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
+import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
+import { ResultStepModalComponent } from '../../base/result-step-modal/result-step-modal.component';
 declare var $:any
 declare var joint:any;
 declare var dagre:any
@@ -23,7 +25,8 @@ export class ExistingjComponent {
   @ViewChild("dagCanvasComponent") dagCanvas!:DagCanvasComponent;
   @ViewChild("modalparam") modalparam!:ParamExistingjComponent;
   @ViewChild("modalparamv") vlmod!:ValueModalComponent;  
-
+  @ViewChild("resultStepModal") resultStepModal!:ResultStepModalComponent;  
+  
 
   parameters: any[] = []
   boxes: any = []
@@ -37,7 +40,8 @@ export class ExistingjComponent {
 
   constructor(private router: Router, 
     private route: ActivatedRoute,
-    private service: ExistingJInputPort){
+    private service: ExistingJInputPort,
+    ){
   }
 
   async ngOnInit() {
@@ -184,5 +188,11 @@ export class ExistingjComponent {
     item.id = event.name
     item.status = event.statusLink
     this.saveJar()
+  }
+  async execStepEvent(item:any){
+    let data = await this.service.executeDagUncompiled(this.uncompiled,item.dagname,item.step);    
+    this.service.sendResultExecution(data);
+    
+    this.resultStepModal.show(data);
   }
 }

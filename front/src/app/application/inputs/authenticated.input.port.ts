@@ -5,4 +5,5 @@ export abstract class AuthenticatedInputPort {
   public abstract getDecodedAccessToken():DagToken;
   public abstract removeAccessToken():void;
   public abstract getServerInfo():Promise<Agents[]>;
+  public abstract listenEvents(): any;
 }
