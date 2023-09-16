@@ -1,14 +1,17 @@
 package main.infra.adapters.input.controllers;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.http.HttpEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ui.Model;
 import main.application.ports.input.GitHubWebHookUseCase;
+import main.application.ports.input.StageApiUsecase;
 import main.domain.exceptions.DomainException;
 import main.domain.model.ChannelPropsDTO;
-
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -28,11 +31,15 @@ class DefaultControllerTest {
 	@Mock
 	private GitHubWebHookUseCase handler;
 	
+	@Mock
+	private StageApiUsecase stage;
 	
 	@BeforeEach
     public void init() {
 		handler = mock(GitHubWebHookUseCase.class);
+		stage = mock(StageApiUsecase.class);
 		ReflectionTestUtils.setField(controller, "handler", handler);
+		ReflectionTestUtils.setField(controller, "api", stage);
 	}
 	
     @Test
@@ -58,6 +65,37 @@ class DefaultControllerTest {
     	HttpServletResponse response = mock(HttpServletResponse.class);
     	try {
     		if(controller.defaultGet(model, request, response).isRedirectView()) {
+        		assertTrue(true); 	
+        	} else {
+        		assertTrue(false);
+        	}	
+		} catch (Exception e) {
+			assertTrue(false,e.getMessage());
+		}
+    }
+    @Test
+    void stageApiTest() {
+    	HttpEntity<String> httpEntity = mock(HttpEntity.class);
+    	HttpServletResponse response = mock(HttpServletResponse.class);
+    	JSONObject obj = new JSONObject();
+    	obj.put("dagname", "test");
+    	obj.put("stepname", "step");
+    	obj.put("uncompiled", 0);
+    	obj.put("token", "token");
+    	JSONObject ret = new JSONObject();
+    	when(stage.executeTmp(anyInt(),anyString(),anyString(),anyString())).thenReturn(ret);
+    	when(httpEntity.getBody()).thenReturn(obj.toString());
+    	if(controller.stageApi(httpEntity, response).getStatusCode().is2xxSuccessful()) {
+    		assertTrue(true);
+    	}
+    }
+    @Test
+    void docsGetTest() {
+    	Model model = mock(Model.class);
+    	HttpServletRequest request = mock(HttpServletRequest.class);
+    	HttpServletResponse response = mock(HttpServletResponse.class);
+    	try {
+    		if(controller.docsGet(model, request, response).isRedirectView()) {
         		assertTrue(true); 	
         	} else {
         		assertTrue(false);

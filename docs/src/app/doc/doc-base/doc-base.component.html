@@ -68,7 +68,7 @@
                                 </p>
                                 <img src="assets/images/fig001.PNG" class="center"/>
                                 <p>For this last configuration there is a view in the front end, with which you can manage the Github events that the dagserver listens to.</p>
-                                <img src="assets/images/fig002.PNG" class="center"/>
+                                <img src="assets/images/fig002.PNG" class="center etl"/>
                                 <p>In this modal you can configure the repository that the dagserver will be listening to to generate the events</p>
                                 <img src="assets/images/fig003.PNG" class="center"/>
                             </div>
@@ -76,7 +76,64 @@
                         <section id="scheduler-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Scheduler</h2>
                             <div class="section-block">
-
+                                <p>The scheduler configuration is divided into the management of properties or parameters, and the information about the jobs that are executed within the scheduler.</p>
+                                <ul>
+                                    <li>
+                                        <label>Scheduler View:</label>
+                                        <p>The scheduler view is divided into the tab of jar files available to the scheduler (called jobs), and the designs of these jobs, which are available to the developer, but not compiled or available to the scheduler.</p>
+                                        <img src="assets/images/fig017.PNG" class="center etl"/>
+                                        <p>In the tab with the jobs available in the scheduler you will find both the external jobs, which are available in the respective path of the OS, and the internal jobs. The latter cannot be executed through this view, since they are internal to the scheduler. On the other hand, Jobs can be executed from the front, and the respective canvas of the DAG can also be displayed, as well as its dependencies. There is also the option to stop the job in the scheduler and finally view the execution logs.</p>
+                                        <img src="assets/images/fig018.PNG" class="center etl"/>
+                                        <div class="callout-block callout-success">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-thumbs-up"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <h4 class="callout-title">Useful Tip:</h4>
+                                                <p>When the DAG is compiled it is impossible to add or change its design without compiling it again. But it is possible to change the value of the parameters configured in each node. This can be done directly from the compiled DAG detail</p>
+                                            </div><!--//content-->
+                                        </div>
+                                        <img src="assets/images/fig019.PNG" class="center etl"/>
+                                        <p>
+                                        The dependencies viewer allows you to quickly identify the listener jobs that are listening to the execution of the DAG
+                                        </p>
+                                        <img src="assets/images/fig020.PNG" class="center etl"/>
+                                        <p>The canvas allows the configuration of each node and see how the operators are related in the context of the DAG that is being designed.</p>
+                                        <img src="assets/images/fig021.PNG" class="center etl"/>
+                                        <img src="assets/images/fig022.PNG" class="center etl"/>
+                                        <p>In the designs tab you can create the design of a new DAG, using the canvas. This view also allows this design to be compiled into an executable file, visible to the scheduler. It also allows you to export the design of this Job to a JSON file, with which this design can later be imported.</p>
+                                        <img src="assets/images/fig023.PNG" class="center etl"/>
+                                        <img src="assets/images/fig024.PNG" class="center etl"/>
+                                        <div class="callout-block callout-success">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-thumbs-up"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <h4 class="callout-title">Useful Tip:</h4>
+                                                <p>The visual positions of each operator on the canvas are not saved within the generated classes, but rather are recalculated, using the DAG structure.</p>
+                                            </div><!--//content-->
+                                        </div>
+                                        <img src="assets/images/fig025.PNG" class="center etl"/>
+                                        <p>When creating a DAG, in the right side panel, you can configure whether the DAG will be executed based on a schedule (CRON QUARTZ), or if it will be executed based on the behavior of another DAG (Job Listener). This allows complex flows to be implemented within the tool.</p>
+                                        <img src="assets/images/fig026.PNG" class="center etl"/>
+                                        <img src="assets/images/fig027.PNG" class="center etl"/>
+                                        <p>Operators are the types of nodes that can be used within a DAG. Operators offer functionality as varied as running queries against a database, running SSH statements on a remote server, or running a JAR file with custom logic.</p>
+                                        <img src="assets/images/fig028.PNG" class="center etl"/>
+                                        <img src="assets/images/fig029.PNG" class="center etl"/>
+                                        <p>In the DAG editor canvas, each node can be configured to run an operator. The configuration view allows you to configure the DAG with optional parameters, the script, and the particularities of each operator, and also test the operation of the DAG at design time.</p>
+                                        <img src="assets/images/fig030.PNG" class="center etl"/>
+                                        <p>The "scripts" tab will be available in the operators that allow you to enter some additional script, such as entering an ssh command or an SQL query.</p>
+                                        <img src="assets/images/fig031.PNG" class="center etl"/>
+                                        <p>In the "settings" tab it is possible to configure the name of the stage in the canvas, and modify the state of the input link of the DAG node</p>
+                                        <img src="assets/images/fig032.PNG" class="center etl"/>
+                                    </li>
+                                    <li>
+                                        <label>Properties View:</label>
+                                        <p>The properties view allows you to see the property groups that have been created within the scheduler. These properties correspond to the Job parameters that are configured from the DAGS designer.</p>
+                                        <img src="assets/images/fig032.PNG" class="center etl"/>
+                                        <p>From this view you can see/edit/delete the parameters managed within the DAG server. It is also possible to export and import these parameters to a JSON file.</p>
+                                    </li>
+                                </ul>
                             </div>
                         </section>
                         <section id="admin-section" class="doc-section" tabindex="-1">

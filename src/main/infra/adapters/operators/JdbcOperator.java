@@ -17,6 +17,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
+import main.domain.core.KeyValue;
 import main.domain.core.MetadataManager;
 import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
@@ -51,30 +52,18 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
 				if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
-					result = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler(),data.get(0));	
-				} else if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("update")) {
+					String sql = this.args.getProperty(QUERY);
+					var map = data.get(0);
+					var kv = this.namedParameter(sql, map);
+					result = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
+				} else {
 					String sql = this.args.getProperty(QUERY);
 					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
 						Map<String, Object> map =  iterator.next();
-					    Pattern pattern = Pattern.compile(":\\w+");
-					    Matcher matcher = pattern.matcher(sql);
-					    List<String> paramNames = new ArrayList<>();
-					    while (matcher.find()) {
-					        String paramName = matcher.group().substring(1); 
-					        paramNames.add(paramName);
-					    }
-					    Object[] objList = new Object[paramNames.size()];
-					    String sqlWithPlaceholders = sql.replaceAll(":\\w+", "?");
-					    for (int i = 0; i < paramNames.size(); i++) {
-					        String paramName = paramNames.get(i);
-					        objList[i] = map.get(paramName);
-					    }
-					    queryRunner.update(con, sqlWithPlaceholders, objList);
+					    var kv = this.namedParameter(sql, map);
+					    queryRunner.update(con, kv.getKey(), kv.getValue());
 					}
-				} else {
-					Object[][] objList = data.stream().map(m -> m.values().toArray()).toArray(Object[][]::new);
-					queryRunner.batch(con,this.args.getProperty(QUERY), objList);
-				}	
+				} 
 			} else {
 					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 						result = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());	
@@ -86,6 +75,23 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 			log.error(e);
 		}
 		return result;
+	}
+	private KeyValue<String, Object[]> namedParameter(String sql,Map<String, Object> map) {
+		Pattern pattern = Pattern.compile(":\\w+");
+	    Matcher matcher = pattern.matcher(sql);
+	    List<String> paramNames = new ArrayList<>();
+	    while (matcher.find()) {
+	        String paramName = matcher.group().substring(1); 
+	        paramNames.add(paramName);
+	    }
+	    Object[] objList = new Object[paramNames.size()];
+	    String sqlWithPlaceholders = sql.replaceAll(":\\w+", "?");
+	    for (int i = 0; i < paramNames.size(); i++) {
+	        String paramName = paramNames.get(i);
+	        objList[i] = map.get(paramName);
+	    }
+	    KeyValue<String, Object[]> keyValue = new KeyValue<>(sqlWithPlaceholders, objList);
+	    return keyValue;
 	}
 	@Override
 	public JSONObject getMetadataOperator() {

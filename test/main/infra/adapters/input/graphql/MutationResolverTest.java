@@ -162,4 +162,44 @@ class MutationResolverTest {
 		var resp2 = mutation.deleteJarfile("test","group");
 		assertNotNull(resp2);
 	}
+	@Test
+	void addGitHubWebhookTest() throws DomainException {
+		var resp = mutation.addGitHubWebhook(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).addGitHubWebhook(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+		var resp2 = mutation.addGitHubWebhook(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void removeGithubWebhookTest() throws DomainException {
+		var resp = mutation.removeGithubWebhook(anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).removeGithubWebhook(anyString(), anyString());
+		var resp2 = mutation.removeGithubWebhook(anyString(), anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void deleteLogTest() throws DomainException {
+		var resp = mutation.deleteLog(anyString(), anyInt());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteLog(anyString(), anyInt());
+		var resp2 = mutation.deleteLog(anyString(), anyInt());
+		assertNotNull(resp2);
+	}
+	@Test
+	void deleteAllLogsTest() throws DomainException {
+		var resp = mutation.deleteAllLogs(anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteAllLogs(anyString(), anyString());
+		var resp2 = mutation.deleteAllLogs(anyString(), anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void renameUncompiledTest() throws DomainException {
+		var resp = mutation.renameUncompiled(anyString(), anyInt(),anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).renameUncompiled(anyString(), anyInt(),anyString());
+		var resp2 = mutation.renameUncompiled(anyString(), anyInt(),anyString());
+		assertNotNull(resp2);
+	}
 }
