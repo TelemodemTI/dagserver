@@ -1,4 +1,5 @@
 package main.domain.services;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,7 +14,8 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 
 	
 	@Override
-	public JSONObject executeTmp(Integer uncompiled, String dagname, String stepName) {
+	public JSONObject executeTmp(Integer uncompiled, String dagname, String stepName, String token) {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 		String json = repository.getUncompiledBin(uncompiled);
 		JSONObject daguncompiled = new JSONObject(json);
 		JSONArray dags = daguncompiled.getJSONArray("dags");
@@ -70,6 +72,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 		}
 		JSONObject output = new JSONObject();
 		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 			String result = dagtmp.execute(stepName);
 			String locatedAt = repository.createInternalStatus(dagtmp.getXcom());		
 			String objetive = (stepName.isEmpty())?"COMPLETE":"INCOMPLETE";
@@ -77,6 +80,9 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			JSONObject xcom = dagtmp.getXcom();
 			output.put("xcom", xcom);
 			output.put("result", result);
+			output.put("dagname", dagname);
+			output.put("objetive", stepName);
+			output.put("evalDt", sdf.format(dagtmp.getEvalDt()));
 			output.put("log", dagtmp.getLogText());
 		} catch (Exception e) {
 			output.put("result", e.getMessage());

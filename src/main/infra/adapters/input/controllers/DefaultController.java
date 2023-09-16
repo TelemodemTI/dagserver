@@ -52,7 +52,8 @@ public class DefaultController {
 		Integer uncompiled = body.getInt("uncompiled");
 		String dagname = body.getString("dagname");
 		String stepname = body.getString("stepname");
-		JSONObject responsej = api.executeTmp(uncompiled,dagname,stepname);
+		String token = body.getString("token");
+		JSONObject responsej = api.executeTmp(uncompiled,dagname,stepname,token);
 		return new ResponseEntity<>(responsej.toString(), HttpStatus.OK);
 	}
 	

@@ -16,10 +16,12 @@ export class DinamicAdapterService implements DinamicOutputPort {
             const headers = new HttpHeaders({
                 'Content-Type': 'application/json' // Configura las cabeceras para enviar JSON
             });
+            var token = localStorage.getItem("dagserver_token")
             const body = {
                 uncompiled: uncompiledId,
                 dagname: dagname,
-                stepname: stepname
+                stepname: stepname,
+                token: token
             };
             this.http.post(url, JSON.stringify(body), { headers: headers }).subscribe((result:any)=>{
                 resolve(result)

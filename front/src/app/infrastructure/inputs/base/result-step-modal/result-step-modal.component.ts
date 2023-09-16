@@ -11,7 +11,6 @@ export class ResultStepModalComponent {
 
   show(data:any){
     this.data = data
-    console.log(data)
     $('#result-step-modal').modal('show');    
   }
 }

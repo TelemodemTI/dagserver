@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticatedInputPort } from 'src/app/application/inputs/authenticated.input.port';
 import { Agents } from 'src/app/domain/models/agent.model';
+import { ResultStepModalComponent } from '../result-step-modal/result-step-modal.component';
 
 @Component({
   selector: 'app-authenticated',
@@ -10,11 +11,15 @@ import { Agents } from 'src/app/domain/models/agent.model';
 })
 export class AuthenticatedComponent {
 
+  @ViewChild("resultStepModalAut") resultStepModalAut!:ResultStepModalComponent
+
   username:any = ""
   agents: Agents[] = []
   interval!:any
   intervalServerInfo!:any
   typeAccount!:any
+  notifications:any[] = []
+  badget:number = 0
 
   constructor(private router: Router,
     private service: AuthenticatedInputPort){}
@@ -25,7 +30,10 @@ export class AuthenticatedComponent {
     this.interval = setInterval(()=>{this.start();},3000);
     this.intervalServerInfo = setInterval(()=>{this.loadServerInfo();},60000) 
     this.service.listenEvents().subscribe((data:any)=>{
-      console.log(data)
+      if(data && data.result){
+        this.notifications.push(data);
+        this.badget = this.badget + 1
+      }
     })
   }
 
@@ -60,5 +68,10 @@ export class AuthenticatedComponent {
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
   }
-  
+  reset(){
+    this.badget = 0
+  }  
+  result(item:any){
+    this.resultStepModalAut.show(item);
+  }
 }

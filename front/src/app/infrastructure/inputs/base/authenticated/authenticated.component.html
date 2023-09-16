@@ -21,6 +21,27 @@
             
             
             <li class="dropdown navbar-inverse">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" (click)="reset()">
+                    <i class="fa fa-book fa-fw"></i> 
+                    <ng-container *ngIf="badget != 0">
+                        <span class="badge">1</span> 
+                    </ng-container>
+                    <b class="caret"></b>
+                </a>
+                <ng-container *ngIf="notifications.length > 0">
+                    <ul class="dropdown-menu dropdown-alerts">
+                        <li *ngFor="let item of notifications">
+                            <a class="linker" (click)="result(item)">
+                                <div>
+                                    <i class="fa fa-comment fa-fw"></i> {{item?.dagname}}
+                                    <span class="pull-right text-muted small">{{item?.evalDt }}</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </ng-container>
+            </li>
+            <li class="dropdown navbar-inverse">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     <i class="fa fa-server fa-fw"></i> <b class="caret"></b>
                 </a>
@@ -98,4 +119,4 @@
   
   </div>
   <!-- /#wrapper -->
-  
+  <app-result-step-modal #resultStepModalAut></app-result-step-modal>

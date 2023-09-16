@@ -192,7 +192,6 @@ export class ExistingjComponent {
   async execStepEvent(item:any){
     let data = await this.service.executeDagUncompiled(this.uncompiled,item.dagname,item.step);    
     this.service.sendResultExecution(data);
-    
     this.resultStepModal.show(data);
   }
 }

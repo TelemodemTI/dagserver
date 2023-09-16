@@ -7,7 +7,37 @@
                 <h4 class="modal-title" id="myModalLabel">Result Step  </h4>
             </div>
             <div class="modal-body">
-                        
+                <label>Log output</label>     
+                <div class="well" [innerText]="data?.log"></div>
+
+                <div class="row">
+                            
+                    <div class="col-md-6">
+                        <b>XCOM</b>
+                        <div class="panel-group" id="accordion-{{itemx.key}}" *ngFor="let itemx of data?.xcom | keyvalue">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne-{{itemx.key}}" aria-expanded="false" class="collapsed">{{itemx.key}}</a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne-{{itemx.key}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                    <div class="panel-body">
+                                        <div class="well" [innerHtml]="itemx.value | json"></div>
+                                        
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Result status</label><br>
+                        {{data?.result}}<br>
+                        {{data?.evalDt}}
+
+                    </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

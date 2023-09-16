@@ -25,7 +25,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 	private String logText;
 	private String evalstring;
 	private Map<String,OperatorStatus> status;
-	
+	private Date evalDt;
 	public TemporalDagExecutable() {
 		super();
 		status = new HashMap<>();
@@ -47,8 +47,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 		return status.toString();
 	}
 	protected OperatorStatus evaluate(String stopAtStep) {
-		
-		Date evalDt = new Date();
+		evalDt = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
 		var fa = this.createDagMemoryAppender(evalstring);
@@ -131,6 +130,12 @@ public class TemporalDagExecutable extends DagExecutable  {
 	}
 	public void setStatus(Map<String, OperatorStatus> status) {
 		this.status = status;
+	}
+	public Date getEvalDt() {
+		return evalDt;
+	}
+	public void setEvalDt(Date evalDt) {
+		this.evalDt = evalDt;
 	}
 	
 }
