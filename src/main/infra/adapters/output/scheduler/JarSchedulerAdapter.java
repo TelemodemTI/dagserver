@@ -169,14 +169,14 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);
 					Class<?> clazz = helper.loadFromJar(jarfileO, classname);
-					activateDeactivate(dagname, clazz, classname);
+					activateDeactivate(dagname, clazz);
 				}		
 			} catch (Exception e) {
 				throw new DomainException(e.getMessage());
 			}	
 		}
 	}	
-	private void activateDeactivate(String dagname,Class<?> clazz,String classname) {
+	private void activateDeactivate(String dagname,Class<?> clazz) {
 		try {
 			Dag toschedule = clazz.getAnnotation(Dag.class);
 			if(toschedule.name().equals(dagname)) {

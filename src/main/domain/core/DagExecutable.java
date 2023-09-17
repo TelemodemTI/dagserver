@@ -41,6 +41,7 @@ import main.infra.adapters.confs.InMemoryLoggerAppender;
 public class DagExecutable implements Job,JobListener {
 	
 	private static Logger log = Logger.getLogger(DagExecutable.class);
+	private static final String VALUE = "value";
 	
 	protected class DagNode {
 		protected Class<?> operator;
@@ -133,7 +134,7 @@ public class DagExecutable implements Job,JobListener {
 		Map<String,String> parmdata = new HashMap<>(); 
 		parmdata.put("evalkey",evalstring);
 		parmdata.put("dagname",dagname);
-		parmdata.put("value",fa.getResult());
+		parmdata.put(VALUE,fa.getResult());
 		parmdata.put("xcom",null);
 		parmdata.put("channel",this.executionSource);
 		parmdata.put("objetive","COMPLETE");
@@ -151,7 +152,7 @@ public class DagExecutable implements Job,JobListener {
 			} else {
 				logdag.debug("no constraint");
 			}
-			parmdata.put("value",fa.getResult());
+			parmdata.put(VALUE,fa.getResult());
 			repo.setLog(parmdata,status);
 			Class<?> clazz = node.operator;
 			ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -173,7 +174,7 @@ public class DagExecutable implements Job,JobListener {
 			});
 			while (!future.isDone()) {
 			    try {
-			    	parmdata.put("value",fa.getResult());
+			    	parmdata.put(VALUE,fa.getResult());
 					repo.setLog(parmdata,status);
 			    	Thread.sleep(500);	
 				} catch (InterruptedException e) {
@@ -218,7 +219,7 @@ public class DagExecutable implements Job,JobListener {
 				Logger.getRootLogger().removeAppender(fa);
 				try {
 					String locatedAt = repo.createInternalStatus(xcom);
-					parmdata.put("value",fa.getResult());
+					parmdata.put(VALUE,fa.getResult());
 					parmdata.put("xcom", locatedAt);
 					repo.setLog(parmdata,status);
 				} catch (Exception e2) {
@@ -233,7 +234,7 @@ public class DagExecutable implements Job,JobListener {
 			fa.close();
 			Logger.getRootLogger().removeAppender(fa);
 			String locatedAt = repo.createInternalStatus(xcom);
-			parmdata.put("value",fa.getResult());
+			parmdata.put(VALUE,fa.getResult());
 			parmdata.put("xcom", locatedAt);
 			repo.setLog(parmdata,status);
 			return OperatorStatus.OK;	

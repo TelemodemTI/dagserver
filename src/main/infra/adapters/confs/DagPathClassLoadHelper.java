@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -52,32 +53,35 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			try {
 				ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(srv);
 				var ctx = (springContext != null)? springContext.getClassLoader():null;
-				if(ctx !=null) {
-					prop.load(ctx.getResourceAsStream("application.properties"));	
-					String pathfolder = prop.getProperty("param.folderpath");
-					try {
-						return this.getClassForLoad(prop, pathfolder, name);	
-					} catch (Exception e) {
-						List<String> archivosJar = new ArrayList<>();
-						this.searchJarFiles(new File(pathfolder),archivosJar);
-						List<URI> list = new ArrayList<>();
-						for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
-							String jarpath = iterator.next();
-							list.add(new File(jarpath).toURI());
-						}
-						ClassLoader cls = this.getClassLoader(list);
-						return cls.loadClass(name);
-					}
-						
-				} else {
-					log.error("no existe contexto??");
-					return null;
-				}
+				return this.loadClassWithCtx(ctx,prop,name);
 			} catch (Exception e) {
 				log.error(e);
 				return null;
 			}	
 		} else return null;
+	}
+	private Class<?> loadClassWithCtx(ClassLoader ctx,Properties prop,String name) throws IOException, ClassNotFoundException {
+		if(ctx !=null) {
+			prop.load(ctx.getResourceAsStream("application.properties"));	
+			String pathfolder = prop.getProperty("param.folderpath");
+			try {
+				return this.getClassForLoad(pathfolder, name);	
+			} catch (Exception e) {
+				List<String> archivosJar = new ArrayList<>();
+				this.searchJarFiles(new File(pathfolder),archivosJar);
+				List<URI> list = new ArrayList<>();
+				for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
+					String jarpath = iterator.next();
+					list.add(new File(jarpath).toURI());
+				}
+				ClassLoader cls = this.getClassLoader(list);
+				return cls.loadClass(name);
+			}
+				
+		} else {
+			log.error("no existe contexto??");
+			return null;
+		}
 	}
 	private void searchJarFiles(File directorio, List<String> archivosJar) {
         File[] archivos = directorio.listFiles();
@@ -93,7 +97,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
         }
     }
 
-	private Class<?> getClassForLoad(Properties prop,String pathfolder, String name) throws DomainException {
+	private Class<?> getClassForLoad(String pathfolder, String name) throws DomainException {
 		try {
 			File folder = new File(pathfolder);
 			File[] listOfFiles = folder.listFiles();	
@@ -132,7 +136,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			  ZipEntry ze = entries.nextElement();
 			  if(ze.getName().equals(".source")) {
 				  InputStream inputStream = zipFile.getInputStream(ze);
-	                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8"); // Puedes cambiar la codificación según sea necesario
+	                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 	                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
 	                StringBuilder stringBuilder = new StringBuilder();
@@ -163,7 +167,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		ClassLoader loader = LoaderBuilder
 			    .anIsolatingLoader()
 			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(Arrays.asList( new URI[]{ uri }))
+			    .withClasspath(Arrays.asList( uri ))
 			    .withParentRelationship(DelegateRelationshipBuilder.builder()
 			        .withIsolationLevel(IsolationLevel.FULL)
 			        .build())
@@ -174,21 +178,26 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			while(entries.hasMoreElements()) {
 			  ZipEntry ze = entries.nextElement();
 			  DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
-			  if (!ze.isDirectory() && ze.getName().endsWith(".class")) {
-				  	try {
-					  Class<?> clazz = loader.loadClass(ze.getName().replace("/", ".").replace(".class", ""));
-				      if(clazz.getName().equals(searched)) {
-				    	rvclazz = clazz;
-				      }
-					} catch (NoClassDefFoundError e) {
-						log.debug(ze.getName()+" not found");
-					}
-			   }
+			  if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
+				  rvclazz = this.loadClassTry(ze,loader,searched);	
+			  }
 			}
 			return rvclazz;
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
+	}
+	private Class<?> loadClassTry(ZipEntry ze,ClassLoader loader,String searched) {
+		Class<?> rvclazz = null;
+		try {
+			  Class<?> clazz = loader.loadClass(ze.getName().replace("/", ".").replace(CLASSEXT, ""));
+		      if(clazz.getName().equals(searched)) {
+		    	rvclazz = clazz;
+		      }
+			} catch (NoClassDefFoundError | ClassNotFoundException e) {
+				log.debug(ze.getName()+" not found");
+			}
+		return rvclazz;
 	}
 	public static void verificationZipFile(ZipEntry ze,ZipFile zipFile) throws DomainException {
 		int thresholdEntries = 10000;
@@ -204,7 +213,6 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		int totalEntryArchive = 0;
 		try(
 				InputStream in = new BufferedInputStream(zipFile.getInputStream(ze));
-				//OutputStream out = new BufferedOutputStream(new FileOutputStream("./output_onlyfortesting.txt"));
 				) {
 				  totalEntryArchive ++;
 
@@ -212,8 +220,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 				  byte[] buffer = new byte[2048];
 				  double totalSizeEntry = 0;
 
-				  while((nBytes = in.read(buffer)) > 0) { // Compliant
-				      //out.write(buffer, 0, nBytes);
+				  while((nBytes = in.read(buffer)) > 0) { 
 				      totalSizeEntry += nBytes;
 				      totalSizeArchive += nBytes;
 				      Long tmpv = ze.getCompressedSize();
@@ -272,7 +279,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		ClassLoader loader = LoaderBuilder
 			    .anIsolatingLoader()
 			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(Arrays.asList( new URI[]{ uri }))
+			    .withClasspath(Arrays.asList( uri ))
 			    .withParentRelationship(DelegateRelationshipBuilder.builder()
 			        .withIsolationLevel(IsolationLevel.NONE)
 			        .build())
@@ -290,7 +297,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 		ClassLoader loader = LoaderBuilder
 			    .anIsolatingLoader()
 			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(Arrays.asList( new URI[]{ uri }))
+			    .withClasspath(Arrays.asList(  uri ))
 			    .withParentRelationship(DelegateRelationshipBuilder.builder()
 			        .withIsolationLevel(IsolationLevel.FULL)
 			        .build())

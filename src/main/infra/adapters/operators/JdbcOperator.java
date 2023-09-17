@@ -31,17 +31,22 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	private static final String QUERY = "query";
 	
+	private List<URI> getListURI(List<String> archivosJar){
+		List<URI> list = new ArrayList<>();
+		for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
+			String jarpath = iterator.next();
+			list.add(new File(jarpath).toURI());
+		}
+		return list;
+	}
+	
 	@Override
 	public List<Map<String, Object>> call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<String> archivosJar = new ArrayList<>();
 		this.searchJarFiles(new File(this.args.getProperty("driverPath")),archivosJar);
-		List<URI> list = new ArrayList<>();
-		for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
-			String jarpath = iterator.next();
-			list.add(new File(jarpath).toURI());
-		}
+		List<URI> list = this.getListURI(archivosJar);
 		DbUtils.loadDriver(helper.getClassLoader(list), this.args.getProperty("driver"));
 		String xcomname = this.optionals.getProperty("xcom");
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
@@ -90,8 +95,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	        String paramName = paramNames.get(i);
 	        objList[i] = map.get(paramName);
 	    }
-	    KeyValue<String, Object[]> keyValue = new KeyValue<>(sqlWithPlaceholders, objList);
-	    return keyValue;
+	    return new KeyValue<>(sqlWithPlaceholders, objList);
 	}
 	@Override
 	public JSONObject getMetadataOperator() {

@@ -33,18 +33,20 @@ public class TemporalDagExecutable extends DagExecutable  {
 	public void setDagname(String dagname) {
 		this.dagname = dagname;
 	}
+	@Override
 	public void addOperator(String name,Class<?> operator,Properties args,Properties optionals) throws DomainException {
 		super.addOperator(name,operator,args,optionals);
 	}
+	@Override
 	public void addDependency(String name1, String name2, String status) {
 		super.addDependency(name1, name2, status);
 	}
-	public String execute(String stopAtStep) throws JobExecutionException {
+	public String execute(String stopAtStep) {
 		this.executionSource = "UNCOMPILED_JOB_ENGINE";	
 		this.isRunning = true;
-		var status = this.evaluate(stopAtStep);
+		var statusf = this.evaluate(stopAtStep);
 		this.isRunning = false;
-		return status.toString();
+		return statusf.toString();
 	}
 	protected OperatorStatus evaluate(String stopAtStep) {
 		evalDt = new Date();
@@ -67,7 +69,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 		parmdata.put("sourceType","UNCOMPILED");
 		while (breadthFirstIterator.hasNext()) {
 			
-			DagNode node = (DagNode) breadthFirstIterator.next();
+			DagNode node = breadthFirstIterator.next();
 			status.put(node.name, OperatorStatus.EXECUTING);
 			logdag.debug("executing node::"+node.name);
 			var statusToBe = this.constraints.get(node.name);

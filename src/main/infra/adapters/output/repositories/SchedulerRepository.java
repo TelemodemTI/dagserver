@@ -41,6 +41,8 @@ import main.infra.adapters.output.repositories.mappers.SchedulerMapper;
 public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	private static final String QUERYPROPS =  "select props from PropertyParameter as props where props.group = '";
+	private static final String VALUE = "value";
+	private static final String UNCOMPILEDQUERY = "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = ";
 	
 	@Autowired
 	DAO dao;
@@ -86,12 +88,11 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		var log = dao.read(Log.class, "select log from Log as log where log.id = :logid",param).get(0);
 		return mapper.toLogDTO(log);
 	}
-	
-	//public void setLog(String evalkey,String dagname,String value,String xcom, Map<String, OperatorStatus> status, String channel,String objetive, String sourceType) {
+
 	public void setLog(Map<String,String> parmdata, Map<String, OperatorStatus> status) {
 		String evalkey = parmdata.get("evalkey");
 		String dagname  = parmdata.get("dagname");
-		String value = parmdata.get("value");
+		String value = parmdata.get(VALUE);
 		String xcom = parmdata.get("xcom");
 		String channel = parmdata.get("channel");
 		String objetive = parmdata.get("objetive");
@@ -108,7 +109,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			entry.setOutputxcom(xcom);
 			entry.setChannel(channel);
 			entry.setObjetive(objetive);
-			entry.setSourceType(sourceType);;
+			entry.setSourceType(sourceType);
 			JSONObject statusObj = new JSONObject(status);
 			entry.setStatus(statusObj.toString());
 			dao.save(entry);	
@@ -284,13 +285,13 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	@Override
 	public String getUncompiledBin(Integer uncompiled) {
-		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = "+uncompiled);
+		var list = dao.read(ScheUncompiledDags.class, UNCOMPILEDQUERY+uncompiled);
 		return list.get(0).getBin();
 	}
 
 	@Override
 	public void deleteUncompiled(Integer uncompiled) {
-		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = "+uncompiled);
+		var list = dao.read(ScheUncompiledDags.class, UNCOMPILEDQUERY+uncompiled);
 		dao.delete(list.get(0));
 	}
 
@@ -327,7 +328,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		String typeope = box.getString("type");
 		String idope = box.getString("id");
 		String params = "params";
-		String value = "value";
+		String value = VALUE;
 		String key = "key";
 		if(box.has(params)) {
 			for (int l = 0; l < box.getJSONArray(params).length(); l++) {
@@ -442,7 +443,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			for (int i = 0; i < bindata.length(); i++) {
 				JSONObject b = bindata.getJSONObject(i);
 				if(b.getString("key").equals(propertyParameter.getName())) {
-					propertyParameter.setValue(b.getString("value"));
+					propertyParameter.setValue(b.getString(VALUE));
 					dao.save(propertyParameter);
 				}
 			}
@@ -478,7 +479,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	@Override
 	public void renameUncompiled(Integer uncompiled, String newname) {
-		var uncompiledObj = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = "+uncompiled).get(0);
+		var uncompiledObj = dao.read(ScheUncompiledDags.class, UNCOMPILEDQUERY+uncompiled).get(0);
 		uncompiledObj.setName(newname);
 		String bin = uncompiledObj.getBin();
 		JSONObject binobj = new JSONObject(bin);
