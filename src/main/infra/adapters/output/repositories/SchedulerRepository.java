@@ -87,7 +87,15 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return mapper.toLogDTO(log);
 	}
 	
-	public void setLog(String evalkey,String dagname,String value,String xcom, Map<String, OperatorStatus> status, String channel,String objetive, String sourceType) {
+	//public void setLog(String evalkey,String dagname,String value,String xcom, Map<String, OperatorStatus> status, String channel,String objetive, String sourceType) {
+	public void setLog(Map<String,String> parmdata, Map<String, OperatorStatus> status) {
+		String evalkey = parmdata.get("evalkey");
+		String dagname  = parmdata.get("dagname");
+		String value = parmdata.get("value");
+		String xcom = parmdata.get("xcom");
+		String channel = parmdata.get("channel");
+		String objetive = parmdata.get("objetive");
+		String sourceType = parmdata.get("sourceType");
 		HashMap<String, Object> param = new HashMap<>();
 		param.put("evalkey",evalkey);
 		var founded = dao.read(Log.class, "select log from Log log where log.evalkey = :evalkey",param);
@@ -99,6 +107,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			entry.setValue(value);
 			entry.setOutputxcom(xcom);
 			entry.setChannel(channel);
+			entry.setObjetive(objetive);
+			entry.setSourceType(sourceType);;
 			JSONObject statusObj = new JSONObject(status);
 			entry.setStatus(statusObj.toString());
 			dao.save(entry);	
@@ -107,6 +117,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			var entry = founded.get(0);
 			entry.setValue(value);
 			entry.setStatus(statusObj.toString());
+			entry.setObjetive(objetive);
+			entry.setSourceType(sourceType);
 			entry.setOutputxcom(xcom);
 			entry.setChannel(channel);
 			dao.save(entry);	

@@ -38,9 +38,6 @@ import main.domain.enums.OperatorStatus;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.confs.InMemoryLoggerAppender;
 
-
-
-//@Component
 public class DagExecutable implements Job,JobListener {
 	
 	private static Logger log = Logger.getLogger(DagExecutable.class);
@@ -133,7 +130,15 @@ public class DagExecutable implements Job,JobListener {
 		Logger logdag = Logger.getLogger(evalstring);
 		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
-		repo.setLog(evalstring,dagname, fa.getResult(),null,status,this.executionSource,"COMPLETE","COMPILED");
+		Map<String,String> parmdata = new HashMap<>(); 
+		parmdata.put("evalkey",evalstring);
+		parmdata.put("dagname",dagname);
+		parmdata.put("value",fa.getResult());
+		parmdata.put("xcom",null);
+		parmdata.put("channel",this.executionSource);
+		parmdata.put("objetive","COMPLETE");
+		parmdata.put("sourceType","COMPILED");
+		repo.setLog(parmdata,status);
 		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		while (breadthFirstIterator.hasNext()) {
 			
@@ -146,7 +151,8 @@ public class DagExecutable implements Job,JobListener {
 			} else {
 				logdag.debug("no constraint");
 			}
-			repo.setLog(evalstring,dagname, fa.getResult(),null,status,this.executionSource,"COMPLETE","COMPILED");
+			parmdata.put("value",fa.getResult());
+			repo.setLog(parmdata,status);
 			Class<?> clazz = node.operator;
 			ExecutorService executorService = Executors.newSingleThreadExecutor();
 			Future<?> future = executorService.submit(() -> {
@@ -160,25 +166,25 @@ public class DagExecutable implements Job,JobListener {
 			    	args.put("logdag", logdag);
 			    	args.put("status", status);
 			    	args.put("fa", fa);
-					this.instanciateEvaluate(args);
+					this.instanciateEvaluate(args,parmdata);
 				} catch (JobExecutionException e) {
 					logdag.error(e);
 				}
 			});
 			while (!future.isDone()) {
 			    try {
-			    	repo.setLog(evalstring,dagname, fa.getResult(),null,status,this.executionSource,"COMPLETE","COMPILED");
+			    	parmdata.put("value",fa.getResult());
+					repo.setLog(parmdata,status);
 			    	Thread.sleep(500);	
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
 			}
 		}
-		return this.setLogEvaluate(evalstring,fa, xcom, status);
+		return this.setLogEvaluate(fa, xcom, status,parmdata);
 	}
 	@SuppressWarnings("unchecked")
-	protected void instanciateEvaluate(Map<String,Object> args) throws JobExecutionException {
-		String evalkey = (String) args.get("evalkey");
+	protected void instanciateEvaluate(Map<String,Object> args,Map<String,String> parmdata) throws JobExecutionException {
 		Class<?> clazz = (Class<?>) args.get("clazz");
 		DagNode node = (DagNode) args.get("node");
 		JSONObject xcom = (JSONObject) args.get("xcom");
@@ -212,7 +218,9 @@ public class DagExecutable implements Job,JobListener {
 				Logger.getRootLogger().removeAppender(fa);
 				try {
 					String locatedAt = repo.createInternalStatus(xcom);
-					repo.setLog(evalkey,dagname, fa.getResult(),locatedAt,status,this.executionSource,"COMPLETE","COMPILED");	
+					parmdata.put("value",fa.getResult());
+					parmdata.put("xcom", locatedAt);
+					repo.setLog(parmdata,status);
 				} catch (Exception e2) {
 					log.error(e2);
 				}
@@ -220,12 +228,14 @@ public class DagExecutable implements Job,JobListener {
 			}
 		}
 	}
-	private OperatorStatus setLogEvaluate(String evaluatekey,InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status) throws JobExecutionException {
+	private OperatorStatus setLogEvaluate(InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status,Map<String,String> parmdata) throws JobExecutionException {
 		try {
 			fa.close();
 			Logger.getRootLogger().removeAppender(fa);
 			String locatedAt = repo.createInternalStatus(xcom);
-			repo.setLog(evaluatekey,dagname, fa.getResult(),locatedAt,status,this.executionSource,"COMPLETE","COMPILED");
+			parmdata.put("value",fa.getResult());
+			parmdata.put("xcom", locatedAt);
+			repo.setLog(parmdata,status);
 			return OperatorStatus.OK;	
 		} catch (Exception e) {
 			throw new JobExecutionException(e);

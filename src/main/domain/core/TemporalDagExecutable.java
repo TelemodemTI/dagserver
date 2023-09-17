@@ -56,6 +56,15 @@ public class TemporalDagExecutable extends DagExecutable  {
 		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
 		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
+		Map<String,String> parmdata = new HashMap<>(); 
+		parmdata.put("evalkey",evalstring);
+		parmdata.put("dagname",dagname);
+		parmdata.put("value",fa.getResult());
+		parmdata.put("xcom",null);
+		parmdata.put("channel","TEST_API");
+		String obj = (stopAtStep.trim().isEmpty())?"COMPLETE":stopAtStep;
+		parmdata.put("objetive",obj);
+		parmdata.put("sourceType","UNCOMPILED");
 		while (breadthFirstIterator.hasNext()) {
 			
 			DagNode node = (DagNode) breadthFirstIterator.next();
@@ -80,7 +89,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 			    	args.put("logdag", logdag);
 			    	args.put("status", status);
 			    	args.put("fa", fa);
-					this.instanciateEvaluate(args);
+					this.instanciateEvaluate(args,parmdata);
 				} catch (JobExecutionException e) {
 					logdag.error(e);
 				}

@@ -262,7 +262,6 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 			return loader.loadClass(name.replace("/", ".").replace(CLASSEXT, ""));
 		} catch (ClassNotFoundException e) {
 			log.error(e);
-			e.printStackTrace();
 			throw new DomainException("loadFromJar error::"+e.getMessage());
 		}
 		

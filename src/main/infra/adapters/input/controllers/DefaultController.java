@@ -57,13 +57,13 @@ public class DefaultController {
 		return new ResponseEntity<>(responsej.toString(), HttpStatus.OK);
 	}
 	
-	@GetMapping(path={"/","/cli","/cli/"})
+	@GetMapping(path={"/","/cli"})
     public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		RedirectView redirectView = new RedirectView();
         redirectView.setUrl("/dagserver/cli/index.html");
         return redirectView;
 	}
-	@GetMapping(path={"/","/docs","/docs/"})
+	@GetMapping(path={"/docs","/docs/"})
     public RedirectView docsGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		RedirectView redirectView = new RedirectView();
         redirectView.setUrl("/dagserver/docs/index.html");

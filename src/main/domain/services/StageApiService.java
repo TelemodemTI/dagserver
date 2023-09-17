@@ -1,5 +1,7 @@
 package main.domain.services;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,8 +77,16 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 			String result = dagtmp.execute(stepName);
 			String locatedAt = repository.createInternalStatus(dagtmp.getXcom());		
-			String objetive = (stepName.isEmpty())?"COMPLETE":"INCOMPLETE";
-			this.repository.setLog(dagtmp.getEvalstring(),dagname,dagtmp.getLogText(), locatedAt,dagtmp.getStatus(),"STAGE_API",objetive,"UNCOMPILED");
+			String objetive = (stepName.isEmpty())?"COMPLETE":stepName;
+			Map<String,String> parmdata = new HashMap<>(); 
+			parmdata.put("evalkey",dagtmp.getEvalstring());
+			parmdata.put("dagname",dagname);
+			parmdata.put("value",dagtmp.getLogText());
+			parmdata.put("xcom",locatedAt);
+			parmdata.put("channel","TEST_API");
+			parmdata.put("objetive",objetive);
+			parmdata.put("sourceType","UNCOMPILED");
+			this.repository.setLog(parmdata,dagtmp.getStatus());
 			JSONObject xcom = dagtmp.getXcom();
 			output.put("xcom", xcom);
 			output.put("result", result);

@@ -130,7 +130,9 @@
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
     	<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.exclusions>
-			**/repositories/entities/**
+			**/repositories/entities/**,
+			WebContent/**,
+			**/**.html
 		</sonar.exclusions>
   </properties>
   
