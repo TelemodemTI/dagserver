@@ -405,5 +405,11 @@
 			<version>7.3.0</version>
 		</dependency>
 
+
+		<dependency>
+		    <groupId>com.github.plexpt</groupId>
+		    <artifactId>chatgpt</artifactId>
+		    <version>4.0.1</version>
+		</dependency>
   </dependencies>
 </project>

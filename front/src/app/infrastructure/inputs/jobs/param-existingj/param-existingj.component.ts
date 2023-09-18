@@ -82,8 +82,16 @@ export class ParamExistingjComponent {
   updateParams(){
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
     let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
+    let paramarr = this.loadParams()  
+    step.params = paramarr
+    let stagename = this.stagenameinput.nativeElement.value
+    let statusLink = this.linkstatusinput.nativeElement.value
+    this.updateStepEvent.emit({name:stagename,statusLink:statusLink,old:this.name})
+    $('.param-value-input').val('');
+    $('#param-modalexistingj').modal('hide');
+  }
+  loadParams(){
     let paramarr = []
-    
     for (let index = 0; index < this.selectedStepParams.params.length; index++) {
       const key = this.selectedStepParams.params[index];
       if(key.type != "sourcecode"){
@@ -107,12 +115,7 @@ export class ParamExistingjComponent {
         }
       }
     }
-    step.params = paramarr
-    let stagename = this.stagenameinput.nativeElement.value
-    let statusLink = this.linkstatusinput.nativeElement.value
-    this.updateStepEvent.emit({name:stagename,statusLink:statusLink,old:this.name})
-    $('.param-value-input').val('');
-    $('#param-modalexistingj').modal('hide');
+    return paramarr;
   }
   removeStep(){
     let obj = this.data.dags.filter(( obj:any )=> {return  obj.name == this.selectedTab;})[0]
@@ -136,8 +139,6 @@ export class ParamExistingjComponent {
     this.data.dags[indecr].boxes.splice(index1, 1);
     this.removeStepEvent.emit(obj);
     this.close()
-    /*this.diagram.clear()
-    this.redraw(obj,this.diagram)*/
   }
   close(){
     $('#param-modalexistingj').modal('hide');
@@ -221,7 +222,6 @@ export class ParamExistingjComponent {
     let opt = confirm("you sure?")
     if(opt){
       this.execStepEvent.emit({dagname:this.selectedTab,step:this.selectedStep})
-      this.close()
     }
   }  
 }

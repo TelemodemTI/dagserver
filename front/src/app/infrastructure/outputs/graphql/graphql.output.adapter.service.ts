@@ -253,7 +253,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
       var token = localStorage.getItem("dagserver_token")
       var string = "mutation updateUncompiled($token:String, $uncompiled:Int , $bin:String){updateUncompiled(token:$token,uncompiled:$uncompiled,bin:$bin){ status,code,value }}"
       this.query(string,{token:token,uncompiled:uncompiledId,bin:base64}).subscribe((result:any)=>{
-        if(result.updateUncompiled && result.updateUncompiled.status == "ok"){
+        if(result && result.updateUncompiled && result.updateUncompiled.status == "ok"){
           resolve()
         } else {
           reject(result.updateUncompiled.status)

@@ -36,7 +36,7 @@ export class ExistingjComponent {
   data!:any
   selectedTab:string = ""
   selectedObj!:any
-  
+  hasViewDetail:boolean = false
 
   constructor(private router: Router, 
     private route: ActivatedRoute,
@@ -90,6 +90,7 @@ export class ExistingjComponent {
   }
 
   changeTab(dagname:string){
+    this.hasViewDetail = true
     this.selectedTab = dagname
 
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]    
@@ -190,8 +191,27 @@ export class ExistingjComponent {
     this.saveJar()
   }
   async execStepEvent(item:any){
+    console.log(this.selectedObj)
+    let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
+    let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedObj.selectedStep})[0]
+    let paramarr = this.modalparam.loadParams()  
+    step.params = paramarr
+    var base64 = Buffer.from(JSON.stringify(this.data)).toString('base64')
+    await this.service.saveUncompiled(parseInt(this.uncompiled),base64)  
     let data = await this.service.executeDagUncompiled(this.uncompiled,item.dagname,item.step);    
     this.service.sendResultExecution(data);
+    this.modalparam.close()
     this.resultStepModal.show(data);
+  }
+  async playDesignJob(){
+    if(this.hasViewDetail){
+      let data = await this.service.executeDagUncompiled(this.uncompiled,this.selectedTab,"");    
+      console.log(data)
+      this.service.sendResultExecution(data);
+      this.resultStepModal.show(data);
+    } else {
+      alert("you must select DAG implementation first!")
+    }
+    
   }
 }
