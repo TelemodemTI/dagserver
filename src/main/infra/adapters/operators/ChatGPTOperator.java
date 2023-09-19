@@ -1,6 +1,8 @@
 package main.infra.adapters.operators;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -15,35 +17,44 @@ import main.domain.exceptions.DomainException;
 
 
 @Operator(args={"akiKey","prompt"},optionalv = {"xcom"})
-public class ChatGPTOperator extends OperatorStage implements Callable<String> {
+public class ChatGPTOperator extends OperatorStage implements Callable<Map<String,String>> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String call() throws DomainException {		
+	public Map<String,String> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		String xcomname = this.optionals.getProperty("xcom");
-		String prompt = "";
+		ChatGPT chatGPT = ChatGPT.builder()
+                .apiKey(this.args.getProperty("akiKey"))
+                .build()
+                .init();
+		Map<String,String> returnv = new HashMap<>();
 		if(xcomname != null && !xcomname.isEmpty()) {
 			if(!this.xcom.has(xcomname)) {
 				throw new DomainException("xcom not exist for dagname::"+xcomname);
 			}
 			List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
-			var map = data.get(0);
-			prompt = namedParameter(this.args.getProperty("prompt"),map);
+			for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
+				Map<String, Object> map = iterator.next();
+				String prompt = namedParameter(this.args.getProperty("prompt"),map);
+				log.debug("prompt for chatGPT::"+prompt);
+				String res = chatGPT.chat(prompt);
+				log.debug("response from chatGPT::"+res);
+				returnv.put("prompt", prompt);
+				returnv.put("result", res);
+			}
 		} else {
-			prompt = this.args.getProperty("prompt");
+			String prompt = this.args.getProperty("prompt");
+			log.debug("prompt for chatGPT::"+prompt);
+			String res = chatGPT.chat(prompt);
+			log.debug("response from chatGPT::"+res);
+			returnv.put("prompt", prompt);
+			returnv.put("result", res);
 		}
-		log.debug("prompt for chatGPT::"+prompt);
-		ChatGPT chatGPT = ChatGPT.builder()
-                .apiKey(this.args.getProperty("akiKey"))
-                .build()
-                .init();
-        String res = chatGPT.chat(prompt);
-        log.debug("response from chatGPT::"+res);
 		log.debug(this.args);
 		log.debug(this.getClass()+" end "+this.name);
-		return res;
+		return returnv;
 	}
 	
 
