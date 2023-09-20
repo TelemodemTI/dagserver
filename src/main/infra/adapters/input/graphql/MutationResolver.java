@@ -22,30 +22,7 @@ public class MutationResolver implements GraphQLMutationResolver {
 	@Autowired
 	SchedulerMutationUseCase handler;
 	
-	public class StatusOp {
-		private String status;
-	    private Integer code;
-	    private String value;
-		public String getStatus() {
-			return status;
-		}
-		public void setStatus(String status) {
-			this.status = status;
-		}
-		public Integer getCode() {
-			return code;
-		}
-		public void setCode(Integer code) {
-			this.code = code;
-		}
-		public String getValue() {
-			return value;
-		}
-		public void setValue(String value) {
-			this.value = value;
-		}
-	    
-	}
+	
 	
 	public StatusOp scheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {
@@ -231,16 +208,16 @@ public class MutationResolver implements GraphQLMutationResolver {
 	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
-		status.code = 200;
-		status.status = "ok";
-		status.value = "ok";
+		status.setCode(200);
+		status.setStatus("ok");
+		status.setValue("ok");
 		return status;
 	}
 	private StatusOp error(Exception e) {
 		StatusOp status = new StatusOp();
-		status.code = 503;
-		status.status = "error";
-		status.value = ExceptionUtils.getRootCauseMessage(e);
+		status.setCode(503);
+		status.setStatus("error");
+		status.setValue(ExceptionUtils.getRootCauseMessage(e));
 		return status;
 	}
 	private JSONObject decodeBase64JSON(String base64EncodedString) {

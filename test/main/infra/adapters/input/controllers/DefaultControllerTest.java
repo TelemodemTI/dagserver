@@ -73,7 +73,8 @@ class DefaultControllerTest {
 			assertTrue(false,e.getMessage());
 		}
     }
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     void stageApiTest() {
     	HttpEntity<String> httpEntity = mock(HttpEntity.class);
     	HttpServletResponse response = mock(HttpServletResponse.class);
