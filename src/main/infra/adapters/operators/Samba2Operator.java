@@ -68,7 +68,7 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 					results.add(result.toString());
 					break;
 				case "upload":
-					this.upload(null, cmd[1], cmd[2],this.args.getProperty(SMBSHARENAME));
+					this.upload(smb2session, cmd[1], cmd[2],this.args.getProperty(SMBSHARENAME));
 					results.add(status1.toString());
 					break;
 				case "download":

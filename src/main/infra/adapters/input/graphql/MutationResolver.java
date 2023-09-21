@@ -22,8 +22,6 @@ public class MutationResolver implements GraphQLMutationResolver {
 	@Autowired
 	SchedulerMutationUseCase handler;
 	
-	
-	
 	public StatusOp scheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {
 			handler.scheduleDag(token,dagname,jarname);

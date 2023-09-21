@@ -23,7 +23,7 @@ public class GroovyOperator extends OperatorStage implements Callable<Object> {
 	    Binding binding = new Binding();
 	    binding.setVariable("log", log);
 	    binding.setVariable("xcom", xcom);
-	    GroovyShell shell = new GroovyShell(binding);
+	    GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), binding);
 		return shell.evaluate(source);
 	}
 	

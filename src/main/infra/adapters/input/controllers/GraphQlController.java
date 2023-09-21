@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +24,14 @@ import main.infra.adapters.confs.RequestQuery;
 import main.infra.adapters.input.graphql.MutationResolver;
 import main.infra.adapters.input.graphql.QueryResolver;
 
+
 @RestController
 @RequestMapping(path = "/query", produces = "application/json")
 @CrossOrigin(origins = "*")
 public class GraphQlController {
+	
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(GraphQlController.class);
 	
 	@Autowired
 	private QueryResolver queryResolver;
@@ -34,10 +39,11 @@ public class GraphQlController {
 	@Autowired
 	private MutationResolver mutationResolver;
 	
+	
 	private GraphQL graphQL;
 	
 	@PostConstruct
-	public void init() {
+	public void init() {		
 		GraphQLSchema graphQLSchema = SchemaParser.newParser().file("schema.graphql").resolvers(queryResolver,mutationResolver).build().makeExecutableSchema();
 		graphQL = GraphQL.newGraphQL(graphQLSchema).build();
 	}

@@ -50,8 +50,8 @@ public class FTPOperator extends OperatorStage implements Callable<List<String>>
 			List<String> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			//list pathremote
-			//download remote local
-			//upload remote local
+			//download local remote
+			//upload local remote
 			JSONObject status1 = new JSONObject();
 			status1.put("status", "ok");
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
@@ -62,11 +62,11 @@ public class FTPOperator extends OperatorStage implements Callable<List<String>>
 					results.add(result.toString());
 					break;
 				case "upload":
-					this.upload(null, cmd[1], cmd[2]);
+					this.upload(ftp, cmd[1], cmd[2]);
 					results.add(status1.toString());
 					break;
 				case "download":
-					this.download(null, cmd[1], cmd[2]);
+					this.download(ftp, cmd[1], cmd[2]);
 					results.add(status1.toString());
 					break;
 				 default:

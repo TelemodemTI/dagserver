@@ -185,6 +185,46 @@
 
                             </div>
                         </section>
+                        <section id="http-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">HTTP Example</h2>
+                            <div class="section-block">
+                                <p> For the following example, we will send a JSON file located on GitHub, to be uploaded using different transfer protocols</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>For example purposes, the following JSON file will be used https://gist.githubusercontent.com/ksafranski/2973986/raw/5fda5e87189b066e11c1bf80bbfbecb556cf2cc1/Common-Currency.json.</p>
+                                    </div><!--//content-->
+                                </div>
+                                <p>We will make the following design on the canvas</p>
+                                <img src="assets/images/fig034.PNG" class="center etl"/>
+                                <p>The first step will be to configure an HTTP Operator to make a request using the GET method</p>
+                                <img src="assets/images/fig035.PNG" class="center etl"/>
+                                <p>Then we will use a groovy script to recover the fields that will be used in the creation of the csv file</p>
+                                <img src="assets/images/fig036.PNG" class="center etl"/>
+                                <p>With the previous data we will build the file that will be sent via FTP</p>
+                                <img src="assets/images/fig037.PNG" class="center etl"/>
+                                <p>Finally, the sending will be made using the FTP Operator, whose configuration is as follows</p>
+                                <img src="assets/images/fig038.PNG" class="center etl"/>
+                                <p>The operator exposes three functionalities for this protocol, of which the upload command will be used</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>The methods exposed by the FTPOperator are the following:</p>
+                                        <ul>
+                                            <li>list pathremote</li>
+			                                <li>download remote local</li>
+			                                <li>upload remote local</li>
+                                        </ul>
+                                    </div><!--//content-->
+                                </div>
+                            </div>
+                        </section>
                     </div><!--//content-inner-->
                 </div><!--//doc-content-->
                 <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -221,7 +261,7 @@
                                         <a class="nav-link scrollto pointer" (click)="goTo('etl-section')">ETL Example</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link scrollto pointer">Save response HTTP in external repository Example</a>
+                                        <a class="nav-link scrollto pointer">Http and File Storage example</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link scrollto pointer">Windows CMD example</a>

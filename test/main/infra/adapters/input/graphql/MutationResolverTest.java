@@ -202,4 +202,5 @@ class MutationResolverTest {
 		var resp2 = mutation.renameUncompiled(anyString(), anyInt(),anyString());
 		assertNotNull(resp2);
 	}
+	
 }

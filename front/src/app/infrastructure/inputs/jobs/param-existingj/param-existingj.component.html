@@ -47,15 +47,15 @@
                             <ng-container *ngIf="item.type == 'boolean'">
                                 <label>{{item.key}}</label>
                                 <select class="form-control param-value-input" id="param-{{item.key}}-value">
-                                    <option value="true">True</option>
-                                    <option value="false">False</option>
+                                    <option value="true" [selected]="item.value == 'true'?true:false" >True</option>
+                                    <option value="false" [selected]="item.value == 'false'?true:false" >False</option>
                                 </select>
                                 <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'list'">
                                 <label>{{item.key}}</label>
                                 <select class="form-control param-value-input" id="param-{{item.key}}-value">
-                                    <option *ngFor="let opt of item.opt" value="{{opt}}">{{opt}}</option>
+                                    <option *ngFor="let opt of item.opt" value="{{opt}}" [selected]="item.value == opt">{{opt}}</option>
                                 </select>
                                 <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>

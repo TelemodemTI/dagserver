@@ -33,7 +33,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
 			Integer mode = this.getMode(this.args.getProperty("mode"));
-			String xcomname = this.args.getProperty("xcom");
+			String xcomname = this.optionals.getProperty("xcom");
 			String filepath = this.args.getProperty("filepath");
 			Boolean firstrow = Boolean.valueOf(this.args.getProperty("firstRowTitles"));
 			String rowDelimiter = this.args.getProperty("rowDelimiter");
@@ -43,7 +43,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 			} else {
 				log.debug("mode:write");
 				List<Map<String, String>> data = (List<Map<String, String>>) this.xcom.get(xcomname);
-				this.write(filepath, rowDelimiter, data);
+				this.write(filepath, rowDelimiter,firstrow, data);
 			}
 			return result;	
 		} catch (Exception e) {
@@ -51,10 +51,16 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 		}
 	}
 	
-	private void write(String filepath,String rowDelimiter,List<Map<String, String>> data) {
+	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String, String>> data) {
 		Integer lines = 0;
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
-	        for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
+	        if(firstrow) {
+	        	var first = data.get(0);
+	        	String titles = String.join(rowDelimiter, first.keySet());
+	        	writer.write(titles);
+	        	writer.newLine();
+	        }
+			for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
 				Map<String, String> map =  iterator.next();
 				String resultLine = String.join(rowDelimiter, map.values());
 				writer.write(resultLine);

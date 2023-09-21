@@ -194,6 +194,116 @@
                                 </div>
                             </div>
                         </section>
+                        <section id="http-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">HTTP Operator</h2>
+                            <div id="step1"  class="section-block">
+                                <p>This operator allows sending request via http.</p>
+                                <h2 class="section-title">Icon</h2>
+                                <img src="assets/images/icons/http001.PNG"/>
+                                <h2 class="section-title">Param Dialog</h2>
+                                <img src="assets/images/icons/http002.PNG"/>
+                                <br>
+                                <br><br>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> URL:</strong> request url</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Method:</strong> http method</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Timeout:</strong> timeout milisecs</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Content Type:</strong> content type</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Authorization Header:</strong> optional authorization token header</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Body Xcom:</strong> XCOM with the body if aplicable </p>
+                            </div>
+                        </section>
+                        <section id="ftp-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">FTP Operator</h2>
+                            <div id="step1"  class="section-block">
+                                <p>This operator allows you to send and receive files via FTP.</p>
+                                <h2 class="section-title">Icon</h2>
+                                <img src="assets/images/icons/ftp001.PNG"/>
+                                <h2 class="section-title">Param Dialog</h2>
+                                <img src="assets/images/icons/ftp002.PNG"/>
+                                <br>
+                                <br><br>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Host:</strong> host</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Port:</strong> port</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Ftp User:</strong> Ftp user</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Ftp Pass:</strong> Ftp password</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>The methods exposed by the FTPOperator are the following:</p>
+                                        <ul>
+                                            <li>list pathremote</li>
+			                                <li>download remote local</li>
+			                                <li>upload remote local</li>
+                                        </ul>
+                                    </div><!--//content-->
+                                </div>
+                            </div>
+                        </section>
+                        <section id="sftp-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">SFTP Operator</h2>
+                            <div id="step1"  class="section-block">
+                                <p>This operator allows you to send and receive files via SFTP.</p>
+                                <h2 class="section-title">Icon</h2>
+                                <img src="assets/images/icons/sftp001.PNG"/>
+                                <h2 class="section-title">Param Dialog</h2>
+                                <img src="assets/images/icons/sftp002.PNG"/>
+                                <br>
+                                <br><br>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Host:</strong> host</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Port:</strong> port</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Ftp User:</strong> Ftp user</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Ftp Pass:</strong> Ftp password</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>The methods exposed by the SFTPOperator are the following:</p>
+                                        <ul>
+                                            <li>list pathremote</li>
+			                                <li>download remote local</li>
+			                                <li>upload remote local</li>
+                                        </ul>
+                                    </div><!--//content-->
+                                </div>
+                            </div>
+                        </section>
+                        <section id="samba2-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">Samba2 Operator</h2>
+                            <div id="step1"  class="section-block">
+                                <p>This operator allows you to send and receive files via Samba2 (windows shared folder).</p>
+                                <h2 class="section-title">Icon</h2>
+                                <img src="assets/images/icons/samba2001.PNG"/>
+                                <h2 class="section-title">Param Dialog</h2>
+                                <img src="assets/images/icons/sftp002.PNG"/>
+                                <br>
+                                <br><br>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Host:</strong> host</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Samba2 User:</strong> Samba2 user</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Samba2 Pass:</strong> Samba2 password</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Samba2 Domain:</strong> Samba2 domain</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Samba2 ShareFodler:</strong> Samba2 shared folder</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>The methods exposed by the Samba2Operator are the following:</p>
+                                        <ul>
+                                            <li>list pathremote</li>
+			                                <li>download remote local</li>
+			                                <li>upload remote local</li>
+                                        </ul>
+                                    </div><!--//content-->
+                                </div>
+                            </div>
+                        </section>
+                        
                     </div><!--//content-inner-->
                 </div><!--//doc-content-->
                 <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -209,13 +319,25 @@
                                     <a class="nav-link scrollto pointer" (click)="goTo('file-section')">File Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" (click)="goTo('groovy-section')">Groovy Script Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('groovy-section')">Groovy Script Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" (click)="goTo('jdbc-section')">JDBC Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('jdbc-section')">JDBC Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" (click)="goTo('smtp-section')">Mail SMTP Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('smtp-section')">Mail SMTP Operator</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto pointer" (click)="goTo('http-section')">HTTP Operator</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto pointer" (click)="goTo('ftp-section')">FTP Operator</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto pointer" (click)="goTo('sftp-section')">SFTP Operator</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto pointer" (click)="goTo('samba2-section')">Samba2 Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">Java Jarfile Operator</a>
@@ -224,19 +346,10 @@
                                     <a class="nav-link scrollto" href="#dummy-section">TestNG Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">HTTP Operator</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">SFTP Operator</a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">Template Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">FTP Operator</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">Samba2 Operator</a>
+                                    <a class="nav-link scrollto" href="#dummy-section">ChatGPT Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">CMD Operator (Windows Only)</a>

@@ -66,11 +66,11 @@ public class SFTPOperator extends OperatorStage implements Callable<List<String>
 					results.add(result.toString());
 					break;
 				case "upload":
-					this.upload(null, cmd[1], cmd[2]);
+					this.upload(sftp, cmd[1], cmd[2]);
 					results.add(status1.toString());
 					break;
 				case "download":
-					this.download(null, cmd[1], cmd[2]);
+					this.download(sftp, cmd[1], cmd[2]);
 					results.add(status1.toString());
 					break;
 				default:
