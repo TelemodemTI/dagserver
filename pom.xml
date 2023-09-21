@@ -404,7 +404,11 @@
 			<artifactId>testng</artifactId>
 			<version>7.3.0</version>
 		</dependency>
-
+		<dependency>
+		  <groupId>com.rabbitmq</groupId>
+		  <artifactId>amqp-client</artifactId>
+		  <version>5.18.0</version>
+		</dependency>
 
 		<dependency>
 		    <groupId>com.github.plexpt</groupId>
@@ -412,21 +416,7 @@
 		    <version>4.0.1</version>
 		</dependency>
 		
-		<dependency>
-	      <groupId>com.google.api-client</groupId>
-	      <artifactId>google-api-client</artifactId>
-	      <version>1.33.0</version>
-	    </dependency>
-		<dependency>
-		    <groupId>com.google.apis</groupId>
-		    <artifactId>google-api-services-blogger</artifactId>
-		    <version>v3-rev20221220-2.0.0</version>
-		</dependency>
-		<dependency>
-	      <groupId>com.google.apis</groupId>
-	      <artifactId>google-api-services-oauth2</artifactId>
-	      <version>v2-rev20200213-1.32.1</version>
-	    </dependency>
+		
 		
 
   </dependencies>

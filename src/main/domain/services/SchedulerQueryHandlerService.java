@@ -40,6 +40,8 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Value( "${param.git_hub.propkey}" )
 	private String gitHubPropkey;
 	
+	@Value( "${param.rabbit.propkey}" )
+	private String rabbitPropkey;
 	
 	@Override
 	public List<Map<String,Object>> listScheduledJobs() throws DomainException {
@@ -189,10 +191,34 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		ChannelDTO scheduler = new ChannelDTO();
 		scheduler.setName("SCHEDULER");
 		scheduler.setStatus("ACTIVE");
+		
+		
+		String rabbitStatus = "INACTIVE";
+		List<ChannelPropsDTO> rabbitprops = new ArrayList<>();
+		var rabbitPropsList = repository.getProperties(rabbitPropkey);
+		for (Iterator<PropertyParameterDTO> iterator = rabbitPropsList.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			if(propertyParameterDTO.getName().equals("rabbitChannelStatus")){
+				rabbitStatus = propertyParameterDTO.getValue();
+			} else {
+				ChannelPropsDTO prop1 = new ChannelPropsDTO();
+				prop1.setKey(propertyParameterDTO.getName());
+				prop1.setDescr(propertyParameterDTO.getDescription());
+				prop1.setValue(propertyParameterDTO.getValue());
+				rabbitprops.add(prop1);
+			}
+		}
+		
+		
+		ChannelDTO rabbit = new ChannelDTO();
+		rabbit.setName("RABBITMQ");
+		rabbit.setStatus(rabbitStatus);
+		rabbit.setProps(rabbitprops);
+		
 		List<ChannelDTO> list = new ArrayList<>();
 		list.add(scheduler);
 		list.add(github);
-		
+		list.add(rabbit);
 		return list;
 	}
 	@Override

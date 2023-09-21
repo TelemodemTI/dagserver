@@ -1,0 +1,39 @@
+package main.domain.services;
+
+import java.util.Iterator;
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.stereotype.Service;
+
+import main.application.ports.input.RabbitChannelUseCase;
+import main.domain.core.BaseServiceComponent;
+import main.domain.exceptions.DomainException;
+import main.domain.model.PropertyParameterDTO;
+
+@Service
+@ImportResource("classpath:properties-config.xml")
+public class RabbitChannelService extends BaseServiceComponent implements RabbitChannelUseCase {
+
+	@Value( "${param.rabbit.propkey}" )
+	private String rabbitPropkey;
+	
+	@Override
+	public Properties getRabbitChannelProperties() throws DomainException {
+		var propertyList = repository.getProperties(rabbitPropkey);
+		Properties props = new Properties();
+		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			props.put(propertyParameterDTO.getName(),propertyParameterDTO.getValue());
+		}
+		return props;
+	}
+
+	@Override
+	public void raiseEvent(String bodyStr, String string, String routingKey, String contentType) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

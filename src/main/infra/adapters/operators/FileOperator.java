@@ -1,6 +1,7 @@
 package main.infra.adapters.operators;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.security.SecureRandom;
@@ -11,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import main.domain.annotations.Operator;
 import main.domain.core.MetadataManager;
@@ -18,16 +21,16 @@ import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
 @Operator(args={"mode","filepath","rowDelimiter","firstRowTitles"},optionalv = {"xcom"})
-public class FileOperator extends OperatorStage implements Callable<List<Map<String, String>>> {
+public class FileOperator extends OperatorStage implements Callable<List<Object>> {
 
 	private SecureRandom random = new SecureRandom();
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Map<String, String>> call() throws DomainException {		
+	public List<Object> call() throws DomainException {		
 		try {
-			List<Map<String, String>> result = new ArrayList<>();
+			List<Object> result = new ArrayList<>();
 			log.debug(this.getClass()+" init "+this.name);
 			log.debug("args");
 			log.debug(this.args);
@@ -39,11 +42,23 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 			String rowDelimiter = this.args.getProperty("rowDelimiter");
 			if(mode.equals(0)) {
 				 log.debug("mode:read");
-				 this.read(filepath, rowDelimiter, firstrow, result);
+				 if(rowDelimiter.trim().isEmpty()) {
+					String content = FileUtils.readFileToString(new File(filepath), "UTF-8");
+					result.add(content);
+				 } else {
+					 this.read(filepath, rowDelimiter, firstrow, result);	 
+				 }
 			} else {
 				log.debug("mode:write");
-				List<Map<String, String>> data = (List<Map<String, String>>) this.xcom.get(xcomname);
-				this.write(filepath, rowDelimiter,firstrow, data);
+				List<Object> data = (List<Object>) this.xcom.get(xcomname);
+				if(rowDelimiter.trim().isEmpty()) {
+					FileWriter writer = new FileWriter(filepath);
+			        writer.write(data.get(0).toString());
+			        writer.close();
+				} else {
+					this.write(filepath, rowDelimiter,firstrow, data);	
+				}
+
 			}
 			return result;	
 		} catch (Exception e) {
@@ -51,17 +66,20 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 		}
 	}
 	
-	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String, String>> data) {
+	@SuppressWarnings("unchecked")
+	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Object> data) {
 		Integer lines = 0;
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
 	        if(firstrow) {
 	        	var first = data.get(0);
-	        	String titles = String.join(rowDelimiter, first.keySet());
+	        	var maps = (Map<String, String>) first;
+	        	String titles = String.join(rowDelimiter, maps.keySet());
 	        	writer.write(titles);
 	        	writer.newLine();
 	        }
-			for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
-				Map<String, String> map =  iterator.next();
+	        
+			for (Iterator<Object> iterator = data.iterator(); iterator.hasNext();) {
+				Map<String, String> map =  (Map<String, String>) iterator.next();
 				String resultLine = String.join(rowDelimiter, map.values());
 				writer.write(resultLine);
                 writer.newLine();
@@ -73,7 +91,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Map<Str
 		log.debug("write "+filepath+"--lines:"+lines);
 	}
 	
-	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String, String>> result) {
+	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Object> result) {
 		String line;
 		Integer lineNumber = 0;
 		List<String> titles = new ArrayList<>();

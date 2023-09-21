@@ -23,6 +23,14 @@ export class InputsChannelsComponent {
   @ViewChild("jarfile") jarfile!:ElementRef;
   @ViewChild("dagname") dagname!:ElementRef;
 
+  @ViewChild("rabbithost") rabbithost!:ElementRef;
+  @ViewChild("rabbitport") rabbitport!:ElementRef;
+  @ViewChild("rabbituser") rabbituser!:ElementRef;
+  @ViewChild("rabbitpwd") rabbitpwd!:ElementRef;
+  @ViewChild("rabbitqueue") rabbitqueue!:ElementRef;
+  @ViewChild("jarfiler") jarfiler!:ElementRef;
+  @ViewChild("dagnamer") dagnamer!:ElementRef;
+
   constructor(private router: Router, 
     private service: InputsChannelsInputPort,
     private service2: JobsInputPort){
@@ -36,7 +44,11 @@ export class InputsChannelsComponent {
     this.jars = [...new Set(jarsf)];
   }
   options(item:any){
-    $("#githubModal").modal('show');
+    if(item.name == "GITHUB_CHANNEL"){
+      $("#githubModal").modal('show');
+    } else {
+      $("#rabbitModal").modal('show');
+    }
     this.propsSelected = item.props
   }
   async createGithubWebhook(){
@@ -60,5 +72,13 @@ export class InputsChannelsComponent {
   selectJarFile(){
     this.dags = this.jobs.filter((ele:any)=>{ return ele.jarname == this.jarfile.nativeElement.value})
     console.log(this.dags)
+  }
+  selectJarFiler(){
+    this.dags = this.jobs.filter((ele:any)=>{ return ele.jarname == this.jarfiler.nativeElement.value})
+    console.log(this.dags)
+  }
+  
+  createRabbit(){
+
   }
 }
