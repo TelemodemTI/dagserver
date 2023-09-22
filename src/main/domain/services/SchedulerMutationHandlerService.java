@@ -1,7 +1,6 @@
 package main.domain.services;
 
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import main.application.ports.input.SchedulerMutationUseCase;
 import main.domain.core.BaseServiceComponent;
 import main.domain.exceptions.DomainException;
-
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -23,6 +21,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	
 	@Value( "${param.git_hub.propkey}" )
 	private String gitHubPropkey;
+	
+	@Value( "${param.rabbit.propkey}" )
+	private String rabbitPropkey;
 	
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerMutationHandlerService.class);
@@ -227,6 +228,31 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	public void renameUncompiled(String token, Integer uncompiled, String newname) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 		repository.renameUncompiled(uncompiled,newname);
+	}
+	@Override
+	public void saveRabbitChannel(String token, String host, String user, String pwd, Integer port)
+			throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.setProperty("host", "GENERATED", host, rabbitPropkey );
+		repository.setProperty("username", "GENERATED", user, rabbitPropkey );
+		if(!pwd.equals("******")) {
+			repository.setProperty("password", "GENERATED", pwd, rabbitPropkey );	
+		}
+		repository.setProperty("port", "GENERATED", port.toString(), rabbitPropkey );
+		repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", rabbitPropkey );
+	}
+	@Override
+	public void addQueue(String token, String queue, String jarfile, String dagname) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.setProperty(queue , "GENERATED", "rabbit_consumer_queue" , rabbitPropkey );
+		repository.setProperty("dagname", "GENERATED", dagname, queue);
+		repository.setProperty(JARNAME, "GENERATED", jarfile, queue);
+	}
+	@Override
+	public void delQueue(String token, String queue) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.delProperty(queue, rabbitPropkey);
+		repository.delGroupProperty(queue);
 	}
 	
 	

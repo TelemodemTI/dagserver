@@ -39,18 +39,22 @@ export class ParamExistingjComponent {
     this.initCodemirror().then((flag)=>{
       this.loader?.nativeElement.classList.add("invisible");
       this.form?.nativeElement.classList.remove("invisible")
-      if(this.editor && this.data){  
+      if(this.data){
         let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
         let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
         this.another = obj.boxes.filter((elem:any)=>{ return elem.type == step.type && elem.id != step.id})
-        this.name = step.id
-        this.statusSel = step.status
-        let value;
-        try {
-          value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
-          this.editor.setValue(value.value) 
-        } catch (error) {}
+        if(this.editor){    
+          
+          this.name = step.id
+          this.statusSel = step.status
+          let value;
+          try {
+            value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
+            this.editor.setValue(value.value) 
+          } catch (error) {}
+        }
       }
+      
     })
 
   }

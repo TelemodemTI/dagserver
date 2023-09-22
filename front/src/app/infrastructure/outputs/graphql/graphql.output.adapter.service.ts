@@ -19,6 +19,47 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
 
+
+  delQueue(queue: string): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation delQueue($token:String,$queue:String) { delQueue(token:$token,queue:$queue) {status,code,value} }"
+      this.query(string,{token:token,queue:queue}).subscribe((result:any)=>{
+        if(result && result.delQueue && result.delQueue.status == "ok"){
+          resolve()
+        } else if(result && result.delQueue) {
+          reject(result.delQueue.status)
+        }      
+      })
+    })
+  }
+  addQueue(queue: string, jarfile: string, dagname: string): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation addQueue($token:String,$queue:String,$jarfile:String,$dagname:String) { addQueue(token:$token,queue:$queue,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
+      this.query(string,{token:token,queue:queue,jarfile:jarfile,dagname:dagname}).subscribe((result:any)=>{
+        if(result && result.addQueue && result.addQueue.status == "ok"){
+          resolve()
+        } else if(result && result.addQueue) {
+          reject(result.addQueue.status)
+        }      
+      })
+    })
+  }
+  saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation saveRabbitChannel($token:String,$host:String,$user:String,$pwd:String,$port:Int) { saveRabbitChannel(token:$token,host:$host,user:$user,pwd:$pwd,port:$port) {status,code,value} }"
+      this.query(string,{token:token,host:host,user:user,pwd:pwd,port:port}).subscribe((result:any)=>{
+        if(result && result.saveRabbitChannel && result.saveRabbitChannel.status == "ok"){
+          resolve()
+        } else if(result && result.saveRabbitChannel) {
+          reject(result.saveRabbitChannel.status)
+        }      
+      })
+    })
+  }
+
   renameUncompiled(uncompiled: any, arg1: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

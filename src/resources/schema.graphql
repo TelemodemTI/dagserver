@@ -132,4 +132,7 @@ type Mutation {
 	deleteLog(token:String,logid: Int) : StatusOp
 	deleteAllLogs(token:String,dagname:String) : StatusOp
 	renameUncompiled(token:String,uncompiled:Int,newname:String) : StatusOp
+	saveRabbitChannel(token:String, host:String, user:String, pwd:String, port:Int) : StatusOp
+	addQueue(token:String, queue:String,jarfile:String,dagname:String) : StatusOp
+	delQueue(token:String, queue:String) : StatusOp
 }

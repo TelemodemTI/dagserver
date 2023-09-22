@@ -26,4 +26,7 @@ public interface SchedulerMutationUseCase {
 	void deleteLog(String token, Integer logid) throws DomainException;
 	void deleteAllLogs(String token, String dagname) throws DomainException;
 	void renameUncompiled(String token, Integer uncompiled, String newname) throws DomainException;
+	void saveRabbitChannel(String token, String host, String user, String pwd, Integer port) throws DomainException;
+	void addQueue(String token, String queue, String jarfile, String dagname) throws DomainException;
+	void delQueue(String token, String queue) throws DomainException;
 }

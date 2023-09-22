@@ -43,7 +43,6 @@ export class DagCanvasComponent {
             let opt = el.opt?el.opt:[]
             if(step.params){
               let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
-              console.log(parit)
               defval = parit.value
             }
             this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})

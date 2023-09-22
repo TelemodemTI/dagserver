@@ -38,7 +38,6 @@ public class MutationResolver implements GraphQLMutationResolver {
 		} catch (Exception e) {
 			return error(e);
 		}
-		
 	}
 	
 	public StatusOp createProperty(String token, String name, String description, String value,String group) {
@@ -198,6 +197,30 @@ public class MutationResolver implements GraphQLMutationResolver {
 	public StatusOp renameUncompiled(String token,Integer uncompiled,String newname) {
 		try {
 			handler.renameUncompiled(token,uncompiled,newname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp saveRabbitChannel(String token, String host, String user, String pwd, Integer port) {
+		try {
+			handler.saveRabbitChannel(token, host, user, pwd, port);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp addQueue(String token, String queue, String jarfile, String dagname) {
+		try {
+			handler.addQueue(token, queue, jarfile , dagname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp delQueue(String token, String queue) {
+		try {
+			handler.delQueue(token, queue);
 			return ok();
 		} catch (Exception e) {
 			return error(e);

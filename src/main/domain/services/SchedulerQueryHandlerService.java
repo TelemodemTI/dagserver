@@ -198,7 +198,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		var rabbitPropsList = repository.getProperties(rabbitPropkey);
 		for (Iterator<PropertyParameterDTO> iterator = rabbitPropsList.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals("rabbitChannelStatus")){
+			if(propertyParameterDTO.getName().equals("STATUS")){
 				rabbitStatus = propertyParameterDTO.getValue();
 			} else {
 				ChannelPropsDTO prop1 = new ChannelPropsDTO();

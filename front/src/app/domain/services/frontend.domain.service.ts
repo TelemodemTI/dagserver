@@ -52,8 +52,16 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
-  
-  
+
+  saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void> {
+    return this.adapter.saveRabbitChannel(host, user, pwd, port)
+  }
+  addQueue(queue: string, jarfile: string, dagname: string): Promise<void> {
+    return this.adapter.addQueue(queue,jarfile,dagname);
+  }
+  delQueue(queue: string): Promise<void> {
+    return this.adapter.delQueue(queue);
+  }
   executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string): Promise<any> {
     return this.httpd.executeDagUncompiled(uncompiledId,dagname,stepname)
   }

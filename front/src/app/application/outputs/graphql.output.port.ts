@@ -8,6 +8,9 @@ import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 import { Credential } from 'src/app/domain/models/credential.model';
 
 export abstract class GraphQLOutputPort {
+    public abstract delQueue(queue: string): Promise<void>;
+    public abstract addQueue(queue: string, jarfile: string, dagname: string): Promise<void>;
+    public abstract saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void>;
     public abstract renameUncompiled(uncompiled: any, arg1: any): Promise<void>;
     public abstract removeLog(id: any): Promise<void>;
     public abstract removeAllLog(dagname: any): Promise<void>;

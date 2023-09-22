@@ -129,20 +129,22 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Host</label>
-                    <input #rabbithost class="form-control">
+                    <input #rabbithost class="form-control" value="{{rbhost}}">
                 </div>
                 <div class="form-group">
                     <label>Port</label>
-                    <input #rabbitport class="form-control">
+                    <input #rabbitport class="form-control" value="{{rbport}}">
                 </div>
                 <div class="form-group">
                     <label>Username</label>
-                    <input #rabbituser class="form-control">
+                    <input #rabbituser class="form-control" value="{{rbuser}}">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input #rabbitpwd type="password" class="form-control">
+                    <input #rabbitpwd type="password" class="form-control" value="{{rbpwd}}">
                 </div>
+                <button (click)="createRabbit()" type="button" class="btn btn-primary">Save</button> 
+                <br><br>
                 <a data-toggle="collapse" id="props-collapser-son" href="#collapseNewQueue" aria-expanded="false" class="collapsed">Bind Queue</a>
                 <div id="collapseNewQueue" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
 
@@ -163,7 +165,7 @@
                             <option *ngFor="let item of dags" value="{{item.dagname}}">{{item.dagname}}</option>
                         </select>
                     </div>
-                    <button (click)="createRabbit()" type="button" class="btn btn-primary">Add</button> 
+                    <button (click)="saveQueue()" type="button" class="btn btn-primary">Add</button> 
 
 
                 </div>
@@ -175,10 +177,17 @@
                                 <th>Queue</th>
                                 <th>JarFile</th>
                                 <th>Dagname</th>
+                                <th>Options</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr *ngFor="let item of queues">
+                                <td>{{item.queue}}</td>
+                                <td>{{item.jarname}}</td>
+                                <td>{{item.dagname}}</td>
+                                <td>
+                                    <button (click)="removeQueue(item)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-close"></i></button>&nbsp;
+                                </td>
                             </tr>
                         </tbody>
                     </table>
