@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
-
 import org.json.JSONObject;
-
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -26,6 +23,7 @@ import main.domain.exceptions.DomainException;
 @Operator(args={"host","username","password","port","mode"},optionalv = {"xcom","exchange","routingKey","queue"})
 public class RabbitMQOperator extends OperatorStage implements Callable<List<String>> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -52,7 +50,6 @@ public class RabbitMQOperator extends OperatorStage implements Callable<List<Str
 					boolean autoAck = false;
 					GetResponse response = channel.basicGet(this.optionals.getProperty("queue"), autoAck);
 					if (response != null) {
-					    AMQP.BasicProperties props = response.getProps();
 					    byte[] body = response.getBody();
 					    long deliveryTag = response.getEnvelope().getDeliveryTag();
 					    String msg = new String(body);

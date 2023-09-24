@@ -12,6 +12,7 @@ import main.domain.annotations.Operator;
 import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.output.repositories.SchedulerRepository;
+import main.infra.adapters.output.scheduler.JarSchedulerAdapter;
 
 
 @Operator(args={})
@@ -28,6 +29,7 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 				if(srv != null) {
 					ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(srv);
 					SchedulerRepository repo = this.getSchedulerRepository(springContext);
+					JarSchedulerAdapter scheduler = this.getScheduler(springContext);
 					var clsl = (springContext!=null)? springContext.getClassLoader():null;
 					if(clsl!=null) {
 						prop.load(clsl.getResourceAsStream("application.properties"));
@@ -35,6 +37,7 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 						rollup.setTimeInMillis(rollup.getTimeInMillis());
 						rollup.add(Calendar.HOUR, Integer.parseInt(prop.getProperty("param.logs.rollup.hours")));
 						repo.deleteLogsBy(rollup.getTime());
+						scheduler.deleteXCOM(rollup.getTime());
 						log.debug(this.getClass()+" end "+this.name);	
 					}
 				} else return null;

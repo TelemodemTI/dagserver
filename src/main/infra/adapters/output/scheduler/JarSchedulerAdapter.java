@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +36,13 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
+	
+	@Value("${param.xcompath}")
+	private String xcomfolder;
+	
+
+	private static final Logger logger = Logger.getLogger(JarSchedulerAdapter.class);
+	
 	
 	@Autowired
 	QuartzConfig quartz;
@@ -285,5 +293,23 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
+	}
+
+	public void deleteXCOM(Date time) throws DomainException {
+		File directory = new File(xcomfolder);
+        if (!directory.isDirectory()) {
+        	throw new DomainException("not a folder");
+        }
+        File[] files = directory.listFiles();
+        for (File file : files) {
+            if (file.isFile() && file.lastModified() < time.getTime()) {
+                if (file.delete()) {
+                	logger.debug("delete file: " + file.getName());
+                } else {
+                	logger.error("could not delete file: " + file.getName());
+                }
+            }
+        }
+		
 	}
 }

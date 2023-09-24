@@ -16,7 +16,7 @@ import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
 
-@Operator(args={"akiKey","prompt"},optionalv = {"xcom"})
+@Operator(args={"apiKey","prompt"},optionalv = {"xcom"})
 public class ChatGPTOperator extends OperatorStage implements Callable<Map<String,String>> {
 
 	@SuppressWarnings("unchecked")
@@ -61,7 +61,7 @@ public class ChatGPTOperator extends OperatorStage implements Callable<Map<Strin
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.ChatGPTOperator");
-		metadata.setParameter("akiKey", "text");
+		metadata.setParameter("apiKey", "password");
 		metadata.setParameter("prompt", "sourcecode");
 		return metadata.generate();
 	}

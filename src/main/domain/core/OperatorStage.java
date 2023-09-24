@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 
 import main.domain.exceptions.DomainException;
 import main.infra.adapters.output.repositories.SchedulerRepository;
+import main.infra.adapters.output.scheduler.JarSchedulerAdapter;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
  
@@ -65,6 +66,15 @@ public abstract class OperatorStage {
 		return repo;
 	}
 
+	protected JarSchedulerAdapter getScheduler(ApplicationContext springContext) {
+		JarSchedulerAdapter adapter = new JarSchedulerAdapter();
+		AutowireCapableBeanFactory factory = springContext.getAutowireCapableBeanFactory();
+		factory.autowireBean( adapter );
+		factory.initializeBean( adapter , "jarSchedulerAdapter" );
+		return adapter;
+	}
+	
+	
 	public JSONObject getXcom() {
 		return xcom;
 	}

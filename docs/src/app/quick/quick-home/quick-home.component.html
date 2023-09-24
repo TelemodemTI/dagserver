@@ -49,8 +49,6 @@
                             <div id="step1"  class="section-block" tabindex="-1">
                                 <h3 class="block-title">Step One</h3>
                                 <p>Copy the docker-compose file included in the repository, to a path on your local machine, and then edit it, as follows</p>
-                                
-                                
                                 <pre><code class="language-yaml">
                                     version: "3.9"  # optional since v1.27.0
                                     services:
@@ -80,8 +78,7 @@
                                            - subnet: 10.5.0.0/16
                                              gateway: 10.5.0.1
                                 </code></pre>
-                                <p>The base installation must have a Quartz-compatible database installation. Currently only scripts exist only for the Mysql (MariaDB) type.
-                                    With this in mind and editing the corresponding environment variables. The docker-compose file would look like this</p>
+                                <p>To set up the core installation, you'll need a Quartz-compatible database. Currently, we provide scripts exclusively for the MySQL (MariaDB) database type. Keeping this in mind, and after editing the relevant environment variables, your docker-compose file should resemble the following</p>
                                 <pre><code class="language-yaml">
                                     version: "3.9"  # optional since v1.27.0
                                     services:
@@ -152,9 +149,7 @@
                         <section id="code-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Properties</h2>
                             <div class="section-block">
-                                <p>
-                                    The following are the basic configurations that are needed to run the application:
-                                </p>
+                                <p>The following are the basic configurations that are needed to run the application:</p>
                                 <pre><code class="language-yaml">
                                     application.properties:
 

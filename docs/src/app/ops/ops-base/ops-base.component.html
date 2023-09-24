@@ -33,7 +33,7 @@
         <div class="container">
             <div id="doc-header" class="doc-header text-center">
                 <h1 class="doc-title"><i class="icon fa fa-book"></i> Operators</h1>
-                <div class="meta"><i class="far fa-clock"></i> Last updated: 09 Sept 2023</div>
+                <div class="meta"><i class="far fa-clock"></i> Last updated: 24 Sept 2023</div>
             </div><!--//doc-header-->
             <div class="doc-body row">
                 <div class="doc-content col-md-9 col-12 order-1">
@@ -46,18 +46,20 @@
                         </section><!--//doc-section-->
                         <section id="dummy-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Dummy Operator</h2>
-                            <div id="step1"  class="section-block">
-                                <p>Test operator, runs a test task that doesn't really do anything.</p>
+                            <div id="step1" class="section-block">
+                                <p>The Dummy Operator is a test operator that performs a task without any significant functionality.</p>
+
                                 <h2 class="section-title">Icon</h2>
-                                <img src="assets/images/icons/dummy001.PNG"/>
-                                <h2 class="section-title">Param Dialog</h2>
-                                <img src="assets/images/icons/dummy002.PNG"/>
+                                <img src="assets/images/icons/dummy001.PNG" alt="Dummy Operator Icon"/>
+
+                                <h2 class="section-title">Parameter Dialog</h2>
+                                <img src="assets/images/icons/dummy002.PNG" alt="Parameter Dialog"/>
                             </div>
                         </section><!--//doc-section-->
                         <section id="ssh-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">SSH Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows you to execute a command through a connection via SSH to the server. Supports private key and know host</p>
+                                <p>This operator enables you to execute commands through an SSH connection to a server. It supports private keys and known hosts.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/ssh001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -88,7 +90,7 @@
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
                                         <p>
-                                            PPK (PuTTY Private Key) files are used in the PuTTY SSH client environment and are used to authenticate to SSH servers using private keys instead of passwords.
+                                            PPK (PuTTY Private Key) files are utilized in the PuTTY SSH client environment for authentication to SSH servers using private keys instead of passwords.
                                         </p>
                                     </div><!--//content-->
                                 </div>
@@ -97,7 +99,7 @@
                         <section id="file-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">File Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows you to read or write the content of a structured flat file (CSV) to or from the xcom of the DAG</p>
+                                <p>This operator enables you to read from or write to the content of structured flat files (CSV) or unstructured files and interact with the xcom of the DAG.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/file001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -113,7 +115,7 @@
                                     </div><!--//icon-holder-->
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
-                                        <p>If an empty row delimiter is provided, the file content will be treated as unstructured. This means that the content associated with the read/write will be passed directly from/to the corresponding XCOM.</p>
+                                        <p>If an empty row delimiter is provided, the file content will be treated as unstructured. This means that the content, whether structured or unstructured, associated with the read/write operation will be passed directly to/from the corresponding XCOM.</p>
                                     </div><!--//content-->
                                 </div>
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> First Row Titles:</strong> first row is column titles.</p>
@@ -123,7 +125,7 @@
                         <section id="groovy-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Groovy Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows you to execute a groovy script within the DAG execution flow.</p>
+                                <p>This operator enables you to execute a Groovy script within the DAG execution flow.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/groovy001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -137,7 +139,7 @@
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
                                         <p>
-                                            Within the groovy script, you can access all the variables resulting from the execution of the previous nodes of the DAG, as well as the log output of the DAG
+                                            Within the Groovy script, you can access all the variables generated from the execution of the preceding nodes in the DAG, as well as the log output of the DAG.
                                         </p>
                                     </div><!--//content-->
                                 </div>
@@ -146,7 +148,7 @@
                         <section id="jdbc-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">JDBC Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows you to execute a SQL command in a JDBC compatible RDMS</p>
+                                <p>This operator enables you to execute SQL commands in a JDBC-compatible RDMS.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/jdbc001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -166,7 +168,7 @@
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
                                         <p>
-                                            If it is required to interact with data from an XCOM resulting from the execution of another node, within the DAG, the use of named parameters in the queries is recommended
+                                            If you need to interact with data from an XCOM generated during the execution of another node within the DAG, it is advisable to use named parameters in your SQL queries.
                                         </p>
                                     </div><!--//content-->
                                 </div>
@@ -175,7 +177,7 @@
                         <section id="smtp-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Mail SMTP Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator is used to send an email using an SMTP server.</p>
+                                <p>This operator is used for sending emails using an SMTP server.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/smtp001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -197,7 +199,7 @@
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
                                         <p>
-                                            In the case of this stage, in the script tab, you can write the body text of the email directly, if you do not want to use the message from another resulting XCOM
+                                            In the case of this stage, you have the option to directly write the body text of the email in the script tab if you do not wish to use the message from another resulting XCOM.
                                         </p>
                                     </div><!--//content-->
                                 </div>
@@ -206,7 +208,7 @@
                         <section id="http-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">HTTP Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows sending request via http.</p>
+                                <p>This operator enables the sending of HTTP requests.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/http001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -224,7 +226,7 @@
                         <section id="ftp-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">FTP Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows you to send and receive files via FTP.</p>
+                                <p>This operator enables sending and receiving files via FTP.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/ftp001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -241,7 +243,7 @@
                                     </div><!--//icon-holder-->
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
-                                        <p>The methods exposed by the FTPOperator are the following:</p>
+                                        <p>The operator exposes the following methods:</p>
                                         <ul>
                                             <li>list pathremote</li>
 			                                <li>download remote local</li>
@@ -254,7 +256,7 @@
                         <section id="sftp-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">SFTP Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows you to send and receive files via SFTP.</p>
+                                <p>This operator enables sending and receiving files via SFTP.</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/sftp001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -271,7 +273,7 @@
                                     </div><!--//icon-holder-->
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
-                                        <p>The methods exposed by the SFTPOperator are the following:</p>
+                                        <p>The operator exposes the following methods:</p>
                                         <ul>
                                             <li>list pathremote</li>
 			                                <li>download remote local</li>
@@ -284,7 +286,7 @@
                         <section id="samba2-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Samba2 Operator</h2>
                             <div id="step1"  class="section-block">
-                                <p>This operator allows you to send and receive files via Samba2 (windows shared folder).</p>
+                                <p>This operator enables you to send and receive files via Samba2 (Windows shared folders).</p>
                                 <h2 class="section-title">Icon</h2>
                                 <img src="assets/images/icons/samba2001.PNG"/>
                                 <h2 class="section-title">Param Dialog</h2>
@@ -302,7 +304,7 @@
                                     </div><!--//icon-holder-->
                                     <div class="content">
                                         <h4 class="callout-title">Useful Tip:</h4>
-                                        <p>The methods exposed by the Samba2Operator are the following:</p>
+                                        <p>The operator exposes the following methods:</p>
                                         <ul>
                                             <li>list pathremote</li>
 			                                <li>download remote local</li>
@@ -312,7 +314,71 @@
                                 </div>
                             </div>
                         </section>
-                        
+                        <section id="java-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">Java Operator</h2>
+                            <div id="step1"  class="section-block">
+                                <p>This operator allows you to execute a class located inside an ordinary java file (Jar File)</p>
+                                <h2 class="section-title">Icon</h2>
+                                <img src="assets/images/icons/java001.PNG"/>
+                                <h2 class="section-title">Param Dialog</h2>
+                                <img src="assets/images/icons/java002.PNG"/>
+                                <br>
+                                <br><br>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> jarPath:</strong> This parameter specifies the path that will be used to create the ClassLoader. Ensure that the JAR file you want to execute is located within this path.</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> className:</strong> This parameter indicates the class to be executed from the JAR file.</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>The operator exposes the following methods:</p>
+                                        <ul>
+                                            <li>It must implement the Serializable interface.</li>
+                                            <li>It must implement the Callable interface, where T is the type of object that the callable class should return.</li>
+                                            <li>The callable class should have access to the xcom variables and the arguments (which contain the two aforementioned variables).</li>        
+                                        </ul>
+                                    </div><!--//content-->
+                                </div>
+                            </div>
+                        </section>
+                        <section id="test-ng-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">TestNG Operator</h2>
+                            <div id="step1"  class="section-block">
+                                <p>This operator allows you to execute a testing suite (XML) implemented with the testNG framework.</p>
+                                <h2 class="section-title">Icon</h2>
+                                <img src="assets/images/icons/testng001.PNG"/>
+                                <h2 class="section-title">Param Dialog</h2>
+                                <img src="assets/images/icons/testng002.PNG"/>
+                                <br>
+                                <br><br>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Classpath:</strong> classpath from where the external jar with the tests will be executed.</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Report Output:</strong> path where the output report generated by testNG will be created</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> Testng Xml Files: </strong> list of xml files with the suites to be executed by the operator, separated by the character ;</p>
+                            </div>
+                        </section>
+                        <section id="test-ng-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">ChatGPT Operator</h2>
+                            <div id="step1"  class="section-block">
+                                <p>This operator allows you to call the chatGPT API to generate content directly in an XCOM</p>
+                                <h2 class="section-title">Icon</h2>
+                                <img src="assets/images/icons/chatgpt001.PNG"/>
+                                <h2 class="section-title">Param Dialog</h2>
+                                <img src="assets/images/icons/chatgpt002.PNG"/>
+                                <br>
+                                <br><br>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> apiKey:</strong> Api key valid for chatGPT API.</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>To use the ChatGPT Operator you must have paid access to the GPT chat API.</p>
+                                    </div><!--//content-->
+                                </div>
+                            </div>
+                        </section>
                     </div><!--//content-inner-->
                 </div><!--//doc-content-->
                 <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -349,16 +415,20 @@
                                     <a class="nav-link scrollto pointer" (click)="goTo('samba2-section')">Samba2 Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">Java Jarfile Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('java-section')">Java Jarfile Operator</a>
                                 </li>               
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">TestNG Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('test-ng-section')">TestNG Operator</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#dummy-section">ChatGPT Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">Template Operator</a>
                                 </li>
+                                
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">ChatGPT Operator</a>
+                                    <a class="nav-link scrollto" href="#dummy-section">RabbitMQ Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">CMD Operator (Windows Only)</a>
