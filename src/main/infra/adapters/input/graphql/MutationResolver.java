@@ -226,6 +226,14 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
+	public StatusOp saveRedisChannel(String token,String mode,String hostport,String channel,String jarfile,String dagname) {
+		try {
+			handler.saveRedisChannel(token, mode,hostport,channel,jarfile,dagname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();

@@ -135,4 +135,5 @@ type Mutation {
 	saveRabbitChannel(token:String, host:String, user:String, pwd:String, port:Int) : StatusOp
 	addQueue(token:String, queue:String,jarfile:String,dagname:String) : StatusOp
 	delQueue(token:String, queue:String) : StatusOp
+	saveRedisChannel(token:String,mode:String,hostport:String, channel:String,jarfile:String,dagname:String) : StatusOp
 }

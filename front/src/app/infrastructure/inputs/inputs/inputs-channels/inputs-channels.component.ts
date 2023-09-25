@@ -22,7 +22,14 @@ export class InputsChannelsComponent {
   rbhost!:any
   rbport!:any
   queues:any[] = []
-  
+
+  redmode!:any
+  redhost!:any
+  redport!:any
+  redchannel!:any
+  reddag!:any
+  redjar!:any
+
   @ViewChild("reponame") reponame!:ElementRef;
   @ViewChild("repourl") repourl!:ElementRef;
   @ViewChild("reposecret") reposecret!:ElementRef;
@@ -36,6 +43,14 @@ export class InputsChannelsComponent {
   @ViewChild("rabbitqueue") rabbitqueue!:ElementRef;
   @ViewChild("jarfiler") jarfiler!:ElementRef;
   @ViewChild("dagnamer") dagnamer!:ElementRef;
+
+  @ViewChild("jarfiled") jarfiled!:ElementRef;
+  @ViewChild("dagnamed") dagnamed!:ElementRef;
+  @ViewChild("redismode") redismode!:ElementRef;
+  @ViewChild("redishost") redishost!:ElementRef;
+  @ViewChild("redisport") redisport!:ElementRef;
+  @ViewChild("redischannel") redischannel!:ElementRef;
+  
 
   constructor(private router: Router, 
     private service: InputsChannelsInputPort,
@@ -62,14 +77,25 @@ export class InputsChannelsComponent {
         this.queues.push({queue:element.name,dagname:dagname,jarname:jarname})
       }
     }
-    console.log(this.queues)
+    let redisprops = props.filter((ele:any)=>{ return ele.group == 'REDIS_PROPS' })
+    for (let index = 0; index < redisprops.length; index++) {
+      const element = redisprops[index];
+      this.redmode = (element.name == "mode")?element.value:this.redmode
+      this.redhost = (element.name == "host")?element.value:this.redhost
+      this.redport = (element.name == "port")?element.value:this.redport
+      this.redchannel = (element.name == "channel")?element.value:this.redport
+      this.reddag = props.filter((ele:any)=>{ return ele.group == this.redchannel && ele.name == "dagname" })[0].value
+      this.redjar = props.filter((ele:any)=>{ return ele.group == this.redchannel && ele.name == "jarname" })[0].value
+    }
     this.jars = [...new Set(jarsf)];
   }
   options(item:any){
     if(item.name == "GITHUB_CHANNEL"){
       $("#githubModal").modal('show');
-    } else {
+    } else if(item.name == "RABBITMQ") {
       $("#rabbitModal").modal('show');
+    } else {
+      $("#redisModal").modal('show');
     }
     this.propsSelected = item.props
   }
@@ -97,6 +123,9 @@ export class InputsChannelsComponent {
   selectJarFiler(){
     this.dags = this.jobs.filter((ele:any)=>{ return ele.jarname == this.jarfiler.nativeElement.value})
   }
+  selectJarFiled(){
+    this.dags = this.jobs.filter((ele:any)=>{ return ele.jarname == this.jarfiled.nativeElement.value})
+  }
   
   async createRabbit(){
     let host = this.rabbithost.nativeElement.value
@@ -119,6 +148,32 @@ export class InputsChannelsComponent {
   }
   async removeQueue(item:any){
     await this.service.delQueue(item.queue)
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigateByUrl(`auth/channels`);
+    });
+  }
+  async createRedis(){
+    let mode = this.redismode.nativeElement.value
+    let host = this.redishost.nativeElement.value
+    let port = this.redisport.nativeElement.value
+    let channel = this.redischannel.nativeElement.value
+    let jarFile = this.jarfiled.nativeElement.value
+    let dagname = this.dagnamed.nativeElement.value
+    let hotsport = "";
+    if(mode == 'true'){
+      let arr = host.split(";")
+      let portarr = port.split(";")
+      for (let index = 0; index < arr.length; index++) {
+        const host = arr[index];
+        const port = portarr[index]
+        hotsport += host + ":" + port
+        hotsport += (index!=0)?";":""
+        
+      }
+    } else {
+      hotsport = host + ":" + port
+    }
+    await this.service.saveRedisChannel(mode,hotsport,channel,jarFile,dagname)
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigateByUrl(`auth/channels`);
     });

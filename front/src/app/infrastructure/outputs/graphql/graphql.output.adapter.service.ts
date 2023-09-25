@@ -18,7 +18,20 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
-
+  
+  saveRedisChannel(mode: any, hotsport: string, channel: any, jarFile: any, dagname: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation saveRedisChannel($token:String,$mode:String,$hostport:String,$channel:String,$jarfile:String,$dagname:String) { saveRedisChannel(token:$token,mode:$mode,hostport:$hostport,channel:$channel,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
+      this.query(string,{token:token,mode:mode,hotsport:hotsport,channel:channel,jarfile:jarFile,dagname:dagname}).subscribe((result:any)=>{
+        if(result && result.saveRedisChannel && result.saveRedisChannel.status == "ok"){
+          resolve()
+        } else if(result && result.saveRedisChannel) {
+          reject(result.saveRedisChannel.status)
+        }      
+      })
+    })
+  }
 
   delQueue(queue: string): Promise<void> {
     return new Promise<void>((resolve,reject)=>{

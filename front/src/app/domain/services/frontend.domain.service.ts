@@ -52,6 +52,10 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+  
+  saveRedisChannel(mode: any, hotsport: string, channel: any, jarFile: any, dagname: any): Promise<void> {
+    return this.adapter.saveRedisChannel(mode,hotsport,channel,jarFile,dagname)
+  }
 
   saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void> {
     return this.adapter.saveRabbitChannel(host, user, pwd, port)

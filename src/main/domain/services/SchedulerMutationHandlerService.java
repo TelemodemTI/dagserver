@@ -25,6 +25,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Value( "${param.rabbit.propkey}" )
 	private String rabbitPropkey;
 	
+	@Value( "${param.redis.propkey}" )
+	private String redisPropkey;
+	
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerMutationHandlerService.class);
 	
@@ -253,6 +256,32 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 		repository.delProperty(queue, rabbitPropkey);
 		repository.delGroupProperty(queue);
+	}
+	@Override
+	public void saveRedisChannel(String token, String mode, String hostport, String channel, String jarfile, String dagname) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		Boolean bmode = Boolean.parseBoolean(mode);
+		if(bmode) {
+			String[] hosallarr = hostport.split(";");
+			for (int i = 0; i < hosallarr.length; i++) {
+				String string = hosallarr[i];
+				String[] hosparr = string.split(":");
+				repository.setProperty("hostname", "GENERATED", hosparr[0], redisPropkey );
+				repository.setProperty("port", "GENERATED", hosparr[1], redisPropkey );
+			}
+			repository.setProperty("channel", "GENERATED", channel, redisPropkey );
+			repository.setProperty("dagname", "GENERATED", dagname, channel);
+			repository.setProperty(JARNAME, "GENERATED", jarfile, channel);
+			repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", rabbitPropkey );
+		} else {
+			String[] hosparr = hostport.split(":");
+			repository.setProperty("hostname", "GENERATED", hosparr[0], redisPropkey );
+			repository.setProperty("port", "GENERATED", hosparr[1], redisPropkey );
+			repository.setProperty("channel", "GENERATED", channel, redisPropkey );
+			repository.setProperty("dagname", "GENERATED", dagname, channel);
+			repository.setProperty(JARNAME, "GENERATED", jarfile, channel);
+			repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", rabbitPropkey );
+		}
 	}
 	
 	

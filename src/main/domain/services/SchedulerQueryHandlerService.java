@@ -43,6 +43,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Value( "${param.rabbit.propkey}" )
 	private String rabbitPropkey;
 	
+	@Value( "${param.redis.propkey}" )
+	private String redisPropkey;
+	
 	@Override
 	public List<Map<String,Object>> listScheduledJobs() throws DomainException {
 		List<Map<String,Object>> realscheduled = scanner.listScheduled();
@@ -215,10 +218,33 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		rabbit.setStatus(rabbitStatus);
 		rabbit.setProps(rabbitprops);
 		
+		String redisStatus = "INACTIVE";
+		List<ChannelPropsDTO> redisprops = new ArrayList<>();
+		var redisPropsList = repository.getProperties(rabbitPropkey);
+		for (Iterator<PropertyParameterDTO> iterator = redisPropsList.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			if(propertyParameterDTO.getName().equals("STATUS")){
+				redisStatus = propertyParameterDTO.getValue();
+			} else {
+				ChannelPropsDTO prop1 = new ChannelPropsDTO();
+				prop1.setKey(propertyParameterDTO.getName());
+				prop1.setDescr(propertyParameterDTO.getDescription());
+				prop1.setValue(propertyParameterDTO.getValue());
+				redisprops.add(prop1);
+			}
+		}
+		
+		
+		ChannelDTO redis = new ChannelDTO();
+		redis.setName("REDIS_LISTENER");
+		redis.setStatus(redisStatus);
+		redis.setProps(redisprops);
+		
 		List<ChannelDTO> list = new ArrayList<>();
 		list.add(scheduler);
 		list.add(github);
 		list.add(rabbit);
+		list.add(redis);
 		return list;
 	}
 	@Override
