@@ -78,6 +78,11 @@ The current graphql schema can be checked in the schema.graphql file located at 
 
 docker-compose.yml example file is provided for running the server within a container environment.
 
+## Selenium Test project
+
+This related project is dedicated to performing frontend tests on the "dagserver" application using Selenium and testNG:
+[dagserver-selenium](https://github.com/maximolira/dagserver-selenium).
+
 ## License
 
 <a href="https://www.buymeacoffee.com/maximolira" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>

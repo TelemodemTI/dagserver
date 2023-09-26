@@ -13,6 +13,7 @@ export class CredentialsComponent {
 
   credentials: any[] = []
   localtype:any = ""
+  message!:any
 
   constructor(private router: Router, private service: CredentialsInputPort, private serviceL: AuthenticatedInputPort){}
 
@@ -31,11 +32,15 @@ export class CredentialsComponent {
       var repwd = $("#repwdpropinput").val();
       
       if(pwd == repwd){
-        await this.service.createAccount(userac,typeac,pwd);
-        $('#addUserModal').modal('hide');
-        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-          this.router.navigate(['admin',"credentials"]);
-        }); 
+        try {
+          await this.service.createAccount(userac,typeac,pwd);
+          $('#addUserModal').modal('hide');
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['admin',"credentials"]);
+          });   
+        } catch (error) {
+          this.message = error
+        }
       }      
   }
   async delete(item:any){

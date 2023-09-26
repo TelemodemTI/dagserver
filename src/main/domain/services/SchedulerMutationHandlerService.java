@@ -135,7 +135,11 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			var claims = tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			Map<String,String> claimsmap = (Map<String, String>) claims.get(CLAIMS);
 			if(claimsmap.get(TYPEACCOUNT).equals(ADMIN)) {
-				repository.createAccount(username,accountType,pwdHash);
+				if(repository.findUser(username).isEmpty()) {
+					repository.createAccount(username,accountType,pwdHash);	
+				} else {
+					throw new DomainException("account already exists");
+				}
 			} else {
 				throw new DomainException("insufficient privileges");
 			}	

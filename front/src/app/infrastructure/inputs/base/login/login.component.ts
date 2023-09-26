@@ -14,6 +14,7 @@ export class LoginComponent {
 
   @ViewChild("userinput") localinput!:ElementRef
   @ViewChild("passinput") passinput!:ElementRef
+  message!:any
 
   constructor(private router: Router, 
     private service: LoginInputPort){
@@ -35,8 +36,13 @@ export class LoginComponent {
     let rv = await this.service.login(user, pwd)
     console.log(rv)
     if (rv) {
-
+      this.message = ""
       this.router.navigateByUrl("auth");
+    } else {
+      this.message = "Error: Incorrect credentials."
+      setTimeout(()=>{
+        this.message = ""
+      },5000)
     }
   }
   

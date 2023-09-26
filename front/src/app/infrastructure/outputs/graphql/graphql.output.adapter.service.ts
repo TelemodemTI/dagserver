@@ -466,15 +466,19 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
     return new Promise<boolean>((resolve, reject) => {
       const string = "query login($username: String!,$pwd: String!) { login(username:$username,pwdhash:$pwd) }";
       this.query(string,{username:user,pwd: pwd}).subscribe((result:any)=>{
-      
-        console.log(result)
-        if (result && result.login) {
-          localStorage.setItem("dagserver_token", result.login);
-          console.log("test")
-          resolve(true);
-        } 
-      }, (error: any) => {
-        reject(error);
+        try {
+          if(result){
+            if (result.login ) {
+              localStorage.setItem("dagserver_token", result.login);
+              resolve(true);
+            } else {
+              resolve(false);
+            }  
+          }
+        } catch (error) {
+          console.log(error)
+          resolve(false) 
+        }
       });
     });
   }
