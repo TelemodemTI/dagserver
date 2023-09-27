@@ -424,7 +424,8 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
           if(result["scheduleDag"].status == "ok"){
             resolve()
           } else {
-            reject()
+            console.log(result["scheduleDag"].value)
+            reject(result["scheduleDag"].value)
           }
         }
       })

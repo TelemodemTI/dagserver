@@ -35,13 +35,8 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	
 	@Override
 	public void scheduleDag(String token, String dagname,String jarname) throws DomainException {
-		try {
-			tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-			scanner.init().scheduler(dagname,jarname);	
-		} catch (Exception e) {
-			throw new DomainException(e.getMessage());
-		}
-		
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		scanner.init().scheduler(dagname,jarname);	
 	}
 	@Override
 	public void unscheduleDag(String token,String dagname,String jarname) throws DomainException {

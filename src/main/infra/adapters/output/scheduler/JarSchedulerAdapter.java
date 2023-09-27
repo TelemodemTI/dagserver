@@ -14,6 +14,8 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -154,6 +156,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				}	
 			} catch (Exception e) {
 				log.error(e);
+				throw new DomainException(ExceptionUtils.getRootCause(e)); 
 			}	
 		}
 	}	

@@ -33,7 +33,7 @@ export class PropsComponent {
     this.properties = [];
     let root = this
     setTimeout(function () {
-      var table = $('#dataTables-jobs').DataTable({responsive: true});
+      var table = $('#dataTables-props').DataTable({responsive: true});
       table.on('search.dt',  (e:any, settings:any)=> {
         if(root.intervaledSearch)
           clearTimeout(root.intervaledSearch)

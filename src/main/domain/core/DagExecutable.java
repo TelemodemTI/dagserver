@@ -292,7 +292,7 @@ public class DagExecutable implements Job,JobListener {
 		for (int i = 0; i < argsarr.length; i++) {
 			String string = argsarr[i];
 			if(!args.containsKey(string)) {
-				throw new DomainException(string + "not found");
+				throw new DomainException(string + " not found");
 			}
 		}
 		var node = new DagNode(name,operator,args,optionals);

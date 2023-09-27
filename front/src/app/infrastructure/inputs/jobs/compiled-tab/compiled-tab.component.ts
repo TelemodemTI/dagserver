@@ -77,6 +77,7 @@ export class CompiledTabComponent {
       });   
     } catch (error) {
       this.error_msje = error
+      console.log(error)
       $('#propertyNotFoundModal').modal('show');
     }
   }
