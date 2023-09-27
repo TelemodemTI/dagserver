@@ -10,7 +10,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-    - DAGSERVERURI=http://localhost:65002/dagserver/query
+    - DAGSERVERURI=http://localhost:65002/
     - APP_JDBC_URL=jdbc:mysql://host.docker.internal:65306/scheduler?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     - APP_JDBC_USER=scheduler_user
     - APP_JDBC_PASSWORD=password

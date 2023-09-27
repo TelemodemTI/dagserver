@@ -46,6 +46,16 @@
                         </section><!--//doc-section-->
                         <section id="installation-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Get Started</h2>
+                            <p>The most direct way to start a dagserver is using the docker run command, as shown in the following example</p>
+                            <pre><code>docker run -d -p 65002:8080 -p 65003:2587 -e DAGSERVERURI='http://localhost:65002/' -e APP_JDBC_URL='jdbc:mysql://host.docker.internal:65306/scheduler?useSSL=false' -e APP_JDBC_USER='scheduler_user' -e APP_JDBC_PASSWORD='password' --name dagserver maximolira/dagserver:latest </code></pre>
+                            <p>In order to use dagserver in this way, you need to have previously installed mysql (maria db) to configure the parameters. The details of the parameters are below.</p>
+                            <ul>
+                                <li>APP_JDBC_URL: Database connection url to be used as storage for the scheduler </li>
+                                <li>APP_JDBC_USER: Database connection user to be used as scheduler storage</li>
+                                <li>APP_JDBC_PASSWORD: Password of the database connection user to be used as storage for the scheduler</li>
+                                <li>DAGSERVERURI: Backend service url. This variable is used by the front end to locate the corresponding backend. In development environment normally this variable points to localhost. In a productive environment you can point directly to the backend, or you can point to an intermediate system (api management).</li>
+                            </ul>
+                            <h2>If you prefer to use a docker compose file, continue with the following steps</h2>
                             <div id="step1"  class="section-block" tabindex="-1">
                                 <h3 class="block-title">Step One</h3>
                                 <p>Copy the docker-compose file included in the repository, to a path on your local machine, and then edit it, as follows</p>
@@ -61,7 +71,7 @@
                                         extra_hosts:
                                           - "host.docker.internal:host-gateway"
                                         environment:
-                                        - DAGSERVERURI=http://localhost:65002/dagserver/query
+                                        - DAGSERVERURI=http://localhost:65002/
                                         - APP_JDBC_URL=jdbc:mysql://host.docker.internal:65306/scheduler?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
                                         - APP_JDBC_USER=scheduler_user
                                         - APP_JDBC_PASSWORD=password
@@ -94,7 +104,7 @@
                                         extra_hosts:
                                           - "host.docker.internal:host-gateway"
                                         environment:
-                                        - DAGSERVERURI=http://host.docker.internal:65002/dagserver/query
+                                        - DAGSERVERURI=http://host.docker.internal:65002/
                                         - APP_JDBC_URL=jdbc:mysql://host.docker.internal:65306/scheduler?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
                                         - APP_JDBC_USER=scheduler_user
                                         - APP_JDBC_PASSWORD=password
@@ -158,6 +168,8 @@
                                     param.jwt_subject: Subject of the token
                                     param.jwt_ttl: Time to live
                                     param.folderpath: Path from where the JAR files will be loaded, which contain the implementation of the DAGs to be executed
+                                    param.xcompath: Path where the temporary XCOM files will be created
+                                    
                                     log4j.properties:
 
                                     log4j.appender.file.File: Path from where the execution log file will be saved
@@ -202,8 +214,8 @@
                                 <p>                                    
                                     GraphQL Endpoint:<br>
                                     <br>
-                                    Front-End: http://:/dagserver/cli<br>
-                                    URL: http://:/server/query<br>
+                                    Front-End: http://:/cli<br>
+                                    URL: http://:/query<br>
                                     Username: dagserver<br>
                                     Password: dagserver<br><br>
                                     The current graphql schema can be checked in the schema.graphql file located at the root of the classpath.<br>

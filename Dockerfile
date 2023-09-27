@@ -10,7 +10,7 @@ COPY --from=maven_builder /app/dagserver/target/dagserver-0.0.1-SNAPSHOT.war /us
 COPY --from=maven_builder /app/dagserver/start.sh /root/
 RUN apt-get update
 RUN apt-get install vim -y
-RUN mv /usr/local/tomcat/webapps/dagserver-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/dagserver.war
+RUN mv /usr/local/tomcat/webapps/dagserver-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 RUN mkdir /root/dags/
 
 EXPOSE 2587
