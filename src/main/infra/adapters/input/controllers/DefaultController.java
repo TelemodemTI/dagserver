@@ -60,13 +60,13 @@ public class DefaultController {
 	@GetMapping(path={"/","/cli"})
     public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("/dagserver/cli/index.html");
+        redirectView.setUrl("/cli/index.html");
         return redirectView;
 	}
 	@GetMapping(path={"/docs","/docs/"})
     public RedirectView docsGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("/dagserver/docs/index.html");
+        redirectView.setUrl("/docs/index.html");
         return redirectView;
 	}
 	@PostMapping(value = "/github-webhook")

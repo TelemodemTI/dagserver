@@ -50,7 +50,7 @@ These last three variables can be overridden using the following environment var
 	  
 ## Basic Usage
 
-Dagserver provides a user-friendly web-based interface accessible at http://localhost:8080/dagserver/cli, allowing you to streamline your DAG (Directed Acyclic Graph) workflow management. With this interface, you can:
+Dagserver provides a user-friendly web-based interface accessible at http://localhost:8080/cli, allowing you to streamline your DAG (Directed Acyclic Graph) workflow management. With this interface, you can:
 
 1. **Create and Compile DAGs:** Easily design, implement, and compile DAGs into standard Java JAR files. These JAR files contain the DAG implementations ready for execution.
 

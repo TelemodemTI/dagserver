@@ -73,7 +73,7 @@ export class JardetailComponent {
     })
   }
   async getimageByType(typeop:any){
-    return "/dagserver/cli/assets/images/operators/" + await this.service.getIcons(typeop)
+    return "/cli/assets/images/operators/" + await this.service.getIcons(typeop)
   }
   
 

@@ -47,7 +47,7 @@
                         <section id="installation-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">Get Started</h2>
                             <p>The most direct way to start a dagserver is using the docker run command, as shown in the following example</p>
-                            <pre><code>docker run -d -p 65002:8080 -p 65003:2587 -e DAGSERVERURI='http://localhost:65002/' -e APP_JDBC_URL='jdbc:mysql://host.docker.internal:65306/scheduler?useSSL=false' -e APP_JDBC_USER='scheduler_user' -e APP_JDBC_PASSWORD='password' --name dagserver maximolira/dagserver:latest </code></pre>
+                            <pre><code>docker run -d -p 65002:8080 -p 65003:2587 -e DAGSERVERURI=http://localhost:65002/ -e APP_JDBC_URL="jdbc:mysql://host.docker.internal:3306/scheduler?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" -e APP_JDBC_USER=scheduler_user -e APP_JDBC_PASSWORD=password --name dagserver maximolira/dagserver:latest  </code></pre>
                             <p>In order to use dagserver in this way, you need to have previously installed mysql (maria db) to configure the parameters. The details of the parameters are below.</p>
                             <ul>
                                 <li>APP_JDBC_URL: Database connection url to be used as storage for the scheduler </li>

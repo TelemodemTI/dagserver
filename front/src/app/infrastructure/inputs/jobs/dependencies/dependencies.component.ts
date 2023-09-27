@@ -34,7 +34,7 @@ export class DependenciesComponent {
   }
 
   draw(){
-    let icon = "/dagserver/cli/assets/images/operators/dag.jpg"
+    let icon = "/cli/assets/images/operators/dag.jpg"
     let rectactual = this.getShapeWithImage(this.dagname,icon)  
     rectactual.addTo(this.g);  
     for (let index = 0; index < this.data.onStart.length; index++) {
