@@ -10,7 +10,11 @@ Dag server based on quartz, allows to execute batch processes modeled as DAG (Di
 ![CI/CD](https://github.com/maximolira/dagserver/actions/workflows/CICD.yaml/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dagserver&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dagserver)
 
-[Documentation]: https://dagserver.telemodem.cl/docs
+
+
+## Documentation
+
+The documentation is available here: [Documentation](https://dagserver.telemodem.cl/docs)
 
 ## Requirements
 
