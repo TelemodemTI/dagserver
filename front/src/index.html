@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="icon" type="image/x-icon" href="/cli/assets/favicon.png">
+        
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -12,6 +12,24 @@
         <script>
             window['base-href'] = window.location.pathname;
             console.log(window['base-href'])
+
+
+
+            let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+            const segmentos = base.split('/');
+            segmentos.pop();
+            let rutaBase = segmentos.join('/');
+            rutaBase = (rutaBase)?rutaBase:"/"
+            rutaBase = rutaBase.endsWith("/")?rutaBase:rutaBase+"/"
+
+
+            const headElement = document.head;
+            const linkElement = document.createElement('link');
+            linkElement.rel = 'icon';
+            linkElement.type = 'image/x-icon';
+            linkElement.href = rutaBase + 'assets/favicon.png';
+            headElement.appendChild(linkElement);
+
         </script>
 
         <!-- Bootstrap Core CSS -->

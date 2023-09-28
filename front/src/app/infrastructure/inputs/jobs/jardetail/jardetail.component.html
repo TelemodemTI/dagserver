@@ -23,7 +23,7 @@
                             <div *ngFor="let dag of dagsavai; let i = index;" [ngClass]="dagname == dag ? 'tab-pane fade in active':'tab-pane fade'" id="{{dag}}">
                                 <div id="diagram-ctn-{{dag}}" style="border: 1px dotted gray;overflow: scroll;"></div>
                             </div>
-                            
+                            <input type="text" id="canvas-det" class="noDisplay"/>
                         </div>
 
 

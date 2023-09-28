@@ -3,12 +3,6 @@
     height: 5em;
     border: 0;
 }
-.CmdOperator {
-    height: 5.5em;
-    background: url('/cli/assets/images/operators/cmd.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
 .SshOperator {
     background: url('/cli/assets/images/operators/ssh.png');
     background-size: 100% 100%;
@@ -19,11 +13,6 @@
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
-.FileOperator {
-    background: url('/cli/assets/images/operators/file.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
 .GroovyOperator {
     background: url('/cli/assets/images/operators/groovy.png');
     background-size: 100% 100%;
@@ -31,21 +20,6 @@
 }
 .JdbcOperator{
     background: url('/cli/assets/images/operators/jdbc.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-.JavaOperator{
-    background: url('/cli/assets/images/operators/jar.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-.MailOperator{
-    background: url('/cli/assets/images/operators/mail.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-.SFTPOperator{
-    background: url('/cli/assets/images/operators/sftp.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }

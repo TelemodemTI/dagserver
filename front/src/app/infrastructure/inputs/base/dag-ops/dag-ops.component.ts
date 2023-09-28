@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/
 import { DagOpsInputPort } from 'src/app/application/inputs/dagops.input.port';
 declare var $:any
 declare var joint:any;
+declare var window:any
 @Component({
   selector: 'app-dag-ops',
   templateUrl: './dag-ops.component.html',
@@ -79,8 +80,15 @@ export class DagOpsComponent {
   randomIntFromInterval(min:any, max:any) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
+  
   async getimageByType(typeop:any){
-    return "/cli/assets/images/operators/" + await this.service.getIcons(typeop)
+    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    const segmentos = base.split('/');
+    segmentos.pop();
+    let rutaBase = segmentos.join('/');
+    rutaBase = (rutaBase)?rutaBase:"/"
+    rutaBase = rutaBase.endsWith("/")?rutaBase:rutaBase+"/"
+    return rutaBase + "assets/images/operators/" + await this.service.getIcons(typeop)
   }
   getsource(id:any){
     if(id){

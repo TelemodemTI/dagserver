@@ -5,7 +5,7 @@ import { DependenciesInputPort } from 'src/app/application/inputs/dependencies.i
 declare var $:any
 declare var joint:any;
 declare var dagre:any
-
+declare var window:any
 @Component({
   selector: 'app-dependencies',
   templateUrl: './dependencies.component.html',
@@ -33,8 +33,18 @@ export class DependenciesComponent {
     this.draw()
   }
 
-  draw(){
-    let icon = "/cli/assets/images/operators/dag.jpg"
+  async getDagImage(){
+    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    const segmentos = base.split('/');
+    segmentos.pop();
+    let rutaBase = segmentos.join('/');
+    rutaBase = (rutaBase)?rutaBase:"/"
+    rutaBase = rutaBase.endsWith("/")?rutaBase:rutaBase+"/"
+    return rutaBase + "assets/images/operators/dag.png"
+  }
+
+  async draw(){
+    let icon = await this.getDagImage()
     let rectactual = this.getShapeWithImage(this.dagname,icon)  
     rectactual.addTo(this.g);  
     for (let index = 0; index < this.data.onStart.length; index++) {

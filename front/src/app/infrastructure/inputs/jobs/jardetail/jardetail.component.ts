@@ -7,6 +7,7 @@ import { JardetailpComponent } from '../jardetailp/jardetailp.component';
 declare var $:any
 declare var joint:any;
 declare var dagre:any
+declare var window:any
 @Component({
   selector: 'app-jardetail',
   templateUrl: './jardetail.component.html',
@@ -73,7 +74,13 @@ export class JardetailComponent {
     })
   }
   async getimageByType(typeop:any){
-    return "/cli/assets/images/operators/" + await this.service.getIcons(typeop)
+    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    const segmentos = base.split('/');
+    segmentos.pop();
+    let rutaBase = segmentos.join('/');
+    rutaBase = (rutaBase)?rutaBase:"/"
+    rutaBase = rutaBase.endsWith("/")?rutaBase:rutaBase+"/"
+    return rutaBase + "assets/images/operators/" + await this.service.getIcons(typeop)
   }
   
 
@@ -113,6 +120,7 @@ export class JardetailComponent {
   }
 
   initui(result:any){
+    let root = this
     let arr = []
     for (let index = 0; index < result.detail.detail.length; index++) {
       const element = result.detail.detail[index];
@@ -136,9 +144,12 @@ export class JardetailComponent {
           this.drawDiagram(diagram,boxes);
         })
       }
-
+      $("#canvas-det").on("change", function() {
+        var fromSelenium = $("#canvas-det").val();
+        let json = JSON.parse(fromSelenium);
+        root.triggerClick(json.dagname,json.selectedStep)
+      })
     })
-    
   }
 
   drawDiagram(graph:any,boxes:any[]){
@@ -192,23 +203,25 @@ export class JardetailComponent {
         paper.on('element:pointerdblclick', (elementView:any)=> {
           let dagname = id;
           let selectedStep = elementView.model.attributes.attrs.label.text
-          let dag = this.result.detail.detail.filter((element:any)=>{ return element.dagname == dagname })[0]
-          let node = dag.node.filter((node1:any)=>{
-            return node1.operations[0] == selectedStep
-          })[0]
-          console.log(node)
-          let params = JSON.parse(node.operations[2])
-          let opts = JSON.parse(node.operations[3])
-          let metadata = JSON.parse(node.operations[4])
-          this.selectedStepMetadata = metadata
-          this.selectedDag = dag
-          this.selectedStep = selectedStep
-          this.selectedStepOpts = opts
-          this.selectedStepParams = params
-          this.modalp.show();
+          this.triggerClick(dagname,selectedStep)
         })
         resolve(graph)
       },100)
     })
+  }
+  triggerClick(dagname:any,selectedStep:any){
+    let dag = this.result.detail.detail.filter((element:any)=>{ return element.dagname == dagname })[0]
+    let node = dag.node.filter((node1:any)=>{
+      return node1.operations[0] == selectedStep
+    })[0]
+    let params = JSON.parse(node.operations[2])
+    let opts = JSON.parse(node.operations[3])
+    let metadata = JSON.parse(node.operations[4])
+    this.selectedStepMetadata = metadata
+    this.selectedDag = dag
+    this.selectedStep = selectedStep
+    this.selectedStepOpts = opts
+    this.selectedStepParams = params
+    this.modalp.show();
   }
 }
