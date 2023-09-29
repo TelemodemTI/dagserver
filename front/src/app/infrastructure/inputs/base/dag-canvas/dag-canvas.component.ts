@@ -16,6 +16,16 @@ export class DagCanvasComponent {
   @Output() clickedStepEvent = new EventEmitter<any>();
 
   setupViewer(){
+    let root = this
+    $("#canvas-new-det").on("change", function() {
+      var fromSelenium = $("#canvas-new-det").val();
+      let json = JSON.parse(fromSelenium);
+
+      let obj = root.data.dags.filter(( obj:any )=> {return obj.name == root.selectedTab})[0]
+      let step = obj.boxes.filter((obj:any)=>{ return obj.id == json.stepname})[0]
+
+      root.triggerClick(step)
+    })
     return new Promise((resolve:any,reject:any)=>{
       setTimeout(()=>{
         var namespace = joint.shapes;
@@ -36,34 +46,37 @@ export class DagCanvasComponent {
         paper.on('element:pointerdblclick', (elementView:any)=> {
           let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab})[0]
           let step = obj.boxes.filter((obj:any)=>{ return obj.id == elementView.model.attributes.attrs.label.text})[0]
-          this.selectedStepParams = this.parameters.filter((el:any)=>{ return el.class == step.type })[0]
-          this.generatedIdParams = []
-          this.selectedStepParams.params.forEach((el:any)=>{
-            let defval = undefined
-            let opt = el.opt?el.opt:[]
-            if(step.params){
-              let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
-              defval = parit.value
-            }
-            this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})
-          })
-          if(this.selectedStepParams.opt){
-            this.selectedStepParams.opt.forEach((el:any)=>{
-              let defval = undefined
-              let opt = el.opt?el.opt:[]
-              if(step.params){
-                let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
-                defval = parit.value
-              }
-              this.generatedIdParams.push({key:el.name,type:el.type, value:defval,source:"OPT", domid:this.generateRandomString(5),opt:opt})
-            })
-          }
-          this.selectedStep = step.id
-          this.clickedStepEvent.emit({selectedStep:this.selectedStep,selectedStepParams:this.selectedStepParams,generatedIdParams:this.generatedIdParams})
+          root.triggerClick(step)
         });
         resolve(graph)
       },100)
     })
+  }
+  triggerClick(step:any){
+    this.selectedStepParams = this.parameters.filter((el:any)=>{ return el.class == step.type })[0]
+    this.generatedIdParams = []
+    this.selectedStepParams.params.forEach((el:any)=>{
+      let defval = undefined
+      let opt = el.opt?el.opt:[]
+      if(step.params){
+                let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
+                defval = parit.value
+      }
+      this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})
+    })
+    if(this.selectedStepParams.opt){
+      this.selectedStepParams.opt.forEach((el:any)=>{
+        let defval = undefined
+        let opt = el.opt?el.opt:[]
+        if(step.params){
+          let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
+          defval = parit.value
+        }
+        this.generatedIdParams.push({key:el.name,type:el.type, value:defval,source:"OPT", domid:this.generateRandomString(5),opt:opt})
+      })
+    }
+    this.selectedStep = step.id
+    this.clickedStepEvent.emit({selectedStep:this.selectedStep,selectedStepParams:this.selectedStepParams,generatedIdParams:this.generatedIdParams})
   }
   generateRandomString(length:number) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

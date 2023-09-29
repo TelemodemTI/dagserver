@@ -15,14 +15,14 @@
             <label>Cron Expression</label>
         </ng-container>
         <ng-template #nocron>triggerval
-            <a (click)="changeTrigger('cron')">Cron</a>    
+            <a id="cron-type-link" (click)="changeTrigger('cron')">Cron</a>    
         </ng-template>
         &nbsp;|&nbsp;
         <ng-container *ngIf="typeTrigger == 'listener';else nolistener">
             <label>Listener</label>
         </ng-container>
         <ng-template #nolistener>
-            <a (click)="changeTrigger('listener')">Listener</a>    
+            <a id="listener-type-link" (click)="changeTrigger('listener')">Listener</a>    
         </ng-template>
         <ng-container *ngIf="typeTrigger == 'cron';else nocronin">
             <input id="dagcroninput-{{dagName}}" class="form-control dagname {{dagName}}" placeholder="cron expression" value="{{triggerval}}">
@@ -62,12 +62,12 @@
             <div class="form-group">
                 <label>Target</label>
                 <ng-container *ngIf="targetType == 'DAG'; else groupele">
-                    <select class="form-control" id="dagcroninput-{{dagName}}">
+                    <select class="form-control" id="dagtargetinput-{{dagName}}">
                         <option *ngFor="let item of availables" value="{{item.dagname}}" [selected]="triggerval == item.dagname ? 'selected':''">{{item.dagname}}</option>
                     </select>
                 </ng-container>
                 <ng-template #groupele>
-                    <select class="form-control" id="dagcroninput-{{dagName}}">
+                    <select class="form-control" id="dagtargetinput-{{dagName}}">
                         <option *ngFor="let item of groups" value="{{item}}" [selected]="triggerval == item ? 'selected':''">{{item}}</option>
                     </select>
                 </ng-template>

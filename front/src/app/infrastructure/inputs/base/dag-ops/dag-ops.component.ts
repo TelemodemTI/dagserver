@@ -16,12 +16,29 @@ export class DagOpsComponent {
   @Input('boxes') boxes!: any[]
   @Input('parameters') parameters!: any
   @Output() createNewStepEvent = new EventEmitter<string>();
-  
+
+  sshOperatorImg! : string;
+  dummyOperatorImg! : string;
+  groovyOperatorImg! : string;
+  jdbcOperatorImg! : string;
+    
+
+
   constructor(private service: DagOpsInputPort){}
 
-
   ngOnChanges(changes: SimpleChanges) {
-    console.log(this.parameters)
+    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    const segmentos = base.split('/');
+    segmentos.pop();
+    let rutaBase = segmentos.join('/');
+    rutaBase = (rutaBase)?rutaBase:"/"
+    rutaBase = rutaBase.endsWith("/")?rutaBase:rutaBase+"/"
+
+    this.sshOperatorImg = "url(" +rutaBase + "assets/images/operators/ssh.png)";
+    this.dummyOperatorImg = "url(" +rutaBase + "assets/images/operators/dummy.png)";
+    this.groovyOperatorImg = "url(" +rutaBase + "assets/images/operators/groovy.png)";
+    this.jdbcOperatorImg = "url(" +rutaBase + "assets/images/operators/jdbc.png)";
+
   }
   
   async add(operator:any,tabname:string){

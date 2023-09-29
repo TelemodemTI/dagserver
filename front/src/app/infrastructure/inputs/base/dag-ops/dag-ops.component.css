@@ -3,23 +3,3 @@
     height: 5em;
     border: 0;
 }
-.SshOperator {
-    background: url('/cli/assets/images/operators/ssh.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-.DummyOperator {
-    background: url('/cli/assets/images/operators/dummy.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-.GroovyOperator {
-    background: url('/cli/assets/images/operators/groovy.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-.JdbcOperator{
-    background: url('/cli/assets/images/operators/jdbc.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}

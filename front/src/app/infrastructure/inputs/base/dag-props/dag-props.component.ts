@@ -66,9 +66,11 @@ export class DagPropsComponent {
 
     changeDagName(dagname:any){
       let newname = $("#dagnameinput-"+dagname).val()
-      let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]
-      obj.name = newname
-      this.changeDagNameEvent.emit(obj)
+      if(newname){
+        let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]
+        obj.name = newname
+        this.changeDagNameEvent.emit(obj)
+      }
     }
     collapse(dagname:any){
       
