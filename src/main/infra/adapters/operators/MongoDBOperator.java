@@ -27,7 +27,7 @@ import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
 
-@Operator(args={"username","password","hostname","port","mode","database","collection"},optionalv = {"xcom"})
+@Operator(args={"hostname","port","mode","database","collection","timeout"},optionalv = {"xcom","username","password"})
 public class MongoDBOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
 
 	@Override
@@ -36,7 +36,12 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 		log.debug("args");
 		log.debug(this.args);
 		List<Map<String, Object>> list = new ArrayList<>();
-		String conUrl = "mongodb+srv:/"+this.args.getProperty("username")+":"+this.args.getProperty("password")+"@"+this.args.getProperty("hostname")+":"+this.args.getProperty("port")+"?connectTimeoutMS(2000)";		
+		String conUrl = "";
+		if(this.optionals.containsKey("username")) {
+			conUrl = "mongodb://"+this.optionals.getProperty("username")+":"+this.optionals.getProperty("password")+"@"+this.args.getProperty("hostname")+":"+this.args.getProperty("port")+"/?connectTimeoutMS="+this.args.getProperty("timeout");	
+		} else {
+			conUrl = "mongodb://"+this.args.getProperty("hostname")+":"+this.args.getProperty("port")+"/?connectTimeoutMS="+this.args.getProperty("timeout");
+		}
 		MongoClient mongoClient = MongoClients.create(
 				MongoClientSettings.builder().applyConnectionString(new ConnectionString(conUrl))
 				      .applyToSocketSettings(builder ->
@@ -146,14 +151,15 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.MongoDBOperator");
-		metadata.setParameter("username", "text");
-		metadata.setParameter("password", "password");
 		metadata.setParameter("hostname", "text");
 		metadata.setParameter("mode", "list", Arrays.asList("READ","SAVE","DELETE"));
 		metadata.setParameter("port", "number");
 		metadata.setParameter("database", "text");
 		metadata.setParameter("collection", "text");
+		metadata.setParameter("timeout", "number");
 		metadata.setOpts("xcom", "text");
+		metadata.setOpts("username", "text");
+		metadata.setOpts("password", "password");
 		return metadata.generate();
 	}
 	@Override

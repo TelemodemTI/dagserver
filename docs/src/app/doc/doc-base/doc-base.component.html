@@ -311,6 +311,17 @@
                                     <img src="assets/images/fig047.PNG" class="center etl"/>
                             </div>
                         </section>
+                        <section id="mongodb-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">Read collection from mongo db</h2>
+                            <div class="section-block">
+                                <p>To read a collection from mongo db, the first thing will be to draw the following DAG on the canvas:</p>
+                                <img src="assets/images/fig048.PNG" class="center etl"/>
+                                <p>The mongo operator configuration is shown in the following image:</p>
+                                <img src="assets/images/fig049.PNG" class="center etl"/>
+                                <p>The configuration of the same operator, but with writing mode, is shown in the following image</p>
+                                <img src="assets/images/fig050.PNG" class="center etl"/>
+                            </div>
+                        </section>
                     </div><!--//content-inner-->
                 </div><!--//doc-content-->
                 <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -354,6 +365,9 @@
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link scrollto pointer" (click)="goTo('chat-gpt-section')">Mail templating and Chat GPT</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link scrollto pointer">MongoDB Example</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link scrollto pointer">Publish and Consume RabbitMQ</a>

@@ -131,6 +131,7 @@ export class NewjComponent {
   
   async saveJar(){
     this.changeJarName()
+    console.log(this.data)
     var base64 = Buffer.from(JSON.stringify(this.data)).toString('base64')
     try {
       await this.service.createUncompiled(base64)  
@@ -171,6 +172,10 @@ export class NewjComponent {
     let item = obj.boxes.filter((elem:any)=>{ return elem.id == event.old})[0]
     item.id = event.name
     item.status = event.statusLink
+    let sourceitem = obj.boxes.filter((elem:any)=>{ return elem.source && elem.source.attributes.attrs.label.text == event.old})
+    if(sourceitem.length > 0 && sourceitem[0].source){
+      sourceitem[0].source.attributes.attrs.label.text = event.name
+    }
     this.saveJar()
   }
   execStepEvent(event:any){

@@ -48,9 +48,7 @@ export class ExistingjComponent {
     this.uncompiled = this.route.snapshot.paramMap.get('uncompiledId');
     let arr = await this.service.getUncompileds()
     this.item = arr.filter((el:Uncompileds)=>{ return (el.uncompiledId == this.uncompiled)})[0]
-    console.log(this.item)
     this.data = JSON.parse( this.item.bin)
-    
     let r = await this.service.getOperatorMetadata();
     this.parameters = JSON.parse(r)
     for (let index = 0; index < this.data.dags.length; index++) {
@@ -188,6 +186,7 @@ export class ExistingjComponent {
     let item = obj.boxes.filter((elem:any)=>{ return elem.id == event.old})[0]
     item.id = event.name
     item.status = event.statusLink
+    console.log(item)
     this.saveJar()
   }
   async execStepEvent(item:any){

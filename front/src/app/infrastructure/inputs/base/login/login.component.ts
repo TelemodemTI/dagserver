@@ -3,7 +3,7 @@ import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginInputPort } from 'src/app/application/inputs/login.input.port';
 
-
+declare var window:any
 declare var $:any
 @Component({
   selector: 'app-login',
@@ -45,5 +45,7 @@ export class LoginComponent {
       },5000)
     }
   }
-  
+  async goToDocs(){
+    window.location.href = "https://dagserver.telemodem.cl/docs/"
+  }
 }

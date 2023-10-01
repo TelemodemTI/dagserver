@@ -310,7 +310,9 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
         if(result && result.updateUncompiled && result.updateUncompiled.status == "ok"){
           resolve()
         } else {
-          reject(result.updateUncompiled.status)
+          if(result.updateUncompiled){
+            reject(result.updateUncompiled.status)
+          }
         }
       })
     })
@@ -447,7 +449,15 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
       var token = localStorage.getItem("dagserver_token")!
       this.query(uncomp,{token:token}).subscribe((result:any)=>{
         if(result && result.getUncompileds){
-          resolve(result.getUncompileds.map((item:any)=>{ item.decoded = JSON.parse(item.bin) ; return item; }) as Uncompileds[])
+          console.log(result.getUncompileds)
+          let rv = result.getUncompileds.map((item:any)=>{ 
+            if(item){
+              item.decoded = JSON.parse(item.bin) ; 
+              return item; 
+            }
+          }) as Uncompileds[]
+          console.log(rv)
+          resolve(rv)
         }
       })
     })

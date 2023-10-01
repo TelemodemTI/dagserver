@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthenticatedInputPort } from 'src/app/application/inputs/authenticated.input.port';
 import { Agents } from 'src/app/domain/models/agent.model';
 import { ResultStepModalComponent } from '../result-step-modal/result-step-modal.component';
-
+declare var window:any
 @Component({
   selector: 'app-authenticated',
   templateUrl: './authenticated.component.html',
@@ -73,5 +73,8 @@ export class AuthenticatedComponent {
   }  
   result(item:any){
     this.resultStepModalAut.show(item);
+  }
+  async goToDocs(){
+    window.location.href = "https://dagserver.telemodem.cl/docs/"
   }
 }

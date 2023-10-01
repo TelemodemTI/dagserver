@@ -58,15 +58,17 @@ public class DefaultController {
 	}
 	
 	@GetMapping(path={"/","/cli"})
-    public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
+    public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {		
+		String path = request.getContextPath();
 		RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("/cli/index.html");
+        redirectView.setUrl(path+"/cli/index.html");
         return redirectView;
 	}
 	@GetMapping(path={"/docs","/docs/"})
-    public RedirectView docsGet(Model model,HttpServletRequest request,HttpServletResponse response) {				
+    public RedirectView docsGet(Model model,HttpServletRequest request,HttpServletResponse response) {	
+		String path = request.getContextPath();
 		RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("/docs/index.html");
+        redirectView.setUrl(path+"/docs/index.html");
         return redirectView;
 	}
 	@PostMapping(value = "/github-webhook")

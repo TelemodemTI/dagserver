@@ -104,7 +104,7 @@
 </app-param-existingj>
 <app-value-modal #modalparamv
     [param]="'Jarfile name'"
-    [actualValue]="item.decoded.jarname"
+    [actualValue]="item?.decoded.jarname"
     (changeValueEvent)="changeValueEvent($event)"
 >
 </app-value-modal>

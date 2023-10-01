@@ -36,27 +36,28 @@ export class ParamExistingjComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.initCodemirror().then((flag)=>{
-      this.loader?.nativeElement.classList.add("invisible");
-      this.form?.nativeElement.classList.remove("invisible")
-      if(this.data){
-        let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
-        let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
-        this.another = obj.boxes.filter((elem:any)=>{ return elem.type == step.type && elem.id != step.id})
-        if(this.editor){    
-          
-          this.name = step.id
-          this.statusSel = step.status
-          let value;
-          try {
-            value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
-            this.editor.setValue(value.value) 
-          } catch (error) {}
+    if(this.generatedIdParams){
+      this.initCodemirror().then((flag)=>{
+        this.loader?.nativeElement.classList.add("invisible");
+        this.form?.nativeElement.classList.remove("invisible")
+        if(this.data){
+          let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
+          if(obj){
+            let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
+            this.another = obj.boxes.filter((elem:any)=>{ return elem && step && elem.type == step.type && elem.id != step.id})
+            this.name = step.id
+            this.statusSel = step.status
+            let value;
+            try {
+                value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
+                if(this.editor){    
+                  this.editor.setValue(value.value) 
+                }
+            } catch (error) {}
+          }
         }
-      }
-      
-    })
-
+      })
+    }
   }
   loadFrom(id:any){
     let target = this.another.filter((elem:any)=>{ return elem.id == id})[0]
@@ -156,22 +157,26 @@ export class ParamExistingjComponent {
       setTimeout(()=>{
         try {
           var obj = document.getElementById("queryTextqv")
-          this.editor = CodeMirror.fromTextArea(obj, {
-                lineNumbers: true,
-                lineWrapping: lineWrapping,
-                readOnly: read,
-                matchBrackets: true,
-                mode: "simplemode",
-                continueComments: "Enter"
-          })
-          this.editor.setSize(width,height)  
-          this.editor.refresh();  
+          if(obj){
+            this.editor = CodeMirror.fromTextArea(obj, {
+                  lineNumbers: true,
+                  lineWrapping: lineWrapping,
+                  readOnly: read,
+                  matchBrackets: true,
+                  mode: "simplemode",
+                  continueComments: "Enter"
+            })
+            this.editor.setSize(width,height)  
+            this.editor.refresh();  
+            console.log(this.editor)
+          }
         } catch (error) {
+          console.log(error)
           console.log("error en codemirror loading")
         }
         
         resolve(true)
-      },1)
+      },10)
     })
   }
   isDisabled(item:any){
