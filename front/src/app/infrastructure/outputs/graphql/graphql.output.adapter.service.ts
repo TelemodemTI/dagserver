@@ -310,7 +310,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
         if(result && result.updateUncompiled && result.updateUncompiled.status == "ok"){
           resolve()
         } else {
-          if(result.updateUncompiled){
+          if(result && result.updateUncompiled){
             reject(result.updateUncompiled.status)
           }
         }

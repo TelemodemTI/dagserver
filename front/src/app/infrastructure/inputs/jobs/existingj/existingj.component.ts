@@ -186,7 +186,12 @@ export class ExistingjComponent {
     let item = obj.boxes.filter((elem:any)=>{ return elem.id == event.old})[0]
     item.id = event.name
     item.status = event.statusLink
-    console.log(item)
+    console.log(obj.boxes)
+    let sourceitem = obj.boxes.filter((elem:any)=>{ return elem.source && elem.source.attrs.label.text == event.old})
+    if(sourceitem.length > 0 && sourceitem[0].source){
+      sourceitem[0].source.attrs.label.text = event.name
+    }
+    console.log(this.data.dags)
     this.saveJar()
   }
   async execStepEvent(item:any){
