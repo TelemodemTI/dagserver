@@ -357,7 +357,7 @@
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> Testng Xml Files: </strong> list of xml files with the suites to be executed by the operator, separated by the character ;</p>
                             </div>
                         </section>
-                        <section id="test-ng-section" class="doc-section" tabindex="-1">
+                        <section id="chatgpt-section" class="doc-section" tabindex="-1">
                             <h2 class="section-title">ChatGPT Operator</h2>
                             <div id="step1"  class="section-block">
                                 <p>This operator allows you to call the chatGPT API to generate content directly in an XCOM</p>
@@ -390,7 +390,7 @@
                                 <br>
                                 <br><br>
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> hostname:</strong> Hostname.</p>
-                                <p><strong><i class="fas fa-external-link-square-alt"></i> mode:</strong> Operator operating mode: READ/SAVE/DELETE</p>
+                                <p><strong><i class="fas fa-external-link-square-alt"></i> mode:</strong> Operator operating mode: READ/INSERT/UPDATE/DELETE</p>
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> port: </strong> Database port</p>
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> database: </strong> Database name</p>
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> collection: </strong> Collection name</p>
@@ -398,6 +398,15 @@
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> username: </strong> Optional username</p>
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> password: </strong> Optional Password</p>
                                 <p><strong><i class="fas fa-external-link-square-alt"></i> XCOM: </strong> Optional XCOM for SAVE/DELETE operations</p>
+                                <div class="callout-block callout-success">
+                                    <div class="icon-holder">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </div><!--//icon-holder-->
+                                    <div class="content">
+                                        <h4 class="callout-title">Useful Tip:</h4>
+                                        <p>For upsert and delete options, a json must be provided as a filter.</p>
+                                    </div><!--//content-->
+                                </div>
                             </div>
                         </section>
                     </div><!--//content-inner-->
@@ -442,16 +451,16 @@
                                     <a class="nav-link scrollto pointer" (click)="goTo('test-ng-section')">TestNG Operator</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">ChatGPT Operator</a>
+                                    <a class="nav-link scrollto pointer" (click)="goTo('chatgpt-section')">ChatGPT Operator</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto pointer" (click)="goTo('mogno-db-section')">MongoDB Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">Template Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">RabbitMQ Operator</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#dummy-section">MongoDB Operator</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#dummy-section">Redis Operator</a>

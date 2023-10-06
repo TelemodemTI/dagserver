@@ -21,7 +21,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 
 import main.domain.annotations.Operator;
@@ -53,6 +52,8 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 		String mode = this.args.getProperty("mode");
 		if(mode.equals("READ")) {
 			list = this.read(mongoClient);
+		} else if(mode.equals("INSERT")) {
+			list = this.insert(mongoClient);
 		} else if(mode.equals("UPDATE")) {
 			list = this.save(mongoClient);
 		} else {
@@ -117,7 +118,7 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	    		  String totalFilter = this.optionals.getProperty("filter");
 	    		  filter = Document.parse(totalFilter);
 	    	  } else {
-	    		  filter = Filters.empty();
+	    		  throw new DomainException("no filter json for update?");
 	    	  }
 	    	  UpdateOptions options = new UpdateOptions().upsert(true);
 	    	  collection.updateMany(filter,collectionData,options);
@@ -127,7 +128,43 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 		  }
 	}
 	
-	
+
+	private List<Map<String, Object>> insert(MongoClient mongoClient) throws DomainException {
+		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
+		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
+		  if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
+	    	  String xcomname = this.optionals.getProperty("xcom");
+	    	  if(!this.xcom.has(xcomname)) {
+					throw new DomainException("xcom not exist for dagname::"+xcomname);
+	    	  }
+	    	  List<Map<String, Object>> rv = new ArrayList<>();
+	    	  @SuppressWarnings("unchecked")
+	    	  List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
+	    	  List<Document> collectionData = new ArrayList<>();
+	    	  Integer position = 0;
+	    	  for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
+				Map<String, Object> map = iterator.next();
+				Map<String, Object> status = new HashMap<>();
+				
+				Document document = new Document();
+				for (Map.Entry<String, Object> entry : map.entrySet()) {
+		            String clave = entry.getKey();
+		            Object valor = entry.getValue();
+		            document.put(clave, valor);
+		        }
+				
+				collectionData.add(document);
+				status.put("rownumber", position);
+				rv.add(status);
+				position++;
+	    	  }
+	    	  collection.insertMany(collectionData);
+	    	  return rv;
+		  } else {
+			  throw new DomainException("no xcom selected for write?");
+		  }
+	}
+
 
 	private List<Map<String, Object>> delete(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
@@ -166,7 +203,7 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.MongoDBOperator");
 		metadata.setParameter("hostname", "text");
-		metadata.setParameter("mode", "list", Arrays.asList("READ","UPDATE","DELETE"));
+		metadata.setParameter("mode", "list", Arrays.asList("READ","INSERT","UPDATE","DELETE"));
 		metadata.setParameter("port", "number");
 		metadata.setParameter("database", "text");
 		metadata.setParameter("collection", "text");
@@ -174,7 +211,7 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 		metadata.setOpts("xcom", "text");
 		metadata.setOpts("username", "text");
 		metadata.setOpts("password", "password");
-		metadata.setOpts("filter", "script");
+		metadata.setOpts("filter", "sourcecode");
 		return metadata.generate();
 	}
 	@Override

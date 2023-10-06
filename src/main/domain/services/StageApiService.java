@@ -87,7 +87,8 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			JSONObject step = steps.getJSONObject(j);		
 			if(step.has("source")) {
 				String sourceStepname = step.getJSONObject("source").getJSONObject("attrs").getJSONObject("label").getString("text");
-				dagtmp.addDependency(sourceStepname, step.getString("id"), step.getString("status"));
+				String status = step.getString("status").isEmpty() ? "ANY":step.getString("status");
+				dagtmp.addDependency(sourceStepname, step.getString("id"),status );
 			}
 		}
 	}

@@ -42,3 +42,7 @@
   .input {
     width: 50%;
   }
+  .tab-content{
+    overflow-y:auto;
+    max-height: 400em;
+  }
