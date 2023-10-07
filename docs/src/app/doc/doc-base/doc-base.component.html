@@ -325,6 +325,28 @@
                                 <p>There are also options to perform upsert and delete, but a json must be defined with the respective filter.</p>
                             </div>
                         </section>
+                        <section id="rabbit-section" class="doc-section" tabindex="-1">
+                            <h2 class="section-title">Read collection from mongo db</h2>
+                            <div class="section-block">
+                                    <p>The integration with RabbitMQ can be used in two ways. The first is by configuring the RabbitMQ Input Channel. With it you can react to the publication of a message in a queue, with the execution of a DAG.</p>
+                                    <p>The second way is using the RabbitMQOperator, with it you can both read and publish messages to Rabbit MQ</p>
+                                    <br><br>
+                                    <b>RabbitMQ Input Channel</b><br>
+                                    <p>To configure the input channel, you must go to the Channels Input menu, and there select RabbitMQ. This will open the following form:</p>
+                                    <img src="assets/images/fig052.PNG" class="center etl"/>
+                                    <p>Here you must enter the connection credentials to RabbitMQ and you can configure a new Queue Binding</p>
+                                    <img src="assets/images/fig053.PNG" class="center etl"/>
+                                    <p>With this, every time a message arrives at the configured queue, the configured DAG will be triggered.</p>
+                                    <br><br>
+                                    <b>RabbitMQOperator</b><br>
+                                    <p>Configuring the RabbitMQOperator within a DAG allows both reading and publishing messages to RabbitMQ. The Operator configuration can be used like any other operator on the canvas:</p>
+                                    <img src="assets/images/fig054.PNG" class="center etl"/>
+                                    <p>In the previous example we are creating a message through a groovy transformation, using the GroovyOperator</p>
+                                    <img src="assets/images/fig055.PNG" class="center etl"/>
+                                    <p>The following shows the RabbitMQOperator parameters to publish to an exchange</p>
+                                    <img src="assets/images/fig056.PNG" class="center etl"/>
+                            </div>
+                        </section>
                     </div><!--//content-inner-->
                 </div><!--//doc-content-->
                 <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -373,7 +395,7 @@
                                         <a class="nav-link scrollto pointer" (click)="goTo('mongodb-section')">MongoDB Example</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link scrollto pointer">Publish and Consume RabbitMQ</a>
+                                        <a class="nav-link scrollto pointer" (click)="goTo('rabbit-section')">Publish and Consume RabbitMQ</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link scrollto pointer">Publish and Consume Redis</a>

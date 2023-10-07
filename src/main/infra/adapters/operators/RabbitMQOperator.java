@@ -64,6 +64,7 @@ public class RabbitMQOperator extends OperatorStage implements Callable<List<Str
 			log.debug(this.getClass()+" end "+this.name);
 			return rv;
 		} catch (Exception e) {
+			log.error(e);			
 			throw new DomainException(e.getMessage());
 		}
 	}
