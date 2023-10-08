@@ -91,21 +91,6 @@ class DefaultControllerTest {
     	}
     }
     @Test
-    void docsGetTest() {
-    	Model model = mock(Model.class);
-    	HttpServletRequest request = mock(HttpServletRequest.class);
-    	HttpServletResponse response = mock(HttpServletResponse.class);
-    	try {
-    		if(controller.docsGet(model, request, response).isRedirectView()) {
-        		assertTrue(true); 	
-        	} else {
-        		assertTrue(false);
-        	}	
-		} catch (Exception e) {
-			assertTrue(false,e.getMessage());
-		}
-    }
-    @Test
     void githubEventTest() throws IOException, DomainException {
     	Model model = mock(Model.class);
     	HttpServletRequest request = mock(HttpServletRequest.class);

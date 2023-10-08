@@ -14,7 +14,7 @@ Dag server based on quartz, allows to execute batch processes modeled as DAG (Di
 
 ## Documentation
 
-The documentation is available here: [Documentation](https://dagserver.telemodem.cl/docs)
+The documentation is available here: [Documentation](https://docs.telemodem.cl/books/dagserver-documentation)
 
 ## Requirements
 
