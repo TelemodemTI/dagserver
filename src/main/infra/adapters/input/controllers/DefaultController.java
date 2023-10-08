@@ -64,13 +64,7 @@ public class DefaultController {
         redirectView.setUrl(path+"/cli/index.html");
         return redirectView;
 	}
-	@GetMapping(path={"/docs","/docs/"})
-    public RedirectView docsGet(Model model,HttpServletRequest request,HttpServletResponse response) {	
-		String path = request.getContextPath();
-		RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(path+"/docs/index.html");
-        return redirectView;
-	}
+	
 	@PostMapping(value = "/github-webhook")
 	public ResponseEntity<String> githubEvent(Model model,HttpServletRequest request,HttpServletResponse response) throws IOException, DomainException{
 		StringBuilder builder = new StringBuilder();

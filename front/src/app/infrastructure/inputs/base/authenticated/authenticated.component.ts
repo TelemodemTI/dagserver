@@ -75,6 +75,6 @@ export class AuthenticatedComponent {
     this.resultStepModalAut.show(item);
   }
   async goToDocs(){
-    window.location.href = "https://dagserver.telemodem.cl/docs/"
+    window.location.href = "https://docs.telemodem.cl/books/dagserver-documentation"
   }
 }
