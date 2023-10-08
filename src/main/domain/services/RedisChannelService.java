@@ -30,7 +30,9 @@ public class RedisChannelService extends BaseServiceComponent implements RedisCh
 		Properties props = new Properties();
 		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			props.put(propertyParameterDTO.getName(),propertyParameterDTO.getValue());
+			if(!propertyParameterDTO.getValue().equals("redis_consumer_listener")) {
+				props.put(propertyParameterDTO.getName(),propertyParameterDTO.getValue());	
+			}
 		}
 		return props;
 	}
@@ -57,6 +59,19 @@ public class RedisChannelService extends BaseServiceComponent implements RedisCh
 			log.error(e);
 		}
 		
+	}
+
+	@Override
+	public Properties getRedisListeners() throws DomainException {
+		var propertyList = repository.getProperties(redisPropkey);
+		Properties props = new Properties();
+		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			if(propertyParameterDTO.getValue().equals("redis_consumer_listener")) {
+				props.put(propertyParameterDTO.getName(),propertyParameterDTO.getValue());	
+			}
+		}
+		return props;
 	}
 
 }

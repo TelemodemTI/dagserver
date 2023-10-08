@@ -19,11 +19,38 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
   
-  saveRedisChannel(mode: any, hotsport: string, channel: any, jarFile: any, dagname: any): Promise<void> {
+  delListener(channel: string): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")
-      var string = "mutation saveRedisChannel($token:String,$mode:String,$hostport:String,$channel:String,$jarfile:String,$dagname:String) { saveRedisChannel(token:$token,mode:$mode,hostport:$hostport,channel:$channel,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
-      this.query(string,{token:token,mode:mode,hotsport:hotsport,channel:channel,jarfile:jarFile,dagname:dagname}).subscribe((result:any)=>{
+      var string = "mutation delListener($token:String,$channel:String) { delListener(token:$token,channel:$channel) {status,code,value} }"
+      this.query(string,{token:token,channel:channel}).subscribe((result:any)=>{
+        if(result && result.delListener && result.delListener.status == "ok"){
+          resolve()
+        } else if(result && result.delListener) {
+          reject(result.delListener.status)
+        } 
+      })
+    })
+  }
+  addListener(channel: string, jarfile: string, dagname: string): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation addListener($token:String,$channel:String,$jarfile:String,$dagname:String) { addListener(token:$token,channel:$channel,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
+      this.query(string,{token:token,channel:channel,jarfile:jarfile,dagname:dagname}).subscribe((result:any)=>{
+        if(result && result.addListener && result.addListener.status == "ok"){
+          resolve()
+        } else if(result && result.addListener) {
+          reject(result.addListener.status)
+        } 
+      })
+    })
+  }
+  
+  saveRedisChannel(mode: any, hostnames: string, ports: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation saveRedisChannel($token:String,$mode:String,$hostnames:String,$portnumbers:String) { saveRedisChannel(token:$token,mode:$mode,hostnames:$hostnames,portnumbers:$portnumbers) {status,code,value} }"
+      this.query(string,{token:token,mode:mode,hostnames:hostnames,portnumbers:ports}).subscribe((result:any)=>{
         if(result && result.saveRedisChannel && result.saveRedisChannel.status == "ok"){
           resolve()
         } else if(result && result.saveRedisChannel) {

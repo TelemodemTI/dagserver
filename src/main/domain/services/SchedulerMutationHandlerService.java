@@ -257,30 +257,32 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.delGroupProperty(queue);
 	}
 	@Override
-	public void saveRedisChannel(String token, String mode, String hostport, String channel, String jarfile, String dagname) throws DomainException {
+	public void saveRedisChannel(String token, String mode, String hostnames, String portnumbers) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-		Boolean bmode = Boolean.parseBoolean(mode);
-		if(bmode) {
-			String[] hosallarr = hostport.split(";");
-			for (int i = 0; i < hosallarr.length; i++) {
-				String string = hosallarr[i];
-				String[] hosparr = string.split(":");
-				repository.setProperty("hostname", "GENERATED", hosparr[0], redisPropkey );
-				repository.setProperty("port", "GENERATED", hosparr[1], redisPropkey );
-			}
-			repository.setProperty("channel", "GENERATED", channel, redisPropkey );
-			repository.setProperty("dagname", "GENERATED", dagname, channel);
-			repository.setProperty(JARNAME, "GENERATED", jarfile, channel);
-			repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", rabbitPropkey );
-		} else {
-			String[] hosparr = hostport.split(":");
-			repository.setProperty("hostname", "GENERATED", hosparr[0], redisPropkey );
-			repository.setProperty("port", "GENERATED", hosparr[1], redisPropkey );
-			repository.setProperty("channel", "GENERATED", channel, redisPropkey );
-			repository.setProperty("dagname", "GENERATED", dagname, channel);
-			repository.setProperty(JARNAME, "GENERATED", jarfile, channel);
-			repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", rabbitPropkey );
+			Boolean bmode = Boolean.parseBoolean(mode);
+			String[] hosallarr = hostnames.split(";");
+			String[] portnumbersarr = portnumbers.split(";");
+		for (int i = 0; i < hosallarr.length; i++) {
+			String string = hosallarr[i];
+			String portnumber = portnumbersarr[i];
+			repository.setProperty("hostname", "GENERATED", string, redisPropkey );
+			repository.setProperty("port", "GENERATED", portnumber, redisPropkey );
 		}
+		repository.setProperty("MODE", "GENERATED", bmode.toString(), redisPropkey );
+		repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", redisPropkey );
+	}
+	@Override
+	public void addListener(String token, String listener, String jarfile, String dagname) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.setProperty(listener , "GENERATED", "redis_consumer_listener" , redisPropkey );
+		repository.setProperty("dagname", "GENERATED", dagname, listener);
+		repository.setProperty(JARNAME, "GENERATED", jarfile, listener);
+	}
+	@Override
+	public void delListener(String token, String listener) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.delProperty(listener, redisPropkey);
+		repository.delGroupProperty(listener);
 	}
 	
 	

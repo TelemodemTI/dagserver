@@ -6,5 +6,6 @@ import main.domain.exceptions.DomainException;
 
 public interface RedisChannelUseCase {
 	Properties getRedisChannelProperties() throws DomainException;
+	Properties getRedisListeners() throws DomainException;
 	void raiseEvent(String channel, String message);
 }

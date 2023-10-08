@@ -29,5 +29,7 @@ public interface SchedulerMutationUseCase {
 	void saveRabbitChannel(String token, String host, String user, String pwd, Integer port) throws DomainException;
 	void addQueue(String token, String queue, String jarfile, String dagname) throws DomainException;
 	void delQueue(String token, String queue) throws DomainException;
-	void saveRedisChannel(String token, String mode, String hostport, String channel, String jarfile, String dagname) throws DomainException;
+	void saveRedisChannel(String token, String mode, String hostnames, String portnumbers) throws DomainException;
+	void addListener(String token, String listener, String jarfile, String dagname) throws DomainException;
+	void delListener(String token, String listener) throws DomainException;
 }

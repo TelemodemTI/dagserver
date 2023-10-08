@@ -1,8 +1,11 @@
 package main.infra.adapters.input.redis;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -33,10 +36,14 @@ public class RedisInputListener {
 	@Value( "${param.redis.refresh.timeout}" )
 	private Integer redisRefresh;
 	
+	private Thread listener;
+	private Map<String,Thread> bindings;
+	
 	@PostConstruct
 	public void listener() {
 		var root = this;
-		new Thread(new Runnable() {
+		this.bindings = new HashMap<String,Thread>();
+		this.listener = new Thread(new Runnable() {
             public void run() {
             	while(true) {
             		try {
@@ -44,48 +51,84 @@ public class RedisInputListener {
                     	String status = redisprops.getProperty("STATUS");
             			if(status != null && status.equals("ACTIVE")){
             				Boolean mode = Boolean.parseBoolean(redisprops.getProperty("redisCluster"));
+            				Properties listenersConfs = handler.getRedisListeners();
             				var publisher = new JedisPubSub() {
         	            	    @Override
         	            	    public void onMessage(String channel, String message) {
         	            	    	handler.raiseEvent(channel,message);
         	            	    }
         	            	};
-            				if(mode) {
-            					Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-            					List<KeyValue<String,Integer>> nodes = root.getConnectionInfoCluster(redisprops);
-                				for (Iterator<KeyValue<String, Integer>> iterator = nodes.iterator(); iterator.hasNext();) {
-									KeyValue<String, Integer> keyValue = iterator.next();
-									jedisClusterNodes.add(new HostAndPort(keyValue.getKey(), keyValue.getValue()));
-								}
-            					try(JedisCluster jedisc = new JedisCluster(jedisClusterNodes);){
-            						jedisc.subscribe(publisher, redisprops.getProperty("channel"));	
-            					} catch (Exception e) {
-            						log.error(e);
-                            		break;
-								}
-            				} else {
-            					var kv = root.getConectionInfo(redisprops);
-            					try(Jedis jSubscriber = new Jedis(kv.getKey(),kv.getValue());){	
-                	            	jSubscriber.subscribe(publisher, redisprops.getProperty("channel"));
-                            	} catch (Exception e) {
-                            		
-                				}	
+            				if(mode) {	
+            					for (String clave : listenersConfs.stringPropertyNames()) {
+            			            if(!bindings.containsKey(clave)) {
+            			            	log.debug("new redis channel detected::"+clave);
+                    					
+                    					Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+                    					List<KeyValue<String,Integer>> nodes = root.getConnectionInfoCluster(redisprops);
+                        				for (Iterator<KeyValue<String, Integer>> iterator = nodes.iterator(); iterator.hasNext();) {
+        									KeyValue<String, Integer> keyValue = iterator.next();
+        									jedisClusterNodes.add(new HostAndPort(keyValue.getKey(), keyValue.getValue()));
+        								}	
+                        				Thread bindingThread = new Thread(new Runnable() {
+                        					@Override
+        									public void run() {
+                        						try(JedisCluster jedisc = new JedisCluster(jedisClusterNodes);){
+                            						jedisc.subscribe(publisher, clave);	
+                            					} catch (Exception e) {
+                            						log.error(e);
+                								}			
+                        					}
+                        				});
+                        				bindingThread.start();
+                    					bindings.put(clave,bindingThread);
+            			            }
+            			        }	
+                		} else {
+            				for (String clave : listenersConfs.stringPropertyNames()) {
+            					if(!bindings.containsKey(clave)) {
+            						log.debug("new redis channel detected::"+clave);
+            						var kv = root.getConectionInfo(redisprops);
+                					Thread bindingThread = new Thread(new Runnable() {
+    									@Override
+    									public void run() {
+    										try(Jedis jSubscriber = new Jedis(kv.getKey(),kv.getValue());){	
+    		                	            	jSubscriber.subscribe(publisher, clave);
+    		                            	} catch (Exception e) {
+    		                            		log.error(e);
+    		                				}	
+    									}
+                					});
+                					bindingThread.start();
+                					bindings.put(clave,bindingThread);	
+            					}
             				}
             			}
             			Thread.sleep(redisRefresh);	
-					} catch (Exception e) {
-						log.error(e);
-                		break;
 					}
-            	}
+            	} catch (Exception e) {
+					log.error(e);
+                	break;
+				}
             }
+           }
 		});
+		this.listener.start();
 	}
 	protected List<KeyValue<String, Integer>> getConnectionInfoCluster(Properties redisprops) {
-		// TODO Auto-generated method stub
-		return null;
+		List<KeyValue<String, Integer>> newarr = new ArrayList<>();
+		String[] hosts = redisprops.getProperty("hostname").split(";");
+		String[] ports = redisprops.getProperty("port").split(";");
+		for (int i = 0; i < hosts.length; i++) {
+			String string = hosts[i];
+			Integer portr = Integer.parseInt(ports[i]);
+			KeyValue<String, Integer> rv = new KeyValue<>(string, portr);
+			newarr.add(rv);
+		}
+		return newarr;
 	}
 	private KeyValue<String, Integer> getConectionInfo(Properties redisprops){
-		return null;
+		Integer port = Integer.parseInt(redisprops.getProperty("port"));
+		KeyValue<String, Integer> rv = new KeyValue<>(redisprops.getProperty("hostname"), port);
+		return rv;
 	}
 }

@@ -226,9 +226,25 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	public StatusOp saveRedisChannel(String token,String mode,String hostport,String channel,String jarfile,String dagname) {
+	public StatusOp saveRedisChannel(String token,String mode,String hostnames,String portnumbers) {
 		try {
-			handler.saveRedisChannel(token, mode,hostport,channel,jarfile,dagname);
+			handler.saveRedisChannel(token, mode,hostnames,portnumbers);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp addListener(String token, String channel,String jarfile,String dagname) {
+		try {
+			handler.addListener(token, channel,jarfile,dagname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp delListener(String token,String channel) {
+		try {
+			handler.delListener(token, channel);
 			return ok();
 		} catch (Exception e) {
 			return error(e);

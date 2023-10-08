@@ -1,0 +1,88 @@
+<div class="modal fade" id="redisModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Redis Channel Options</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Mode</label>
+                    <select #redismode class="form-control">
+                        <option value="false" [selected]="redmode == 'false'">SINGLE</option>
+                        <option value="true" [selected]="redmode == 'true'">CLUSTER</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Host</label>
+                    <input #redishost class="form-control" value="{{redhost}}">
+                </div>
+                <div class="form-group">
+                    <label>Port</label>
+                    <input #redisport class="form-control" value="{{redport}}">
+                </div>
+                <button (click)="createRedis()" type="button" class="btn btn-primary">Save</button> 
+                <br><br>
+                <a data-toggle="collapse" id="props-collapser-son" href="#collapseNewListener" aria-expanded="false" class="collapsed">Bind Listener</a>
+                <div id="collapseNewListener" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                
+                    <div class="form-group">
+                        <label>Channel</label>
+                        <input #redischannel class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>JarFile</label>
+                        <select #jarfiled class="form-control" (change)="selectJarFiled()">
+                            <option disabled selected>Select JarFile</option>
+                            <option *ngFor="let item of jars" value="{{item}}">{{item}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Dag</label>
+                        <select #dagnamed class="form-control">
+                            <option *ngFor="let item of dags" value="{{item.dagname}}">{{item.dagname}}</option>
+                        </select>
+                    </div>
+                    <button (click)="saveListener()" type="button" class="btn btn-primary">Add</button> 
+                </div>
+
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th>JarFile</th>
+                                <th>Dagname</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of channels">
+                                <td>{{item.channel}}</td>
+                                <td>{{item.jarname}}</td>
+                                <td>{{item.dagname}}</td>
+                                <td>
+                                    <button (click)="removeListener(item)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-close"></i></button>&nbsp;
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+
+
+                
+
+
+
+            </div>
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

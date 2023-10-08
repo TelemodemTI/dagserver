@@ -53,8 +53,15 @@ export class FrontEndDomainService implements
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
   
-  saveRedisChannel(mode: any, hotsport: string, channel: any, jarFile: any, dagname: any): Promise<void> {
-    return this.adapter.saveRedisChannel(mode,hotsport,channel,jarFile,dagname)
+  addListener(channel: string, jarfile: string, dagname: string): Promise<void> {
+    return this.adapter.addListener(channel,jarfile,dagname);
+  }
+  delListener(channel: string): Promise<void> {
+    return this.adapter.delListener(channel);
+  }
+  
+  saveRedisChannel(mode: any, hostname: string, ports: any): Promise<void> {
+    return this.adapter.saveRedisChannel(mode,hostname,ports)
   }
 
   saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void> {

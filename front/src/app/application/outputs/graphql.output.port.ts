@@ -8,7 +8,9 @@ import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 import { Credential } from 'src/app/domain/models/credential.model';
 
 export abstract class GraphQLOutputPort {
-    public abstract saveRedisChannel(mode: any, hotsport: string, channel: any, jarFile: any, dagname: any): Promise<void>;
+    public abstract delListener(channel: string): Promise<void>;
+    public abstract addListener(channel: string, jarfile: string, dagname: string): Promise<void>;
+    public abstract saveRedisChannel(mode: any, hostnames: string, ports: any): Promise<void>;
     public abstract delQueue(queue: string): Promise<void>;
     public abstract addQueue(queue: string, jarfile: string, dagname: string): Promise<void>;
     public abstract saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void>;
