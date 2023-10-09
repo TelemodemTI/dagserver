@@ -36,25 +36,7 @@ public class RabbitChannelService extends BaseServiceComponent implements Rabbit
 
 	@Override
 	public void raiseEvent(String bodyStr, String queue, String routingKey, String contentType)  {
-		try {
-			var propertyList = repository.getProperties(queue);
-			String dagname = "";
-			String jarname = "";
-			for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
-				PropertyParameterDTO propertyParameterDTO = iterator.next();
-				if(propertyParameterDTO.getName().equals("dagname")) {
-					dagname = propertyParameterDTO.getValue();
-				}
-				if(propertyParameterDTO.getName().equals("jarname")) {
-					jarname = propertyParameterDTO.getValue();
-				}
-			}
-			if(!dagname.isEmpty() && !jarname.isEmpty()) {
-				scanner.init().execute(jarname, dagname,"RABBIT_EVENT");	
-			}	
-		} catch (Exception e) {
-			log.error(e);
-		}
+		this.trigggerEvent(queue, "RABBIT_EVENT");
 	}
 
 }

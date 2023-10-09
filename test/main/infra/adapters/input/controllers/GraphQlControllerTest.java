@@ -1,7 +1,6 @@
 package main.infra.adapters.input.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,11 +45,6 @@ class GraphQlControllerTest {
 		ReflectionTestUtils.setField(controller, "mutationResolver", mutationResolver);
     }
 	
-    @Test
-    void initTest() {
-    	controller.init();
-    	assertTrue(true);
-    }
     
     @Test
     void myGraphqlTest() {

@@ -129,10 +129,10 @@ public class QueryResolver implements GraphQLQueryResolver {
 				LogDTO log =  iterator.next();
 				var entry = new LogEntry();
 				entry.setDagname(log.getDagname());
-				entry.setExecDt(log.getExecDt().getTime());
+				entry.setExecDt(log.getExecDt());
 				entry.setId(log.getId());
 				entry.setValue(log.getValue());
-				entry.setXcomoutput(log.getOutputxcom());
+				entry.setOutputxcom(log.getOutputxcom());
 				entry.setChannel(log.getChannel());
 				entry.setStatus(log.getStatus());
 				rv.add(entry);

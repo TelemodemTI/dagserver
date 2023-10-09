@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -83,6 +83,7 @@ public class DagExecutable implements Job,JobListener {
 	private String eventname = "";
 	private Map<String,DagNode> nodeList = new HashMap<>();
 	private SecureRandom random = new SecureRandom();
+	protected Properties extrArgs;
 	protected SchedulerRepositoryOutputPort repo;
 	protected Map<String,OperatorStatus> constraints = new HashMap<>();
 	protected Boolean isRunning = true;
@@ -117,7 +118,9 @@ public class DagExecutable implements Job,JobListener {
 		log.debug("outcode::" + status.toString());
 	}
 	
-
+	public void addExtraParams(Properties propxtra) {
+		this.extrArgs = propxtra;
+	}
 	
 	@SuppressWarnings("rawtypes")
 	protected OperatorStatus evaluate() throws JobExecutionException {
@@ -295,9 +298,26 @@ public class DagExecutable implements Job,JobListener {
 				throw new DomainException(string + " not found");
 			}
 		}
+		
+		if(this.extrArgs != null) {
+			args = this.mergePropertiesByIteratingKeySet(this.extrArgs,args);
+		}
+		
 		var node = new DagNode(name,operator,args,optionals);
 		this.nodeList.put(name, node);
 		this.g.addVertex(node);
+	}
+	
+	private Properties mergePropertiesByIteratingKeySet(Properties... properties) {
+	    Properties mergedProperties = new Properties();
+	    for (Properties property : properties) {
+	        Set<String> propertyNames = property.stringPropertyNames();
+	        for (String name : propertyNames) {
+	            String propertyValue = property.getProperty(name);
+	            mergedProperties.setProperty(name, propertyValue);
+	        }
+	    }
+	    return mergedProperties;
 	}
 	
 	protected void addDependency(String name1, String name2, String status) {

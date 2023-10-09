@@ -39,21 +39,7 @@ public class GitHubWebHookService extends BaseServiceComponent implements GitHub
 	public void raiseEvent(String repourl) throws DomainException {
 		ChannelPropsDTO repos = this.getChannelPropsFromRepo(repourl);
 		String name = repos.getKey();
-		var propertyList = repository.getProperties(name);
-		String dagname = "";
-		String jarname = "";
-		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
-			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals("dagname")) {
-				dagname = propertyParameterDTO.getValue();
-			}
-			if(propertyParameterDTO.getName().equals("jarname")) {
-				jarname = propertyParameterDTO.getValue();
-			}
-		}
-		if(!dagname.isEmpty() && !jarname.isEmpty()) {
-			scanner.init().execute(jarname, dagname,"GITHUB_EVENT");	
-		}
+		this.trigggerEvent(name, "GITHUB_EVENT");
 	}
 	
 

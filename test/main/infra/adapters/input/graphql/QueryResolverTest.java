@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +25,8 @@ import main.application.ports.input.LoginUseCase;
 import main.application.ports.input.SchedulerQueryUseCase;
 import main.domain.exceptions.DomainException;
 import main.domain.model.AgentDTO;
+import main.domain.model.ChannelDTO;
+import main.domain.model.ChannelPropsDTO;
 import main.domain.model.DagDTO;
 import main.domain.model.LogDTO;
 import main.domain.model.PropertyDTO;
@@ -226,5 +229,29 @@ class QueryResolverTest {
 		when(handler.getDependencies(anyString(), anyString())).thenReturn(arl);
 		var returned = resolver.getDependencies("test", "test");
 		assertNotNull(returned);
+	}
+	@Test
+	void channelStatus() throws DomainException {
+		List<ChannelPropsDTO> props = new ArrayList<>();
+		List<ChannelDTO> list = new ArrayList<>();
+		ChannelDTO dto = new ChannelDTO();
+		dto.setName("name");
+		dto.setStatus("test");
+		dto.setProps(props);
+		when(handler.getChannels(anyString())).thenReturn(list);
+		var rt = resolver.channelStatus("test");
+		assertNotNull(rt);
+	}
+	@Test
+	void exportUncompiledTest() throws DomainException {
+		when(handler.exportUncompiled(anyString(),anyInt())).thenReturn("test");
+		var str = resolver.exportUncompiled("test",1);
+		assertNotNull(str);
+	}
+	@Test
+	void exportUncompiledErrorTest() throws DomainException {
+		when(handler.exportUncompiled(anyString(),anyInt())).thenThrow(new DomainException("test"));
+		var str = resolver.exportUncompiled("test",1);
+		assertNotNull(str);
 	}
 }

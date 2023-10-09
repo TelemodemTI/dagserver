@@ -17,7 +17,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	private static final String CLAIMS = "claims";
 	private static final String ADMIN = "ADMIN";
 	private static final String JARNAME = "jarname";
+	private static final String DAGNAME = "dagname";
 	private static final String TYPEACCOUNT = "typeAccount";
+	private static final String GENERATED = "GENERATED";
 	
 	@Value( "${param.git_hub.propkey}" )
 	private String gitHubPropkey;
@@ -197,8 +199,8 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		try {
 			tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			repository.setProperty(name,repositoryUrl,secret,this.gitHubPropkey);
-			repository.setProperty("dagname", "GENERATED", dagname, name);
-			repository.setProperty(JARNAME, "GENERATED", jarname, name);
+			repository.setProperty(DAGNAME, GENERATED, dagname, name);
+			repository.setProperty(JARNAME, GENERATED, jarname, name);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
@@ -209,7 +211,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		try {
 			tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 			repository.delProperty(name, this.gitHubPropkey);
-			repository.delProperty("dagname", name);
+			repository.delProperty(DAGNAME, name);
 			repository.delProperty(JARNAME, name);
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
@@ -235,20 +237,20 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	public void saveRabbitChannel(String token, String host, String user, String pwd, Integer port)
 			throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-		repository.setProperty("host", "GENERATED", host, rabbitPropkey );
-		repository.setProperty("username", "GENERATED", user, rabbitPropkey );
+		repository.setProperty("host", GENERATED, host, rabbitPropkey );
+		repository.setProperty("username", GENERATED, user, rabbitPropkey );
 		if(!pwd.equals("******")) {
-			repository.setProperty("password", "GENERATED", pwd, rabbitPropkey );	
+			repository.setProperty("password", GENERATED, pwd, rabbitPropkey );	
 		}
-		repository.setProperty("port", "GENERATED", port.toString(), rabbitPropkey );
+		repository.setProperty("port", GENERATED, port.toString(), rabbitPropkey );
 		repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", rabbitPropkey );
 	}
 	@Override
 	public void addQueue(String token, String queue, String jarfile, String dagname) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-		repository.setProperty(queue , "GENERATED", "rabbit_consumer_queue" , rabbitPropkey );
-		repository.setProperty("dagname", "GENERATED", dagname, queue);
-		repository.setProperty(JARNAME, "GENERATED", jarfile, queue);
+		repository.setProperty(queue , GENERATED, "rabbit_consumer_queue" , rabbitPropkey );
+		repository.setProperty(DAGNAME, GENERATED, dagname, queue);
+		repository.setProperty(JARNAME, GENERATED, jarfile, queue);
 	}
 	@Override
 	public void delQueue(String token, String queue) throws DomainException {
@@ -265,18 +267,18 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		for (int i = 0; i < hosallarr.length; i++) {
 			String string = hosallarr[i];
 			String portnumber = portnumbersarr[i];
-			repository.setProperty("hostname", "GENERATED", string, redisPropkey );
-			repository.setProperty("port", "GENERATED", portnumber, redisPropkey );
+			repository.setProperty("hostname", GENERATED, string, redisPropkey );
+			repository.setProperty("port", GENERATED, portnumber, redisPropkey );
 		}
-		repository.setProperty("MODE", "GENERATED", bmode.toString(), redisPropkey );
+		repository.setProperty("MODE", GENERATED, bmode.toString(), redisPropkey );
 		repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", redisPropkey );
 	}
 	@Override
 	public void addListener(String token, String listener, String jarfile, String dagname) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-		repository.setProperty(listener , "GENERATED", "redis_consumer_listener" , redisPropkey );
-		repository.setProperty("dagname", "GENERATED", dagname, listener);
-		repository.setProperty(JARNAME, "GENERATED", jarfile, listener);
+		repository.setProperty(listener , GENERATED, "redis_consumer_listener" , redisPropkey );
+		repository.setProperty(DAGNAME, GENERATED, dagname, listener);
+		repository.setProperty(JARNAME, GENERATED, jarfile, listener);
 	}
 	@Override
 	public void delListener(String token, String listener) throws DomainException {

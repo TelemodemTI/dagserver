@@ -105,6 +105,9 @@ public class RedisInputListener {
             			}
             			Thread.sleep(redisRefresh);	
 					}
+            	} catch (InterruptedException ie) {
+            			log.error("InterruptedException: ", ie);
+            			Thread.currentThread().interrupt();
             	} catch (Exception e) {
 					log.error(e);
                 	break;

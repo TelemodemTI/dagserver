@@ -34,6 +34,9 @@ import main.domain.model.UserDTO;
 @ImportResource("classpath:properties-config.xml")
 public class SchedulerQueryHandlerService extends BaseServiceComponent implements SchedulerQueryUseCase {
 	
+	private static final String INACTIVE = "INACTIVE";
+	private static final String STATUS = "STATUS";
+	
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(SchedulerQueryHandlerService.class);
 	
@@ -116,7 +119,8 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Override
 	public List<UserDTO> credentials(String token) throws DomainException {
 		try {
-			Map<String,String> claims = (Map<String, String>) tokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
+			var map = tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+			Map<String,String> claims = (Map<String, String>) map.get("claims");
 			if(claims.get("typeAccount").equals("ADMIN")) {
 				return repository.getUsers();	
 			} else {
@@ -173,11 +177,11 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 			throw new DomainException("unauthorized");
 		}
 		List<ChannelPropsDTO> props = new ArrayList<>();
-		String githubStatus = "INACTIVE";
+		String githubStatus = INACTIVE;
 		var propertyList = repository.getProperties(gitHubPropkey);
 		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals("STATUS")){
+			if(propertyParameterDTO.getName().equals(STATUS)){
 				githubStatus = propertyParameterDTO.getValue();
 			} else {
 				ChannelPropsDTO prop1 = new ChannelPropsDTO();
@@ -196,12 +200,12 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		scheduler.setStatus("ACTIVE");
 		
 		
-		String rabbitStatus = "INACTIVE";
+		String rabbitStatus = INACTIVE;
 		List<ChannelPropsDTO> rabbitprops = new ArrayList<>();
 		var rabbitPropsList = repository.getProperties(rabbitPropkey);
 		for (Iterator<PropertyParameterDTO> iterator = rabbitPropsList.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals("STATUS")){
+			if(propertyParameterDTO.getName().equals(STATUS)){
 				rabbitStatus = propertyParameterDTO.getValue();
 			} else {
 				ChannelPropsDTO prop1 = new ChannelPropsDTO();
@@ -218,12 +222,12 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		rabbit.setStatus(rabbitStatus);
 		rabbit.setProps(rabbitprops);
 		
-		String redisStatus = "INACTIVE";
+		String redisStatus = INACTIVE;
 		List<ChannelPropsDTO> redisprops = new ArrayList<>();
 		var redisPropsList = repository.getProperties(rabbitPropkey);
 		for (Iterator<PropertyParameterDTO> iterator = redisPropsList.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals("STATUS")){
+			if(propertyParameterDTO.getName().equals(STATUS)){
 				redisStatus = propertyParameterDTO.getValue();
 			} else {
 				ChannelPropsDTO prop1 = new ChannelPropsDTO();

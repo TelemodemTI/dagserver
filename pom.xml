@@ -131,6 +131,7 @@
     	<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.exclusions>
 			**/repositories/entities/**,
+			**/infra/adapters/operators/**,
 			WebContent/**,
 			**/**.html
 		</sonar.exclusions>

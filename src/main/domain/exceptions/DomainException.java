@@ -1,11 +1,9 @@
 package main.domain.exceptions;
 
-import java.util.Objects;
-
 public class DomainException extends Exception { 
     
 	private static final long serialVersionUID = 1L;
-	private String message;
+	private final String message;
 
 	public DomainException(String errorMessage) {
         super(errorMessage);
@@ -17,11 +15,9 @@ public class DomainException extends Exception {
         this.message = ex.getMessage();
 	}
 
+	@Override
 	public String getMessage() {
 		return message;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
 }

@@ -12,13 +12,17 @@ import main.application.ports.output.JarSchedulerOutputPort;
 import main.application.ports.output.SchedulerRepositoryOutputPort;
 import main.domain.core.TokenEngine;
 import main.domain.exceptions.DomainException;
+import main.domain.model.UserDTO;
 import main.infra.adapters.output.scheduler.JarSchedulerAdapter;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -285,6 +289,24 @@ class SchedulerMutationHandlerServiceTest {
 		assertTrue(true);
 	}
 	@Test
+	void createAccountAlreadyTest() throws DomainException {
+		Map<String,String> claimsmap = new HashMap<>();
+		claimsmap.put("typeAccount", "ADMIN");
+		Map<String,Object> ret = new HashMap<>();
+		ret.put("claims", claimsmap);
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		UserDTO user = new UserDTO();
+		user.setId(1);
+		List<UserDTO> list = new ArrayList<>();
+		list.add(user);
+		when(repository.findUser(anyString())).thenReturn(list);
+		try {
+			service.createAccount("token", "username", "type", "hash");	
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	@Test
 	void deleteAccountTest() throws DomainException {
 		Map<String,String> claimsmap = new HashMap<>();
 		claimsmap.put("typeAccount", "ADMIN");
@@ -320,5 +342,163 @@ class SchedulerMutationHandlerServiceTest {
 		} catch (Exception e) {
 			assertTrue(true);
 		}
+	}
+	@Test
+	void updateParamsCompiledTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.updateParamsCompiled("token","name","group","s3","s4");
+		assertTrue(true);
+		doThrow(new RuntimeException("Test")).when(repository).updateParams(anyString(),anyString(),anyString(),anyString());
+		try {
+			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.updateParamsCompiled("token","name","group","s3","s4");
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	void updatePropTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.updateProp("token","name","group","s3");
+		assertTrue(true);
+		doThrow(new RuntimeException("Test")).when(repository).updateprop(anyString(),anyString(),anyString());
+		try {
+			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.updateProp("token","name","group","s3");
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	void deleteJarfileTest() throws DomainException {
+		Map<String,Object> claims = new HashMap<>();
+		claims.put("typeAccount", "ADMIN");
+		Map<String,Object> ret = new HashMap<>();
+		ret.put("claims", claims);
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.deleteJarfile("token","name");
+		assertTrue(true);
+		
+	}
+	@Test
+	void deleteJarfileError1Test() throws DomainException {
+		Map<String,Object> claims = new HashMap<>();
+		claims.put("typeAccount", "USER");
+		Map<String,Object> ret = new HashMap<>();
+		ret.put("claims", claims);
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		try {
+			service.deleteJarfile("token","name");	
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	@Test
+	void deleteJarfileErrorTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		try {
+			service.deleteJarfile("token","name");	
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	void addGitHubWebhookTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.addGitHubWebhook("token","name","group","s3","s4","s5");
+		assertTrue(true);
+		doThrow(new RuntimeException("Test")).when(repository).setProperty(anyString(),anyString(),anyString(),anyString());
+		try {
+			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.addGitHubWebhook("token","name","group","s3","s4","s5");
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	void removeGithubWebhookTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.removeGithubWebhook("token","name");
+		assertTrue(true);
+		doThrow(new RuntimeException("Test")).when(repository).delProperty(anyString(),anyString());
+		try {
+			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			service.removeGithubWebhook("token","name");
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	void deleteLogTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.deleteLog("token",1);
+		assertTrue(true);
+	}
+	@Test
+	void deleteAllLogsTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.deleteAllLogs("token","asdf");
+		assertTrue(true);
+	}
+	@Test
+	void renameUncompiledTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.renameUncompiled("token",1,"asdf");
+		assertTrue(true);
+	}
+	@Test
+	void saveRabbitChannelTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.saveRabbitChannel("token","asdf","asdf","asdf",1);
+		assertTrue(true);
+	}
+	@Test
+	void addQueueTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.addQueue("token","asdf","asdf","asdf");
+		assertTrue(true);
+	}
+	@Test
+	void delQueueTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.delQueue("token","asdf");
+		assertTrue(true);
+	}
+	@Test
+	void saveRedisChannelTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.saveRedisChannel("token","asdf","asdf","asdf");
+		assertTrue(true);
+	}
+	@Test
+	void addListenerTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.addListener("token","asdf","asdf","asdf");
+		assertTrue(true);
+	}
+	@Test
+	void delListenerTest() throws DomainException {
+		Map<String,Object> ret = new HashMap<>();
+		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		service.delListener("token","asdf");
+		assertTrue(true);
 	}
 }

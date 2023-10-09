@@ -41,31 +41,37 @@ public class RabbitChannel {
 	private Channel channel;
 	
 	@PostConstruct
-	public void listener() {
+	public void listenerHandler() {
 		runningConsumers = new ArrayList<>();
 		listener = new Thread(new Runnable() {
             public void run() {
-            	while(true) {
-            		try {
-            			Properties rabbitprops = handler.getRabbitChannelProperties();
-            			String status = rabbitprops.getProperty("STATUS");
-            			if(status != null && status.equals("ACTIVE")){
-            				if(channel == null) {
-            					channel = getConnection(rabbitprops);	
-            				}
-            				configureListener(rabbitprops);
-            			}
-            			Thread.sleep(rabbitRefresh);	
-					} catch (Exception e) {
-						log.error(e);
-						break;
-					}
-            		
-        		}
+            	runForever();
             }
         });
 		listener.start(); 
 	}	
+	private void runForever() {
+		Boolean longRunning = true;
+    	while(longRunning) {
+    		try {
+    			Properties rabbitprops = handler.getRabbitChannelProperties();
+    			String status = rabbitprops.getProperty("STATUS");
+    			if(status != null && status.equals("ACTIVE")){
+    				if(channel == null) {
+    					channel = getConnection(rabbitprops);	
+    				}
+    				configureListener(rabbitprops);
+    			}
+    			Thread.sleep(rabbitRefresh);	
+    		} catch (InterruptedException ie) {
+    			log.error("InterruptedException: ", ie);
+    			Thread.currentThread().interrupt();
+    		} catch (Exception e) {
+				log.error(e);
+				break;
+			}
+		}
+	}
 	private Channel getConnection(Properties rabbitprops) throws IOException, TimeoutException {
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setUsername(rabbitprops.getProperty("username"));
@@ -73,9 +79,10 @@ public class RabbitChannel {
 		factory.setHost(rabbitprops.getProperty("host"));
 		factory.setPort(Integer.parseInt(rabbitprops.getProperty("port")));
 
-		Connection conn = factory.newConnection();	
-		Channel channel = conn.createChannel();
-		return channel;
+		try(Connection conn = factory.newConnection();){
+			Channel channel = conn.createChannel();
+			return channel;	
+		}
 	}	
 	private void configureListener(Properties rabbitprops) throws IOException, TimeoutException {
 		Set<Object> keys = rabbitprops.keySet();

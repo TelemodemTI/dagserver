@@ -202,5 +202,52 @@ class MutationResolverTest {
 		var resp2 = mutation.renameUncompiled(anyString(), anyInt(),anyString());
 		assertNotNull(resp2);
 	}
-	
+	@Test
+	void saveRabbitChannelTest() throws DomainException {
+		var resp = mutation.saveRabbitChannel(anyString(), anyString(), anyString(), anyString(), anyInt());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).saveRabbitChannel(anyString(),anyString(),anyString(),anyString() ,anyInt());
+		var resp2 = mutation.saveRabbitChannel(anyString(),anyString(),anyString(),anyString(), anyInt());
+		assertNotNull(resp2);
+	}
+	@Test
+	void addQueueTest() throws DomainException {
+		var resp = mutation.addQueue(anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).addQueue(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.addQueue(anyString(),anyString(),anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void delQueueTest() throws DomainException {
+		var resp = mutation.delQueue(anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).delQueue(anyString(),anyString());
+		var resp2 = mutation.delQueue(anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void saveRedisChannelTest() throws DomainException {
+		var resp = mutation.saveRedisChannel(anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).saveRedisChannel(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.saveRedisChannel(anyString(),anyString(),anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void addListenerTest() throws DomainException {
+		var resp = mutation.addListener(anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).addListener(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.addListener(anyString(),anyString(),anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void delListenerTest() throws DomainException {
+		var resp = mutation.delListener(anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).delListener(anyString(),anyString());
+		var resp2 = mutation.delListener(anyString(),anyString());
+		assertNotNull(resp2);
+	}
 }
