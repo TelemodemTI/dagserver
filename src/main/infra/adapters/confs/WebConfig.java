@@ -156,6 +156,7 @@ public class WebConfig implements WebMvcConfigurer {
 			properties.put("hibernate.dialect",dbDialect );
 		}
         properties.put("hibernate.show_sql", false);
+        properties.put("hibernate.temp.use_jdbc_metadata_defaults", false);
         return properties;        
     }
 	@Bean(initMethod = "migrate")
