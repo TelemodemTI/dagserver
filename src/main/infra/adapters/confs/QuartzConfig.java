@@ -46,6 +46,10 @@ public class QuartzConfig {
 	
 	private static final String APP_JDBC_URL = "APP_JDBC_URL";
 	private static final String APP_JDBC_USER = "APP_JDBC_USER";
+	private static final String APP_JDBC_DRIVER = "APP_JDBC_DRIVER";
+	private static final String APP_JDBC_PASSWORD = "APP_JDBC_PASSWORD";
+	
+	
 	
 	private static final String PREFIX_JOB_DB = "";
 	private Scheduler scheduler;
@@ -229,14 +233,17 @@ public class QuartzConfig {
 		InputStream stream = loader.getResourceAsStream("quartz.properties");
 		Properties p = new Properties();
 		p.load(stream);
+		if(System.getenv(APP_JDBC_DRIVER) != null) {
+			p.setProperty("org.quartz.dataSource.quartzDS.driver", System.getenv(APP_JDBC_DRIVER));
+		}
 		if(System.getenv(APP_JDBC_URL) != null) {
 			p.setProperty("org.quartz.dataSource.quartzDS.URL", System.getenv(APP_JDBC_URL));	
 		}
 		if(System.getenv(APP_JDBC_USER) != null) {
 			p.setProperty("org.quartz.dataSource.quartzDS.user", System.getenv(APP_JDBC_USER));
 		}
-		if(System.getenv(APP_JDBC_USER) != null) {
-			p.setProperty("org.quartz.dataSource.quartzDS.password", System.getenv("APP_JDBC_PASSWORD"));
+		if(System.getenv(APP_JDBC_PASSWORD) != null) {
+			p.setProperty("org.quartz.dataSource.quartzDS.password", System.getenv(APP_JDBC_PASSWORD));
 		}
 		return p;
 	}

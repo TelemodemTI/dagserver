@@ -3,9 +3,7 @@ package main.infra.adapters.confs;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-
 import javax.sql.DataSource;
-
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -25,7 +23,6 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 import main.application.ports.input.GetDefaultJobsUseCase;
 import main.domain.annotations.Dag;
 import main.domain.core.DagExecutable;
@@ -39,6 +36,11 @@ public class WebConfig implements WebMvcConfigurer {
 
 	private static final String APP_JDBC_URL = "APP_JDBC_URL";
 	private static final String APP_JDBC_USER = "APP_JDBC_USER";
+	private static final String APP_JDBC_DRIVER = "APP_JDBC_DRIVER";
+	private static final String APP_MIGRATION_JDBC_TYPE = "APP_MIGRATION_JDBC_TYPE";
+	private static final String APP_JDBC_PASSWORD = "APP_JDBC_PASSWORD";
+	private static final String APP_HIBERNATE_DIALECT = "APP_HIBERNATE_DIALECT"; 
+	
 	
 	@Value( "${org.quartz.dataSource.quartzDS.URL}" )
 	private String dbHost;
@@ -116,14 +118,18 @@ public class WebConfig implements WebMvcConfigurer {
 	@Bean
 	public DataSource dataSource() {
 		BasicDataSource  dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(this.dbDriver);
+		if(System.getenv(APP_JDBC_DRIVER) != null) {
+			dataSource.setDriverClassName(System.getenv(APP_JDBC_DRIVER));
+		} else {
+			dataSource.setDriverClassName(dbDriver);
+		}
 		if(System.getenv(APP_JDBC_USER) != null) {
 			dataSource.setUsername(System.getenv(APP_JDBC_USER));
 		} else {
 			dataSource.setUsername(this.dbUser);
 		}
-		if(System.getenv(APP_JDBC_USER) != null) {
-			dataSource.setPassword(System.getenv("APP_JDBC_PASSWORD"));
+		if(System.getenv(APP_JDBC_PASSWORD) != null) {
+			dataSource.setPassword(System.getenv(APP_JDBC_PASSWORD));
 		} else {
 			dataSource.setPassword(this.dbPass);
 		}
@@ -144,7 +150,11 @@ public class WebConfig implements WebMvcConfigurer {
 	}
 	private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", dbDialect);
+        if(System.getenv(APP_HIBERNATE_DIALECT) != null) {
+        	properties.put("hibernate.dialect", System.getenv(APP_HIBERNATE_DIALECT));
+		} else {
+			properties.put("hibernate.dialect",dbDialect );
+		}
         properties.put("hibernate.show_sql", false);
         return properties;        
     }
@@ -153,17 +163,17 @@ public class WebConfig implements WebMvcConfigurer {
 	    Flyway flyway = new Flyway();
 	    flyway.setDataSource(dataSource());
 	    flyway.setBaselineOnMigrate(true);
+	    if(System.getenv(APP_MIGRATION_JDBC_TYPE) != null) {
+	    	flyway.setLocations(System.getenv(APP_MIGRATION_JDBC_TYPE));
+		} else {
+			flyway.setLocations(dbMigrations);
+		}
 	    return flyway;
 	}
-	
-	
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
           .addResourceHandler("/cli/**")
           .addResourceLocations("/WEB-INF/cli/");
-        registry
-          .addResourceHandler("/docs/**")
-          .addResourceLocations("/WEB-INF/docs/");	
     }
 }

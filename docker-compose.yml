@@ -14,6 +14,9 @@ services:
     - APP_JDBC_URL=jdbc:mysql://host.docker.internal:65306/scheduler?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     - APP_JDBC_USER=scheduler_user
     - APP_JDBC_PASSWORD=password
+    - APP_JDBC_DRIVER=com.mysql.cj.jdbc.Driver
+    - APP_MIGRATION_JDBC_TYPE=mysql
+    - APP_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLInnoDBDialect
     volumes:
     - "/home/ec2-user/dags/:/root/dags/"
     networks:

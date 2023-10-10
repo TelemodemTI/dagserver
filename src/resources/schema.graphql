@@ -82,7 +82,7 @@ type LogEntry {
 	dagname: String,
 	execDt: Float,
 	value: String,
-	xcomoutput: String,
+	outputxcom: String,
 	status: String,
 	channel: String
 }
