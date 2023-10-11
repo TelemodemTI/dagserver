@@ -128,8 +128,8 @@ public class WebConfig implements WebMvcConfigurer {
 		} else {
 			dataSource.setUsername(this.dbUser);
 		}
-		if(System.getenv(APP_JDBC_PASSWORD) != null) {
-			dataSource.setPassword(System.getenv(APP_JDBC_PASSWORD));
+		if(System.getenv(APP_JDBC_USER) != null) {
+			dataSource.setPassword(System.getenv(APP_JDBC_PASSWORD).trim());
 		} else {
 			dataSource.setPassword(this.dbPass);
 		}
