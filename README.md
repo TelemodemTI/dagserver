@@ -30,6 +30,8 @@ A Docker image is provided [Docker-Hub](https://hub.docker.com/r/maximolira/dags
 The following are the basic configurations that are needed to run the application:
 
 application.properties:  
+- param.hibernate.dialect: Hibernate Dialect
+- param.flyway.migrations: Migration path for initial database load
 - param.jwt_secret: Secret of token JWT for authentication  
 - param.jwt_signer: Signer of token  
 - param.jwt_subject: Subject of the token  
@@ -42,19 +44,23 @@ log4j.properties:
 	
 	
 quartz.properties:  
+- org.quartz.dataSource.quartzDS.driver: Quartz engine driver database
 - org.quartz.dataSource.quartzDS.URL: Quartz engine database host  
 - org.quartz.dataSource.quartzDS.user: Quartz engine database user  
 - org.quartz.dataSource.quartzDS.password: Quartz engine database password  
 	
-These last three variables can be overridden using the following environment variables:  
-- APP_JDBC_URL  
-- APP_JDBC_USER  	
-- APP_JDBC_PASSWORD  
-- DAGSERVERURI
+The following are the defined environment variables
+- APP_JDBC_DRIVER: overwrites the variable corresponding to the Quartz database driver
+- APP_JDBC_URL: overwrites the variable corresponding to the Quartz engine database host  
+- APP_JDBC_USER: overwrites the variable corresponding to the Quartz engine database user  
+- APP_JDBC_PASSWORD: overwrites the variable corresponding to the Quartz engine database pwd    
+- APP_MIGRATION_JDBC_TYPE: overwrites the variable with the location of the initial migrations. currently there is support for h2 and mysql
+- APP_HIBERNATE_DIALECT: overwrites the hibernate dialect variable to be used by the scheduler
+- DAGSERVERURI: indicates the location of the graphql endpoint to use from the front end.
 	  
 ## Basic Usage
 
-Dagserver provides a user-friendly web-based interface accessible at http://localhost:8080/cli, allowing you to streamline your DAG (Directed Acyclic Graph) workflow management. With this interface, you can:
+Dagserver provides a user-friendly web-based interface accessible at http://hostname:port/context/cli, allowing you to streamline your DAG (Directed Acyclic Graph) workflow management. With this interface, you can:
 
 1. **Create and Compile DAGs:** Easily design, implement, and compile DAGs into standard Java JAR files. These JAR files contain the DAG implementations ready for execution.
 
@@ -72,8 +78,8 @@ These features empower you to create, schedule, and manage your DAGs seamlessly,
 
 GraphQL Endpoint:  
   
-- Front-End: http://<serverhost>:<serverport>/dagserver/cli
-- URL: http://<serverhost>:<serverport>/server/query  
+- Front-End: http://<serverhost>:<serverport>/<contexto>/cli
+- URL: http://<serverhost>:<serverport>/<contexto>/query  
 - Username: dagserver  
 - Password: dagserver  
   

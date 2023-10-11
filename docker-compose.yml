@@ -15,7 +15,7 @@ services:
     - APP_JDBC_USER=scheduler_user
     - APP_JDBC_PASSWORD=password
     - APP_JDBC_DRIVER=com.mysql.cj.jdbc.Driver
-    - APP_MIGRATION_JDBC_TYPE=mysql
+    - APP_MIGRATION_JDBC_TYPE=db/migration/mysql
     - APP_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLInnoDBDialect
     volumes:
     - "/home/ec2-user/dags/:/root/dags/"
