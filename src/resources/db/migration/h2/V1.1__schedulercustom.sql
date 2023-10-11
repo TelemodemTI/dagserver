@@ -27,7 +27,7 @@ CREATE TABLE `sche_users` (
   `created_at` datetime NOT NULL
 )
 
-INSERT INTO `sche_users` VALUES ('1', 'dagserver', 'f399729e48f37737f3aa5f2e74e62f9f75bb7bb10adb065a0a8e21df433d6fa3', 'ADMIN' , NOW());
+INSERT INTO `sche_users` VALUES ('1', 'dagserver', 'f399729e48f37737f3aa5f2e74e62f9f75bb7bb10adb065a0a8e21df433d6fa3', 'ADMIN' , CURRENT_TIMESTAMP());
 
 CREATE TABLE `sche_properties` (
   `prop_id` int NOT NULL AUTO_INCREMENT,
