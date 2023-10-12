@@ -9,13 +9,13 @@ import main.domain.core.MetadataManager;
 import main.domain.core.OperatorStage;
 import main.domain.exceptions.DomainException;
 
-@Operator(args={"prefix","c","cmd"})
+@Operator(args={"cmd"})
 public class CmdOperator extends OperatorStage implements Callable<StringBuilder> {
 
 	@Override
 	public StringBuilder call() throws DomainException {		
 		try {
-			ProcessBuilder builder = new ProcessBuilder(this.args.getProperty("prefix"), this.args.getProperty("c"), this.args.getProperty("cmd"));
+			ProcessBuilder builder = new ProcessBuilder("cmd", "/c",this.args.getProperty("cmd"));
 		    builder.redirectErrorStream(true);
 		    Process p = builder.start();
 		    BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -35,8 +35,6 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.CmdOperator");
-		metadata.setParameter("prefix", "text");
-		metadata.setParameter("c", "text");
 		metadata.setParameter("cmd", "sourcecode");
 		return metadata.generate();
 	}
