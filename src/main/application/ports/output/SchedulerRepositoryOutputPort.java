@@ -21,7 +21,7 @@ public interface SchedulerRepositoryOutputPort {
 	public List<EventListenerDTO> getEventListeners(String listenerName);
 	public List<LogDTO> getLogs(String dagname);
 	public LogDTO getLog(Integer logid);
-	public void setLog(Map<String,String> parmdata, Map<String, OperatorStatus> status);
+	public void setLog(Map<String,String> parmdata, Map<String, OperatorStatus> status, List<String> timestamps);
 	public void deleteLogsBy(Date rolldate);
 	public List<UserDTO> findUser(String username);
 	public List<PropertyParameterDTO> getProperties(String groupname) throws DomainException;

@@ -8,6 +8,7 @@ public class LogPOJO {
 	private Date execDt;
 	private String value;
 	private String outputxcom;
+	private String marks;
 	private String status;
 	private String channel;
 	public Integer getId() {
@@ -51,6 +52,12 @@ public class LogPOJO {
 	}
 	public void setChannel(String channel) {
 		this.channel = channel;
+	}
+	public String getMarks() {
+		return marks;
+	}
+	public void setMarks(String marks) {
+		this.marks = marks;
 	}
 
 }

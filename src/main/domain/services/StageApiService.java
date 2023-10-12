@@ -1,6 +1,8 @@
 package main.domain.services;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -107,7 +109,8 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			parmdata.put("channel","TEST_API");
 			parmdata.put("objetive",objetive);
 			parmdata.put("sourceType","UNCOMPILED");
-			this.repository.setLog(parmdata,dagtmp.getStatus());
+			List<String> timestamps = new ArrayList<>();
+			this.repository.setLog(parmdata,dagtmp.getStatus(),timestamps);
 			JSONObject xcom = dagtmp.getXcom();
 			output.put("xcom", xcom);
 			output.put("result", result);

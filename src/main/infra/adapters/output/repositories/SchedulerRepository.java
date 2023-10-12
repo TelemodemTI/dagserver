@@ -94,7 +94,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return mapper.toLogDTO(log);
 	}
 
-	public void setLog(Map<String,String> parmdata, Map<String, OperatorStatus> status) {
+	public void setLog(Map<String, String> parmdata, Map<String, OperatorStatus> status, List<String> timestamps) {
 		String evalkey = parmdata.get("evalkey");
 		String dagname  = parmdata.get("dagname");
 		String value = parmdata.get(VALUE);
@@ -103,6 +103,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		String objetive = parmdata.get("objetive");
 		String sourceType = parmdata.get("sourceType");
 		HashMap<String, Object> param = new HashMap<>();
+		JSONArray arr = new JSONArray(timestamps);
 		param.put("evalkey",evalkey);
 		var founded = dao.read(Log.class, "select log from Log log where log.evalkey = :evalkey",param);
 		if(founded.isEmpty()) {
@@ -115,6 +116,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			entry.setChannel(channel);
 			entry.setObjetive(objetive);
 			entry.setSourceType(sourceType);
+			entry.setMarks(arr.toString());
 			JSONObject statusObj = new JSONObject(status);
 			entry.setStatus(statusObj.toString());
 			dao.save(entry);	
@@ -122,6 +124,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			JSONObject statusObj = new JSONObject(status);
 			var entry = founded.get(0);
 			entry.setValue(value);
+			entry.setMarks(arr.toString());
 			entry.setStatus(statusObj.toString());
 			entry.setObjetive(objetive);
 			entry.setSourceType(sourceType);
@@ -492,4 +495,6 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		uncompiledObj.setBin(binobj.toString());
 		dao.save(uncompiledObj);
 	}
+
+	
 }

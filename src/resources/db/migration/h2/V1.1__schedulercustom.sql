@@ -16,6 +16,7 @@ CREATE TABLE `sche_logs` (
   `text_value` text,
   `outxcom` text DEFAULT NULL,
   `status` text,
+  `marks` text,
   `channel` varchar(190)
 );
 

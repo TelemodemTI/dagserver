@@ -80,9 +80,10 @@ type Scheduled {
 type LogEntry {
 	id: Int,
 	dagname: String,
-	execDt: Float,
+	execDt: String,
 	value: String,
 	outputxcom: String,
+	marks: String,
 	status: String,
 	channel: String
 }

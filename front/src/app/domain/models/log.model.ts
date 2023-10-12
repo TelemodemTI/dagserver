@@ -4,5 +4,6 @@ export class Log {
 	execDt!: number
 	value!: String
 	xcomoutput!: String
+	marks!: String
 	status!: String
 }

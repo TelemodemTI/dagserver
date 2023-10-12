@@ -17,11 +17,65 @@
                     <div class="panel-body">
 
                         <ul class="nav nav-tabs">
-                            <li *ngFor="let dag of dagsavai; let i = index;"  [ngClass]="dagname == dag ? 'active':''"><a href="#{{dag}}" (click)="reinit();" data-toggle="tab">{{dag}}</a></li>
+                            <li *ngFor="let dag of dagsavai; let i = index;"  [ngClass]="dagname == dag ? 'active':''"><a href="#{{dag}}" (click)="reinit(i);" data-toggle="tab">{{dag}}</a></li>
                         </ul>
                         <div class="tab-content">
                             <div *ngFor="let dag of dagsavai; let i = index;" [ngClass]="dagname == dag ? 'tab-pane fade in active':'tab-pane fade'" id="{{dag}}">
-                                <div id="diagram-ctn-{{dag}}" style="border: 1px dotted gray;overflow: scroll;"></div>
+                                
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <div id="diagram-ctn-{{dag}}" style="border: 1px dotted gray;overflow: scroll;width:100%;"></div>
+                                    </div>
+                                    <div class="col-md-5">
+
+
+
+
+
+
+
+
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <i class="fa fa-clock-o fa-fw"></i> Last Execution Timeline
+                                            </div>
+                                            <!-- /.panel-heading -->
+                                            <div class="panel-body">
+                                                <ul class="timeline">
+                                                    <li *ngFor="let node of dagparsed;let i = index" [ngClass]=" i % 2 ===1?'timeline-inverted':''">
+                                                        <div class="timeline-badge"><i class="fa fa-check"></i>
+                                                        </div>
+                                                        <div class="timeline-panel">
+                                                            <div class="timeline-heading">
+                                                                <h4 class="timeline-title">{{node.name}}</h4>
+                                                                <p>
+                                                                    <small class="text-muted"><i class="fa fa-clock-o"></i>{{node.endOn}}</small>
+                                                                </p>
+                                                            </div>
+                                                            <div class="timeline-body">
+                                                                <b>Operator:</b>
+                                                                <p>{{node.operator}}</p>
+                                                                <p>{{node.wait}} miliseconds</p>
+                                                                <p>returned: {{node.rows}} rows</p>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    
+                                                </ul>
+                                            </div>
+                                            <!-- /.panel-body -->
+                                        </div>
+                                        <!-- /.panel -->
+            
+
+
+
+
+
+                                    </div>
+                                </div>
+                                
+                                
                             </div>
                             <input type="text" id="canvas-det" class="noDisplay"/>
                         </div>

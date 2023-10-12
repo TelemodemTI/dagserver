@@ -24,6 +24,7 @@ export class LogsComponent {
   async ngOnInit() {
     this.dagname = this.route.snapshot.paramMap.get('dagname');
     this.logs = await this.service.logs(this.dagname)
+    console.log(this.logs)
     this.logs.sort((a:number,b:number)=> a < b ? 1 : -1);
     if(this.logs.length > 0){
       this.last = this.logs.reduce((a, b) => (a.execDt > b.execDt ? a : b));

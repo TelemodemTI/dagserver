@@ -33,8 +33,12 @@ public class Log {
 	@Column(name = "outxcom", nullable = true)
 	private String outputxcom;
 
+	@Column(name = "marks", nullable = false)
+	private String marks;
+	
 	@Column(name = "status", nullable = false)
 	private String status;
+	
 	
 	@Column(name = "channel", nullable = false)
 	private String channel;
@@ -104,6 +108,12 @@ public class Log {
 	}
 	public void setObjetive(String objetive) {
 		this.objetive = objetive;
+	}
+	public String getMarks() {
+		return marks;
+	}
+	public void setMarks(String marks) {
+		this.marks = marks;
 	}
 
 }

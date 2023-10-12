@@ -29,6 +29,7 @@ import main.domain.exceptions.DomainException;
 import main.domain.model.DagDTO;
 import main.infra.adapters.confs.DagPathClassLoadHelper;
 import main.infra.adapters.confs.QuartzConfig;
+import main.infra.adapters.operators.DummyOperator;
 import main.infra.adapters.operators.LogsRollupOperator;
 import main.infra.adapters.operators.RegisterSchedulerOperator;
 
@@ -217,12 +218,22 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		item.setDagname("background_system_dag");
 		item.setCronExpr("0 0/10 * * * ?");
 		item.setGroup("system_dags");
+		DagDTO item2 = new DagDTO();
+		item2.setDagname("event_system_dag");
+		item2.setOnEnd("background_system_dag");
+		item2.setGroup("system_dags");
 		List<List<String>> list = new ArrayList<>();
 		list.add(ops);
 		list.add(register);
 		item.setOps(list);
 		
 		defs.add(item);
+		List<List<String>> liste = new ArrayList<>();
+		List<String> evts = Arrays.asList("dummy",DummyOperator.class.getCanonicalName());
+		liste.add(evts);
+		item2.setOps(liste);
+		defs.add(item2);
+		
 		return defs;
 	}
 	private List<DagDTO> getDagDetailJAR(String jarname) throws DomainException {

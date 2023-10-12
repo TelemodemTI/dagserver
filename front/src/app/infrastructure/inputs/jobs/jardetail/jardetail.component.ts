@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JardetailInputPort } from 'src/app/application/inputs/jardetail.input.port';
 import { JardetailpComponent } from '../jardetailp/jardetailp.component';
+import { LogsInputPort } from 'src/app/application/inputs/logs.input.port';
 
 
 declare var $:any
@@ -27,19 +28,25 @@ export class JardetailComponent {
   selectedStepOpts!:any
   selectedStepParams!:any
   selectedStepMetadata!:any
+  
+  dagitem!:any
+  dagparsed!:any
 
   @ViewChild("modalp") modalp!: JardetailpComponent;
 
   constructor(private router: Router, 
     private route: ActivatedRoute,
+    private servicel: LogsInputPort,
     private service: JardetailInputPort){
   }
 
   async ngOnInit() {
     this.jarname = this.route.snapshot.paramMap.get('jarname');
     this.dagname = this.route.snapshot.paramMap.get("dagname")
+    
+    this.result = await this.service.getDetail(this.jarname);  
+    this.calculateAnaliticPane(this.dagname);
     try {
-      this.result = await this.service.getDetail(this.jarname);  
       this.initui(this.result);
     } catch (error) {
       this.error_msje = error
@@ -48,7 +55,54 @@ export class JardetailComponent {
     }
   }
 
-  reinit(){
+  async calculateAnaliticPane(dagname:any){
+    let timemarks:any[] = [];
+    let waits:any[] = []
+    try {
+      let logs = await this.servicel.logs(dagname)
+      let last:any = logs.reduce((a, b) => (a.execDt > b.execDt ? a : b),logs[0]);
+      let xcom = JSON.parse(last.outputxcom)
+      
+      if(last && last.marks){
+        let times = JSON.parse(last.marks).map((ele:any)=>{
+          return new Date(parseInt(ele));
+        })
+        timemarks = times.map((ele:any)=>{
+          return ele.toISOString();
+        })
+        for (let index = 0; index < times.length; index++) {
+          if(times[index-1]){
+            const diffTime = Math.abs(times[index] - times[index-1]);
+            waits.push(diffTime)
+          } else {
+            waits.push(0)
+          }
+        }
+        this.dagitem = this.result.detail.detail.filter((el:any)=> { return el.dagname == dagname })[0]
+        let index = 0
+        this.dagparsed = this.dagitem.node.map((ele:any)=>{
+          let arr = ele.operations[1].split(".")
+          index ++;
+          let counted = xcom[ele.operations[0]] ? xcom[ele.operations[0]].length : 0
+          return {
+            name: ele.operations[0],
+            operator: arr[arr.length-1],
+            endOn: timemarks[index-1],
+            wait: waits[index-1],
+            rows: counted
+          }
+        })
+      } else {
+        this.dagparsed = []
+      }
+    } catch (error) {
+      console.log(error)
+      console.log("no log info..")
+    }
+  }
+  reinit(i:number){
+    let item = this.dagsavai[i];
+    this.calculateAnaliticPane(item);
     let arr = []
     for (let index = 0; index < this.result.detail.detail.length; index++) {
       const element = this.result.detail.detail[index];
@@ -190,7 +244,7 @@ export class JardetailComponent {
         let paper = new joint.dia.Paper({
             el: document.getElementById("diagram-ctn-"+id),
             model: graph,
-            width: '90%',
+            width: '100%',
             height: 600,
             gridSize: 2,
             drawGrid: true,
@@ -224,4 +278,5 @@ export class JardetailComponent {
     this.selectedStepParams = params
     this.modalp.show();
   }
+  
 }

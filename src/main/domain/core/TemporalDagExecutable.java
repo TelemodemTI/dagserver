@@ -1,8 +1,10 @@
 package main.domain.core;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -58,7 +60,8 @@ public class TemporalDagExecutable extends DagExecutable  {
 		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
 		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
-		Map<String,String> parmdata = new HashMap<>(); 
+		Map<String,String> parmdata = new HashMap<>();
+		List<String> timestamps = new ArrayList<>();
 		parmdata.put("evalkey",evalstring);
 		parmdata.put("dagname",dagname);
 		parmdata.put("value",fa.getResult());
@@ -91,7 +94,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 			    	args.put("logdag", logdag);
 			    	args.put("status", status);
 			    	args.put("fa", fa);
-					this.instanciateEvaluate(args,parmdata);
+					this.instanciateEvaluate(args,parmdata,timestamps);
 				} catch (JobExecutionException e) {
 					logdag.error(e);
 				}

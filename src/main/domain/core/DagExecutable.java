@@ -128,7 +128,7 @@ public class DagExecutable implements Job,JobListener {
 		Date evalDt = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		String evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
-		
+		List<String> timestamps = new ArrayList<>();
 		var fa = this.createDagMemoryAppender(evalstring);
 		JSONObject xcom = new JSONObject();
 		Logger logdag = Logger.getLogger(evalstring);
@@ -142,7 +142,7 @@ public class DagExecutable implements Job,JobListener {
 		parmdata.put("channel",this.executionSource);
 		parmdata.put("objetive","COMPLETE");
 		parmdata.put("sourceType","COMPILED");
-		repo.setLog(parmdata,status);
+		repo.setLog(parmdata,status,timestamps);
 		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		while (breadthFirstIterator.hasNext()) {
 			
@@ -156,7 +156,7 @@ public class DagExecutable implements Job,JobListener {
 				logdag.debug("no constraint");
 			}
 			parmdata.put(VALUE,fa.getResult());
-			repo.setLog(parmdata,status);
+			repo.setLog(parmdata,status,timestamps);
 			Class<?> clazz = node.operator;
 			ExecutorService executorService = Executors.newSingleThreadExecutor();
 			Future<?> future = executorService.submit(() -> {
@@ -170,7 +170,7 @@ public class DagExecutable implements Job,JobListener {
 			    	args.put("logdag", logdag);
 			    	args.put("status", status);
 			    	args.put("fa", fa);
-					this.instanciateEvaluate(args,parmdata);
+					this.instanciateEvaluate(args,parmdata,timestamps);
 				} catch (JobExecutionException e) {
 					logdag.error(e);
 				}
@@ -178,17 +178,19 @@ public class DagExecutable implements Job,JobListener {
 			while (!future.isDone()) {
 			    try {
 			    	parmdata.put(VALUE,fa.getResult());
-					repo.setLog(parmdata,status);
+			    	Long dt = new Date().getTime();
+					timestamps.add(dt.toString());
+			    	repo.setLog(parmdata,status,timestamps);
 			    	Thread.sleep(500);	
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
 			}
 		}
-		return this.setLogEvaluate(fa, xcom, status,parmdata);
+		return this.setLogEvaluate(fa, xcom, status,parmdata,timestamps);
 	}
 	@SuppressWarnings("unchecked")
-	protected void instanciateEvaluate(Map<String,Object> args,Map<String,String> parmdata) throws JobExecutionException {
+	protected void instanciateEvaluate(Map<String,Object> args,Map<String,String> parmdata, List<String> timestamps) throws JobExecutionException {
 		Class<?> clazz = (Class<?>) args.get("clazz");
 		DagNode node = (DagNode) args.get("node");
 		JSONObject xcom = (JSONObject) args.get("xcom");
@@ -224,7 +226,7 @@ public class DagExecutable implements Job,JobListener {
 					String locatedAt = repo.createInternalStatus(xcom);
 					parmdata.put(VALUE,fa.getResult());
 					parmdata.put("xcom", locatedAt);
-					repo.setLog(parmdata,status);
+					repo.setLog(parmdata,status,timestamps);
 				} catch (Exception e2) {
 					log.error(e2);
 				}
@@ -232,14 +234,14 @@ public class DagExecutable implements Job,JobListener {
 			}
 		}
 	}
-	private OperatorStatus setLogEvaluate(InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status,Map<String,String> parmdata) throws JobExecutionException {
+	private OperatorStatus setLogEvaluate(InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status,Map<String,String> parmdata,List<String> timestamps) throws JobExecutionException {
 		try {
 			fa.close();
 			Logger.getRootLogger().removeAppender(fa);
 			String locatedAt = repo.createInternalStatus(xcom);
 			parmdata.put(VALUE,fa.getResult());
 			parmdata.put("xcom", locatedAt);
-			repo.setLog(parmdata,status);
+			repo.setLog(parmdata,status,timestamps);
 			return OperatorStatus.OK;	
 		} catch (Exception e) {
 			throw new JobExecutionException(e);
