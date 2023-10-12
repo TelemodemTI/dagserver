@@ -15,12 +15,14 @@ export class LoginComponent {
   @ViewChild("userinput") localinput!:ElementRef
   @ViewChild("passinput") passinput!:ElementRef
   message!:any
+  rutaBase!:any
+  version!:any
 
   constructor(private router: Router, 
     private service: LoginInputPort){
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     $(document).on('keypress',(e:any)=> {
       if(e.which == 13) {
           this.login()
@@ -29,6 +31,13 @@ export class LoginComponent {
     if(localStorage.getItem("dagserver_token")){
       this.router.navigateByUrl("auth")
     }
+    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    const segmentos = base.split('/');
+    segmentos.pop();
+    this.rutaBase = segmentos.join('/');
+    this.rutaBase = (this.rutaBase)?this.rutaBase:"/"
+    this.rutaBase = this.rutaBase.endsWith("/")?this.rutaBase:this.rutaBase+"/"
+    this.version = await this.service.version();
   }
   async login() {
     const user = this.localinput.nativeElement.value;

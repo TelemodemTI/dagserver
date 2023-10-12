@@ -10,6 +10,14 @@ export class DinamicAdapterService implements DinamicOutputPort {
     
     constructor(private http: HttpClient) {}
 
+    version(){
+        return new Promise<any>((resolve,reject)=>{
+            let url = uri + "version/";
+            this.http.get(url,{ responseType: 'text' }).subscribe((result:any)=>{
+                resolve(result)
+            })
+        })
+    }
     executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string): Promise<any> {
         return new Promise<any>((resolve,reject)=>{
             let url = uri + "stageApi/";

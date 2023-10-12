@@ -6,7 +6,7 @@
                     <h3 class="panel-title">Please Sign In</h3>
                 </div>
                 <div class="panel-body">
-                    
+                        <img src="{{rutaBase}}assets/favicon.png" alt="Dagserver" class="logo">
                         <fieldset>
                             <div class="form-group">
                                 <input #userinput class="form-control" placeholder="Username" name="username" type="text" autofocus>
@@ -19,6 +19,8 @@
                                 {{message}}
                             </div>
                             <button (click)="login()" (keyup.enter)="login()" class="btn btn-lg btn-success btn-block">Login</button>
+                            <br>
+                            <p><b>Status:</b>{{version}}</p>
                         </fieldset>
                     
                         <br><br>

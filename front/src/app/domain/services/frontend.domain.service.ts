@@ -52,6 +52,10 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  version(): Promise<any> {
+    return this.httpd.version()
+  }
   
   addListener(channel: string, jarfile: string, dagname: string): Promise<void> {
     return this.adapter.addListener(channel,jarfile,dagname);
