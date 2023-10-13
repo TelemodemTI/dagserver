@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import main.domain.core.DagExecutable;
 import main.domain.exceptions.DomainException;
+import main.domain.model.PropertyParameterDTO;
 import main.infra.adapters.output.repositories.SchedulerRepository;
+import main.infra.adapters.output.repositories.entities.PropertyParameter;
 import main.domain.annotations.Dag;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -251,6 +254,34 @@ public class QuartzConfig {
 		for (Entry<String, Properties> entry : analizeJarProperties.entrySet() ) {
 			Properties properties = analizeJarProperties.get(entry.getKey());
 	        repo.insertIfNotExists(jarname,entry.getKey(),properties);
+		}
+	}
+	public void propertiesToRepo(Properties prop) throws DomainException {
+		List<String> keys = new ArrayList<>();
+		for (String key : prop.stringPropertyNames()) {
+		    if(key.startsWith("value.")) {
+		    	String real = key.replace("value.", "");
+		    	if(!keys.contains(real)) {
+		    		keys.add(real);
+		    	}
+		    }
+		}
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String key = iterator.next();
+			String descr = prop.getProperty("desc."+key);
+			String group = prop.getProperty("group."+key);
+			String value = prop.getProperty("value."+key);
+			var props = repo.getProperties(group);
+			boolean found = false;
+	        for (PropertyParameterDTO existingProperty : props) {
+	            if (existingProperty.getName().equals(key)) {
+	                found = true;
+	                break;
+	            }
+	        }
+	        if (!found) {
+	        	repo.setProperty(key, descr, value, group);	
+	        }
 		}
 	}
 }

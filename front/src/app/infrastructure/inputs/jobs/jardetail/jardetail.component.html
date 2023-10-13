@@ -30,42 +30,58 @@
 
 
 
+                                        <ul class="nav nav-tabs">
+                                            <li class="active"><a href="#timeline" data-toggle="tab">Execution Timeline Performance</a>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade in active" id="timeline">
 
 
 
-
-
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <i class="fa fa-clock-o fa-fw"></i> Last Execution Timeline
-                                            </div>
-                                            <!-- /.panel-heading -->
-                                            <div class="panel-body">
-                                                <ul class="timeline">
-                                                    <li *ngFor="let node of dagparsed;let i = index" [ngClass]=" i % 2 ===1?'timeline-inverted':''">
-                                                        <div class="timeline-badge"><i class="fa fa-check"></i>
+                                                <div class="panel panel-default">
+                                                    <!-- /.panel-heading -->
+                                                    <div class="panel-body">
+        
+                                                        <div class="form-group">
+                                                            <label>Log Id</label>
+                                                            <input class="form-control" disabled value="{{last.id}}">
                                                         </div>
-                                                        <div class="timeline-panel">
-                                                            <div class="timeline-heading">
-                                                                <h4 class="timeline-title">{{node.name}}</h4>
-                                                                <p>
-                                                                    <small class="text-muted"><i class="fa fa-clock-o"></i>{{node.endOn}}</small>
-                                                                </p>
-                                                            </div>
-                                                            <div class="timeline-body">
-                                                                <b>Operator:</b>
-                                                                <p>{{node.operator}}</p>
-                                                                <p>{{node.wait}} miliseconds</p>
-                                                                <p>returned: {{node.rows}} rows</p>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                    
-                                                </ul>
+                                                        <p>Log detail <a (click)="goToLogDetail(last.id)" class="linker">here.</a></p>
+                                                        <ul class="timeline">
+                                                            <li *ngFor="let node of dagparsed;let i = index" [ngClass]=" i % 2 ===1?'timeline-inverted':''">
+                                                                <div class="timeline-badge"><i class="fa fa-check"></i>
+                                                                </div>
+                                                                <div class="timeline-panel">
+                                                                    <div class="timeline-heading">
+                                                                        <h4 class="timeline-title">{{node.name}}</h4>
+                                                                        <p>
+                                                                            <small class="text-muted"><i class="fa fa-clock-o"></i>{{node.endOn}}</small>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="timeline-body">
+                                                                        <b>Operator:</b>
+                                                                        <p>{{node.operator}}</p>
+                                                                        <p>{{node.wait}} miliseconds</p>
+                                                                        <p>returned: {{node.rows}} rows</p>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                            
+                                                        </ul>
+                                                    </div>
+                                                    <!-- /.panel-body -->
+                                                </div>
+                                                <!-- /.panel -->
+
+
+
                                             </div>
-                                            <!-- /.panel-body -->
                                         </div>
-                                        <!-- /.panel -->
+
+
+
+                                        
             
 
 

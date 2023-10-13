@@ -1,6 +1,10 @@
 package main.domain.services;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Component;
 import main.application.ports.input.SchedulerMutationUseCase;
 import main.domain.core.BaseServiceComponent;
 import main.domain.exceptions.DomainException;
+import main.domain.model.PropertyParameterDTO;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -101,8 +106,15 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			String bin = repository.getUncompiledBin(uncompiled);
 			JSONObject def = new JSONObject(bin);
 			String jarname = def.getString(JARNAME);
-			compiler.createJar(bin,force);
-			repository.createParams(jarname,bin);	
+			List<String> groups = repository.createParams(jarname,bin);
+			Properties prop = new Properties();
+			for (Iterator<String> iterator = groups.iterator(); iterator.hasNext();) {
+				String string = iterator.next();
+				var propitem = repository.getProperties(string);
+				this.convertToProperties(prop,propitem);
+			}
+			compiler.createJar(bin,force,prop);
+				
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
@@ -286,6 +298,13 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.delProperty(listener, redisPropkey);
 		repository.delGroupProperty(listener);
 	}
-	
+	private void convertToProperties(Properties inputProps, List<PropertyParameterDTO> propitem) {
+		for (Iterator<PropertyParameterDTO> iterator = propitem.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			inputProps.put("value."+propertyParameterDTO.getName(), propertyParameterDTO.getValue());
+			inputProps.put("desc."+propertyParameterDTO.getName(), propertyParameterDTO.getDescription());
+			inputProps.put("group."+propertyParameterDTO.getName(), propertyParameterDTO.getGroup());
+		}
+	}
 	
 }

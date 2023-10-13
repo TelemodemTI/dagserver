@@ -2,6 +2,7 @@ package main.infra.adapters.output.scheduler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -95,7 +96,27 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		return props;
 	}
 	
-	
+	public Properties getProperties(File jarFile) {
+		Properties prop = new Properties();
+		try(
+				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+				ZipFile zipFile = new ZipFile(jarFile);
+				) {
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			while(entries.hasMoreElements()) {
+				 ZipEntry ze = entries.nextElement();
+				 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+				 if (!ze.isDirectory() && ze.getName().endsWith("properties")) {
+					 InputStream inputStream = zipFile.getInputStream(ze);
+		             prop.load(inputStream);
+		             inputStream.close();
+				 }
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return prop;
+	}
 	private List<Map<String,String>> analizeJar(File jarFile) {
 		List<Map<String,String>> classNames = new ArrayList<>();
 		try(
@@ -138,6 +159,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public void scheduler(String dagname,String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		File jarfileO = this.findJarFile(jarname);
+		Properties prop = this.getProperties(jarfileO);
 		if(jarfileO!= null) {
 			try {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
@@ -145,6 +167,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 						Class<?> clazz = helper.loadFromJar(jarfileO, classname);
 						Dag toschedule = clazz.getAnnotation(Dag.class);
 						if(toschedule.name().equals(dagname)) {
+							quartz.propertiesToRepo(prop);
 							DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
 							if(toschedule.cronExpr().equals("")) {
 								quartz.configureListener(toschedule,dag);	

@@ -1,5 +1,6 @@
 package main.infra.adapters.output.compiler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -63,7 +65,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static Logger log = Logger.getLogger(CompilerHandler.class);
 	
 	@Override
-	public void createJar(String bin,Boolean force) throws DomainException {
+	public void createJar(String bin,Boolean force,Properties props) throws DomainException {
 		try {
 			ByteBuddyAgent.install();
 			ClassReloadingStrategy.fromInstalledAgent().reset(DagExecutable.class);
@@ -87,7 +89,7 @@ public class CompilerHandler implements CompilerOutputPort {
 				dtomap.put(GROUP, group);
 				dtomap.put("listenerLabel", loc);
 				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
-				this.packageJar(jarname, classname, dagdef1.getBytes());
+				this.packageJar(jarname, classname, dagdef1.getBytes(),props);
 
 			}	
 		} catch (Exception e) {
@@ -168,7 +170,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		}
 		return varu;
 	}
-	private void packageJar(String jarname,String classname, byte[] bytes) {
+	private void packageJar(String jarname,String classname, byte[] bytes, Properties props) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try(
         		InputStream fis = classloader.getResourceAsStream("basedag.zip");
@@ -193,6 +195,12 @@ public class CompilerHandler implements CompilerOutputPort {
 
             zos.putNextEntry(new ZipEntry(strcom+".class"));
             zos.write(bytes);
+            zos.closeEntry();
+            
+            zos.putNextEntry(new ZipEntry("config.properties"));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            props.store(baos, null);
+            zos.write(baos.toByteArray());
             zos.closeEntry();
             
 		} catch (Exception e) {

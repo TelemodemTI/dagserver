@@ -1,7 +1,6 @@
 package main.domain.services;
 
 import static org.mockito.Mockito.mock;
-
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -210,7 +209,7 @@ class SchedulerMutationHandlerServiceTest {
 	@Test
 	void compileErrorTest() throws DomainException {
 		Map<String,Object> ret = new HashMap<>();
-		doThrow(new DomainException("test")).when(compiler).createJar(anyString(),any());
+		doThrow(new DomainException("test")).when(compiler).createJar(anyString(),any(),any());
 		try {
 			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
 			service.compile("token", 1, true);

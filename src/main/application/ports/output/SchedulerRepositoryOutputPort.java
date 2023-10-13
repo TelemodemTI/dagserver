@@ -36,7 +36,7 @@ public interface SchedulerRepositoryOutputPort {
 	public List<UncompiledDTO> getUncompileds();
 	public String getUncompiledBin(Integer uncompiled);
 	public void deleteUncompiled(Integer uncompiled);
-	public void createParams(String jarname, String bin) throws DomainException;
+	public List<String> createParams(String jarname, String bin) throws DomainException;
 	public String createInternalStatus(JSONObject data) throws DomainException;
 	public JSONObject readXcom(String locatedAt) throws DomainException;
 	public void delGroupProperty(String group);

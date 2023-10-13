@@ -28,7 +28,7 @@ export class JardetailComponent {
   selectedStepOpts!:any
   selectedStepParams!:any
   selectedStepMetadata!:any
-  
+  last!:any
   dagitem!:any
   dagparsed!:any
 
@@ -42,10 +42,11 @@ export class JardetailComponent {
 
   async ngOnInit() {
     this.jarname = this.route.snapshot.paramMap.get('jarname');
-    this.dagname = this.route.snapshot.paramMap.get("dagname")
-    
+    this.dagname = this.route.snapshot.paramMap.get("dagname")  
     this.result = await this.service.getDetail(this.jarname);  
-    this.calculateAnaliticPane(this.dagname);
+    let logs = await this.servicel.logs(this.dagname)
+    this.last = logs.reduce((a, b) => (a.execDt > b.execDt ? a : b),logs[0]);
+    this.calculateAnaliticPane(this.dagname,this.last);
     try {
       this.initui(this.result);
     } catch (error) {
@@ -55,12 +56,12 @@ export class JardetailComponent {
     }
   }
 
-  async calculateAnaliticPane(dagname:any){
+  async calculateAnaliticPane(dagname:any,last:any){
     let timemarks:any[] = [];
     let waits:any[] = []
     try {
-      let logs = await this.servicel.logs(dagname)
-      let last:any = logs.reduce((a, b) => (a.execDt > b.execDt ? a : b),logs[0]);
+      
+      
       let xcom = JSON.parse(last.outputxcom)
       
       if(last && last.marks){
@@ -102,7 +103,7 @@ export class JardetailComponent {
   }
   reinit(i:number){
     let item = this.dagsavai[i];
-    this.calculateAnaliticPane(item);
+    this.calculateAnaliticPane(item,this.last);
     let arr = []
     for (let index = 0; index < this.result.detail.detail.length; index++) {
       const element = this.result.detail.detail[index];
@@ -278,5 +279,7 @@ export class JardetailComponent {
     this.selectedStepParams = params
     this.modalp.show();
   }
-  
+  goToLogDetail(id:any){
+    this.router.navigateByUrl(`auth/jobs/${this.dagname}/${id}`);
+  }
 }

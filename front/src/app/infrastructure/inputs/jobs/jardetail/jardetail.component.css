@@ -1,3 +1,6 @@
 .noDisplay {
     display: none;
 }
+.linker {
+    cursor: pointer;
+}

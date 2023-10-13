@@ -227,30 +227,43 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	
 	public void insertIfNotExists(String jarname,String propertiesFile, Properties properties) {
-	    List<PropertyParameter> existingProperties = dao.read(PropertyParameter.class,QUERYPROPS + jarname+"."+propertiesFile + "'");
 	    
+	    List<String> keys = new ArrayList<>();
 	    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 	        String key = (String) entry.getKey();
-	        String value = (String) entry.getValue();
+	        if(key.startsWith("value.")) {
+		    	String real = key.replace("value.", "");
+		    	if(!keys.contains(real)) {
+		    		keys.add(real);
+		    	}
+		    }
 	        
-	        boolean found = false;
+	    }
+	     
+	    for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String key = iterator.next();
+			String value = properties.getProperty("value."+key);
+			String descr = properties.getProperty("desc."+key);
+			String group = properties.getProperty("group."+key);
+			List<PropertyParameter> existingProperties = dao.read(PropertyParameter.class,QUERYPROPS + group + "'");
+			boolean found = false;
 	        for (PropertyParameter existingProperty : existingProperties) {
 	            if (existingProperty.getName().equals(key)) {
 	                found = true;
 	                break;
 	            }
 	        }
-	        
 	        if (!found) {
 	            // La propiedad no existe, insertarla
 	            PropertyParameter newProperty = new PropertyParameter();
-	            newProperty.setGroup(jarname+"."+propertiesFile);
+	            newProperty.setGroup(group);
 	            newProperty.setName(key);
 	            newProperty.setValue(value);
-	            newProperty.setDescription("imported by Scheduler.");
+	            newProperty.setDescription(descr);
 	            dao.save(newProperty);
 	        }
-	    }
+		}
+
 	}
 
 	public void addUncompiled(String name, JSONObject json) throws DomainException {
@@ -304,20 +317,24 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 
 	@Override
-	public void createParams(String jarname,String bin) throws DomainException {
+	public List<String> createParams(String jarname,String bin) throws DomainException {
 		try {
 			JSONObject def = new JSONObject(bin);
+			List<String> groupprops = new ArrayList<>();
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
 				JSONArray boxes = dag.getJSONArray("boxes");
-				this.processBoxes(boxes, jarname);
+				var groups = this.processBoxes(boxes, jarname);
+				groupprops.addAll(groups);
 			}	
+			return groupprops;
 		} catch (Exception e) {
 			throw new DomainException(e.getMessage());
 		}
 	}
 	
-	private void processBoxes(JSONArray boxes,String jarname) throws ClassNotFoundException {
+	private List<String> processBoxes(JSONArray boxes,String jarname) throws ClassNotFoundException {
+		List<String> arr = new ArrayList<>();
 		for (int j = 0; j < boxes.length(); j++) {
 			for (int k = 0; k < boxes.length(); k++) {
 				var box = boxes.getJSONObject(k);
@@ -328,8 +345,10 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 				Operator annotation = clazz.getAnnotation(Operator.class);
 				this.deletePropsByGroup(group);
 				this.boxHasParams(box, annotation, group, jarname);
+				arr.add(group);
 			}
 		}
+		return arr;
 	}
 	
 	private void boxHasParams(JSONObject box,Operator annotation,String group,String jarname) {
