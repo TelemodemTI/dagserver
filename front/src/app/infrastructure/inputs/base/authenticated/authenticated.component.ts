@@ -4,6 +4,8 @@ import { AuthenticatedInputPort } from 'src/app/application/inputs/authenticated
 import { Agents } from 'src/app/domain/models/agent.model';
 import { ResultStepModalComponent } from '../result-step-modal/result-step-modal.component';
 declare var window:any
+declare var environment : any;
+const uri =  environment.dagserverUri;
 @Component({
   selector: 'app-authenticated',
   templateUrl: './authenticated.component.html',
@@ -80,5 +82,9 @@ export class AuthenticatedComponent {
   }
   async goToDocs(){
     window.location.href = "https://docs.telemodem.cl/books/dagserver-documentation"
+  }
+  async goToMonitor(){
+    let url = uri + "monitoring";
+    window.location.href = url
   }
 }
