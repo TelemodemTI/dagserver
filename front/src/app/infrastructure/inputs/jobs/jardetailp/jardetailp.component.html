@@ -30,6 +30,14 @@
                                 <label>{{item.name}}</label>
                                 <input type="number" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepParams[item.name]}}">
                             </ng-container>
+                            <ng-container *ngIf="item.type == 'xcom'">
+                                <label>XCOM</label>
+                                <select class="form-control param-value-input" id="param-{{item.name}}-value">
+                                    <option *ngFor="let node of selectedDag.node" [selected]="selectedStepParams[item.name] == node.operations[0]" value="{{node.operations[0]}}">{{node.operations[0]}}</option>
+                                </select>
+                            </ng-container>
+                            
+                            
                             <ng-container *ngIf="item.type == 'boolean'">
                                 <label>{{item.name}}</label>
                                 <select class="form-control param-value-input" id="param-{{item.name}}-value">
@@ -58,6 +66,14 @@
                                 <label>{{item.name}}</label>
                                 <input type="number" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepOpts[item.name]}}">
                             </ng-container>
+
+                            <ng-container *ngIf="item.type == 'xcom'">
+                                <label>XCOM</label>
+                                <select class="form-control param-value-input" id="param-{{item.name}}-value">
+                                    <option *ngFor="let node of selectedDag.node" [selected]="selectedStepOpts[item.name] == node.operations[0]" value="{{node.operations[0]}}">{{node.operations[0]}}</option>
+                                </select>
+                            </ng-container>
+
                             <ng-container *ngIf="item.type == 'boolean'">
                                 <label>{{item.name}}</label>
                                 <select class="form-control param-value-input" id="param-{{item.name}}-value">

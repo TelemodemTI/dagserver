@@ -7,11 +7,13 @@
                 <h4 class="modal-title" id="myModalLabel">Input Modal </h4>
             </div>
             <div class="modal-body">
-                        
                 <div class="form-group">
                     <label>Input value for {{param}}</label>
                     <input #inputValueModal class="form-control" value="{{actualValue}}">
                 </div>
+                <div class="alert alert-danger" *ngIf="error_msg">
+                    {{error_msg}}
+                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

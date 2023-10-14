@@ -18,6 +18,7 @@ export class PropsComponent {
 
   propertiesOriginal:any[] = []
   properties:any[] = []
+  error_msg!:any
   newvalue!:any
   oldv!:any
   group!:any
@@ -56,18 +57,23 @@ export class PropsComponent {
     }
   }
   async saveChanges(){
-    var name = $("#namepropinput").val()
-    var description = $("#descrpropinput").val()
-    var value = $("#valuepropinput").val()
-    var group = $("#grouppropinput").val()
-    try {
-      await this.service.createProperty(name,description,value,group);
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigate(['auth',"props"]);
-      });
-    } catch (error) {
-      localStorage.removeItem("dagserver_token");
-      this.router.navigateByUrl("");
+    var name = $("#namepropinput").val().trim()
+    var description = $("#descrpropinput").val().trim()
+    var value = $("#valuepropinput").val().trim()
+    var group = $("#grouppropinput").val().trim()
+    if(name && description && value && group){
+      this.error_msg = ""
+      try {
+        await this.service.createProperty(name,description,value,group);
+        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+          this.router.navigate(['auth',"props"]);
+        });
+      } catch (error) {
+        localStorage.removeItem("dagserver_token");
+        this.router.navigateByUrl("");
+      }
+    } else {
+      this.error_msg = "All values ​​are required."
     }
   }
   viewProp(propval:any,i:any){

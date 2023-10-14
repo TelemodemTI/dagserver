@@ -22,6 +22,9 @@
                     <label>Password</label>
                     <input #rabbitpwd type="password" class="form-control" value="{{rbpwd}}">
                 </div>
+                <div class="alert alert-danger" *ngIf="error_msg">
+                    {{error_msg}}
+                 </div>
                 <button (click)="createRabbit()" type="button" class="btn btn-primary">Save</button> 
                 <br><br>
                 <a data-toggle="collapse" id="props-collapser-son" href="#collapseNewQueue" aria-expanded="false" class="collapsed">Bind Queue</a>
@@ -44,6 +47,9 @@
                             <option *ngFor="let item of dags" value="{{item.dagname}}">{{item.dagname}}</option>
                         </select>
                     </div>
+                    <div class="alert alert-danger" *ngIf="error_msg2">
+                        {{error_msg2}}
+                     </div>
                     <button (click)="saveQueue()" type="button" class="btn btn-primary">Add</button> 
 
 

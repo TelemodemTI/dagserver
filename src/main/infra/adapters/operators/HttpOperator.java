@@ -75,7 +75,7 @@ public class HttpOperator extends OperatorStage implements Callable<String> {
 		metadata.setParameter("method", "list",Arrays.asList("GET","POST","PUT","DELETE"));
 		metadata.setParameter("timeout", "number");
 		metadata.setParameter("contentType", "text");
-		metadata.setOpts("bodyxcom", "text");
+		metadata.setOpts("bodyxcom", "xcom");
 		metadata.setOpts(AUTHORIZATION_HEADER, "text");
 		return metadata.generate();
 	}

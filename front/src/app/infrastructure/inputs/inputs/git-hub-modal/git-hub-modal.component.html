@@ -36,6 +36,9 @@
                          <option *ngFor="let item of dags" value="{{item.dagname}}">{{item.dagname}}</option>
                      </select>
                  </div>
+                 <div class="alert alert-danger" *ngIf="error_msg">
+                    {{error_msg}}
+                 </div>
                  <button (click)="createGithubWebhook()" type="button" class="btn btn-primary">Add</button> 
  
              </div>

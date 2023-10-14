@@ -27,6 +27,8 @@ export class RabbitModalComponent {
   rbhost!:any
   rbport!:any
   queues:any[] = []
+  error_msg!:any
+  error_msg2!:any
 
   constructor(private router: Router, 
     private service: InputsChannelsInputPort,
@@ -50,23 +52,33 @@ export class RabbitModalComponent {
     }
   }
   async createRabbit(){
-    let host = this.rabbithost.nativeElement.value
-    let port = this.rabbitport.nativeElement.value
-    let user = this.rabbituser.nativeElement.value
-    let pwd = this.rabbitpwd.nativeElement.value
-    await this.service.saveRabbitChannel(host,user,pwd,port)
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigateByUrl(`auth/channels`);
-    });
+    let host = this.rabbithost.nativeElement.value.trim()
+    let port = this.rabbitport.nativeElement.value.trim()
+    let user = this.rabbituser.nativeElement.value.trim()
+    let pwd = this.rabbitpwd.nativeElement.value.trim()
+    if(host && port && user &&pwd){
+      this.error_msg = ""
+      await this.service.saveRabbitChannel(host,user,pwd,port)
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigateByUrl(`auth/channels`);
+      });
+    } else {
+      this.error_msg = "All values ​​are required."
+    }
   }
   async saveQueue(){
-    let queue = this.rabbitqueue.nativeElement.value
-    let jarFile = this.jarfiler.nativeElement.value
-    let dag = this.dagnamer.nativeElement.value
-    await this.service.addQueue(queue,jarFile,dag)
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigateByUrl(`auth/channels`);
-    });
+    let queue = this.rabbitqueue.nativeElement.value.trim()
+    let jarFile = this.jarfiler.nativeElement.value.trim()
+    let dag = this.dagnamer.nativeElement.value.trim()
+    if(queue && jarFile && dag){
+      this.error_msg2 = ""
+      await this.service.addQueue(queue,jarFile,dag)
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigateByUrl(`auth/channels`);
+      });
+    } else {
+      this.error_msg2 = "All values ​​are required.";
+    }
   }
   async removeQueue(item:any){
     await this.service.delQueue(item.queue)

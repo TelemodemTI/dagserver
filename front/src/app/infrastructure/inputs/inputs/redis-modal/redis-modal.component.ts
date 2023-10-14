@@ -21,6 +21,8 @@ export class RedisModalComponent {
   @ViewChild("redisport") redisport!:ElementRef;
   @ViewChild("redischannel") redischannel!:ElementRef;
 
+  error_msg!:any
+  error_msg2!:any
   redmode!:any
   redhost!:any
   redport!:any
@@ -51,24 +53,34 @@ export class RedisModalComponent {
   }
 
   async createRedis(){
-    let mode = this.redismode.nativeElement.value
-    let host = this.redishost.nativeElement.value
-    let port = this.redisport.nativeElement.value
+    let mode = this.redismode.nativeElement.value.trim()
+    let host = this.redishost.nativeElement.value.trim()
+    let port = this.redisport.nativeElement.value.trim()
     
-    
-    await this.service.saveRedisChannel(mode,host,port)
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigateByUrl(`auth/channels`);
-    });
+    if(mode && host && port){
+      this.error_msg = "";
+      await this.service.saveRedisChannel(mode,host,port)
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigateByUrl(`auth/channels`);
+      });
+    } else {
+      this.error_msg = "All values ​​are required.";
+    }
   }
   async saveListener(){
-    let channel = this.redischannel.nativeElement.value
-    let jarFile = this.jarfiled.nativeElement.value
-    let dag = this.dagnamed.nativeElement.value 
-    await this.service.addListener(channel,jarFile,dag)
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigateByUrl(`auth/channels`);
-    });
+    let channel = this.redischannel.nativeElement.value.trim()
+    let jarFile = this.jarfiled.nativeElement.value.trim()
+    let dag = this.dagnamed.nativeElement.value.trim()
+    if(channel && jarFile && dag){
+      this.error_msg2 = ""
+      await this.service.addListener(channel,jarFile,dag)
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigateByUrl(`auth/channels`);
+      });
+    } else {
+      this.error_msg2 = "All values ​​are required.";
+    }
+    
   }
   async removeListener(item:any){
     await this.service.delListener(item.channel)

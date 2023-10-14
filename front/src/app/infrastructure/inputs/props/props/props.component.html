@@ -112,6 +112,9 @@
                     <label>Value </label>
                     <input id="valuepropinput" class="form-control" type="text" placeholder="">
                 </div>
+                <div class="alert alert-danger" *ngIf="error_msg">
+                    {{error_msg}}
+                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

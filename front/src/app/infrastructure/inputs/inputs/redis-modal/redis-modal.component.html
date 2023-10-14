@@ -21,6 +21,9 @@
                     <label>Port</label>
                     <input #redisport class="form-control" value="{{redport}}">
                 </div>
+                <div class="alert alert-danger" *ngIf="error_msg">
+                    {{error_msg}}
+                 </div>
                 <button (click)="createRedis()" type="button" class="btn btn-primary">Save</button> 
                 <br><br>
                 <a data-toggle="collapse" id="props-collapser-son" href="#collapseNewListener" aria-expanded="false" class="collapsed">Bind Listener</a>
@@ -43,6 +46,9 @@
                             <option *ngFor="let item of dags" value="{{item.dagname}}">{{item.dagname}}</option>
                         </select>
                     </div>
+                    <div class="alert alert-danger" *ngIf="error_msg2">
+                        {{error_msg2}}
+                     </div>
                     <button (click)="saveListener()" type="button" class="btn btn-primary">Add</button> 
                 </div>
 

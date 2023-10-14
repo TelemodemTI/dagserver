@@ -155,7 +155,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Object>
 		metadata.setParameter("filepath", "text");
 		metadata.setParameter("rowDelimiter", "text");
 		metadata.setParameter("firstRowTitles", "boolean");
-		metadata.setOpts("xcom", "text");
+		metadata.setOpts("xcom", "xcom");
 		return metadata.generate();
 	}
 }

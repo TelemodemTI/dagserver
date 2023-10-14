@@ -90,7 +90,7 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 		metadata.setParameter(FROMMAIL, "text");
 		metadata.setParameter("toEmail", "text");
 		metadata.setParameter("subject", "text");
-		metadata.setOpts("xcom", "text");
+		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("body", "sourcecode");
 		return metadata.generate();
 	}

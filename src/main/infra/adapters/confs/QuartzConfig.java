@@ -6,9 +6,7 @@ import main.domain.core.DagExecutable;
 import main.domain.exceptions.DomainException;
 import main.domain.model.PropertyParameterDTO;
 import main.infra.adapters.output.repositories.SchedulerRepository;
-import main.infra.adapters.output.repositories.entities.PropertyParameter;
 import main.domain.annotations.Dag;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;

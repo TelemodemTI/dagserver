@@ -78,7 +78,7 @@ public class RabbitMQOperator extends OperatorStage implements Callable<List<Str
 		metadata.setParameter("password", "password");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("mode", "list", Arrays.asList("publish","consume"));
-		metadata.setOpts("xcom", "text");
+		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("exchange", "text");
 		metadata.setOpts("routingKey", "text");
 		metadata.setOpts("queue", "text");

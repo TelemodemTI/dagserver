@@ -26,22 +26,28 @@ export class CredentialsComponent {
     },100)
   }
   async saveUser(){
-      var userac = $("#usernamepropinput").val();
-      var typeac = $("#accountTypeCombo").val();
-      var pwd = $("#pwdpropinput").val();
-      var repwd = $("#repwdpropinput").val();
+      var userac = $("#usernamepropinput").val().trim();
+      var typeac = $("#accountTypeCombo").val().trim();
+      var pwd = $("#pwdpropinput").val().trim();
+      var repwd = $("#repwdpropinput").val().trim();
       
       if(pwd == repwd){
-        try {
-          await this.service.createAccount(userac,typeac,pwd);
-          $('#addUserModal').modal('hide');
-          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            this.router.navigate(['admin',"credentials"]);
-          });   
-        } catch (error) {
-          this.message = error
+        if(userac && typeac && pwd && repwd){
+          try {
+            await this.service.createAccount(userac,typeac,pwd);
+            $('#addUserModal').modal('hide');
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigate(['admin',"credentials"]);
+            });   
+          } catch (error) {
+            this.message = error
+          }
+        } else {
+          this.message = "All values ​​are required."
         }
-      }      
+      } else {
+        this.message = "Password are not the same"
+      }     
   }
   async delete(item:any){
     await this.service.deleteAccount(item.username);

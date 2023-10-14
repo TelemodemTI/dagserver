@@ -63,6 +63,7 @@ public class ChatGPTOperator extends OperatorStage implements Callable<Map<Strin
 		MetadataManager metadata = new MetadataManager("main.infra.adapters.operators.ChatGPTOperator");
 		metadata.setParameter("apiKey", "password");
 		metadata.setParameter("prompt", "sourcecode");
+		metadata.setOpts("xcom", "xcom");	
 		return metadata.generate();
 	}
 	@Override

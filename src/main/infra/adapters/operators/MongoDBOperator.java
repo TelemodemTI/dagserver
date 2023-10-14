@@ -208,7 +208,7 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 		metadata.setParameter("database", "text");
 		metadata.setParameter("collection", "text");
 		metadata.setParameter("timeout", "number");
-		metadata.setOpts("xcom", "text");
+		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("username", "text");
 		metadata.setOpts("password", "password");
 		metadata.setOpts("filter", "sourcecode");

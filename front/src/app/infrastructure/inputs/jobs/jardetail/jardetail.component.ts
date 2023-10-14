@@ -60,41 +60,40 @@ export class JardetailComponent {
     let timemarks:any[] = [];
     let waits:any[] = []
     try {
-      
-      
-      let xcom = JSON.parse(last.outputxcom)
-      
-      if(last && last.marks){
-        let times = JSON.parse(last.marks).map((ele:any)=>{
-          return new Date(parseInt(ele));
-        })
-        timemarks = times.map((ele:any)=>{
-          return ele.toISOString();
-        })
-        for (let index = 0; index < times.length; index++) {
-          if(times[index-1]){
-            const diffTime = Math.abs(times[index] - times[index-1]);
-            waits.push(diffTime)
-          } else {
-            waits.push(0)
+      if(last){
+        let xcom = JSON.parse(last.outputxcom)
+        if(last && last.marks){
+          let times = JSON.parse(last.marks).map((ele:any)=>{
+            return new Date(parseInt(ele));
+          })
+          timemarks = times.map((ele:any)=>{
+            return ele.toISOString();
+          })
+          for (let index = 0; index < times.length; index++) {
+            if(times[index-1]){
+              const diffTime = Math.abs(times[index] - times[index-1]);
+              waits.push(diffTime)
+            } else {
+              waits.push(0)
+            }
           }
+          this.dagitem = this.result.detail.detail.filter((el:any)=> { return el.dagname == dagname })[0]
+          let index = 0
+          this.dagparsed = this.dagitem.node.map((ele:any)=>{
+            let arr = ele.operations[1].split(".")
+            index ++;
+            let counted = xcom[ele.operations[0]] ? xcom[ele.operations[0]].length : 0
+            return {
+              name: ele.operations[0],
+              operator: arr[arr.length-1],
+              endOn: timemarks[index-1],
+              wait: waits[index-1],
+              rows: counted
+            }
+          })
+        } else {
+          this.dagparsed = []
         }
-        this.dagitem = this.result.detail.detail.filter((el:any)=> { return el.dagname == dagname })[0]
-        let index = 0
-        this.dagparsed = this.dagitem.node.map((ele:any)=>{
-          let arr = ele.operations[1].split(".")
-          index ++;
-          let counted = xcom[ele.operations[0]] ? xcom[ele.operations[0]].length : 0
-          return {
-            name: ele.operations[0],
-            operator: arr[arr.length-1],
-            endOn: timemarks[index-1],
-            wait: waits[index-1],
-            rows: counted
-          }
-        })
-      } else {
-        this.dagparsed = []
       }
     } catch (error) {
       console.log(error)
@@ -119,7 +118,6 @@ export class JardetailComponent {
     res.then((g:any)=>{
       diagrams.push(g)
       diagrams = diagrams.filter(item => item);
-      
       for (let index = 0; index < diagrams.length; index++) {
         const diagram = diagrams[index];
         this.loadBoxes(diagram,this.result,index).then((boxes:any)=>{
