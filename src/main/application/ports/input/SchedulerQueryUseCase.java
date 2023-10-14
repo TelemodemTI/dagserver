@@ -17,7 +17,7 @@ public interface SchedulerQueryUseCase {
 
 	List<Map<String, Object>> listScheduledJobs() throws DomainException;
 	Map<String, List<Map<String, String>>> availableJobs() throws DomainException;
-	List<LogDTO> getLogs(String dagname)  throws DomainException;
+	List<LogDTO> getLogs(String dagname) throws DomainException;
 	List<DagDTO> getDagDetail(String jarname) throws DomainException;
 	List<PropertyDTO> properties()  throws DomainException;
 	List<AgentDTO> agents();
@@ -28,4 +28,5 @@ public interface SchedulerQueryUseCase {
 	List<List<String>> getDependencies(String jarname,String dagname) throws DomainException;
 	List<ChannelDTO> getChannels(String token) throws DomainException;
 	String exportUncompiled(String token, Integer uncompiled) throws DomainException;
+	List<LogDTO> getLastLogs() throws DomainException;
 }

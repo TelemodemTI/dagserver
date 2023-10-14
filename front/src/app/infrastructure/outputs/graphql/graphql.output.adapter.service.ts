@@ -19,6 +19,17 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
   
+  getLastLogs(): Promise<Log[]> {
+    return new Promise<Log[]>((resolve, reject) => {
+      var string = "query last {last {id,dagname,execDt,value,outputxcom,status, channel,marks}}"
+      this.query(string,{}).subscribe((result:any)=>{
+        if(result && result.last){
+          resolve(result.last as Log[]);
+        }
+      })
+    })
+  }
+  
   delListener(channel: string): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

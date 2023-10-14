@@ -28,13 +28,21 @@
                     </ng-container>
                     <b class="caret"></b>
                 </a>
-                <ng-container *ngIf="notifications.length > 0">
+                <ng-container *ngIf="notifications.length > 0 || logs.length > 0">
                     <ul class="dropdown-menu dropdown-alerts">
                         <li *ngFor="let item of notifications">
                             <a class="linker" (click)="result(item)">
                                 <div>
-                                    <i class="fa fa-comment fa-fw"></i> {{item?.dagname}}
+                                    <i class="fa fa-comment fa-fw"></i> {{item?.dagname}}<br>
                                     <span class="pull-right text-muted small">{{item?.evalDt }}</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li *ngFor="let item of logs">
+                            <a class="linker" (click)="resultLog(item)">
+                                <div>
+                                    <i class="fa fa-comment fa-fw"></i> {{item.dagname}}<br>
+                                    <span class="pull-right text-muted small"> {{item.execDt }} </span>
                                 </div>
                             </a>
                         </li>

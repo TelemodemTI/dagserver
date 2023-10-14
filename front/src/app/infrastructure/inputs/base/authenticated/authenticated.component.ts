@@ -19,6 +19,7 @@ export class AuthenticatedComponent {
   intervalServerInfo!:any
   typeAccount!:any
   notifications:any[] = []
+  logs:any[] = []
   badget:number = 0
 
   constructor(private router: Router,
@@ -28,13 +29,11 @@ export class AuthenticatedComponent {
     this.start();
     this.loadServerInfo()
     this.interval = setInterval(()=>{this.start();},3000);
-    this.intervalServerInfo = setInterval(()=>{this.loadServerInfo();},60000) 
-    this.service.listenEvents().subscribe((data:any)=>{
-      if(data && data.result){
-        this.notifications.push(data);
-        this.badget = this.badget + 1
-      }
-    })
+    this.intervalServerInfo = setInterval(()=>{
+      this.loadServerInfo();
+      this.loadLastLogs();
+    },15000) 
+    
   }
 
   start(){
@@ -51,7 +50,9 @@ export class AuthenticatedComponent {
   async loadServerInfo(){
     this.agents = await this.service.getServerInfo()
   }
-  
+  async loadLastLogs(){
+    this.logs = await this.service.getLastLogs();
+  }
   logout():void {
     this.service.removeAccessToken()
     this.router.navigateByUrl("");
@@ -73,6 +74,9 @@ export class AuthenticatedComponent {
   }  
   result(item:any){
     this.resultStepModalAut.show(item);
+  }
+  resultLog(item:any){
+    this.router.navigateByUrl(`auth/jobs/${item.dagname}/${item.id}`);
   }
   async goToDocs(){
     window.location.href = "https://docs.telemodem.cl/books/dagserver-documentation"

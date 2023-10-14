@@ -515,5 +515,11 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		dao.save(uncompiledObj);
 	}
 
+	@Override
+	public List<LogDTO> getLastLogs() {
+		var list = dao.read(Log.class, "select log from Log as log order by log.execDt desc",new HashMap<>(),0,5);
+		return list.stream().map(elt -> mapper.toLogDTO(elt)).collect(Collectors.toList()); 
+	}
+
 	
 }

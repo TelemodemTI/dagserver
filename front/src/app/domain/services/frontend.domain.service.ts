@@ -52,6 +52,10 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+  
+  getLastLogs(): Promise<Log[]> {
+    return this.adapter.getLastLogs();
+  }
 
   version(): Promise<any> {
     return this.httpd.version()

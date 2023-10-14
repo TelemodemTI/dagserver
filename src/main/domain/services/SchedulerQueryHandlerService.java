@@ -256,4 +256,16 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 		return repository.getUncompiledBin(uncompiled);
 	}
+	@Override
+	public List<LogDTO> getLastLogs() throws DomainException {
+		List<LogDTO> newrv = new ArrayList<>();
+		var list = repository.getLastLogs();
+		for (Iterator<LogDTO> iterator = list.iterator(); iterator.hasNext();) {
+			LogDTO logDTO = iterator.next();
+			JSONObject xcom = repository.readXcom(logDTO.getOutputxcom());
+			logDTO.setOutputxcom(xcom.toString());
+			newrv.add(logDTO);
+		}
+		return newrv;
+	}
 }

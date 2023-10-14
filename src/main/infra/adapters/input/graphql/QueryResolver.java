@@ -143,6 +143,30 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}		
 		return rv;
 	}
+	public List<LogEntry> last(){
+		var rv = new ArrayList<LogEntry>();
+		try {
+			var arr = handler.getLastLogs();
+			for (Iterator<LogDTO> iterator = arr.iterator(); iterator.hasNext();) {
+				LogDTO log =  iterator.next();
+				var entry = new LogEntry();
+				entry.setDagname(log.getDagname());
+				entry.setExecDt(log.getExecDt());
+				entry.setId(log.getId());
+				entry.setValue(log.getValue());
+				entry.setOutputxcom(log.getOutputxcom());
+				entry.setChannel(log.getChannel());
+				entry.setStatus(log.getStatus());
+				entry.setMarks(log.getMarks());
+				rv.add(entry);
+			}	
+		} catch (Exception e) {
+			logger.error(e);
+		}		
+		return rv;
+	}
+	
+	
 	public DetailStatus detail(String jarname) throws DomainException{
 		
 		DetailStatus status = new DetailStatus();

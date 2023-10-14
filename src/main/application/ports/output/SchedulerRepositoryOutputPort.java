@@ -48,4 +48,5 @@ public interface SchedulerRepositoryOutputPort {
 	public void deleteLog(Integer logid);
 	public void deleteAllLogs(String dagname);
 	public void renameUncompiled(Integer uncompiled, String newname);
+	public List<LogDTO> getLastLogs();
 }

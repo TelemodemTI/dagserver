@@ -101,6 +101,7 @@ type Query {
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 
 	logs(dagname: String): [LogEntry],
+	last : [LogEntry],
 	detail(jarname: String) : DetailStatus,
 	properties: [Property],
 	agents : [Agent],
