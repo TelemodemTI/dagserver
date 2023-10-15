@@ -198,7 +198,7 @@ export class JardetailComponent {
         })
       }
       $("#canvas-det").on("change", function() {
-        var fromSelenium = $("#canvas-det").val();
+        var fromSelenium = $("#canvas-det").val().trim();
         let json = JSON.parse(fromSelenium);
         root.triggerClick(json.dagname,json.selectedStep)
       })
@@ -267,9 +267,9 @@ export class JardetailComponent {
     let node = dag.node.filter((node1:any)=>{
       return node1.operations[0] == selectedStep
     })[0]
-    let params = JSON.parse(node.operations[2])
-    let opts = JSON.parse(node.operations[3])
-    let metadata = JSON.parse(node.operations[4])
+    let params = node.operations[2] ? JSON.parse(node.operations[2]) : {}
+    let opts = node.operations[3] ? JSON.parse(node.operations[3]) : {}
+    let metadata = node.operations[4] ? JSON.parse(node.operations[4]) : {}
     this.selectedStepMetadata = metadata
     this.selectedDag = dag
     this.selectedStep = selectedStep

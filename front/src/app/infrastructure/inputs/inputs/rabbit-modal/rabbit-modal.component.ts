@@ -52,18 +52,22 @@ export class RabbitModalComponent {
     }
   }
   async createRabbit(){
-    let host = this.rabbithost.nativeElement.value.trim()
-    let port = this.rabbitport.nativeElement.value.trim()
-    let user = this.rabbituser.nativeElement.value.trim()
-    let pwd = this.rabbitpwd.nativeElement.value.trim()
-    if(host && port && user &&pwd){
-      this.error_msg = ""
-      await this.service.saveRabbitChannel(host,user,pwd,port)
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigateByUrl(`auth/channels`);
-      });
-    } else {
-      this.error_msg = "All values ​​are required."
+    try {
+      let host = this.rabbithost.nativeElement.value.trim()
+      let port = parseInt(this.rabbitport.nativeElement.value.trim())
+      let user = this.rabbituser.nativeElement.value.trim()
+      let pwd = this.rabbitpwd.nativeElement.value.trim()
+      if(host && port && user && pwd ){
+        this.error_msg = ""
+        await this.service.saveRabbitChannel(host,user,pwd,port)
+        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+          this.router.navigateByUrl(`auth/channels`);
+        });
+      } else {
+        this.error_msg = "All values ​​are required."
+      }  
+    } catch (error) {
+      this.error_msg = "All values ​​are required. Port is a number."
     }
   }
   async saveQueue(){
