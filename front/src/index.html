@@ -10,7 +10,8 @@
 
         <title>DagserverFront</title>
         <script>
-            window['base-href'] = window.location.pathname;
+            //window['base-href'] = window.location.pathname;
+            window['base-href'] = "/";
             console.log(window['base-href'])
 
 
@@ -22,12 +23,11 @@
             rutaBase = (rutaBase)?rutaBase:"/"
             rutaBase = rutaBase.endsWith("/")?rutaBase:rutaBase+"/"
 
-
             const headElement = document.head;
             const linkElement = document.createElement('link');
             linkElement.rel = 'icon';
             linkElement.type = 'image/x-icon';
-            linkElement.href = rutaBase + 'assets/favicon.png';
+            linkElement.href = 'assets/favicon.png';
             headElement.appendChild(linkElement);
 
         </script>

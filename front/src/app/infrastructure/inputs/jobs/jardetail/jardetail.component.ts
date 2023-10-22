@@ -127,7 +127,8 @@ export class JardetailComponent {
     })
   }
   async getimageByType(typeop:any){
-    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    //let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    let base = "/"
     const segmentos = base.split('/');
     segmentos.pop();
     let rutaBase = segmentos.join('/');

@@ -71,16 +71,21 @@ export class RedisModalComponent {
     let channel = this.redischannel.nativeElement.value.trim()
     let jarFile = this.jarfiled.nativeElement.value.trim()
     let dag = this.dagnamed.nativeElement.value.trim()
-    if(channel && jarFile && dag){
-      this.error_msg2 = ""
-      await this.service.addListener(channel,jarFile,dag)
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigateByUrl(`auth/channels`);
-      });
-    } else {
-      this.error_msg2 = "All values ​​are required.";
-    }
     
+    let itemarr = this.channels.filter((ele:any)=>{ return ele.channel == channel && ele.dagname == dag && ele.jarname == jarFile})
+    if(itemarr.length == 0){
+		if(channel && jarFile && dag){
+	      this.error_msg2 = ""
+	      await this.service.addListener(channel,jarFile,dag)
+	      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+	        this.router.navigateByUrl(`auth/channels`);
+	      });
+	    } else {
+	      this.error_msg2 = "All values ​​are required.";
+	    }	
+	} else {
+		this.error_msg2 = "Listener already exists.";
+	}
   }
   async removeListener(item:any){
     await this.service.delListener(item.channel)

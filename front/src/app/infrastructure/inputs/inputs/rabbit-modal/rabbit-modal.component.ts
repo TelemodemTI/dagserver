@@ -74,15 +74,20 @@ export class RabbitModalComponent {
     let queue = this.rabbitqueue.nativeElement.value.trim()
     let jarFile = this.jarfiler.nativeElement.value.trim()
     let dag = this.dagnamer.nativeElement.value.trim()
-    if(queue && jarFile && dag){
-      this.error_msg2 = ""
-      await this.service.addQueue(queue,jarFile,dag)
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigateByUrl(`auth/channels`);
-      });
-    } else {
-      this.error_msg2 = "All values ​​are required.";
-    }
+    let itemarr = this.queues.filter((ele:any)=>{ return ele.queue == queue && ele.dagname == dag && ele.jarname == jarFile})
+    if(itemarr.length == 0){
+		if(queue && jarFile && dag){
+	      this.error_msg2 = ""
+	      await this.service.addQueue(queue,jarFile,dag)
+	      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+	        this.router.navigateByUrl(`auth/channels`);
+	      });
+	    } else {
+	      this.error_msg2 = "All values ​​are required.";
+	    }
+	} else {
+		this.error_msg2 = "Consumer already exists.";
+	}
   }
   async removeQueue(item:any){
     await this.service.delQueue(item.queue)

@@ -27,7 +27,8 @@ export class DagOpsComponent {
   constructor(private service: DagOpsInputPort){}
 
   ngOnChanges(changes: SimpleChanges) {
-    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    //let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    let base = "/"
     const segmentos = base.split('/');
     segmentos.pop();
     let rutaBase = segmentos.join('/');
@@ -99,7 +100,8 @@ export class DagOpsComponent {
   }
   
   async getimageByType(typeop:any){
-    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    //let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    let base = "/"
     const segmentos = base.split('/');
     segmentos.pop();
     let rutaBase = segmentos.join('/');

@@ -31,7 +31,8 @@ export class LoginComponent {
     if(localStorage.getItem("dagserver_token")){
       this.router.navigateByUrl("auth")
     }
-    let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    //let base = (window['base-href'].startsWith("/auth/"))?"/":window['base-href']
+    let base = "/"
     const segmentos = base.split('/');
     segmentos.pop();
     this.rutaBase = segmentos.join('/');
