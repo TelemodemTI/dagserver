@@ -28,7 +28,7 @@ public class ExceptionStorage implements ExceptionStorageUseCase {
 	public void add(ExceptionEventLog event) {
 		DB db = DBMaker.fileDB(exceptionstoragefile).make();
 		ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
-		String classname = event.getSource().getClass().getCanonicalName().toString();
+		String classname = event.getSource().getClass().getCanonicalName();
 		String method = event.getMessage();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
 		StringWriter stringWriter = new StringWriter();

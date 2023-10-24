@@ -75,7 +75,9 @@ public class CompilerHandler implements CompilerOutputPort {
 			validateOverwrtire(jarname,force);
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
-				String crondef = dag.getString("cron");
+				String crondef = dag.has("cron") ? dag.getString("cron") : ""  ;
+				String onstartdef = dag.has("onstart") ? dag.getString("onstart") : "";  
+				String onenddef = dag.has("onend") ? dag.getString("onend") : "" ;
 				String triggerv = dag.getString("trigger");
 				String loc = dag.getString("loc");
 				String classname = dag.getString("class");
@@ -88,6 +90,8 @@ public class CompilerHandler implements CompilerOutputPort {
 				dtomap.put("type", triggerv);
 				dtomap.put(VALUE, crondef);
 				dtomap.put(GROUP, group);
+				dtomap.put("onstart", onstartdef);
+				dtomap.put("onend", onenddef);
 				dtomap.put("listenerLabel", loc);
 				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
 				this.packageJar(jarname, classname, dagdef1.getBytes(),props);

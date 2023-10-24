@@ -15,8 +15,8 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.json.JSONObject;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
 
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -58,7 +58,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 		var fa = this.createDagMemoryAppender(evalstring);
 		xcom = new JSONObject();
 
-		logdag = LoggerFactory.getLogger(evalstring);
+		logdag = Logger.getLogger(evalstring);
 		
 		logdag.debug("executing dag::"+this.dagname);
 		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
