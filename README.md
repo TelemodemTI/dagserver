@@ -22,7 +22,7 @@ You must have a Quartz-compatible database installation. Currently only tested u
 
 ## Installation
 
-This project is based on Springboot, so it can be executed using the standard java command
+This project is based on Springboot, so it can be executed using the standard java command.
 A Docker image is provided [Docker-Hub](https://hub.docker.com/r/maximolira/dagserver).
 
 ## Basic configuration
