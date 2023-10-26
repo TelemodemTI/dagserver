@@ -22,7 +22,7 @@ You must have a Quartz-compatible database installation. Currently only tested u
 
 ## Installation
 
-Once this war file is compiled, it can be run on the latest version of TOMCAT 9.
+This project is based on Springboot, so it can be executed using the standard java command
 A Docker image is provided [Docker-Hub](https://hub.docker.com/r/maximolira/dagserver).
 
 ## Basic configuration
