@@ -46,3 +46,6 @@
     overflow-y:auto;
     max-height: 400em;
   }
+  .noDisplay {
+    display:none;
+  }

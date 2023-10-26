@@ -36,6 +36,7 @@ export class ParamExistingjComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    let root = this
     if(this.generatedIdParams){
       this.initCodemirror().then((flag)=>{
         this.loader?.nativeElement.classList.add("invisible");
@@ -56,7 +57,11 @@ export class ParamExistingjComponent {
             } catch (error) {}
           }
         }
-      })
+        $("#canvas-codemirror-new-det").on("change", function() {
+          var fromSelenium = $("#canvas-codemirror-new-det").val();
+          root.editor.setValue(fromSelenium);
+        })
+    })
     }
   }
   loadFrom(id:any){
