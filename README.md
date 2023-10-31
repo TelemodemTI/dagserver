@@ -16,10 +16,6 @@ Dag server based on quartz, allows to execute batch processes modeled as DAG (Di
 
 The documentation is available here: [Documentation](https://docs.telemodem.cl/books/dagserver-documentation)
 
-## Requirements
-
-You must have a Quartz-compatible database installation. Currently only tested using Mysql type (MariaDB).
-
 ## Installation
 
 This project is based on Springboot, so it can be executed using the standard java command.
