@@ -161,7 +161,7 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 		metadata.setParameter("redisCluster", "boolean");
 		metadata.setParameter("keyObject", "text");
 		metadata.setOpts("xcom", "xcom");
-		metadata.setOpts("body", "body");
+		metadata.setOpts("body", "sourcecode");
 		return metadata.generate();
 	}
 	@Override
