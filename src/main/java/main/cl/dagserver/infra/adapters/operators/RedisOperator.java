@@ -20,7 +20,7 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
 
 
-@Operator(args={"hostname","port","mode","redisCluster","keyObject"}, optionalv = {"xcom"})
+@Operator(args={"hostname","port","mode","redisCluster","keyObject"}, optionalv = {"xcom","body"})
 public class RedisOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
 
 	@Override
@@ -79,17 +79,25 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 	}
 	private List<Map<String, Object>> clusterSave(JedisCluster jedisc) throws DomainException{
 		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
-	    	  String xcomname = this.optionals.getProperty("xcom");
-	    	  if(!this.xcom.has(xcomname)) {
-					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
-	    	  }
-	    	  var obj = (Object) this.xcom.get(xcomname);
-	    	  jedisc.set(this.args.getProperty("keyObject"), obj.toString());
-	    	  List<Map<String, Object>> rv = new ArrayList<>();
-	  	   	  Map<String, Object> item = new HashMap<>();
-	  	   	  item.put("status", "ok");
-	  	   	  rv.add(item);
-	  	   	  return rv;
+			List<Map<String, Object>> rv = new ArrayList<>();  
+			if(this.optionals.containsKey("xcom")) {
+	    		  String xcomname = this.optionals.getProperty("xcom");
+		    	  if(!this.xcom.has(xcomname)) {
+						throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
+		    	  }
+		    	  var obj = (Object) this.xcom.get(xcomname);
+		    	  jedisc.set(this.args.getProperty("keyObject"), obj.toString());	  
+		  	   	  Map<String, Object> item = new HashMap<>();
+		  	   	  item.put("status", "ok");
+		  	   	  rv.add(item);  
+	    	} else {
+	    		  var body = this.optionals.getProperty("body");
+	    		  jedisc.set(this.args.getProperty("keyObject"), body);
+	    		  Map<String, Object> item = new HashMap<>();
+		  	   	  item.put("status", "ok");
+		  	   	  rv.add(item);  
+	    	}
+	  	   	return rv;
 		} else { 
 			throw new DomainException(new Exception("no xcom to save"));
 		}
@@ -115,6 +123,7 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 	}
 	@SuppressWarnings("unchecked")
 	private List<Map<String, Object>> singleSave(Jedis jedis) throws DomainException{
+		List<Map<String, Object>> rv = new ArrayList<>();
 		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
 	    	  String xcomname = this.optionals.getProperty("xcom");
 	    	  if(!this.xcom.has(xcomname)) {
@@ -122,14 +131,17 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 	    	  }
 	    	  var obj = (List<Map<String, Object>>) this.xcom.get(xcomname);
 	    	  jedis.set(this.args.getProperty("keyObject"), new JSONArray(obj).toString());
-	    	  List<Map<String, Object>> rv = new ArrayList<>();
 	    	  Map<String, Object> item = new HashMap<>();
 	    	  item.put("status", "ok");
 	    	  rv.add(item);
-	    	  return rv;
 		} else {
-			throw new DomainException(new Exception("no xcom to save"));
+			var body = this.optionals.getProperty("body");
+  		    jedis.set(this.args.getProperty("keyObject"), body);
+  		    Map<String, Object> item = new HashMap<>();
+	  	   	item.put("status", "ok");
+	  	   	rv.add(item);  
 		}
+		return rv;
 	}
 	private List<Map<String, Object>> singleDel(Jedis jedis){
 		jedis.del(this.args.getProperty("keyObject"));
@@ -149,6 +161,7 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 		metadata.setParameter("redisCluster", "boolean");
 		metadata.setParameter("keyObject", "text");
 		metadata.setOpts("xcom", "xcom");
+		metadata.setOpts("body", "body");
 		return metadata.generate();
 	}
 	@Override
