@@ -20,7 +20,7 @@ import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
-@Operator(args={"host","username","password","port","mode"},optionalv = {"xcom","exchange","routingKey","queue"})
+@Operator(args={"host","username","password","port","mode"},optionalv = {"xcom","exchange","routingKey","queue","body"})
 public class RabbitMQOperator extends OperatorStage implements Callable<List<String>> {
 
 	@SuppressWarnings("unchecked")
@@ -34,15 +34,20 @@ public class RabbitMQOperator extends OperatorStage implements Callable<List<Str
 			log.debug(this.args);
 			String mode = this.args.getProperty("mode");
 			if(mode.equals("publish")) {
-				String xcomname = this.optionals.getProperty("xcom");
-				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
-				Integer count = 0;
-				for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
-					Map<String, Object> map = iterator.next();
-					JSONObject item = new JSONObject(map);
-					channel.basicPublish(this.optionals.getProperty("exchange"), this.optionals.getProperty("routingKey"), null, item.toString().getBytes());
-					rv.add("message "+ count.toString() + " published");
-					count++;
+				if(this.optionals.containsKey("xcom")) {
+					String xcomname = this.optionals.getProperty("xcom");
+					List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
+					Integer count = 0;
+					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
+						Map<String, Object> map = iterator.next();
+						JSONObject item = new JSONObject(map);
+						channel.basicPublish(this.optionals.getProperty("exchange"), this.optionals.getProperty("routingKey"), null, item.toString().getBytes());
+						rv.add("message "+ count.toString() + " published");
+						count++;
+					}	
+				} else {
+					var msg = this.optionals.getProperty("body");
+					channel.basicPublish(this.optionals.getProperty("exchange"), this.optionals.getProperty("routingKey"), null, msg.getBytes());
 				}
 			} else if(mode.equals("consume")) {
 				
@@ -82,6 +87,7 @@ public class RabbitMQOperator extends OperatorStage implements Callable<List<Str
 		metadata.setOpts("exchange", "text");
 		metadata.setOpts("routingKey", "text");
 		metadata.setOpts("queue", "text");
+		metadata.setOpts("body", "sourcecode");
 		return metadata.generate();
 	}
 	@Override

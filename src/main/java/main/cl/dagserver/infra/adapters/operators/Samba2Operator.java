@@ -88,9 +88,13 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 	}
 
 	private void disconnect(Session smb2session,SMBClient client) throws IOException {
-		smb2session.getConnection().close();
-		smb2session.close();
-		client.close();
+		try {
+			smb2session.getConnection().close();
+			smb2session.close();
+			client.close();	
+		} catch (Exception e) {
+			log.debug("connection close");
+		}
 	}
 	
 
@@ -98,6 +102,12 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 	private JSONArray list(Session smb2session , String directory, String smb2sharename) {
 		JSONArray lista = new JSONArray(); 
 		DiskShare share = (DiskShare) smb2session.connectShare(smb2sharename);
+		if(directory.trim().equals("/")) {
+			directory = "";
+		}
+		if(directory.startsWith("/")) {
+			directory = directory.substring(1);
+		}
 	    for (FileIdBothDirectoryInformation f : share.list(directory,"*")) {
 	        lista.put(f.getFileName());
 	    }

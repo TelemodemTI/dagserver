@@ -99,7 +99,7 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.JavaOperator");
-		metadata.setParameter("jarPath", "text");
+		metadata.setParameter("classpath", "text");
 		metadata.setParameter("className", "text");
 		return metadata.generate();
 	}

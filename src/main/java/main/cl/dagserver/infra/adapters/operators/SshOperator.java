@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import com.jcraft.jsch.ChannelExec;
@@ -38,13 +39,14 @@ public class SshOperator extends OperatorStage implements Callable<Map<String,St
 			if(this.optionals.getProperty("pwd") != null) {
 				session.setPassword(this.args.getProperty("pwd"));
 			}
+			
 			if(this.optionals.getProperty(KNOWHOSTFILE) != null) {
 				File initialFile = new File(this.optionals.getProperty(KNOWHOSTFILE));
 			    InputStream targetStream = new FileInputStream(initialFile);
 				String content = this.readFromInputStream(targetStream);
 				InputStream is = new ByteArrayInputStream(content.getBytes());
 				jsch.setKnownHosts(is);	
-			}
+			} 
 			if(this.optionals.getProperty(PRIVATEKEYFILE) != null) {
 				jsch.addIdentity(this.optionals.getProperty(PRIVATEKEYFILE));
 			}
