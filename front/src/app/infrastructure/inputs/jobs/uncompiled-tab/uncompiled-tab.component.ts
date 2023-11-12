@@ -87,5 +87,7 @@ export class UncompiledTabComponent {
   import(){
     $("#importUncompiledModal").modal("show");
   }
-
+  async refresh(){
+	  this.uncompileds = await this.service.getUncompileds();
+  }
 }

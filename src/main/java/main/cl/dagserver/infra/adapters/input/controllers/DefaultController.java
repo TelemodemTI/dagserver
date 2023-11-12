@@ -41,7 +41,7 @@ public class DefaultController {
 	
 	@GetMapping(path="/version")
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
-		return new ResponseEntity<>("dagserver is running! v0.2.20231020", HttpStatus.OK);
+		return new ResponseEntity<>("dagserver is running! v0.3.0", HttpStatus.OK);
 	}
 	@PostMapping(path = "/stageApi/",consumes = {"application/json"}, produces= {"application/json"})
 	public ResponseEntity<String> stageApi(HttpEntity<String> httpEntity,HttpServletResponse response) throws DomainException {

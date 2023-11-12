@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>main.cl</groupId>
 	<artifactId>dagserver</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<name>dagserver</name>
 	<description>dagserver</description>
 	<properties>
