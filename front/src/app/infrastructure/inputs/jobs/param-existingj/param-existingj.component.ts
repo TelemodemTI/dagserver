@@ -31,6 +31,7 @@ export class ParamExistingjComponent {
   another:any[] = []
   name!:any
   statusSel!:any
+  xcoms:any[] = []
   constructor(private cd: ChangeDetectorRef){
 
   }
@@ -46,6 +47,8 @@ export class ParamExistingjComponent {
           if(obj){
             let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
             this.another = obj.boxes.filter((elem:any)=>{ return elem && step && elem.type == step.type && elem.id != step.id})
+            this.xcoms = obj.boxes.filter((elem:any)=>{ return elem && step && elem.id != step.id})
+            
             this.name = step.id
             this.statusSel = step.status
             let value;
