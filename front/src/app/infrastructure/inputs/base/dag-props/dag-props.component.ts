@@ -74,8 +74,8 @@ export class DagPropsComponent {
     }
     collapse(dagname:any){
       
-      let flag = ($("#props-collapser").attr("aria-expanded").toLowerCase() === 'true')?true:false;
-      let flags = ($("#props-collapser-son").attr("aria-expanded").toLowerCase() === 'true')?true:false;
+      let flag = ($("#props-collapser-"+dagname).attr("aria-expanded").toLowerCase() === 'true')?true:false;
+      let flags = ($("#props-collapser-son-"+dagname).attr("aria-expanded").toLowerCase() === 'true')?true:false;
 
       if(flags && !flag){
   

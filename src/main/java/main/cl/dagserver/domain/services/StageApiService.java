@@ -29,11 +29,13 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 		TemporalDagExecutable dagtmp = new TemporalDagExecutable();
 		for (int i = 0; i < dags.length(); i++) {
 			JSONObject dagobj = dags.getJSONObject(i);
-			JSONArray steps = dagobj.getJSONArray("boxes");
-			try {
-				setupDAG(steps,dagtmp);
-			} catch (Exception e) {
-				throw new DomainException(e);
+			if(dagobj.getString("name").equals(dagname)) {
+				JSONArray steps = dagobj.getJSONArray("boxes");
+				try {
+					setupDAG(steps,dagtmp);
+				} catch (Exception e) {
+					throw new DomainException(e);
+				}	
 			}
 		}
 		return this.generateOutput(dagtmp, dagname, stepName);
