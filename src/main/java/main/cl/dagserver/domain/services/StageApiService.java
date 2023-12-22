@@ -63,9 +63,9 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
                 JSONArray params = step.getJSONArray(PARAMS);
                 for (int k = 0; k < params.length(); k++) {
                     JSONObject param = params.getJSONObject(k);
-                    if (param.has("key") && param.has(VALUE) && param.getString("key").equals(arg) && !param.getString(VALUE).isEmpty()) {
-                    	options.setProperty(arg, param.getString(VALUE));
-                    }
+                    if (param.has("key") && param.has(VALUE) && !param.isNull(VALUE) && param.getString("key").equals(arg) && !param.getString(VALUE).isEmpty()) {
+                       options.setProperty(arg, param.getString(VALUE));
+                    }	
                 }
             }
         }
