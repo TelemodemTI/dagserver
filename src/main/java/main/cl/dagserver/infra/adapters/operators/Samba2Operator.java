@@ -37,13 +37,13 @@ import com.hierynomus.smbj.share.File;
 
 
 @Operator(args={"host","smbUser","smbPass","smbDomain","smbSharename","commands"})
-public class Samba2Operator extends OperatorStage implements Callable<List<String>> {
+public class Samba2Operator extends OperatorStage implements Callable<List<Object>> {
 
 	private static final String SMBSHARENAME = "smbSharename";
 	
 	
 	@Override
-	public List<String> call() throws DomainException {		
+	public List<Object> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -53,7 +53,7 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 		    AuthenticationContext ac = new AuthenticationContext(this.args.getProperty("smbUser"), this.args.getProperty("smbPass").toCharArray(), this.args.getProperty("smbDomain"));
 		    var smb2session = connection.authenticate(ac);
 		    
-		    List<String> results = new ArrayList<>();
+		    List<Object> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			//list pathremote
 			//download remote local
@@ -65,15 +65,15 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 				switch (cmd[0]) {
 				case "list":
 					var result = this.list(smb2session, cmd[1],this.args.getProperty(SMBSHARENAME));
-					results.add(result.toString());
+					results.add(result);
 					break;
 				case "upload":
 					this.upload(smb2session, cmd[1], cmd[2],this.args.getProperty(SMBSHARENAME));
-					results.add(status1.toString());
+					results.add(status1);
 					break;
 				case "download":
 					this.download(smb2session, cmd[1], cmd[2],this.args.getProperty(SMBSHARENAME));
-					results.add(status1.toString());
+					results.add(status1);
 					break;
 				default:
 					throw new DomainException(new Exception("command invalid"));
@@ -145,7 +145,10 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 		}
 	}
 
-	private void upload(Session smb2session, String fileInput, String remoteFilePath,String smb2sharename) throws DomainException {
+	private void upload(Session smb2session, String remoteFilePath,String fileInput,String smb2sharename) throws DomainException {
+		if (remoteFilePath.startsWith("/")) {
+		   remoteFilePath = remoteFilePath.substring(1);
+		}
 		var file = new java.io.File(fileInput);
 		Set<FileAttributes> fileAttributes = new HashSet<>();
 	    fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
@@ -155,6 +158,7 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Strin
 	    var am = new AccessMask[]{AccessMask.MAXIMUM_ALLOWED};
 	    try(
 				InputStream input = new FileInputStream(file);
+	    		
 				File f = share.openFile(remoteFilePath, new HashSet<>(Arrays.asList(am)), fileAttributes, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OVERWRITE_IF, createOptions);
 	    		OutputStream oStream = f.getOutputStream();
 	    		) {
