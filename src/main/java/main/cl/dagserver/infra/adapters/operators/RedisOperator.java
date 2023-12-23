@@ -69,10 +69,16 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 	private List<Map<String, Object>> clusterRead(JedisCluster jedisc){
 		String data = jedisc.get(this.args.getProperty("keyObject"));
 		List<Map<String, Object>> rv = new ArrayList<>();
-		JSONArray arr = new JSONArray(data);
-		for (int i = 0; i < arr.length(); i++) {
-			JSONObject row = arr.getJSONObject(i);
-			Map<String, Object> map = row.toMap();
+		try {
+			JSONArray arr = new JSONArray(data);
+			for (int i = 0; i < arr.length(); i++) {
+				JSONObject row = arr.getJSONObject(i);
+				Map<String, Object> map = row.toMap();
+				rv.add(map);
+			}	
+		} catch (Exception e) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("value", data);
 			rv.add(map);
 		}
 		return rv;
@@ -113,10 +119,16 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 	private List<Map<String, Object>> singleRead(Jedis jedis){
 		String data = jedis.get(this.args.getProperty("keyObject"));
 		List<Map<String, Object>> rv = new ArrayList<>();
-		JSONArray arr = new JSONArray(data);
-		for (int i = 0; i < arr.length(); i++) {
-			JSONObject row = arr.getJSONObject(i);
-			Map<String, Object> map = row.toMap();
+		try {
+			JSONArray arr = new JSONArray(data);
+			for (int i = 0; i < arr.length(); i++) {
+				JSONObject row = arr.getJSONObject(i);
+				Map<String, Object> map = row.toMap();
+				rv.add(map);
+			}	
+		} catch (Exception e) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("value", data);
 			rv.add(map);
 		}
 		return rv;

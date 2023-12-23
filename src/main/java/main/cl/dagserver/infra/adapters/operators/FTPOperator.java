@@ -25,10 +25,10 @@ import org.apache.commons.net.ftp.FTPReply;
 
 
 @Operator(args={"host","port","ftpUser","ftpPass","commands"})
-public class FTPOperator extends OperatorStage implements Callable<List<String>> {
+public class FTPOperator extends OperatorStage implements Callable<List<Object>> {
 
 	@Override
-	public List<String> call() throws DomainException {		
+	public List<Object> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -47,7 +47,7 @@ public class FTPOperator extends OperatorStage implements Callable<List<String>>
 			log.debug(this.getClass()+" end "+this.name);
 
 			
-			List<String> results = new ArrayList<>();
+			List<Object> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			//list pathremote
 			//download local remote
@@ -59,15 +59,15 @@ public class FTPOperator extends OperatorStage implements Callable<List<String>>
 				switch (cmd[0]) {
 				case "list":
 					var result = this.list(ftp, cmd[1]);
-					results.add(result.toString());
+					results.add(result);
 					break;
 				case "upload":
 					this.upload(ftp, cmd[1], cmd[2]);
-					results.add(status1.toString());
+					results.add(status1);
 					break;
 				case "download":
 					this.download(ftp, cmd[1], cmd[2]);
-					results.add(status1.toString());
+					results.add(status1);
 					break;
 				 default:
 					throw new DomainException(new Exception("command invalid"));
@@ -108,7 +108,7 @@ public class FTPOperator extends OperatorStage implements Callable<List<String>>
 		}
 	}
 
-	private void upload(FTPClient ftp,String fileInput,String remoteFilePath) throws IOException {
+	private void upload(FTPClient ftp,String remoteFilePath,String fileInput) throws IOException {
 		File file = new File(fileInput);
 		InputStream input = new FileInputStream(file);
 		ftp.storeFile(remoteFilePath, input);

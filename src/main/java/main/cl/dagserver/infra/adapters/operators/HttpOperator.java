@@ -36,19 +36,19 @@ public class HttpOperator extends OperatorStage implements Callable<String> {
 			con.setConnectTimeout(timeout);
 			con.setReadTimeout(timeout);
 			
-			int responseCode = con.getResponseCode();
 			
 			
-			String xcomname = this.args.getProperty("bodyxcom");
+			
+			String xcomname = this.optionals.getProperty("bodyxcom");
 			if(this.xcom.has(xcomname)) {
-				String body = (String) this.xcom.get(xcomname);
+				String body = this.xcom.get(xcomname).toString();
 				con.setDoOutput(true);
 				OutputStream os = con.getOutputStream();
 				os.write(body.getBytes());
 				os.flush();
 				os.close();	
 			}
-				
+			int responseCode = con.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				String inputLine;
