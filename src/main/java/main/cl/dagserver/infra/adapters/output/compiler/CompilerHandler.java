@@ -54,16 +54,21 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String JARNAME = "jarname";
 	private static final String VALUE = "value";
 	private static final String NAME = "name";
+	private static final String ONSTART = "onstart";
+	private static final String ONEND = "onend";
 	private static final String BASEOPPKG = "main.cl.dagserver.infra.adapters.operators";
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
 	
-	@Autowired
     private ApplicationEventPublisher eventPublisher;
+	private CompilerOperatorBuilder builder;
 	
 	@Autowired
-	CompilerOperatorBuilder builder;
+	public CompilerHandler(CompilerOperatorBuilder builder,ApplicationEventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
+		this.builder = builder;
+	}
 	
 	@Override
 	public void createJar(String bin,Boolean force,Properties props) throws DomainException {
@@ -76,8 +81,8 @@ public class CompilerHandler implements CompilerOutputPort {
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
 				String crondef = dag.has("cron") ? dag.getString("cron") : ""  ;
-				String onstartdef = dag.has("onstart") ? dag.getString("onstart") : "";  
-				String onenddef = dag.has("onend") ? dag.getString("onend") : "" ;
+				String onstartdef = dag.has(ONSTART) ? dag.getString(ONSTART) : "";  
+				String onenddef = dag.has(ONEND) ? dag.getString(ONEND) : "" ;
 				String triggerv = dag.getString("trigger");
 				String loc = dag.getString("loc");
 				String classname = dag.getString("class");
@@ -90,8 +95,8 @@ public class CompilerHandler implements CompilerOutputPort {
 				dtomap.put("type", triggerv);
 				dtomap.put(VALUE, crondef);
 				dtomap.put(GROUP, group);
-				dtomap.put("onstart", onstartdef);
-				dtomap.put("onend", onenddef);
+				dtomap.put(ONSTART, onstartdef);
+				dtomap.put(ONEND, onenddef);
 				dtomap.put("listenerLabel", loc);
 				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
 				this.packageJar(jarname, classname, dagdef1.getBytes(),props);

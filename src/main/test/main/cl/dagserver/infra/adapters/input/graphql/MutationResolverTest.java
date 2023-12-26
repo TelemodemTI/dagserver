@@ -18,7 +18,7 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 
 class MutationResolverTest {
 
-	private MutationResolver mutation = new MutationResolver();
+	private MutationResolver mutation;
 	
 	@Mock
 	SchedulerMutationUseCase handler;
@@ -26,6 +26,7 @@ class MutationResolverTest {
 	@BeforeEach
     void init() {
 		handler = mock(SchedulerMutationUseCase.class);
+		mutation = new MutationResolver(handler);
 		ReflectionTestUtils.setField(mutation, "handler", handler);
 	}
 	@Test

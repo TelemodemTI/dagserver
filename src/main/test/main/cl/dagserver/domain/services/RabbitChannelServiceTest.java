@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
 
-public class RabbitChannelServiceTest {
+class RabbitChannelServiceTest {
 
 	private RabbitChannelService service = new RabbitChannelService();
 	

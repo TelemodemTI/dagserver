@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,20 +41,18 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	private static final String QUERYPROPS =  "select props from PropertyParameter as props where props.group = '";
 	private static final String VALUE = "value";
+	private static final String VALUEP = "value.";
 	private static final String UNCOMPILEDQUERY = "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = ";
-	
 	@Autowired
-	DAO dao;
-
+	private DAO dao;
 	@Autowired
-	SchedulerMapper mapper;
+	private SchedulerMapper mapper;
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
 	
 	@Value("${param.xcompath}")
 	private String xcomfolder;
-	
 	
 	
 	public void addEventListener(String name,String onstart,String onend,String groupname) {
@@ -75,16 +72,16 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	
 	public List<EventListenerDTO> listEventListeners(){
 		var list = dao.read(EventListener.class, "select listener from EventListener as listener");
-		return list.stream().map(elt -> mapper.toEventListenerDTO(elt)).collect(Collectors.toList());
+		return list.stream().map(elt -> mapper.toEventListenerDTO(elt)).toList();
 	}
 	public List<EventListenerDTO> getEventListeners(String listenerName){
 		var list = dao.read(EventListener.class, "select listener from EventListener as listener where listener.listenerName = '"+listenerName+"'");
-		return list.stream().map(elt -> mapper.toEventListenerDTO(elt)).collect(Collectors.toList());
+		return list.stream().map(elt -> mapper.toEventListenerDTO(elt)).toList();
 	}
 	
 	public List<LogDTO> getLogs(String dagname){
 		var list = dao.read(Log.class, "select log from Log as log where log.dagname = '"+dagname+"' order by log.execDt desc");
-		return list.stream().map(elt -> mapper.toLogDTO(elt)).collect(Collectors.toList()); 
+		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
 	}
 	
 	public LogDTO getLog(Integer logid){
@@ -142,7 +139,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	
 	public List<UserDTO> findUser(String username) {
 		List<User> founded = dao.read(User.class, "select user from User as user where user.username = '"+username+"'");
-		return founded.stream().map(elt -> mapper.toUserDTO(elt)).collect(Collectors.toList()); 
+		return founded.stream().map(elt -> mapper.toUserDTO(elt)).toList(); 
 	}
 	public List<PropertyParameterDTO> getProperties(String groupname) throws DomainException{
 		try {
@@ -152,7 +149,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			} else {
 				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
 			}
-			return founded.stream().map(elt -> mapper.toPropertyParameterDTO(elt)).collect(Collectors.toList());	
+			return founded.stream().map(elt -> mapper.toPropertyParameterDTO(elt)).toList();	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -231,8 +228,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	    List<String> keys = new ArrayList<>();
 	    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 	        String key = (String) entry.getKey();
-	        if(key.startsWith("value.")) {
-		    	String real = key.replace("value.", "");
+	        if(key.startsWith(VALUEP)) {
+		    	String real = key.replace(VALUEP, "");
 		    	if(!keys.contains(real)) {
 		    		keys.add(real);
 		    	}
@@ -242,7 +239,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	     
 	    for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
 			String key = iterator.next();
-			String value = properties.getProperty("value."+key);
+			String value = properties.getProperty(VALUEP+key);
 			String descr = properties.getProperty("desc."+key);
 			String group = properties.getProperty("group."+key);
 			List<PropertyParameter> existingProperties = dao.read(PropertyParameter.class,QUERYPROPS + group + "'");
@@ -343,7 +340,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 				String group = jarname+"."+idope+"."+typeope+".props";
 				Class<?> clazz = Class.forName(typeope);
 				Operator annotation = clazz.getAnnotation(Operator.class);
-				this.deletePropsByGroup(group);
+				this.delGroupProperty(group);
 				this.boxHasParams(box, annotation, group, jarname);
 				arr.add(group);
 			}
@@ -365,7 +362,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 				}
 			}
 			String groupo = jarname+"."+idope+"."+typeope+".opts";
-			this.deletePropsByGroup(groupo);
+			this.delGroupProperty(groupo);
 			for (int l = 0; l < box.getJSONArray(params).length(); l++) {
 				JSONObject parm = box.getJSONArray(params).getJSONObject(l);
 				if(this.searchValue(annotation.optionalv(), parm.getString(key))) {
@@ -375,12 +372,15 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		}
 	}
 	
-	private void deletePropsByGroup(String group) {
+	
+	@Override
+	public void delGroupProperty(String group) {
 		var founded = dao.read(PropertyParameter.class,QUERYPROPS+group+"'");
 		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
 			PropertyParameter propertyParameter = iterator.next();
 			dao.delete(propertyParameter);
 		}
+		
 	}
 
 	private boolean searchValue(String[] array, String value) {
@@ -416,15 +416,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		}
 	}
 
-	@Override
-	public void delGroupProperty(String group) {
-		var founded = dao.read(PropertyParameter.class,QUERYPROPS+group+"'");
-		for (Iterator<PropertyParameter> iterator = founded.iterator(); iterator.hasNext();) {
-			PropertyParameter propertyParameter = iterator.next();
-			dao.delete(propertyParameter);
-		}
-		
-	}
+	
 
 	@Override
 	public List<UserDTO> getUsers() {
@@ -519,8 +511,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 
 	@Override
 	public List<LogDTO> getLastLogs() {
-		var list = dao.read(Log.class, "select log from Log as log order by log.execDt desc",new HashMap<>(),0,5);
-		return list.stream().map(elt -> mapper.toLogDTO(elt)).collect(Collectors.toList()); 
+		List<Log> list = dao.read(Log.class,"select log from Log as log order by log.execDt desc",new HashMap<>(),0,5);
+		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
 	}
 
 	

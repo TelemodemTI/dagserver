@@ -24,7 +24,7 @@ import static org.testng.Assert.assertTrue;
 
 class LoginServiceTest {
 
-	private LoginService login = new LoginService();
+	private LoginService login;
 	
 	@Mock 
 	SchedulerRepositoryOutputPort repo;
@@ -42,6 +42,7 @@ class LoginServiceTest {
 		ReflectionTestUtils.setField(login, "jwtSigner", "jwtSigner");
 		ReflectionTestUtils.setField(login, "jwtSubject", "jwtSubject");
 		ReflectionTestUtils.setField(login, "jwtTtl", 1);
+		login = new LoginService(tokenEngine,repo);
 	}
 	
 	@Test

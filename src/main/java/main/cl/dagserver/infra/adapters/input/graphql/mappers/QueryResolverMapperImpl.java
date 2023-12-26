@@ -2,10 +2,7 @@ package main.cl.dagserver.infra.adapters.input.graphql.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Component;
-
 import main.cl.dagserver.domain.model.AgentDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
@@ -65,7 +62,7 @@ public class QueryResolverMapperImpl implements QueryResolverMapper {
 	public Channel toChannel(ChannelDTO dto) {
 		List<ChannelProps> props = new ArrayList<>();
 		if(dto.getProps()!=null) {
-			props = dto.getProps().stream().map(elt -> toChannelProps(elt)).collect(Collectors.toList());	
+			props = dto.getProps().stream().map(this::toChannelProps).toList();
 		}
 		Channel c = new Channel();
 		c.setName(dto.getName());

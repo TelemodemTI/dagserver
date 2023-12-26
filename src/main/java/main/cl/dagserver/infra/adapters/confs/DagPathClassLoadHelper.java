@@ -20,8 +20,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.quartz.simpl.CascadingClassLoadHelper;
 import org.quartz.spi.ClassLoadHelper;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 import com.linkedin.cytodynamics.nucleus.DelegateRelationshipBuilder;
 import com.linkedin.cytodynamics.nucleus.IsolationLevel;
 import com.linkedin.cytodynamics.nucleus.LoaderBuilder;
@@ -37,14 +35,13 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
 		var prop = new Properties();
-		var context = ContextLoader.getCurrentWebApplicationContext();
 		try {
 			return super.loadClass(name);	
 		} catch (Exception e) {
-			return this.loadClassProps(prop,context,name);
+			return this.loadClassProps(prop,name);
 		}
 	}
-	private Class<?> loadClassProps(Properties prop,WebApplicationContext context,String name) {
+	private Class<?> loadClassProps(Properties prop,String name) {
 			try {
 				var ctx = this.getClass().getClassLoader();
 				return this.loadClassWithCtx(ctx,prop,name);

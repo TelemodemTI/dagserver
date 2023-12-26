@@ -160,10 +160,7 @@
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-engine</artifactId>
 		</dependency>
-		<dependency>
-		    <groupId>org.junit.platform</groupId>
-		    <artifactId>junit-platform-launcher</artifactId>
-		</dependency>
+		
 		
 		
 		<!-- SmtpClient -->
@@ -279,8 +276,12 @@
 		
 	</dependencies>
 
-	<build>
-		<testSourceDirectory>src/main/test/</testSourceDirectory>
+
+
+          
+    <build>
+  
+		<testSourceDirectory>src/main/test</testSourceDirectory>
 		<resources>
 			 <resource>
 		     	<directory>src/main/resources</directory>
@@ -289,6 +290,24 @@
 		<sourceDirectory>src/main/java</sourceDirectory>
 		
 		<plugins>
+	
+	<plugin>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <!-- latest version (2.20.1) does not work well with JUnit5 -->
+      <version>2.19.1</version>
+      <dependencies>
+        <dependency>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-surefire-provider</artifactId>
+          <version>1.0.3</version>
+        </dependency>
+        <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter-engine</artifactId>
+          <version>5.0.3</version>
+        </dependency>
+      </dependencies>
+    </plugin>
 			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -303,30 +322,28 @@
 				</configuration>
 			</plugin>
 			
-			<plugin>
-			    <groupId>org.jacoco</groupId>
-			    <artifactId>jacoco-maven-plugin</artifactId>
-			    <version>0.8.10</version>
-			    <executions>
-			        <execution>
-			            <goals>
-			                <goal>prepare-agent</goal>
-			            </goals>
-			            <configuration>
-			                <propertyName>surefireArgLine</propertyName>
-			            </configuration>
-			        </execution>
-			        <execution>
-			            <id>report</id>
-			            <goals>
-			                <goal>report</goal>
-			            </goals>
-			            <configuration>
+			 <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.10</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
 			                <outputDirectory>${jacoco.path}</outputDirectory>
 			            </configuration>
-			        </execution>
-			    </executions>
-			</plugin>
+                    </execution>
+                </executions>
+            </plugin>
 			
 			<plugin>
         <groupId>com.github.eirslett</groupId>

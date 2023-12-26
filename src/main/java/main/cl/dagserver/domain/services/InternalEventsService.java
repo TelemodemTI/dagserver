@@ -9,12 +9,15 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 @Service
 public class InternalEventsService implements ExceptionListenerUseCase {
 
-	@Autowired
-	ExceptionStorageUseCase storage;
-	
-	@Override
-	public void registerException(ExceptionEventLog event) {
-		storage.add(event);
-	}
+    private final ExceptionStorageUseCase storage;
 
+    @Autowired
+    public InternalEventsService(ExceptionStorageUseCase storage) {
+        this.storage = storage;
+    }
+
+    @Override
+    public void registerException(ExceptionEventLog event) {
+        storage.add(event);
+    }
 }

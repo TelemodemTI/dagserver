@@ -9,13 +9,15 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 @Component
 public class ExceptionEventListener implements ApplicationListener<ExceptionEventLog> {
 
-	@Autowired
-	private ExceptionListenerUseCase handler;
-	
-	
-	@Override
-	public void onApplicationEvent(ExceptionEventLog event) {
-		handler.registerException(event);
-	}
+    private final ExceptionListenerUseCase handler;
 
+    @Autowired
+    public ExceptionEventListener(ExceptionListenerUseCase handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public void onApplicationEvent(ExceptionEventLog event) {
+        handler.registerException(event);
+    }
 }

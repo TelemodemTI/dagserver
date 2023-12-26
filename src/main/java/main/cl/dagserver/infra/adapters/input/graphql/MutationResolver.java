@@ -16,8 +16,12 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 
 public class MutationResolver implements GraphQLMutationResolver {
 
+	private SchedulerMutationUseCase handler;
+	
 	@Autowired
-	SchedulerMutationUseCase handler;
+	public MutationResolver(SchedulerMutationUseCase handler) {
+		this.handler = handler;
+	}
 	
 	public StatusOp scheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {

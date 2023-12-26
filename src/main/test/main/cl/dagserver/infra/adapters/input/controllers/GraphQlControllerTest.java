@@ -24,7 +24,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.QueryResolver;
 class GraphQlControllerTest {
 
 	
-	private GraphQlController controller = new GraphQlController(); 
+	private GraphQlController controller; 
 	
 	@Mock
 	QueryResolver queryResolver;
@@ -40,9 +40,11 @@ class GraphQlControllerTest {
 		queryResolver = mock(QueryResolver.class);
 		mutationResolver = mock(MutationResolver.class);
 		graphQL = mock(GraphQL.class);
+		controller = new GraphQlController(queryResolver,mutationResolver);
 		ReflectionTestUtils.setField(controller, "queryResolver", queryResolver);
 		ReflectionTestUtils.setField(controller, "graphQL", graphQL);
 		ReflectionTestUtils.setField(controller, "mutationResolver", mutationResolver);
+		
     }
 	
     

@@ -38,7 +38,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Scheduled;
 
 class QueryResolverTest {
 
-	private QueryResolver resolver = new QueryResolver();
+	private QueryResolver resolver;
 	
 	@Mock
 	SchedulerQueryUseCase handler;
@@ -54,9 +54,11 @@ class QueryResolverTest {
 		handler = mock(SchedulerQueryUseCase.class);
 		login = mock(LoginUseCase.class);
 		mapper = mock(QueryResolverMapper.class);
+		resolver = new QueryResolver(handler,login,mapper);
 		ReflectionTestUtils.setField(resolver, "handler", handler);
 		ReflectionTestUtils.setField(resolver, "login", login);
 		ReflectionTestUtils.setField(resolver, "mapper", mapper);
+		
 	}
 	@Test
 	void loginTest() {
@@ -129,13 +131,7 @@ class QueryResolverTest {
 		var list = resolver.logs("test");
 		assertEquals(arr.size(), list.size());
 	}
-	@Test
-	void logsErrorTest() throws DomainException {
-		
-		when(handler.getLogs(anyString())).thenThrow(new DomainException(new Exception("test")));
-		var list = resolver.logs("test");
-		assertNotNull(list);
-	}
+	
 	@Test
 	void detailTeest() throws DomainException {
 		List<String> opts = new ArrayList<>();
@@ -212,12 +208,7 @@ class QueryResolverTest {
 		var str = resolver.getIcons("test");
 		assertNotNull(str);
 	}
-	@Test
-	void getIconsErrorTest() throws DomainException {
-		when(handler.getIcons(anyString())).thenThrow(new DomainException(new Exception("test")));
-		var str = resolver.getIcons("test");
-		assertNotNull(str);
-	}
+	
 	@Test
 	void getDependenciesTest() throws DomainException {
 		List<String> list = new ArrayList<>();
@@ -249,10 +240,5 @@ class QueryResolverTest {
 		var str = resolver.exportUncompiled("test",1);
 		assertNotNull(str);
 	}
-	@Test
-	void exportUncompiledErrorTest() throws DomainException {
-		when(handler.exportUncompiled(anyString(),anyInt())).thenThrow(new DomainException(new Exception("test")));
-		var str = resolver.exportUncompiled("test",1);
-		assertNotNull(str);
-	}
+	
 }

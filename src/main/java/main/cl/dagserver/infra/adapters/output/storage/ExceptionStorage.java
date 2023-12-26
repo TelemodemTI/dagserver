@@ -26,21 +26,21 @@ public class ExceptionStorage implements ExceptionStorageUseCase {
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void add(ExceptionEventLog event) {
-		DB db = DBMaker.fileDB(exceptionstoragefile).make();
-		ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
-		String classname = event.getSource().getClass().getCanonicalName();
-		String method = event.getMessage();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
-		StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        event.getException().printStackTrace(printWriter);
-        String stacktrace = stringWriter.toString();      
-		Map<String,String> excpd = new HashMap<>();
-		excpd.put("classname", classname);
-		excpd.put("method",method);
-		excpd.put("stacktrace",stacktrace);
-		map.put(sdf.format(new Date()), excpd);
-		db.close();		
+		try(DB db = DBMaker.fileDB(exceptionstoragefile).make()){
+			ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
+			String classname = event.getSource().getClass().getCanonicalName();
+			String method = event.getMessage();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
+			StringWriter stringWriter = new StringWriter();
+	        PrintWriter printWriter = new PrintWriter(stringWriter);
+	        event.getException().printStackTrace(printWriter);
+	        String stacktrace = stringWriter.toString();      
+			Map<String,String> excpd = new HashMap<>();
+			excpd.put("classname", classname);
+			excpd.put("method",method);
+			excpd.put("stacktrace",stacktrace);
+			map.put(sdf.format(new Date()), excpd);	
+		}
 	}
 
 }
