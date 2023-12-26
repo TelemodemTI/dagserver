@@ -36,13 +36,14 @@ class LoginServiceTest {
     public void init() {
 		repo = mock(SchedulerRepositoryOutputPort.class);
 		tokenEngine = mock(TokenEngine.class);
+		login = new LoginService(tokenEngine,repo);
 		ReflectionTestUtils.setField(login, "repository", repo);
 		ReflectionTestUtils.setField(login, "tokenEngine", tokenEngine);
 		ReflectionTestUtils.setField(login, "jwtSecret", "jwtSecret");
 		ReflectionTestUtils.setField(login, "jwtSigner", "jwtSigner");
 		ReflectionTestUtils.setField(login, "jwtSubject", "jwtSubject");
 		ReflectionTestUtils.setField(login, "jwtTtl", 1);
-		login = new LoginService(tokenEngine,repo);
+		
 	}
 	
 	@Test
