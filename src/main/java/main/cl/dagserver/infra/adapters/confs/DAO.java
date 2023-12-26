@@ -59,9 +59,24 @@ public class DAO {
     	if(limit!=null) {
     		queryO.setMaxResults(limit);	
     	}
-        if (!List.class.isAssignableFrom(returnType)) {
-            throw new IllegalArgumentException("El tipo de retorno debe ser List<T>.");
+    	var list = queryO.getResultList();
+    	if(isListOfType(list, returnType)) {
+    		return list;	
+    	} else {
+    		throw new IllegalArgumentException("not valid type"); 
+    	}
+    }
+    private static <T> boolean isListOfType(List<?> list, Class<T> type) {
+        if (list == null || type == null) {
+            return false;
         }
-    	return queryO.getResultList();
+
+        for (Object obj : list) {
+            if (!type.isInstance(obj)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

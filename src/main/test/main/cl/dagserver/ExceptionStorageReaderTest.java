@@ -19,7 +19,7 @@ class ExceptionStorageReaderTest {
 	public void start() {
 	        DB db = null;
 	        try {
-	        	db = DBMaker.fileDB("C:\\tmp\\dagrags\\exception.db").make();
+	        	db = DBMaker.fileDB("C:\\tmp\\dagrags\\exceptions.db").make();
 				for (final Entry<String, Object> entry : db.getAll().entrySet()) {
 	                final String name = entry.getKey();
 	                final Object value = entry.getValue();

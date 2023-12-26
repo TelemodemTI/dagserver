@@ -39,7 +39,7 @@ import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 import main.cl.dagserver.infra.adapters.confs.InMemoryLoggerAppender;
 
 
-public class DagExecutable implements Job,JobListener {
+public class DagExecutable implements Job,JobListener  {
 	
 	private static final String VALUE = "value";
 	private static final String EVALSTRING = "evalstring";
@@ -97,7 +97,7 @@ public class DagExecutable implements Job,JobListener {
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
-		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		ApplicationContext appCtx = ApplicationContextUtils.getApplicationContext();
 		if(appCtx!=null) {
 			repo =  appCtx.getBean("schedulerRepository", SchedulerRepositoryOutputPort.class);
 			eventPublisher = appCtx;
@@ -187,7 +187,7 @@ public class DagExecutable implements Job,JobListener {
 	        Map<String, OperatorStatus> status) {
 	    JSONObject xcom = (JSONObject) argsr.get("xcom");
 	    String evalstring = (String) argsr.get(EVALSTRING);
-	    String statusToBe = (String) argsr.get(STATUSTOBE);
+	    OperatorStatus statusToBe = (OperatorStatus) argsr.get(STATUSTOBE);
 	    Class<?> clazz = node.operator;
 	    ExecutorService executorService = Executors.newSingleThreadExecutor();
 	    return executorService.submit(() -> {
@@ -466,4 +466,6 @@ public class DagExecutable implements Job,JobListener {
 	public void setExecutionSource(String executionSource) {
 		this.executionSource = executionSource;
 	}
+
+	
 }
