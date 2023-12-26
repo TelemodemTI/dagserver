@@ -1,6 +1,7 @@
 package main.cl.dagserver.infra.adapters.input.rabbit;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,39 +35,45 @@ public class RabbitChannel {
 	@Value( "${param.rabbit.refresh.timeout}" )
 	private Integer rabbitRefresh;
 	
-	@Autowired
-	RabbitChannelUseCase handler;
-	
-	@Autowired
+	private static final String QUEUE = "queue";
+	private Boolean someCondition = false;
+	private RabbitChannelUseCase handler;
     private ApplicationEventPublisher eventPublisher;
-	
-	private Thread listener;
 	private List<Map<String,String>> runningConsumers;
-	private Channel channel;
+	private Channel channel1;
+	
+	@Autowired
+	public RabbitChannel(RabbitChannelUseCase handler,ApplicationEventPublisher eventPublisher){
+		this.handler = handler;
+		this.eventPublisher = eventPublisher;
+	}
 	
 	@PostConstruct
 	public void listenerHandler() {
 		runningConsumers = new ArrayList<>();
-		listener = new Thread(new Runnable() {
-            public void run() {
+		Thread listener = new Thread(()-> {
             	try {
 					runForever();
-				} catch (Exception e) {
+            	} catch (InterruptedException ie) {
+            		Thread.currentThread().interrupt();
+            	} catch (Exception e) {
 					eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "listenerHandler"));
 				}
-            }
         });
 		listener.start(); 
 	}	
-	private void runForever() throws Exception {
+	private void runForever() throws IOException, TimeoutException, InterruptedException, DomainException {
 		Boolean longRunning = true;
-    	while(longRunning) {
+    	while(longRunning.equals(Boolean.TRUE)) {
        		Properties rabbitprops = handler.getRabbitChannelProperties();
     		String status = rabbitprops.getProperty("STATUS");
     		if(status != null && status.equals("ACTIVE")){
-    			if(channel == null) {
-    				channel = getConnection(rabbitprops);	
+    			if(channel1 == null) {
+    				channel1 = getConnection(rabbitprops);	
     			}
+    			if (someCondition.equals(Boolean.TRUE)) {
+    				longRunning = false;
+               }
     			configureListener(rabbitprops);
     		}
     		Thread.sleep(rabbitRefresh);	
@@ -80,11 +87,10 @@ public class RabbitChannel {
 		factory.setPort(Integer.parseInt(rabbitprops.getProperty("port")));
 
 		try(Connection conn = factory.newConnection();){
-			Channel channel = conn.createChannel();
-			return channel;	
+			return conn.createChannel();
 		}
 	}	
-	private void configureListener(Properties rabbitprops) throws IOException, TimeoutException {
+	private void configureListener(Properties rabbitprops) throws IOException {
 		Set<Object> keys = rabbitprops.keySet();
 		List<String> queues = new ArrayList<>();
 		for (Object key : keys) {
@@ -94,28 +100,28 @@ public class RabbitChannel {
             	queues.add(clave);
             }
         }
-		if(validateNewConsumer(queues)) {
-			addConsumers(rabbitprops, queues);
+		if(validateNewConsumer(queues).equals(Boolean.TRUE)) {
+			addConsumers(queues);
 		}
-		if(validateDeleteConsumer(queues)) {
-			removeConsumers(rabbitprops,queues);
+		if(validateDeleteConsumer(queues).equals(Boolean.TRUE)) {
+			removeConsumers(queues);
 		}
 	}
-	private void removeConsumers(Properties rabbitprops, List<String> queues) throws IOException {
+	private void removeConsumers(List<String> queues) throws IOException {
 		for (Iterator<Map<String,String>> iterator = runningConsumers.iterator(); iterator.hasNext();) {
 			Map<String,String> runningConsumer = iterator.next();
-			String queueRunning = runningConsumer.get("queue");
+			String queueRunning = runningConsumer.get(QUEUE);
 			String consumerTagRunning = runningConsumer.get("consumerTag");
 			if(!queues.contains(queueRunning)) {
-				channel.basicCancel(consumerTagRunning);
+				channel1.basicCancel(consumerTagRunning);
 			}
 		}
 	}
-	private boolean validateDeleteConsumer(List<String> queues) {
+	private Boolean validateDeleteConsumer(List<String> queues) {
 		Boolean rv = false;
 		for (Iterator<Map<String,String>> iterator = runningConsumers.iterator(); iterator.hasNext();) {
 			Map<String,String> runningConsumer = iterator.next();
-			String queueRunning = runningConsumer.get("queue");
+			String queueRunning = runningConsumer.get(QUEUE);
 			if(!queues.contains(queueRunning)) {
 				rv = true;
 				break;
@@ -123,12 +129,12 @@ public class RabbitChannel {
 		}
 		return rv;
 	}
-	private void addConsumers(Properties rabbitprops,List<String> queues) throws IOException {
+	private void addConsumers(List<String> queues) throws IOException {
 		boolean autoAck = false;
 		for (Iterator<String> iterator = queues.iterator(); iterator.hasNext();) {
 			String string = iterator.next();
 			String consumerTagIn = string + "_consumerTag";
-			String consumerTag = channel.basicConsume(string, autoAck, consumerTagIn, new DefaultConsumer(channel) {
+			String consumerTag = channel1.basicConsume(string, autoAck, consumerTagIn, new DefaultConsumer(channel1) {
 		         @Override
 		         public void handleDelivery(String consumerTag,
 		                                    Envelope envelope,
@@ -137,18 +143,18 @@ public class RabbitChannel {
 		             String routingKey = envelope.getRoutingKey();
 		             String contentType = properties.getContentType();
 		             long deliveryTag = envelope.getDeliveryTag();
-		             String bodyStr = new String(body,"UTF-8");    
+		             String bodyStr = new String(body,StandardCharsets.UTF_8);    
 		             try {
 		            	handler.raiseEvent(bodyStr,string,routingKey,contentType);	
 		             } catch (Exception e) {
 		            	 eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "addConsumers"));
 		             }
 		             
-		             channel.basicAck(deliveryTag, false);
+		             channel1.basicAck(deliveryTag, false);
 		         }
 			});
 			Map<String,String> item = new HashMap<>();
-			item.put("queue", string);
+			item.put(QUEUE, string);
 			item.put("consumerTag", consumerTag);
 			runningConsumers.add(item);
 		}
@@ -160,13 +166,13 @@ public class RabbitChannel {
 			 Boolean exist = false;
 			 for (Iterator<Map<String,String>> iterator2 = runningConsumers.iterator(); iterator2.hasNext();) {
 				 Map<String,String> runningConsumer = iterator2.next();
-				 String queueRunning = runningConsumer.get("queue");
+				 String queueRunning = runningConsumer.get(QUEUE);
 				 if(queueRunning.equals(queue)) {
 					 exist = true;
 					 break;
 				 }
 			}
-			if(!exist) {
+			if(exist.equals(Boolean.FALSE)) {
 				rv = true;
 				break;
 			}

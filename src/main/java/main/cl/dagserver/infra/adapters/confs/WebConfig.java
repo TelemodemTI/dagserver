@@ -38,10 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
 	private static final String APP_MIGRATION_JDBC_TYPE = "APP_MIGRATION_JDBC_TYPE";
 	private static final String APP_JDBC_PASSWORD = "APP_JDBC_PASSWORD";
 	private static final String APP_HIBERNATE_DIALECT = "APP_HIBERNATE_DIALECT"; 
-	
-	@Autowired
-    private ApplicationEventPublisher eventPublisher;
-	
+
 	@Value( "${org.quartz.dataSource.quartzDS.URL}" )
 	private String dbHost;
 	
@@ -62,12 +59,18 @@ public class WebConfig implements WebMvcConfigurer {
 	
 	private List<Job> defaultjobs;
 
-	@Autowired
-	QuartzConfig quartz;
 	
-	@Autowired 
-	GetDefaultJobsUseCase defaults;
-
+	private QuartzConfig quartz;
+	private GetDefaultJobsUseCase defaults;
+    private ApplicationEventPublisher eventPublisher;
+	
+	@Autowired
+	public WebConfig(ApplicationEventPublisher eventPublisher, QuartzConfig quartz, GetDefaultJobsUseCase defaults) {
+	    this.eventPublisher = eventPublisher;
+	    this.quartz = quartz;
+	    this.defaults = defaults;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@EventListener(ContextRefreshedEvent.class)
 	public void contextRefreshedEvent(ContextRefreshedEvent context) {

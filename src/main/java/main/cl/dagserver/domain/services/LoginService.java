@@ -19,10 +19,7 @@ import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 @ImportResource("classpath:properties-config.xml")
 public class LoginService implements LoginUseCase ,Function<List<String>,String> {
 
-	@Autowired
 	private TokenEngine tokenEngine;
-	
-	@Autowired
 	private SchedulerRepositoryOutputPort repository;
 	
 	@Value( "${param.jwt_secret}" )
@@ -37,7 +34,11 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 	@Value( "${param.jwt_ttl}" )
 	private Integer jwtTtl;
 	
-	
+	@Autowired
+	public LoginService(TokenEngine tokenEngine,SchedulerRepositoryOutputPort repository) {
+		this.tokenEngine = tokenEngine;
+		this.repository = repository;
+	}
 	
 	private String login(String username,String hash) {
 		List<UserDTO> list = repository.findUser(username);

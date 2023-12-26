@@ -21,7 +21,7 @@ import main.cl.dagserver.domain.core.TokenEngine;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 
-public class RedisChannelServiceTest {
+class RedisChannelServiceTest {
 
 	private RedisChannelService service = new RedisChannelService();
 	

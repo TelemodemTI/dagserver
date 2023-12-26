@@ -21,7 +21,7 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 		try {
 			log.debug(this.getClass()+" init "+this.name);
 			var prop = new Properties();
-			ApplicationContext appCtx = ApplicationContextUtils.getApplicationContext();
+			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 			if(appCtx!=null) {
 				var repo =  appCtx.getBean("schedulerRepository", SchedulerRepositoryOutputPort.class);
 				var scheduler = appCtx.getBean("jarSchedulerAdapter",JarSchedulerOutputPort.class);

@@ -29,15 +29,15 @@ import main.cl.dagserver.infra.adapters.input.graphql.QueryResolver;
 @CrossOrigin(origins = "*")
 public class GraphQlController {
 	
-	
-	@Autowired
 	private QueryResolver queryResolver;
-
-	@Autowired
 	private MutationResolver mutationResolver;
-	
-	
 	private GraphQL graphQL;
+	
+	@Autowired
+	public GraphQlController(QueryResolver queryResolver,MutationResolver mutationResolver) {
+		this.queryResolver = queryResolver;
+		this.mutationResolver = mutationResolver;
+	}
 	
 	@PostConstruct
 	public void init() {		

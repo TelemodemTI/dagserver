@@ -9,19 +9,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.jupiter.api.Test;
+
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.core.TokenEngine;
 import main.cl.dagserver.domain.exceptions.DomainException;
-
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
-import java.util.HashMap;
-import java.util.Map;
-import static org.mockito.ArgumentMatchers.anyString;
 
-public class StageApiServiceTest {
+class StageApiServiceTest {
 
 	private StageApiService service = new StageApiService();
 	
@@ -51,34 +48,19 @@ public class StageApiServiceTest {
 		ReflectionTestUtils.setField(service, "jwtSigner", "jwtSigner");
 		ReflectionTestUtils.setField(service, "jwtSubject", "jwtSubject");
 	}
+	
 	@Test
 	void executeTmpTest() throws JSONException, DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
-		JSONObject daguncompiled = new JSONObject();
-		JSONObject item = new JSONObject();
 		JSONArray boxes = new JSONArray();
-		JSONObject box = new JSONObject();
-		box.put("type", "main.infra.adapters.operators.DummyOperator");
-		box.put("id", "test");
-		box.put("status", "ANY");
-		JSONObject source = new JSONObject();
-		JSONObject attrs = new JSONObject();
-		JSONObject labels = new JSONObject();
-		labels.put("text", "name");
-		attrs.put("label", labels);
-		source.put("attrs", attrs);
-		box.put("source", source);
-		boxes.put(box);
-		item.put("boxes", boxes);
+		JSONObject dag = new JSONObject();
+		dag.put("name", "name");
+		dag.put("boxes", boxes);
+		JSONObject rv = new JSONObject();
 		JSONArray arr = new JSONArray();
-		arr.put(item);
-		daguncompiled.put("dags", arr);
-		when(repository.getUncompiledBin(anyInt())).thenReturn(daguncompiled.toString());
-		var rt = service.executeTmp(1, "dagname", "stepname", "token");
-		assertNotNull(rt);
+		arr.put(dag);
+		rv.put("dags", arr);
+		when(repository.getUncompiledBin(anyInt())).thenReturn(rv.toString());
+		var rv1 = service.executeTmp(1, "dagname", "stepname", "token");
+		assertNotNull(rv1);
 	}
 }

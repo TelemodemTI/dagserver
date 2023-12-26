@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
@@ -71,7 +72,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
         }
 		return options;
 	}
-	private void setupDAG(JSONArray steps,TemporalDagExecutable dagtmp) throws Exception {
+	private void setupDAG(JSONArray steps,TemporalDagExecutable dagtmp) throws ClassNotFoundException, JSONException, DomainException {
 		for (int j = 0; j < steps.length(); j++) {
 			JSONObject step = steps.getJSONObject(j);
 			Class<?> impl = Class.forName(step.getString("type"));

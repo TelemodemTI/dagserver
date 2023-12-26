@@ -42,6 +42,8 @@ import main.cl.dagserver.infra.adapters.confs.InMemoryLoggerAppender;
 public class DagExecutable implements Job,JobListener {
 	
 	private static final String VALUE = "value";
+	private static final String EVALSTRING = "evalstring";
+	private static final String STATUSTOBE = "statusToBe";
 	
 	protected class DagNode {
 		protected Class<?> operator;
@@ -95,10 +97,10 @@ public class DagExecutable implements Job,JobListener {
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
-		ApplicationContext appCtx = ApplicationContextUtils.getApplicationContext();
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 		if(appCtx!=null) {
 			repo =  appCtx.getBean("schedulerRepository", SchedulerRepositoryOutputPort.class);
-			eventPublisher = (ApplicationEventPublisher) appCtx;
+			eventPublisher = appCtx;
 		}
 	}
 	
@@ -154,42 +156,64 @@ public class DagExecutable implements Job,JobListener {
 			}
 			parmdata.put(VALUE,fa.getResult());
 			repo.setLog(parmdata,status,timestamps);
-			Class<?> clazz = node.operator;
-			ExecutorService executorService = Executors.newSingleThreadExecutor();
-			Future<?> future = executorService.submit(() -> {
-			    try {
-			    	Map<String,Object> args = new HashMap<>();
-			    	args.put("evalstring", evalstring);
-			    	args.put("clazz", clazz);
-			    	args.put("node", node);
-			    	args.put("xcom", xcom);
-			    	args.put("statusToBe", statusToBe);
-			    	args.put("logdag", logdag);
-			    	args.put("status", status);
-			    	args.put("fa", fa);
-					this.instanciateEvaluate(args,parmdata,timestamps);
-				} catch (JobExecutionException e) {
-					logdag.error(e);
-				}
-			});
+			Map<String,Object> argsr = new HashMap<>();
+			argsr.put(EVALSTRING, evalstring);
+			argsr.put(STATUSTOBE, statusToBe);
+			argsr.put("xcom", xcom);
+			Future<?> future = this.futureDelegate(node, logdag, parmdata, timestamps, argsr, fa, status);
 			try {
 				future.get(); 
 			    parmdata.put(VALUE,fa.getResult());
 			    Long dt = new Date().getTime();
 			    timestamps.add(dt.toString());
 			    repo.setLog(parmdata,status,timestamps);	
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				throw new JobExecutionException(e);
 			}
 		}
 		return this.setLogEvaluate(fa, xcom, status,parmdata,timestamps);
 	}
+	
+	@SuppressWarnings("rawtypes")
+	protected Future futureDelegate(
+	        DagNode node,
+	        Logger logdag,
+	        Map<String, String> parmdata,
+	        List<String> timestamps,
+	        Map<String, Object> argsr,
+	        InMemoryLoggerAppender fa,
+	        Map<String, OperatorStatus> status) {
+	    JSONObject xcom = (JSONObject) argsr.get("xcom");
+	    String evalstring = (String) argsr.get(EVALSTRING);
+	    String statusToBe = (String) argsr.get(STATUSTOBE);
+	    Class<?> clazz = node.operator;
+	    ExecutorService executorService = Executors.newSingleThreadExecutor();
+	    return executorService.submit(() -> {
+	        try {
+	            Map<String, Object> args = new HashMap<>();
+	            args.put(EVALSTRING, evalstring);
+	            args.put("clazz", clazz);
+	            args.put("node", node);
+	            args.put("xcom", xcom);
+	            args.put(STATUSTOBE, statusToBe);
+	            args.put("logdag", logdag);
+	            args.put("status", status);
+	            args.put("fa", fa);
+	            this.instanciateEvaluate(args, parmdata, timestamps);
+	        } catch (JobExecutionException e) {
+	            logdag.error(e);
+	        }
+	    });
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected void instanciateEvaluate(Map<String,Object> args,Map<String,String> parmdata, List<String> timestamps) throws JobExecutionException {
 		Class<?> clazz = (Class<?>) args.get("clazz");
 		DagNode node = (DagNode) args.get("node");
 		JSONObject xcom = (JSONObject) args.get("xcom");
-		OperatorStatus statusToBe = (OperatorStatus) args.get("statusToBe");
+		OperatorStatus statusToBe = (OperatorStatus) args.get(STATUSTOBE);
 		Logger logdag = (Logger) args.get("logdag");
 		Map<String,OperatorStatus> status = (Map<String, OperatorStatus>) args.get("status");
 		InMemoryLoggerAppender fa = (InMemoryLoggerAppender) args.get("fa");
@@ -355,7 +379,7 @@ public class DagExecutable implements Job,JobListener {
 	
 	@Override
 	public void jobExecutionVetoed(JobExecutionContext context) {
-		
+		//not necesarry until now
 	}
 
 	@Override

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
 class DefaultControllerTest {
 
-	private DefaultController controller = new DefaultController(); 
+	private DefaultController controller; 
 	
 	@Mock
 	private GitHubWebHookUseCase handler;
@@ -39,8 +39,10 @@ class DefaultControllerTest {
     public void init() {
 		handler = mock(GitHubWebHookUseCase.class);
 		stage = mock(StageApiUsecase.class);
+		controller = new DefaultController(handler, stage);
 		ReflectionTestUtils.setField(controller, "handler", handler);
 		ReflectionTestUtils.setField(controller, "api", stage);
+		
 	}
 	
     @Test

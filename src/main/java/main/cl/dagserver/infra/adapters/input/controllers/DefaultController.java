@@ -31,13 +31,14 @@ import main.cl.dagserver.domain.model.ChannelPropsDTO;
 @CrossOrigin(origins = "*",methods={RequestMethod.GET,RequestMethod.POST})
 public class DefaultController {
 	
-	@Autowired
 	private GitHubWebHookUseCase handler;
-	
-	@Autowired
 	private StageApiUsecase api;
 	
-	
+	@Autowired
+	public DefaultController(GitHubWebHookUseCase handler,StageApiUsecase api) {
+		this.handler = handler;
+		this.api = api;
+	}
 	
 	@GetMapping(path="/version")
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				

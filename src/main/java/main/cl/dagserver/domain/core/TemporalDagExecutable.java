@@ -7,14 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.json.JSONObject;
-import org.quartz.JobExecutionException;
 import org.apache.log4j.Logger;
 
 
@@ -83,24 +80,11 @@ public class TemporalDagExecutable extends DagExecutable  {
 			} else {
 				logdag.debug("no constraint");
 			}
-			Class<?> clazz = node.operator;
-			ExecutorService executorService = Executors.newSingleThreadExecutor();
-			Future<?> future = executorService.submit(() -> {
-			    try {
-			    	Map<String,Object> args = new HashMap<>();
-			    	args.put("evalstring", evalstring);
-			    	args.put("clazz", clazz);
-			    	args.put("node", node);
-			    	args.put("xcom", xcom);
-			    	args.put("statusToBe", statusToBe);
-			    	args.put("logdag", logdag);
-			    	args.put("status", status);
-			    	args.put("fa", fa);
-					this.instanciateEvaluate(args,parmdata,timestamps);
-				} catch (JobExecutionException e) {
-					logdag.error(e.getMessage());
-				}
-			});
+			Map<String,Object> argsr = new HashMap<>();
+			argsr.put("evalstring", evalstring);
+			argsr.put("statusToBe", statusToBe);
+			argsr.put("xcom", xcom);
+			Future<?> future = this.futureDelegate(node, logdag, parmdata, timestamps, argsr, fa, status);
 			while (!future.isDone()) {
 			    try {
 			    	Thread.sleep(500);	
@@ -115,8 +99,6 @@ public class TemporalDagExecutable extends DagExecutable  {
 		logText = fa.getResult();
 		fa.close();
 		
-		
-		//Logger.getRootLogger().removeAppender(fa);
 		return OperatorStatus.OK;
 	}
 	public Logger getLogdag() {

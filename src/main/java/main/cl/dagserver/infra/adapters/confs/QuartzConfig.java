@@ -37,8 +37,8 @@ import org.quartz.utils.Key;
 @Component
 public class QuartzConfig {
 	
-	@Autowired
-	SchedulerRepository repo;
+	
+	private SchedulerRepository repo;
 	
 	
 	private static final String APP_JDBC_URL = "APP_JDBC_URL";
@@ -46,10 +46,15 @@ public class QuartzConfig {
 	private static final String APP_JDBC_DRIVER = "APP_JDBC_DRIVER";
 	private static final String APP_JDBC_PASSWORD = "APP_JDBC_PASSWORD";
 	
-	
+	private static final String VALUE = "value.";
 	
 	private static final String PREFIX_JOB_DB = "";
 	private Scheduler scheduler;
+	
+	@Autowired
+	public QuartzConfig(SchedulerRepository repo) {
+		this.repo = repo;
+	}
 	
 	public Scheduler getScheduler() {
 		return scheduler;
@@ -253,8 +258,8 @@ public class QuartzConfig {
 	public void propertiesToRepo(Properties prop) throws DomainException {
 		List<String> keys = new ArrayList<>();
 		for (String key : prop.stringPropertyNames()) {
-		    if(key.startsWith("value.")) {
-		    	String real = key.replace("value.", "");
+		    if(key.startsWith(VALUE)) {
+		    	String real = key.replace(VALUE, "");
 		    	if(!keys.contains(real)) {
 		    		keys.add(real);
 		    	}
@@ -264,7 +269,7 @@ public class QuartzConfig {
 			String key = iterator.next();
 			String descr = prop.getProperty("desc."+key);
 			String group = prop.getProperty("group."+key);
-			String value = prop.getProperty("value."+key);
+			String value = prop.getProperty(VALUE+key);
 			var props = repo.getProperties(group);
 			boolean found = false;
 	        for (PropertyParameterDTO existingProperty : props) {

@@ -29,96 +29,121 @@ import redis.clients.jedis.JedisCluster;
 @ImportResource("classpath:properties-config.xml")
 public class RedisInputListener {
 	
-	@Autowired
-	RedisChannelUseCase handler;
 	
-	@Autowired
+	private RedisChannelUseCase handler;
     private ApplicationEventPublisher eventPublisher;
 	
 	@Value( "${param.redis.refresh.timeout}" )
 	private Integer redisRefresh;
 	
-	private Thread listener;
+	
 	private Map<String,Thread> bindings;
+	private static final String LISTENER = "listener";
+	private Boolean someCondition = false;
+	
+	@Autowired
+	public RedisInputListener(RedisChannelUseCase handler,ApplicationEventPublisher eventPublisher) {
+		this.handler = handler;
+		this.eventPublisher = eventPublisher;
+	}
 	
 	@PostConstruct
 	public void listener() {
-		var root = this;
-		this.bindings = new HashMap<String,Thread>();
-		this.listener = new Thread(new Runnable() {
-            public void run() {
-            	while(true) {
+		this.bindings = new HashMap<>();
+		 Thread listenerT = new Thread(() -> {
+            
+            	boolean keepRunning = true;
+            	while(keepRunning) {
             		try {
             			Properties redisprops = handler.getRedisChannelProperties();
                     	String status = redisprops.getProperty("STATUS");
             			if(status != null && status.equals("ACTIVE")){
-            				Boolean mode = Boolean.parseBoolean(redisprops.getProperty("redisCluster"));
-            				Properties listenersConfs = handler.getRedisListeners();
-            				var publisher = new JedisPubSub() {
-        	            	    @Override
-        	            	    public void onMessage(String channel, String message) {
-        	            	    	try {
-										handler.raiseEvent(channel,message);
-									} catch (DomainException e) {	
-										eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "listener"));
-									}	
-        	            	    }
-        	            	};
-            				if(mode) {	
-            					for (String clave : listenersConfs.stringPropertyNames()) {
-            			            if(!bindings.containsKey(clave)) {
-                    					Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-                    					List<KeyValue<String,Integer>> nodes = root.getConnectionInfoCluster(redisprops);
-                        				for (Iterator<KeyValue<String, Integer>> iterator = nodes.iterator(); iterator.hasNext();) {
-        									KeyValue<String, Integer> keyValue = iterator.next();
-        									jedisClusterNodes.add(new HostAndPort(keyValue.getKey(), keyValue.getValue()));
-        								}	
-                        				Thread bindingThread = new Thread(new Runnable() {
-                        					@Override
-        									public void run() {
-                        						try(JedisCluster jedisc = new JedisCluster(jedisClusterNodes);){
-                            						jedisc.subscribe(publisher, clave);	
-                            					} catch (Exception e) {
-                            						eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "listener"));
-                								}			
-                        					}
-                        				});
-                        				bindingThread.start();
-                    					bindings.put(clave,bindingThread);
-            			            }
-            			        }	
-                		} else {
-            				for (String clave : listenersConfs.stringPropertyNames()) {
-            					if(!bindings.containsKey(clave)) {
-            						var kv = root.getConectionInfo(redisprops);
-                					Thread bindingThread = new Thread(new Runnable() {
-    									@Override
-    									public void run() {
-    										try(Jedis jSubscriber = new Jedis(kv.getKey(),kv.getValue());){	
-    		                	            	jSubscriber.subscribe(publisher, clave);
-    		                            	} catch (Exception e) {
-    		                            		eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "listener"));
-    		                				}	
-    									}
-                					});
-                					bindingThread.start();
-                					bindings.put(clave,bindingThread);	
-            					}
-            				}
+            				listenerActive(redisprops);
             			}
-					}
-            		Thread.sleep(redisRefresh);	
+            			if (someCondition.equals(Boolean.TRUE)) {
+                             keepRunning = false;
+                        }
+            			Thread.sleep(redisRefresh);	
             	} catch (InterruptedException ie) {
             		Thread.currentThread().interrupt();
             	} catch (Exception e) {
-            		eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "listener"));
+            		eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), LISTENER));
                 	break;
 				}
             }
-           }
 		});
-		this.listener.start();
+		listenerT.start();
 	}
+	
+	private void listenerActive(Properties redisprops) throws DomainException {
+		Boolean mode = Boolean.parseBoolean(redisprops.getProperty("redisCluster"));
+		Properties listenersConfs = handler.getRedisListeners();
+		var publisher = getPublisher();
+		if(mode.equals(Boolean.TRUE)) {	
+			listenerCluster(listenersConfs,redisprops,publisher);
+		} else {
+			for (String clave : listenersConfs.stringPropertyNames()) {
+				if(!bindings.containsKey(clave)) {
+					var kv = this.getConectionInfo(redisprops);
+					Thread bindingThread = getThreadAlt(publisher,clave,kv);
+					bindingThread.start();
+					bindings.put(clave,bindingThread);	
+				}
+			}
+		}
+	}
+	
+	private void listenerCluster(Properties listenersConfs,Properties redisprops,JedisPubSub publisher) {
+		for (String clave : listenersConfs.stringPropertyNames()) {
+            if(!bindings.containsKey(clave)) {
+				Set<HostAndPort> jedisClusterNodes = new HashSet<>();
+				List<KeyValue<String,Integer>> nodes = this.getConnectionInfoCluster(redisprops);
+				for (Iterator<KeyValue<String, Integer>> iterator = nodes.iterator(); iterator.hasNext();) {
+					KeyValue<String, Integer> keyValue = iterator.next();
+					jedisClusterNodes.add(new HostAndPort(keyValue.getKey(), keyValue.getValue()));
+				}	
+				Thread bindingThread = getThread(publisher,jedisClusterNodes,clave);
+				bindingThread.start();
+				bindings.put(clave,bindingThread);
+            }
+        }	
+	}
+	private Thread getThreadAlt(JedisPubSub publisher, String clave, KeyValue<String, Integer> kv) {
+	    return new Thread(() -> {
+	        try (Jedis jSubscriber = new Jedis(kv.getKey(), kv.getValue())) {
+	            jSubscriber.subscribe(publisher, clave);
+	        } catch (Exception e) {
+	            eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), LISTENER));
+	        }
+	    });
+	}
+	
+	private Thread getThread(JedisPubSub publisher,Set<HostAndPort> jedisClusterNodes,String clave) {
+		return new Thread(() -> {
+				try(JedisCluster jedisc = new JedisCluster(jedisClusterNodes);){
+					jedisc.subscribe(publisher, clave);	
+				} catch (Exception e) {
+					eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), LISTENER));
+				}			
+		});
+	}
+	
+	private JedisPubSub getPublisher() {
+		return new JedisPubSub() {
+    	    @Override
+    	    public void onMessage(String channel, String message) {
+    	    	try {
+					handler.raiseEvent(channel,message);
+				} catch (DomainException e) {	
+					eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), LISTENER));
+				}	
+    	    }
+    	};
+	}
+	
+	
+	
+	
 	protected List<KeyValue<String, Integer>> getConnectionInfoCluster(Properties redisprops) {
 		List<KeyValue<String, Integer>> newarr = new ArrayList<>();
 		String[] hosts = redisprops.getProperty("hostname").split(";");
@@ -133,7 +158,9 @@ public class RedisInputListener {
 	}
 	private KeyValue<String, Integer> getConectionInfo(Properties redisprops){
 		Integer port = Integer.parseInt(redisprops.getProperty("port"));
-		KeyValue<String, Integer> rv = new KeyValue<>(redisprops.getProperty("hostname"), port);
-		return rv;
+		return new KeyValue<>(redisprops.getProperty("hostname"), port);
+	}
+	protected void stopListener() {
+		this.someCondition = true;
 	}
 }
