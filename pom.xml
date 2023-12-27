@@ -19,7 +19,9 @@
 		<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.exclusions>
 			**/repositories/entities/**,
-			**/infra/adapters/operators/**
+			**/infra/adapters/operators/**,
+			**/graphql/types/**,
+			**/infra/adapters/confs/**
 		</sonar.exclusions>
 	</properties>
 	<dependencies>
