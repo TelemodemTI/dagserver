@@ -100,12 +100,13 @@ public class RabbitChannel {
             	queues.add(clave);
             }
         }
-		if(validateNewConsumer(queues).equals(Boolean.TRUE)) {
-			addConsumers(queues);
-		}
 		if(validateDeleteConsumer(queues).equals(Boolean.TRUE)) {
 			removeConsumers(queues);
 		}
+		if(validateNewConsumer(queues).equals(Boolean.TRUE)) {
+			addConsumers(queues);
+		}
+		
 	}
 	private void removeConsumers(List<String> queues) throws IOException {
 		for (Iterator<Map<String,String>> iterator = runningConsumers.iterator(); iterator.hasNext();) {
@@ -178,6 +179,18 @@ public class RabbitChannel {
 			}
 		}
 		return rv;
+	}
+
+	public void setSomeCondition(Boolean someCondition) {
+		this.someCondition = someCondition;
+	}
+
+	public void setChannel1(Channel channel1) {
+		this.channel1 = channel1;
+	}
+
+	public void setRunningConsumers(List<Map<String, String>> runningConsumers) {
+		this.runningConsumers = runningConsumers;
 	}
 	
 }
