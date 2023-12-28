@@ -163,4 +163,8 @@ public class RedisInputListener {
 	protected void stopListener() {
 		this.someCondition = true;
 	}
+
+	public void setSomeCondition(Boolean someCondition) {
+		this.someCondition = someCondition;
+	}
 }

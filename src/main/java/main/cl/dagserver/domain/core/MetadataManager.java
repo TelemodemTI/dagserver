@@ -24,7 +24,7 @@ public class MetadataManager {
 		par.put("name", key);
 		par.put("type", type);
 		if(options != null) {
-			par.put("opt", options);
+			par.put("opt", (Object) options);
 		}
 		params.put(par);
 	}
