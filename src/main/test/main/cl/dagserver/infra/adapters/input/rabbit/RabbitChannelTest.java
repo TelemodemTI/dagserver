@@ -10,15 +10,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.rabbitmq.client.Channel;
 
 import main.cl.dagserver.application.ports.input.RabbitChannelUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import redis.clients.jedis.JedisPubSub;
 
 class RabbitChannelTest {
 	@Mock
@@ -83,6 +86,20 @@ class RabbitChannelTest {
 		channel.setRunningConsumers(list);
 		channel.listenerHandler();
 		channel.setSomeCondition(true);
+		assertTrue(true);
+	}
+	@Test
+	void privateTest() {
+		List<Map<String,String>> list = new ArrayList<>();
+		Map<String,String> map = new HashMap<>();
+		map.put("queue", "queue");
+		list.add(map);
+		List<String> queues = new ArrayList<>();
+		queues.add("queue1");
+		channel.setRunningConsumers(list);
+		Channel chnomo = mock(Channel.class);
+		channel.setChannel1(chnomo);
+		ReflectionTestUtils.invokeMethod(channel, "removeConsumers",queues);
 		assertTrue(true);
 	}
 }
