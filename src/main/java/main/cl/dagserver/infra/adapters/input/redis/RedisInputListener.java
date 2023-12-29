@@ -167,4 +167,8 @@ public class RedisInputListener {
 	public void setSomeCondition(Boolean someCondition) {
 		this.someCondition = someCondition;
 	}
+
+	public void setBindings(Map<String, Thread> bindings) {
+		this.bindings = bindings;
+	}
 }

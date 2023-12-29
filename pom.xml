@@ -21,7 +21,14 @@
 			**/repositories/entities/**,
 			**/infra/adapters/operators/**,
 			**/graphql/types/**,
-			**/infra/adapters/confs/**
+			**/domain/core/**,
+			**/domain/annotations/**,
+			**/domain/enums/**,
+			**/domain/exceptions/**,
+			**/domain/model/**,
+			**/infra/adapters/confs/**,
+			**/application/pojos/**,
+			**DagserverApplication.java
 		</sonar.exclusions>
 	</properties>
 	<dependencies>

@@ -13,7 +13,7 @@ class DirectoryClassFileLocatorTest {
 	
 	@BeforeEach
     void init() {
-		locator = new DirectoryClassFileLocator("c:\\tmp\\");
+		locator = new DirectoryClassFileLocator("c:\\tmp\\dagrags\\");
 	}
 	
 	@Test

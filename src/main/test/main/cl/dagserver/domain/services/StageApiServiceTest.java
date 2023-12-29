@@ -51,16 +51,9 @@ class StageApiServiceTest {
 	
 	@Test
 	void executeTmpTest() throws JSONException, DomainException {
-		JSONArray boxes = new JSONArray();
-		JSONObject dag = new JSONObject();
-		dag.put("name", "name");
-		dag.put("boxes", boxes);
-		JSONObject rv = new JSONObject();
-		JSONArray arr = new JSONArray();
-		arr.put(dag);
-		rv.put("dags", arr);
-		when(repository.getUncompiledBin(anyInt())).thenReturn(rv.toString());
-		var rv1 = service.executeTmp(1, "dagname", "stepname", "token");
+		when(repository.getUncompiledBin(anyInt())).thenReturn("{\"jarname\":\"dagJar1.jar\",\"dags\":[{\"cron\":\"0 0/1 * * * ?\",\"boxes\":[{\"rect\":{\"size\":{\"width\":100,\"height\":40},\"angle\":0,\"z\":1,\"position\":{\"x\":101,\"y\":70},\"id\":\"05078a67-e245-41de-afbc-204c285c5cdb\",\"type\":\"standard.Image\",\"attrs\":{\"image\":{\"xlink:href\":\"/assets/images/operators/dummy.png\"},\"rect\":{\"rx\":5,\"ry\":5,\"fill\":\"#42C1C1\"},\"label\":{\"text\":\"step1\",\"fill\":\"black\"}}},\"id\":\"step1\",\"type\":\"main.cl.dagserver.infra.adapters.operators.DummyOperator\",\"status\":\"ANY\"}],\"loc\":\"\",\"name\":\"DAG_kvSFRQ\",\"trigger\":\"cron\",\"class\":\"generated_dag.main.DAG_kvSFRQ\",\"group\":\"main.group\",\"target\":\"DAG\"}]}");
+		var rv1 = service.executeTmp(1, "DAG_kvSFRQ", "step1", "token");
 		assertNotNull(rv1);
 	}
+	
 }

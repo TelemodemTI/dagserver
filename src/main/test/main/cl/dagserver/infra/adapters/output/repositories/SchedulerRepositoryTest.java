@@ -1,9 +1,7 @@
 package main.cl.dagserver.infra.adapters.output.repositories;
 
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertThrows;
 import static org.testng.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -14,9 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import static org.mockito.ArgumentMatchers.anyString;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -218,6 +214,12 @@ class SchedulerRepositoryTest {
 	}
 	@Test
 	void getUncompiledsTest() {
+		ScheUncompiledDags pp = new ScheUncompiledDags();
+		pp.setName("test");
+		pp.setCreatedDt(new Date());
+		List<Object> props = new ArrayList<>();
+		props.add(pp);
+		when(dao.read(any(), anyString())).thenReturn(props);
 	   var uncompileds = repo.getUncompileds();
 	   assertNotNull(uncompileds);
 	}
@@ -225,6 +227,7 @@ class SchedulerRepositoryTest {
 	void getUncompiledBinTest() {
 		ScheUncompiledDags pp = new ScheUncompiledDags();
 		pp.setBin("bin");
+		pp.setCreatedDt(new Date());
 		List<Object> props = new ArrayList<>();
 		props.add(pp);
 		when(dao.read(any(), anyString())).thenReturn(props);
