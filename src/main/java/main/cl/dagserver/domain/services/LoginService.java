@@ -1,9 +1,14 @@
 package main.cl.dagserver.domain.services;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -17,7 +22,7 @@ import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 
 @Service
 @ImportResource("classpath:properties-config.xml")
-public class LoginService implements LoginUseCase ,Function<List<String>,String> {
+public class LoginService implements LoginUseCase ,Function<String,String> {
 
 	private TokenEngine tokenEngine;
 	private SchedulerRepositoryOutputPort repository;
@@ -40,32 +45,66 @@ public class LoginService implements LoginUseCase ,Function<List<String>,String>
 		this.repository = repository;
 	}
 	
-	private String login(String username,String hash) {
+	private String login(JSONObject reqobject) {
+		String username = reqobject.getString("username");
 		List<UserDTO> list = repository.findUser(username);
 		if(!list.isEmpty() ) {
 			UserDTO user = list.get(0);
-			if(hash.equals(user.getPwdhash())) {
-				Map<String,String> claims = new HashMap<>();
+			String pkstr = user.getPwdhash() + reqobject.getString("private_key");
+            String hashHex = calculateHash(pkstr);
+            String hashHexCh = calculateHash(reqobject.getString("challenge"));
+            String combinedData = hashHex + hashHexCh;
+            String hashHexCombined = calculateHash(combinedData);
+            if(reqobject.getString("blind_signature").equals(hashHexCombined)){
+            	Map<String,String> claims = new HashMap<>();
 				claims.put("typeAccount", user.getTypeAccount());
 				claims.put("username", username);
 				claims.put("userid", user.getId().toString());
 				return tokenEngine.tokenize(jwtSecret, jwtSigner, jwtSubject, jwtTtl, claims);
-			} else {
-				return "";
-			}
+            } else {
+            	return "";
+            }
 		} else {
 			return "";
 		}
 	}	
 	@Override
-	public String apply(List<String> t) {
-		var username = t.get(0);
-		var pwd = t.get(1);
+	public String apply(String t) {
 		try {
-			return this.login(username, pwd);
+			byte[] decodedBytes = Base64.getDecoder().decode(t);
+            String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+            JSONObject jsonObject = new JSONObject(decodedString);
+
+			return this.login(jsonObject);
 		} catch (Exception e) {
 			return "";
 		}
 	}
+	
+	public static String calculateHash(String input) {
+        try {
+            // Crear un objeto de MessageDigest para SHA-256
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // Obtener el hash calculado en bytes
+            byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+
+            // Convertir el hash a una representación hexadecimal
+            StringBuilder hexString = new StringBuilder();
+            for (byte hashByte : hashBytes) {
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (Exception e) {
+            // Manejar excepciones según sea necesario
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

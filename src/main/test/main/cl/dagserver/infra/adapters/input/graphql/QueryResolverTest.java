@@ -62,8 +62,8 @@ class QueryResolverTest {
 	}
 	@Test
 	void loginTest() {
-		when(login.apply(anyList())).thenReturn("test");
-		var test = resolver.login("test", "test");
+		when(login.apply(anyString())).thenReturn("test");
+		var test = resolver.login("test");
 		assertEquals("test", test);
 	}
 	@Test

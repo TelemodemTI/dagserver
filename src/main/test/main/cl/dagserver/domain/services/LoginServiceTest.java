@@ -64,7 +64,7 @@ class LoginServiceTest {
 		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
 		
 		when(repo.findUser(anyString())).thenReturn(list);
-		login.apply(Arrays.asList("test","test"));
+		login.apply("test");
 		assertTrue(true);
 	}
 	
@@ -86,7 +86,7 @@ class LoginServiceTest {
 		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
 		
 		when(repo.findUser(anyString())).thenReturn(list);
-		var str = login.apply(Arrays.asList("test","test"));
+		var str = login.apply("test");
 		assertNotNull(str);
 	}
 }

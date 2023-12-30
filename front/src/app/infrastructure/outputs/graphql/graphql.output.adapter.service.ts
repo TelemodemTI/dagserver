@@ -511,10 +511,12 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
       })
     })
   }
-  login(user: any, pwd: any): Promise<boolean> {
+  login(ureqobject: any): Promise<boolean> {
+
+    var token = btoa(JSON.stringify(ureqobject));
     return new Promise<boolean>((resolve, reject) => {
-      const string = "query login($username: String!,$pwd: String!) { login(username:$username,pwdhash:$pwd) }";
-      this.query(string,{username:user,pwd: pwd}).subscribe((result:any)=>{
+      const string = "query login($token: String!) { login(token:$token) }";
+      this.query(string,{token:token}).subscribe((result:any)=>{
         try {
           if(result){
             if (result.login ) {

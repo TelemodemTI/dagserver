@@ -14,4 +14,19 @@ import * as CryptoJS from 'crypto-js';
             return  res.toString();
     }
     
+    public get_desafio(){
+      return CryptoJS.lib.WordArray.random(16).toString();
+    }
+
+    public generate_blind(password:string,desafio: string){ 
+      const passwordHash = CryptoJS.SHA256(password).toString();
+      const privateKey = CryptoJS.lib.WordArray.random(16).toString();
+      const publicKey = CryptoJS.SHA256(passwordHash+privateKey).toString();
+      const challengeHash = CryptoJS.SHA256(desafio).toString();
+      const blindSignature = CryptoJS.SHA256(publicKey + challengeHash).toString();
+      return {
+        private_key: privateKey,
+        blind_signature: blindSignature,
+      };
+    }
   }

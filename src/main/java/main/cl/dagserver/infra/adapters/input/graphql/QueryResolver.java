@@ -1,7 +1,6 @@
 package main.cl.dagserver.infra.adapters.input.graphql;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -46,8 +45,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 		this.mapper = mapper;
 	}
 	
-	public String login(String username,String pwdhash) {
-		return login.apply(Arrays.asList(username, pwdhash));
+	public String login(String token) {
+		return login.apply(token);
 	}
 	
 	public String operatorsMetadata() throws DomainException {

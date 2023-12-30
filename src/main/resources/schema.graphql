@@ -96,7 +96,7 @@ type Account {
 
 
 type Query { 
-	login(username: String ,pwdhash: String) : String,
+	login(token: String) : String,
 	getIcons(type:String) : String,
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 
