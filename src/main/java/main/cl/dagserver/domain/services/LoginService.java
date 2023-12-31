@@ -2,11 +2,12 @@ package main.cl.dagserver.domain.services;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 
 @Service
 @ImportResource("classpath:properties-config.xml")
-public class LoginService implements LoginUseCase ,Function<String,String> {
+public class LoginService implements LoginUseCase ,UnaryOperator<String> {
 
 	private TokenEngine tokenEngine;
 	private SchedulerRepositoryOutputPort repository;
@@ -45,7 +46,7 @@ public class LoginService implements LoginUseCase ,Function<String,String> {
 		this.repository = repository;
 	}
 	
-	private String login(JSONObject reqobject) {
+	private String login(JSONObject reqobject) throws NoSuchAlgorithmException {
 		String username = reqobject.getString("username");
 		List<UserDTO> list = repository.findUser(username);
 		if(!list.isEmpty() ) {
@@ -81,8 +82,8 @@ public class LoginService implements LoginUseCase ,Function<String,String> {
 		}
 	}
 	
-	public static String calculateHash(String input) {
-        try {
+	public static String calculateHash(String input) throws NoSuchAlgorithmException {
+        
             // Crear un objeto de MessageDigest para SHA-256
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
@@ -100,11 +101,7 @@ public class LoginService implements LoginUseCase ,Function<String,String> {
             }
 
             return hexString.toString();
-        } catch (Exception e) {
-            // Manejar excepciones según sea necesario
-            e.printStackTrace();
-            return null;
-        }
+        
     }
 
 }
