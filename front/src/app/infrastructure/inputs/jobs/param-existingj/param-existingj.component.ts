@@ -91,7 +91,6 @@ export class ParamExistingjComponent {
       }
       $('#param-modalexistingj').modal('show');    
   }
-
   updateParams(){
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
     let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
