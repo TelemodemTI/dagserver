@@ -1,44 +1,58 @@
 package main.cl.dagserver.infra.adapters.output.repositories;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.File;
+import java.util.concurrent.ConcurrentMap;
 import org.json.JSONObject;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.stereotype.Component;
 
+import groovyjarjarantlr4.v4.codegen.model.dbg;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
+@Component
+@ImportResource("classpath:properties-config.xml")
 public class InternalStorage {
 	
+	
 	private String locatedb = null;
+	@SuppressWarnings("rawtypes")
+	private ConcurrentMap map = null;
 
-	public InternalStorage(String path ) {
-		this.locatedb = path;
+	
+	public InternalStorage(@Value("${param.xcompath}")String xcomfolder) {
+		deleteExistingFile(xcomfolder);
+		DB db = DBMaker.fileDB(xcomfolder).fileDeleteAfterClose().make();
+		map = db.hashMap("xcom").createOrOpen();
+	}
+	
+	public void init(String name ) {
+		this.locatedb = name;
 	}
 	
 	public String getLocatedb() {
 		return  locatedb;
 	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void put(JSONObject json) throws DomainException {
-		if(json.length() > 0) {
-			try (FileWriter file = new FileWriter(locatedb)) {
-			    file.write(json.toString());
-			    file.flush();
-			} catch (IOException e) {
-			    throw new DomainException(e);
-			}	
-		}
+		map.put(locatedb, json.toString());	
 	}
+	@SuppressWarnings({ "rawtypes" })
 	public JSONObject get() {
-		StringBuilder content = new StringBuilder();
-		try(FileReader reader = new FileReader(locatedb);) {
-	        int character;
-	        while ((character = reader.read()) != -1) {
-	                content.append((char) character);
-	        }
-	        return new JSONObject(content.toString());
-		} catch (Exception e) {
-			return new JSONObject();
-		}
+		String jsonstr = (String) map.get(locatedb);
+		return new JSONObject(jsonstr);
 	}
-	
+	private void deleteExistingFile(String xcomfolder) {
+        File file = new File(xcomfolder);
+        if (file.exists()) {
+            boolean deleted = file.delete();
+            if (deleted) {
+                System.out.println("Archivo existente eliminado con éxito.");
+            } else {
+                System.err.println("No se pudo eliminar el archivo existente.");
+            }
+        }
+    }
 }

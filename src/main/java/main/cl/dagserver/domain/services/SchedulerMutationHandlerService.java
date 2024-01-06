@@ -207,6 +207,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			repository.setProperty(name,repositoryUrl,secret,this.gitHubPropkey);
 			repository.setProperty(DAGNAME, GENERATED, dagname, name);
 			repository.setProperty(JARNAME, GENERATED, jarname, name);
+			repository.setProperty("STATUS", "github channel status", "ACTIVE", "GITHUB_WEBHOOK_PROPS");
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

@@ -256,8 +256,8 @@ public class DagExecutable implements Job,JobListener  {
 		} catch (Exception e) {
 			var keys = this.constraints.keySet();
 			List<OperatorStatus> statusNow = new ArrayList<>();
-			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-				String string = (String) iterator.next();
+			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String string = iterator.next();
 				if(string.startsWith(node.name+".")) {
 					statusNow.add(this.constraints.get(string));	
 				}

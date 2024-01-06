@@ -80,8 +80,8 @@ public class TemporalDagExecutable extends DagExecutable  {
 			
 			var keys = this.constraints.keySet();
 			List<OperatorStatus> statusNow = new ArrayList<>();
-			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-				String string = (String) iterator.next();
+			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String string = iterator.next();
 				if(string.endsWith("."+node.name)) {
 					stepf = string.split("\\.")[0];
 					statusNow.add(this.constraints.get(string));	

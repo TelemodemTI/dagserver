@@ -99,13 +99,7 @@ class JarSchedulerAdapterTest {
 		var rv = adapter.getIcons("main.cl.dagserver.infra.adapters.operators.DummyOperator");
 		assertNotNull(rv);
 	}
-	@Test
-	void deleteXCOMTest() throws DomainException {
-		try {
-			adapter.deleteXCOM(new Date());	
-		} catch (Exception e) {}
-		assertTrue(true);
-	}
+	
 	@Test
 	void privateTest() {
 		ReflectionTestUtils.invokeMethod(adapter, "activateDeactivate", "dagname", this.getClass());

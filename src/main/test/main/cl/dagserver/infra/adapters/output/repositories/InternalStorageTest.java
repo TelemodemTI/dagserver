@@ -15,7 +15,8 @@ class InternalStorageTest {
 	
 	@BeforeEach
     void init() {
-		storage = new InternalStorage("c:\\tmp\\dagrags\\example_test");	
+		storage = new InternalStorage();
+		storage.init("c:\\tmp\\dagrags\\example_test");	
 	}
 	
 	@Test
