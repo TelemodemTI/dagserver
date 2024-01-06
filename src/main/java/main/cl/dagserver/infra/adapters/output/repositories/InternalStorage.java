@@ -1,6 +1,9 @@
 package main.cl.dagserver.infra.adapters.output.repositories;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentMap;
 import org.json.JSONObject;
 import org.mapdb.DB;
@@ -9,10 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
-import groovyjarjarantlr4.v4.codegen.model.dbg;
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 @Component
+@Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class InternalStorage {
 	
@@ -35,11 +39,10 @@ public class InternalStorage {
 	public String getLocatedb() {
 		return  locatedb;
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings( "unchecked" )
 	public void put(JSONObject json) throws DomainException {
 		map.put(locatedb, json.toString());	
 	}
-	@SuppressWarnings({ "rawtypes" })
 	public JSONObject get() {
 		String jsonstr = (String) map.get(locatedb);
 		return new JSONObject(jsonstr);
@@ -48,11 +51,27 @@ public class InternalStorage {
         File file = new File(xcomfolder);
         if (file.exists()) {
             boolean deleted = file.delete();
-            if (deleted) {
-                System.out.println("Archivo existente eliminado con éxito.");
-            } else {
-                System.err.println("No se pudo eliminar el archivo existente.");
+            if (!deleted) {
+                log.debug(xcomfolder+" not deleted!");
             }
         }
     }
+
+	@SuppressWarnings("unchecked")
+	public void deleteXCOM(Date time) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+		var keys = map.entrySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String key = iterator.next();
+			try {
+				Date dk = sdf.parse(key);
+				if(dk.before(time)) {
+					map.remove(key);
+				}	
+			} catch (Exception e) {
+				log.debug("key {} not removed from xcom",key);
+			}
+		}
+		
+	}
 }

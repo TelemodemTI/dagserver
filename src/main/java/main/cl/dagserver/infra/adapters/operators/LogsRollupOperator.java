@@ -31,6 +31,7 @@ public class LogsRollupOperator extends OperatorStage implements Callable<Void> 
 				rollup.setTimeInMillis(rollup.getTimeInMillis());
 				rollup.add(Calendar.HOUR, Integer.parseInt(prop.getProperty("param.logs.rollup.hours")));
 				repo.deleteLogsBy(rollup.getTime());
+				scheduler.deleteXCOM(rollup.getTime());
 				log.debug(this.getClass()+" end "+this.name);	
 			}
 			return null;	

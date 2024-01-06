@@ -23,10 +23,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.domain.model.EventListenerDTO;
-import main.cl.dagserver.domain.model.LogDTO;
-import main.cl.dagserver.domain.model.PropertyParameterDTO;
-import main.cl.dagserver.domain.model.UserDTO;
 import main.cl.dagserver.infra.adapters.confs.DAO;
 import main.cl.dagserver.infra.adapters.output.repositories.entities.EventListener;
 import main.cl.dagserver.infra.adapters.output.repositories.entities.Log;

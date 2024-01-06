@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,11 +33,13 @@ import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 import main.cl.dagserver.infra.adapters.operators.DummyOperator;
 import main.cl.dagserver.infra.adapters.operators.LogsRollupOperator;
 import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
+import main.cl.dagserver.infra.adapters.output.repositories.InternalStorage;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
 public class JarSchedulerAdapter implements JarSchedulerOutputPort {
-	
+	@Autowired
+	private InternalStorage storage;
 	@Value("${param.folderpath}")
 	private String pathfolder;
 	@Autowired
@@ -322,5 +325,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
+	}
+
+	@Override
+	public void deleteXCOM(Date time) throws DomainException {
+		storage.deleteXCOM(time);
 	}
 }

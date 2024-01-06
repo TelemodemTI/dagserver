@@ -3,7 +3,6 @@ package main.cl.dagserver.infra.adapters.output.scheduler;
 import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import java.util.Date;
 import java.io.File;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
