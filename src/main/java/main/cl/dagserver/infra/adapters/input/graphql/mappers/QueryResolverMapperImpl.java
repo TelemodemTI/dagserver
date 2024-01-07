@@ -68,6 +68,7 @@ public class QueryResolverMapperImpl implements QueryResolverMapper {
 		c.setName(dto.getName());
 		c.setProps(props);
 		c.setStatus(dto.getStatus());
+		c.setIcon(dto.getIcon());
 		return c;
 	}
 

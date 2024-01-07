@@ -33,6 +33,11 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Value( "${param.redis.propkey}" )
 	private String redisPropkey;
 	
+	@Value( "${param.kafka.propkey}" )
+	private String kafkaPropkey;
+	
+	
+	
 	
 	@Override
 	public void scheduleDag(String token, String dagname,String jarname) throws DomainException {
@@ -300,6 +305,28 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			inputProps.put("desc."+propertyParameterDTO.getName(), propertyParameterDTO.getDescription());
 			inputProps.put("group."+propertyParameterDTO.getName(), propertyParameterDTO.getGroup());
 		}
+	}
+	@Override
+	public void saveKafkaChannel(String token, String bootstrapServers, String groupId, Integer poll) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.setProperty("bootstrapServers", GENERATED, bootstrapServers, kafkaPropkey );
+		repository.setProperty("groupId", GENERATED, groupId, kafkaPropkey );
+		repository.setProperty("poll", GENERATED, poll.toString(), kafkaPropkey );
+		repository.setProperty("STATUS", "kafka channel status", "ACTIVE", kafkaPropkey );
+	}
+	@Override
+	public void addConsumer(String token, String topic, String jarfile, String dagname) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.setProperty(topic , GENERATED, "kafka_consumer_listener" , kafkaPropkey );
+		repository.setProperty(DAGNAME, GENERATED, dagname, topic);
+		repository.setProperty(JARNAME, GENERATED, jarfile, topic);
+		
+	}
+	@Override
+	public void delConsumer(String token, String topic) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.delProperty(topic, redisPropkey);
+		repository.delGroupProperty(topic);
 	}
 	
 }

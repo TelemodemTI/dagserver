@@ -45,6 +45,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Value( "${param.redis.propkey}" )
 	private String redisPropkey;
 	
+	@Value( "${param.kafka.propkey}" )
+	private String kafkaPropkey;
+	
 	@Override
 	public List<Map<String,Object>> listScheduledJobs() throws DomainException {
 		List<Map<String,Object>> realscheduled = scanner.listScheduled();
@@ -190,10 +193,12 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		ChannelDTO github = new ChannelDTO();
 		github.setName("GITHUB_CHANNEL");
 		github.setStatus(githubStatus);
+		github.setIcon("github.png");
 		github.setProps(props);
 		ChannelDTO scheduler = new ChannelDTO();
 		scheduler.setName("SCHEDULER");
 		scheduler.setStatus("ACTIVE");
+		scheduler.setIcon("scheduler.png");
 		
 		
 		String rabbitStatus = INACTIVE;
@@ -217,7 +222,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		rabbit.setName("RABBITMQ");
 		rabbit.setStatus(rabbitStatus);
 		rabbit.setProps(rabbitprops);
-		
+		rabbit.setIcon("rabbit.png");
 		String redisStatus = INACTIVE;
 		List<ChannelPropsDTO> redisprops = new ArrayList<>();
 		var redisPropsList = repository.getProperties(rabbitPropkey);
@@ -233,18 +238,43 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 				redisprops.add(prop1);
 			}
 		}
-		
-		
+
 		ChannelDTO redis = new ChannelDTO();
 		redis.setName("REDIS_LISTENER");
 		redis.setStatus(redisStatus);
 		redis.setProps(redisprops);
+		redis.setIcon("redis.png");
+		
+		
+		String kafkaStatus = INACTIVE;
+		List<ChannelPropsDTO> kafkaprops = new ArrayList<>();
+		var kafkaPropsList = repository.getProperties(kafkaPropkey);
+		for (Iterator<PropertyParameterDTO> iterator = kafkaPropsList.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			if(propertyParameterDTO.getName().equals(STATUS)){
+				kafkaStatus = propertyParameterDTO.getValue();
+			} else {
+				ChannelPropsDTO prop1 = new ChannelPropsDTO();
+				prop1.setKey(propertyParameterDTO.getName());
+				prop1.setDescr(propertyParameterDTO.getDescription());
+				prop1.setValue(propertyParameterDTO.getValue());
+				kafkaprops.add(prop1);
+			}
+		}
+		
+		ChannelDTO kafka = new ChannelDTO();
+		kafka.setName("KAFKA_CONSUMER");
+		kafka.setStatus(kafkaStatus);
+		kafka.setIcon("kafka.png");
+		kafka.setProps(kafkaprops);
+		
 		
 		List<ChannelDTO> list = new ArrayList<>();
 		list.add(scheduler);
 		list.add(github);
 		list.add(rabbit);
 		list.add(redis);
+		list.add(kafka);
 		return list;
 	}
 	@Override

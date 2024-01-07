@@ -18,6 +18,10 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+
+  
+
+  
   
   getLastLogs(): Promise<Log[]> {
     return new Promise<Log[]>((resolve, reject) => {
@@ -66,6 +70,48 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
           resolve()
         } else if(result && result.saveRedisChannel) {
           reject(result.saveRedisChannel.status)
+        }      
+      })
+    })
+  }
+
+  
+  addConsumer(topic: any, jarFile: any, dag: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation addConsumer($token:String,$topic:String,$jarfile:String,$dagname:String) { addConsumer(token:$token,topic:$topic,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
+      this.query(string,{token:token,topic:topic,jarfile:jarFile,dagname:dag}).subscribe((result:any)=>{
+        if(result && result.addConsumer && result.addConsumer.status == "ok"){
+          resolve()
+        } else if(result && result.addConsumer) {
+          reject(result.addConsumer.status)
+        } 
+      })
+    })
+  }
+  delConsumer(topic: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation delConsumer($token:String,$topic:String) { delConsumer(token:$token,topic:$topic) {status,code,value} }"
+      this.query(string,{token:token,topic:topic}).subscribe((result:any)=>{
+        if(result && result.delConsumer && result.delConsumer.status == "ok"){
+          resolve()
+        } else if(result && result.delConsumer) {
+          reject(result.delConsumer.status)
+        } 
+      })
+    })
+  }
+
+  saveKaflaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation saveKafkaChannel($token:String,$bootstrapServers:String,$groupId:String,$poll:Int) { saveKafkaChannel(token:$token,bootstrapServers:$bootstrapServers,groupId:$groupId,poll:$poll) {status,code,value} }"
+      this.query(string,{token:token,bootstrapServers:bootstrapServers,groupId:groupId,poll:parseInt(poll)}).subscribe((result:any)=>{
+        if(result && result.saveKafkaChannel && result.saveKafkaChannel.status == "ok"){
+          resolve()
+        } else if(result && result.saveKafkaChannel) {
+          reject(result.saveKafkaChannel.status)
         }      
       })
     })
@@ -195,7 +241,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   getChannels(): Promise<any[]> {
     return new Promise<any[]>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")
-      var string = "query channelStatus($token:String) { channelStatus(token:$token) { name,status,props { key,value,descr } } }"
+      var string = "query channelStatus($token:String) { channelStatus(token:$token) { name,status,icon,props { key,value,descr } } }"
       this.query(string,{token:token}).subscribe((result:any)=>{
         if(result && result.channelStatus){
           resolve(result.channelStatus)

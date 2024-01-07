@@ -1,0 +1,78 @@
+<div class="modal fade" id="kafkaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Kafka Channel Options</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>bootstrapServers</label>
+                    <input #kafkabootstrapServers class="form-control" value="{{bootstrapServers}}">
+                </div>
+                <div class="form-group">
+                    <label>groupId</label>
+                    <input #kafkagroupId class="form-control" value="{{groupId}}">
+                </div>
+                <div class="form-group">
+                    <label>poll</label>
+                    <input #kafkapoll class="form-control" value="{{poll}}" type="number">
+                </div>
+                <button (click)="createKafka()" type="button" class="btn btn-primary">Save</button> 
+                <br><br>
+                <a data-toggle="collapse" id="props-collapser-son-3" href="#collapseNewConsumer" aria-expanded="false" class="collapsed">Bind Consumer</a>
+                <div id="collapseNewConsumer" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <div class="form-group">
+                        <label>Topic</label>
+                        <input #kafkatopic class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>JarFile</label>
+                        <select #jarfiled class="form-control" (change)="selectJarFiled()">
+                            <option disabled selected>Select JarFile</option>
+                            <option *ngFor="let item of jars" value="{{item}}">{{item}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Dag</label>
+                        <select #dagnamed class="form-control">
+                            <option *ngFor="let item of dags" value="{{item.dagname}}">{{item.dagname}}</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-danger" *ngIf="error_msg2">
+                        {{error_msg2}}
+                     </div>
+                    <button (click)="saveConsumer()" type="button" class="btn btn-primary">Add</button> 
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table" id="redis-tbl">
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>JarFile</th>
+                                <th>Dagname</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of channels">
+                                <td>{{item.topic}}</td>
+                                <td>{{item.jarname}}</td>
+                                <td>{{item.dagname}}</td>
+                                <td>
+                                    <button (click)="removeConsumer(item)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-close"></i></button>&nbsp;
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

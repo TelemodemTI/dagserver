@@ -16,28 +16,36 @@
                     <!-- /.panel-heading -->
                     <div class="panel-body">
 
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Channel name</th>
-                                        <th>Status</th>
-                                        <th>Options</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let item of items;let i=index;">
-                                       <td>{{item.name}}</td>
-                                       <td>{{item.status}}</td>
-                                       <td>
-                                            <ng-container *ngIf="item.name != 'SCHEDULER'">
-                                                <button (click)="options(item)" type="button" class="btn btn-primary btn-circle"><i class="fa fa-cogs"></i></button>&nbsp;
-                                            </ng-container>
-                                       </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+
+                        <div class="hero-widget well well-sm col-md-2" *ngFor="let item of items;let i=index;">
+                            <div class="icon">
+                               <img src="/assets/images/channels/{{item.icon}}" height="100">
+                            </div>
+                            <div class="text">
+                                <label class="text-muted">{{item.name}}</label><br>
+                                <h5 class="text-muted">{{item.status}}</h5>
+                            </div>
+                            
+                            <ng-container *ngIf="item.name != 'SCHEDULER'; else nobutton">
+                                <div class="options">
+                                    <button class="btn btn-primary btn-lg" (click)="options(item)"><i class="glyphicon glyphicon-plus"></i> Options</button>
+                                </div>
+                            </ng-container>
+                            <ng-template #nobutton>
+                                <div class="options">
+                                    <button disabled class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-plus"></i> Options</button>
+                                </div>
+                            </ng-template>
+                            
                         </div>
+
+
+                        
+
+
+
+
                     </div>
                 </div>
             </div>
@@ -49,4 +57,6 @@
 <app-rabbit-modal [jars]="jars" [dags]="dags" (selectJar)="selectJarFile($event)"></app-rabbit-modal>
 
 <app-redis-modal [jars]="jars" [dags]="dags" (selectJar)="selectJarFile($event)"></app-redis-modal>
+
+<app-kafka-modal [jars]="jars" [dags]="dags" (selectJar)="selectJarFile($event)"></app-kafka-modal>
 

@@ -52,6 +52,17 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  delConsumer(channel: any): Promise<void> {
+    return this.adapter.delConsumer(channel);
+  }
+  addConsumer(topic: any, jarFile: any, dag: any): Promise<void> {
+    return this.adapter.addConsumer(topic,jarFile,dag);
+  }
+  
+  saveKafkaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void> {
+    return this.adapter.saveKaflaChannel(bootstrapServers,groupId,poll);
+  }
   
   getLastLogs(): Promise<Log[]> {
     return this.adapter.getLastLogs();

@@ -5,6 +5,7 @@ import java.util.List;
 public class Channel {
 	private String name;
 	private String status;
+	private String icon;
 	private List<ChannelProps> props;
 	public String getName() {
 		return name;
@@ -23,5 +24,11 @@ public class Channel {
 	}
 	public void setProps(List<ChannelProps> props) {
 		this.props = props;
+	}
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 }

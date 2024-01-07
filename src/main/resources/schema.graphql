@@ -1,6 +1,7 @@
 type Channel {
 	name: String,
 	status: String,
+	icon: String,
 	props: [ChannelProps]
 }
 
@@ -140,4 +141,7 @@ type Mutation {
 	saveRedisChannel(token:String,mode:String,hostnames:String portnumbers:String) : StatusOp
 	addListener(token:String, channel:String,jarfile:String,dagname:String) : StatusOp
 	delListener(token:String, channel:String) : StatusOp
+	saveKafkaChannel(token:String,bootstrapServers:String,groupId:String,poll:Int) : StatusOp
+	addConsumer(token:String,topic:String,jarfile:String,dagname:String) : StatusOp
+	delConsumer(token:String,topic:String) : StatusOp
 }

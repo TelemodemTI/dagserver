@@ -296,7 +296,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 						founded = true;
 						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
 						dag.setExecutionSource(type);
-						
 						quartz.executeInmediate(dag);
 						break;
 					}
