@@ -1,6 +1,7 @@
 package main.cl.dagserver.infra.adapters.output.repositories;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -11,9 +12,7 @@ import org.mapdb.DBMaker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
-
 import lombok.extern.log4j.Log4j2;
-import main.cl.dagserver.domain.exceptions.DomainException;
 
 @Component
 @Log4j2
@@ -40,7 +39,7 @@ public class InternalStorage {
 		return  locatedb;
 	}
 	@SuppressWarnings( "unchecked" )
-	public void put(JSONObject json) throws DomainException {
+	public void put(JSONObject json) {
 		map.put(locatedb, json.toString());	
 	}
 	public JSONObject get() {
@@ -48,13 +47,15 @@ public class InternalStorage {
 		return new JSONObject(jsonstr);
 	}
 	private void deleteExistingFile(String xcomfolder) {
-        File file = new File(xcomfolder);
-        if (file.exists()) {
-            boolean deleted = file.delete();
-            if (!deleted) {
-                log.debug(xcomfolder+" not deleted!");
-            }
-        }
+        try {
+        	File file = new File(xcomfolder);
+            if (file.exists()) {
+                Files.delete(file.toPath());
+            }	
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
     }
 
 	@SuppressWarnings("unchecked")

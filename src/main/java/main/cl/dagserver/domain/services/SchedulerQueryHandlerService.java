@@ -2,6 +2,7 @@ package main.cl.dagserver.domain.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -168,115 +169,75 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		returnv = (returnv.isBlank())?"SYSTEM":returnv;
 		return returnv+"."+dagname;
 	}
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<ChannelDTO> getChannels(String token) throws DomainException {
-		Map<String,String> claims = (Map<String, String>) tokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
-		if(!claims.get("typeAccount").equals("ADMIN")) {
-			throw new DomainException(new Exception("unauthorized"));
-		}
-		List<ChannelPropsDTO> props = new ArrayList<>();
-		String githubStatus = INACTIVE;
-		var propertyList = repository.getProperties(gitHubPropkey);
-		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
-			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals(STATUS)){
-				githubStatus = propertyParameterDTO.getValue();
-			} else {
-				ChannelPropsDTO prop1 = new ChannelPropsDTO();
-				prop1.setKey(propertyParameterDTO.getName());
-				prop1.setDescr(propertyParameterDTO.getDescription());
-				prop1.setValue(propertyParameterDTO.getValue());
-				props.add(prop1);
-			}
-		}
-		ChannelDTO github = new ChannelDTO();
-		github.setName("GITHUB_CHANNEL");
-		github.setStatus(githubStatus);
-		github.setIcon("github.png");
-		github.setProps(props);
-		ChannelDTO scheduler = new ChannelDTO();
-		scheduler.setName("SCHEDULER");
-		scheduler.setStatus("ACTIVE");
-		scheduler.setIcon("scheduler.png");
-		
-		
-		String rabbitStatus = INACTIVE;
-		List<ChannelPropsDTO> rabbitprops = new ArrayList<>();
-		var rabbitPropsList = repository.getProperties(rabbitPropkey);
-		for (Iterator<PropertyParameterDTO> iterator = rabbitPropsList.iterator(); iterator.hasNext();) {
-			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals(STATUS)){
-				rabbitStatus = propertyParameterDTO.getValue();
-			} else {
-				ChannelPropsDTO prop1 = new ChannelPropsDTO();
-				prop1.setKey(propertyParameterDTO.getName());
-				prop1.setDescr(propertyParameterDTO.getDescription());
-				prop1.setValue(propertyParameterDTO.getValue());
-				rabbitprops.add(prop1);
-			}
-		}
-		
-		
-		ChannelDTO rabbit = new ChannelDTO();
-		rabbit.setName("RABBITMQ");
-		rabbit.setStatus(rabbitStatus);
-		rabbit.setProps(rabbitprops);
-		rabbit.setIcon("rabbit.png");
-		String redisStatus = INACTIVE;
-		List<ChannelPropsDTO> redisprops = new ArrayList<>();
-		var redisPropsList = repository.getProperties(rabbitPropkey);
-		for (Iterator<PropertyParameterDTO> iterator = redisPropsList.iterator(); iterator.hasNext();) {
-			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals(STATUS)){
-				redisStatus = propertyParameterDTO.getValue();
-			} else {
-				ChannelPropsDTO prop1 = new ChannelPropsDTO();
-				prop1.setKey(propertyParameterDTO.getName());
-				prop1.setDescr(propertyParameterDTO.getDescription());
-				prop1.setValue(propertyParameterDTO.getValue());
-				redisprops.add(prop1);
-			}
-		}
 
-		ChannelDTO redis = new ChannelDTO();
-		redis.setName("REDIS_LISTENER");
-		redis.setStatus(redisStatus);
-		redis.setProps(redisprops);
-		redis.setIcon("redis.png");
-		
-		
-		String kafkaStatus = INACTIVE;
-		List<ChannelPropsDTO> kafkaprops = new ArrayList<>();
-		var kafkaPropsList = repository.getProperties(kafkaPropkey);
-		for (Iterator<PropertyParameterDTO> iterator = kafkaPropsList.iterator(); iterator.hasNext();) {
-			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(propertyParameterDTO.getName().equals(STATUS)){
-				kafkaStatus = propertyParameterDTO.getValue();
-			} else {
-				ChannelPropsDTO prop1 = new ChannelPropsDTO();
-				prop1.setKey(propertyParameterDTO.getName());
-				prop1.setDescr(propertyParameterDTO.getDescription());
-				prop1.setValue(propertyParameterDTO.getValue());
-				kafkaprops.add(prop1);
-			}
-		}
-		
-		ChannelDTO kafka = new ChannelDTO();
-		kafka.setName("KAFKA_CONSUMER");
-		kafka.setStatus(kafkaStatus);
-		kafka.setIcon("kafka.png");
-		kafka.setProps(kafkaprops);
-		
-		
-		List<ChannelDTO> list = new ArrayList<>();
-		list.add(scheduler);
-		list.add(github);
-		list.add(rabbit);
-		list.add(redis);
-		list.add(kafka);
-		return list;
+	
+	@Override
+	public List<ChannelDTO> getChannels(String token) throws DomainException {
+	    Map<String, String> claims = extractClaims(token);
+	    validateAdminPermission(claims);
+
+	    List<ChannelDTO> channels = new ArrayList<>();
+	    
+	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
+	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB"), "github.png", getChannelProps("GITHUB")));
+	    channels.add(createChannel("RABBITMQ", getChannelStatus("RABBITMQ"), "rabbit.png", getChannelProps("RABBITMQ")));
+	    channels.add(createChannel("REDIS_LISTENER", getChannelStatus("REDIS_LISTENER"), "redis.png", getChannelProps("REDIS_LISTENER")));
+	    channels.add(createChannel("KAFKA_CONSUMER", getChannelStatus("KAFKA_CONSUMER"), "kafka.png", getChannelProps("KAFKA_CONSUMER")));
+
+	    return channels;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private Map<String, String> extractClaims(String token) {
+	    return (Map<String, String>) tokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
+	}
+
+	private void validateAdminPermission(Map<String, String> claims) throws DomainException {
+	    if (!"ADMIN".equals(claims.get("typeAccount"))) {
+	        throw new DomainException(new Exception("unauthorized"));
+	    }
+	}
+
+	private String getChannelStatus(String channelName) throws DomainException {
+	    String status = INACTIVE;
+	    List<PropertyParameterDTO> propsList = repository.getProperties(channelName);
+	    
+	    for (PropertyParameterDTO prop : propsList) {
+	        if (prop.getName().equals(STATUS)) {
+	            status = prop.getValue();
+	            break;
+	        }
+	    }
+	    return status;
+	}
+
+	private List<ChannelPropsDTO> getChannelProps(String channelName) throws DomainException {
+	    List<ChannelPropsDTO> props = new ArrayList<>();
+	    List<PropertyParameterDTO> propsList = repository.getProperties(channelName);
+	    
+	    for (PropertyParameterDTO prop : propsList) {
+	        if (!prop.getName().equals(STATUS)) {
+	            ChannelPropsDTO channelProp = new ChannelPropsDTO();
+	            channelProp.setKey(prop.getName());
+	            channelProp.setDescr(prop.getDescription());
+	            channelProp.setValue(prop.getValue());
+	            props.add(channelProp);
+	        }
+	    }
+	    return props;
+	}
+
+	private ChannelDTO createChannel(String name, String status, String icon, List<ChannelPropsDTO> props) {
+	    ChannelDTO channel = new ChannelDTO();
+	    channel.setName(name);
+	    channel.setStatus(status);
+	    channel.setIcon(icon);
+	    channel.setProps(props);
+	    return channel;
+	}
+	
+	
+	
 	@Override
 	public String exportUncompiled(String token, Integer uncompiled) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);

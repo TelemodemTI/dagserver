@@ -23,6 +23,8 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	private static final String DAGNAME = "dagname";
 	private static final String TYPEACCOUNT = "typeAccount";
 	private static final String GENERATED = "GENERATED";
+	private static final String STATUS = "STATUS";
+	private static final String ACTIVE = "ACTIVE";
 	
 	@Value( "${param.git_hub.propkey}" )
 	private String gitHubPropkey;
@@ -212,7 +214,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			repository.setProperty(name,repositoryUrl,secret,this.gitHubPropkey);
 			repository.setProperty(DAGNAME, GENERATED, dagname, name);
 			repository.setProperty(JARNAME, GENERATED, jarname, name);
-			repository.setProperty("STATUS", "github channel status", "ACTIVE", "GITHUB_WEBHOOK_PROPS");
+			repository.setProperty(STATUS, "github channel status", ACTIVE, "GITHUB_WEBHOOK_PROPS");
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -255,7 +257,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			repository.setProperty("password", GENERATED, pwd, rabbitPropkey );	
 		}
 		repository.setProperty("port", GENERATED, port.toString(), rabbitPropkey );
-		repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", rabbitPropkey );
+		repository.setProperty(STATUS, "rabbit channel status", ACTIVE, rabbitPropkey );
 	}
 	@Override
 	public void addQueue(String token, String queue, String jarfile, String dagname) throws DomainException {
@@ -283,7 +285,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			repository.setProperty("port", GENERATED, portnumber, redisPropkey );
 		}
 		repository.setProperty("MODE", GENERATED, bmode.toString(), redisPropkey );
-		repository.setProperty("STATUS", "rabbit channel status", "ACTIVE", redisPropkey );
+		repository.setProperty(STATUS, "rabbit channel status", ACTIVE, redisPropkey );
 	}
 	@Override
 	public void addListener(String token, String listener, String jarfile, String dagname) throws DomainException {
@@ -312,7 +314,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.setProperty("bootstrapServers", GENERATED, bootstrapServers, kafkaPropkey );
 		repository.setProperty("groupId", GENERATED, groupId, kafkaPropkey );
 		repository.setProperty("poll", GENERATED, poll.toString(), kafkaPropkey );
-		repository.setProperty("STATUS", "kafka channel status", "ACTIVE", kafkaPropkey );
+		repository.setProperty(STATUS, "kafka channel status", ACTIVE, kafkaPropkey );
 	}
 	@Override
 	public void addConsumer(String token, String topic, String jarfile, String dagname) throws DomainException {

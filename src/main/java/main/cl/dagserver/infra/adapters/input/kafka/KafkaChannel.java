@@ -72,38 +72,41 @@ public class KafkaChannel {
     			 String bootstrapServers = kafkaprops.getProperty("bootstrapServers");
     	         String groupId = kafkaprops.getProperty("groupId");
     	         Integer poll = Integer.parseInt(kafkaprops.getProperty("poll"));
-    	         
     	         var consumprops = handler.getKafkaConsumers();
-    	         Set<Object> keys = consumprops.keySet();
-    	         for (Object key : keys) {
-    	        	 String topic = (String) key;
-    	        	 Properties properties = new Properties();
-        	         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        	         properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        	         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        	         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        	         try (Consumer<String, String> consumer = new KafkaConsumer<>(properties)) {
-        	        	Map<String,String> item = new HashMap<>();
-        	 			item.put("topic", topic);
-        	 			item.put("groupId", groupId);
-        	 			runningConsumers.add(item);
-        	        	consumer.subscribe(Collections.singletonList(topic));
-        	        	while (longRunning.equals(Boolean.TRUE)) {
-        	        		if (someCondition.equals(Boolean.TRUE)) {
-        	     				longRunning = false;
-        	                }
-        	        		ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(poll));
-	        	            for (ConsumerRecord<String, String> record : records) {
-	        	            	 handler.raiseEvent(topic,record.value());	
-	        	            }
-        	        	}
-        	         }	 
-    	         }
+    	         this.raiseEvent(consumprops, bootstrapServers, groupId, longRunning, poll);
     		}
     		Thread.sleep(kafkaRefresh);	
     	}
 	}
 
+	private void raiseEvent(Properties consumprops,String bootstrapServers,String groupId, Boolean longRunning,Integer poll) throws DomainException {
+		Set<Object> keys = consumprops.keySet();
+        for (Object key : keys) {
+       	 String topic = (String) key;
+       	 Properties properties = new Properties();
+	         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+	         properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+	         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+	         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+	         try (Consumer<String, String> consumer = new KafkaConsumer<>(properties)) {
+	        	Map<String,String> item = new HashMap<>();
+	 			item.put("topic", topic);
+	 			item.put("groupId", groupId);
+	 			runningConsumers.add(item);
+	        	consumer.subscribe(Collections.singletonList(topic));
+	        	while (longRunning.equals(Boolean.TRUE)) {
+	        		if (someCondition.equals(Boolean.TRUE)) {
+	     				longRunning = false;
+	                }
+	        		ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(poll));
+   	            for (ConsumerRecord<String, String> recorda : records) {
+   	            	 handler.raiseEvent(topic,recorda.value());	
+   	            }
+	        	}
+	         }	 
+        }
+	}
+	
 	public void setSomeCondition(Boolean someCondition) {
 		this.someCondition = someCondition;
 	}	
