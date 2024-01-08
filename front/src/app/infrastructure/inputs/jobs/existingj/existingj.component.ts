@@ -67,10 +67,13 @@ export class ExistingjComponent {
     var base64 = Buffer.from(JSON.stringify(this.data)).toString('base64')
     try {
       await this.service.saveUncompiled(parseInt(this.uncompiled),base64)  
-      this.router.navigateByUrl("auth/jobs");
+      alert("File was updated correctly")
     } catch (error) {
       alert(error)
     }
+  }
+  close(){
+    this.router.navigateByUrl("auth/jobs");
   }
   createDag(){
     let dintmp = this.generateRandomString(6)

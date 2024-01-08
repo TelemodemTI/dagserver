@@ -249,14 +249,14 @@ export class ParamExistingjComponent {
   }  
   tabIsDisplayed(jid:string){ 
     if(jid=="#profile"){
-      
       return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "sourcecode").length > 0:false
     } else {
       return $(jid).text().trim()?true:false;
     }
   }
   tabIsActive(){
-    return this.tabIsDisplayed('#home')?'#home_li':(this.tabIsDisplayed('#profile')?'#profile_li':'#settings_li')
+    //return this.tabIsDisplayed('#home')?'#home_li':(this.tabIsDisplayed('#profile')?'#profile_li':'#settings_li')
+    return "#settings_li"
   }
   ngAfterContentChecked() {
     this.cd.detectChanges();
