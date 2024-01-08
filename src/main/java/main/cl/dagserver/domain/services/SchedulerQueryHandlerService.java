@@ -36,6 +36,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	
 	private static final String INACTIVE = "INACTIVE";
 	private static final String STATUS = "STATUS";
+	private static final String RABBITMQ = "RABBITMQ";
+	private static final String REDIS_LISTENER = "REDIS_LISTENER";
+	private static final String KAFKA_CONSUMER = "KAFKA_CONSUMER";
 	
 	@Value( "${param.git_hub.propkey}" )
 	private String gitHubPropkey;
@@ -180,9 +183,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    
 	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
 	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB"), "github.png", getChannelProps("GITHUB")));
-	    channels.add(createChannel("RABBITMQ", getChannelStatus("RABBITMQ"), "rabbit.png", getChannelProps("RABBITMQ")));
-	    channels.add(createChannel("REDIS_LISTENER", getChannelStatus("REDIS_LISTENER"), "redis.png", getChannelProps("REDIS_LISTENER")));
-	    channels.add(createChannel("KAFKA_CONSUMER", getChannelStatus("KAFKA_CONSUMER"), "kafka.png", getChannelProps("KAFKA_CONSUMER")));
+	    channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
+	    channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));
+	    channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));
 
 	    return channels;
 	}

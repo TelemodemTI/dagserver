@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.input.rabbit;
+package main.cl.dagserver.infra.adapters.input.channels.rabbit;
 
 import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertTrue;
@@ -9,19 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import com.rabbitmq.client.Channel;
-
 import main.cl.dagserver.application.ports.input.RabbitChannelUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import redis.clients.jedis.JedisPubSub;
+
 
 class RabbitChannelTest {
 	@Mock
@@ -47,7 +43,7 @@ class RabbitChannelTest {
 		rabbitprops.setProperty("host","c");
 		rabbitprops.setProperty("port","1");
 		when(handler.getRabbitChannelProperties()).thenReturn(rabbitprops);
-		channel.listenerHandler();
+		channel.listener();
 		channel.setSomeCondition(true);
 		assertTrue(true);
 	}
@@ -63,7 +59,7 @@ class RabbitChannelTest {
 		when(handler.getRabbitChannelProperties()).thenReturn(rabbitprops);
 		Channel chnomo = mock(Channel.class);
 		channel.setChannel1(chnomo);
-		channel.listenerHandler();
+		channel.listener();
 		channel.setSomeCondition(true);
 		assertTrue(true);
 	}
@@ -84,7 +80,7 @@ class RabbitChannelTest {
 		Channel chnomo = mock(Channel.class);
 		channel.setChannel1(chnomo);
 		channel.setRunningConsumers(list);
-		channel.listenerHandler();
+		channel.listener();
 		channel.setSomeCondition(true);
 		assertTrue(true);
 	}
