@@ -107,6 +107,7 @@ public class DagExecutable implements Job,JobListener  {
 	
 	@SuppressWarnings("unused")
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		this.executionSource = context.getMergedJobDataMap().getString("channel");
 		if(this.executionSource.isEmpty()) {
 			this.executionSource = "JOB_SCHEDULER";	
 		}
@@ -234,8 +235,6 @@ public class DagExecutable implements Job,JobListener  {
 		Logger logdag = (Logger) args.get("logdag");
 		Map<String,OperatorStatus> status = (Map<String, OperatorStatus>) args.get("status");
 		InMemoryLoggerAppender fa = (InMemoryLoggerAppender) args.get("fa");
-		
-		
 		
 		try {
 			if( (statusToBe == null)  || statusToBe.equals(OperatorStatus.ANY)|| (status.get(stepf).equals(statusToBe))) {

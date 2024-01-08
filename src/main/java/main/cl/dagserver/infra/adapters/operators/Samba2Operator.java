@@ -14,10 +14,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -37,13 +36,13 @@ import com.hierynomus.smbj.share.File;
 
 
 @Operator(args={"host","smbUser","smbPass","smbDomain","smbSharename","commands"})
-public class Samba2Operator extends OperatorStage implements Callable<List<Object>> {
+public class Samba2Operator extends OperatorStage {
 
 	private static final String SMBSHARENAME = "smbSharename";
 	
 	
 	@Override
-	public List<Object> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -53,19 +52,19 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Objec
 		    AuthenticationContext ac = new AuthenticationContext(this.args.getProperty("smbUser"), this.args.getProperty("smbPass").toCharArray(), this.args.getProperty("smbDomain"));
 		    var smb2session = connection.authenticate(ac);
 		    
-		    List<Object> results = new ArrayList<>();
+		    List<Dagmap> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			//list pathremote
 			//download remote local
 			//upload remote local
-			JSONObject status1 = new JSONObject();
+			Dagmap status1 = new Dagmap();
 			status1.put("status", "ok");
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
 				String[] cmd = iterator.next().split(" ");
 				switch (cmd[0]) {
 				case "list":
 					var result = this.list(smb2session, cmd[1],this.args.getProperty(SMBSHARENAME));
-					results.add(result);
+					results.addAll(result);
 					break;
 				case "upload":
 					this.upload(smb2session, cmd[1], cmd[2],this.args.getProperty(SMBSHARENAME));
@@ -99,8 +98,8 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Objec
 	
 
 	
-	private JSONArray list(Session smb2session , String directory, String smb2sharename) {
-		JSONArray lista = new JSONArray(); 
+	private List<Dagmap> list(Session smb2session , String directory, String smb2sharename) {
+		List<Dagmap> lista = new ArrayList<>(); 
 		DiskShare share = (DiskShare) smb2session.connectShare(smb2sharename);
 		if(directory.trim().equals("/")) {
 			directory = "";
@@ -109,7 +108,10 @@ public class Samba2Operator extends OperatorStage implements Callable<List<Objec
 			directory = directory.substring(1);
 		}
 	    for (FileIdBothDirectoryInformation f : share.list(directory,"*")) {
-	        lista.put(f.getFileName());
+	        Dagmap map = new Dagmap();
+	        map.put("filename", f.getFileName());
+	        map.put("size",f.getEaSize());
+	    	lista.add(map);
 	    }
 	    return lista;
 	}

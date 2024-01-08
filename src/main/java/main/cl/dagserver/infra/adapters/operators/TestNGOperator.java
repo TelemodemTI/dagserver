@@ -5,24 +5,24 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import org.testng.TestNG;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.DagPathClassLoadHelper;
 
 @Operator(args={"classpath","reportOutput","testngXmlFiles"})
-public class TestNGOperator extends OperatorStage implements Callable<Integer> {
+public class TestNGOperator extends OperatorStage {
 
 	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	
 	@Override
-	public Integer call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		try {
@@ -54,7 +54,7 @@ public class TestNGOperator extends OperatorStage implements Callable<Integer> {
 	        testng.run();
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
-			return testng.getStatus();	
+			return Dagmap.createDagmaps(1, "statusCode", testng.getStatus());	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

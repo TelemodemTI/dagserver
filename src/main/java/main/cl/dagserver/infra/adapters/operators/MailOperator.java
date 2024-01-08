@@ -1,10 +1,11 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -18,12 +19,12 @@ import javax.mail.internet.MimeMessage;
 
 
 @Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom"})
-public class MailOperator extends OperatorStage implements Callable<String> {
+public class MailOperator extends OperatorStage {
 
 	private static final String FROMMAIL = "fromMail";
 	
 	@Override
-	public String call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -72,10 +73,10 @@ public class MailOperator extends OperatorStage implements Callable<String> {
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(this.args.getProperty("toEmail"), false));
 	      Transport.send(msg);
     	  log.debug(this.getClass()+" end "+this.name);
-    	  return "ok";
+    	  return Dagmap.createDagmaps(1, "status", "ok");
 	    } catch (Exception e) {
 	      log.error(e);
-	      return e.getMessage();
+	      return Dagmap.createDagmaps(1, "status", e.getMessage());
 	    }
 	}
 	

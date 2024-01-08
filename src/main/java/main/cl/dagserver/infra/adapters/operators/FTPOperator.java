@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -22,13 +20,14 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.json.JSONObject;
 
 
 @Operator(args={"host","port","ftpUser","ftpPass","commands"})
-public class FTPOperator extends OperatorStage implements Callable<List<Object>> {
+public class FTPOperator extends OperatorStage {
 
 	@Override
-	public List<Object> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -47,19 +46,19 @@ public class FTPOperator extends OperatorStage implements Callable<List<Object>>
 			log.debug(this.getClass()+" end "+this.name);
 
 			
-			List<Object> results = new ArrayList<>();
+			List<Dagmap> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			//list pathremote
 			//download local remote
 			//upload local remote
-			JSONObject status1 = new JSONObject();
+			Dagmap status1 = new Dagmap();
 			status1.put("status", "ok");
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
 				String[] cmd = iterator.next().split(" ");
 				switch (cmd[0]) {
 				case "list":
 					var result = this.list(ftp, cmd[1]);
-					results.add(result);
+					results.addAll(result);
 					break;
 				case "upload":
 					this.upload(ftp, cmd[1], cmd[2]);
@@ -87,12 +86,15 @@ public class FTPOperator extends OperatorStage implements Callable<List<Object>>
 		}	
 	}	
 	
-	private JSONArray list(FTPClient ftp,String directory) throws IOException {
+	private List<Dagmap> list(FTPClient ftp,String directory) throws IOException {
 		ftp.cwd(directory);
 		FTPFile[] files = ftp.listFiles();
-		JSONArray content = new JSONArray();
+		List<Dagmap> content = new ArrayList<>();
 		for (FTPFile file : files) {
-			content.put(file.getName());
+			Dagmap map = new Dagmap();
+			map.put("filename", file.getName());
+			map.put("size",file.getSize());
+			content.add(map);
 		}
 		ftp.enterLocalPassiveMode();
 		return content;	

@@ -3,26 +3,23 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.json.JSONObject;
-
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 @Operator(args={"filePath", "mode", "sheetName","startRow", "startColumn"}, optionalv={"xcom","endRow", "endColumn"})
-public class ExcelOperator extends OperatorStage implements Callable<List<Object>> {
+public class ExcelOperator extends OperatorStage {
 
     @Override
-    public List<Object> call() throws DomainException {
+    public List<Dagmap> call() throws DomainException {
         try {
             log.debug(this.getClass() + " init " + this.name);
             log.debug("args");
@@ -46,8 +43,8 @@ public class ExcelOperator extends OperatorStage implements Callable<List<Object
         }
     }
 
-    private List<Object> readExcel(String filePath) {
-        List<Object> result = new ArrayList<>();
+    private List<Dagmap> readExcel(String filePath) {
+        List<Dagmap> result = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(filePath);
              Workbook workbook = getWorkbook(filePath, fis)) {
@@ -64,7 +61,7 @@ public class ExcelOperator extends OperatorStage implements Callable<List<Object
                 for (int i = startRow; i <= endRow; i++) {
                     Row row = sheet.getRow(i);
                     if (row != null) {
-                        Map<String, String> rowData = new HashMap<>();
+                        Dagmap rowData = new Dagmap();
                         for (int j = startColumn; j <= endColumn; j++) {
                             Cell cell = row.getCell(j);
                             String columnName = "Column" + (j + 1);
@@ -100,9 +97,9 @@ public class ExcelOperator extends OperatorStage implements Callable<List<Object
     }
 
     @SuppressWarnings("unchecked")
-    private List<Object> writeExcel(String filePath) throws DomainException {
-        List<Object> result = new ArrayList<>();
-        Map<String, String> statusD = new HashMap<>();
+    private List<Dagmap> writeExcel(String filePath) throws DomainException {
+        List<Dagmap> result = new ArrayList<>();
+        Dagmap statusD = new Dagmap();
         try {
             Workbook workbook = getWorkbook(filePath, null);
             Sheet sheet = workbook.createSheet(this.args.getProperty("sheetName"));

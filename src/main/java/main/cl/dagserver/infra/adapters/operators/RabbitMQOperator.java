@@ -6,29 +6,28 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 import org.json.JSONObject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
-
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={"host","username","password","port","mode"},optionalv = {"xcom","exchange","routingKey","queue","body"})
-public class RabbitMQOperator extends OperatorStage implements Callable<List<String>> {
+public class RabbitMQOperator extends OperatorStage {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<String> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
-		List<String> rv = new ArrayList<>();
+		List<Dagmap> rv = new ArrayList<>();
 		try {
 			Channel channel = this.getConnection();
 			log.debug(this.args);
@@ -42,7 +41,9 @@ public class RabbitMQOperator extends OperatorStage implements Callable<List<Str
 						Map<String, Object> map = iterator.next();
 						JSONObject item = new JSONObject(map);
 						channel.basicPublish(this.optionals.getProperty("exchange"), this.optionals.getProperty("routingKey"), null, item.toString().getBytes());
-						rv.add("message "+ count.toString() + " published");
+						Dagmap dm = new Dagmap();
+						dm.put("status", "message "+ count.toString() + " published");
+						rv.add(dm);
 						count++;
 					}	
 				} else {
@@ -58,8 +59,10 @@ public class RabbitMQOperator extends OperatorStage implements Callable<List<Str
 					    byte[] body = response.getBody();
 					    long deliveryTag = response.getEnvelope().getDeliveryTag();
 					    String msg = new String(body);
-					    channel.basicAck(deliveryTag, false); 
-					    rv.add(msg);
+					    channel.basicAck(deliveryTag, false);
+					    Dagmap dm = new Dagmap();
+					    dm.put("message", msg);
+					    rv.add(dm);
 					} else {
 						break;
 					}

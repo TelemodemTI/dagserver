@@ -1,15 +1,11 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.concurrent.Callable;
-
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -25,28 +21,24 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={"mode", "bootstrapServers","topic" }, optionalv={ "xcom","poll","groupId" })
-public class KafkaOperator extends OperatorStage implements Callable<List<Object>> {
+public class KafkaOperator extends OperatorStage {
 
 	@Override
-	public List<Object> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		String mode = this.args.getProperty("mode");
-		List<Object> rv = new ArrayList<>();
-		
         if ("produce".equalsIgnoreCase(mode)) {
-        	Map<String, Object> status = new HashMap<>();
-        	status.put("status", "ok");
         	produce();
-        	rv.add(status);
-        } else if ("consume".equalsIgnoreCase(mode)) {
-            rv = consume();
+        	return Dagmap.createDagmaps(1, "status", "ok");
+        } else {
+            return consume();
         } 
-		return rv;
 	}
 	
 
@@ -80,13 +72,13 @@ public class KafkaOperator extends OperatorStage implements Callable<List<Object
         }
     }
 
-	private List<Object> consume() throws DomainException {
+	private List<Dagmap> consume() throws DomainException {
         try {
             String bootstrapServers = this.args.getProperty("bootstrapServers");
             String groupId = this.optionals.getProperty("groupId");
             String topic = this.args.getProperty("topic");
             Integer poll = Integer.parseInt(this.optionals.getProperty("poll"));
-            List<Object> rv = new ArrayList<>();
+            List<Dagmap> rv = new ArrayList<>();
             Properties properties = new Properties();
             properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
@@ -109,7 +101,9 @@ public class KafkaOperator extends OperatorStage implements Callable<List<Object
                         break;  
                     }
                     for (ConsumerRecord<String, String> record : records) {
-                        rv.add(record.value());
+                        Dagmap map = new Dagmap();
+                        map.put("message", record.value());
+                    	rv.add(map);
                     }	
                 }
                 return rv;

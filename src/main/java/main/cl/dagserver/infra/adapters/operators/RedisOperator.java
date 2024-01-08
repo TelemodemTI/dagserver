@@ -2,15 +2,14 @@ package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -21,14 +20,14 @@ import redis.clients.jedis.JedisPool;
 
 
 @Operator(args={"hostname","port","mode","redisCluster","keyObject"}, optionalv = {"xcom","body"})
-public class RedisOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
+public class RedisOperator extends OperatorStage {
 
 	@Override
-	public List<Map<String, Object>> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
-		List<Map<String, Object>> rv = new ArrayList<>();
+		List<Dagmap> rv = new ArrayList<>();
 		Boolean redisFlag = Boolean.parseBoolean(this.args.getProperty("redisCluster"));
 		String mode = this.args.getProperty("mode");
 		if(redisFlag) {
@@ -66,26 +65,22 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 		return rv;
 	}
 	
-	private List<Map<String, Object>> clusterRead(JedisCluster jedisc){
+	private List<Dagmap> clusterRead(JedisCluster jedisc){
 		String data = jedisc.get(this.args.getProperty("keyObject"));
-		List<Map<String, Object>> rv = new ArrayList<>();
+		List<Dagmap> rv = new ArrayList<>();
 		try {
-			JSONArray arr = new JSONArray(data);
-			for (int i = 0; i < arr.length(); i++) {
-				JSONObject row = arr.getJSONObject(i);
-				Map<String, Object> map = row.toMap();
-				rv.add(map);
-			}	
+			Dagmap dm = new Dagmap();
+			dm.put("output", data);
+			rv.add(dm);
 		} catch (Exception e) {
-			Map<String, Object> map = new HashMap<>();
+			Dagmap map = new Dagmap();
 			map.put("value", data);
 			rv.add(map);
 		}
 		return rv;
 	}
-	private List<Map<String, Object>> clusterSave(JedisCluster jedisc) throws DomainException{
-		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
-			List<Map<String, Object>> rv = new ArrayList<>();  
+	private List<Dagmap> clusterSave(JedisCluster jedisc) throws DomainException{
+		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) { 
 			if(this.optionals.containsKey("xcom")) {
 	    		  String xcomname = this.optionals.getProperty("xcom");
 		    	  if(!this.xcom.has(xcomname)) {
@@ -93,49 +88,36 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 		    	  }
 		    	  var obj = (Object) this.xcom.get(xcomname);
 		    	  jedisc.set(this.args.getProperty("keyObject"), obj.toString());	  
-		  	   	  Map<String, Object> item = new HashMap<>();
-		  	   	  item.put("status", "ok");
-		  	   	  rv.add(item);  
+		    	  return Dagmap.createDagmaps(1, "status", "ok");
 	    	} else {
 	    		  var body = this.optionals.getProperty("body");
 	    		  jedisc.set(this.args.getProperty("keyObject"), body);
-	    		  Map<String, Object> item = new HashMap<>();
-		  	   	  item.put("status", "ok");
-		  	   	  rv.add(item);  
+	    		  return Dagmap.createDagmaps(1, "status", "ok");
 	    	}
-	  	   	return rv;
 		} else { 
 			throw new DomainException(new Exception("no xcom to save"));
 		}
 	}
-	private List<Map<String, Object>> clusterDel(JedisCluster jedisc){
+	private List<Dagmap> clusterDel(JedisCluster jedisc){
 		jedisc.del(this.args.getProperty("keyObject"));
-		List<Map<String, Object>> rv = new ArrayList<>();
-	   	Map<String, Object> item = new HashMap<>();
-	   	item.put("status", "ok");
-	   	rv.add(item);
-	   	return rv;
+		return Dagmap.createDagmaps(1, "status", "ok");
 	}
-	private List<Map<String, Object>> singleRead(Jedis jedis){
+	private List<Dagmap> singleRead(Jedis jedis){
 		String data = jedis.get(this.args.getProperty("keyObject"));
-		List<Map<String, Object>> rv = new ArrayList<>();
+		List<Dagmap> rv = new ArrayList<>();
 		try {
-			JSONArray arr = new JSONArray(data);
-			for (int i = 0; i < arr.length(); i++) {
-				JSONObject row = arr.getJSONObject(i);
-				Map<String, Object> map = row.toMap();
-				rv.add(map);
-			}	
+			Dagmap dm = new Dagmap();
+			dm.put("output", data);
+			rv.add(dm);
 		} catch (Exception e) {
-			Map<String, Object> map = new HashMap<>();
+			Dagmap map = new Dagmap();
 			map.put("value", data);
 			rv.add(map);
 		}
 		return rv;
 	}
 	@SuppressWarnings("unchecked")
-	private List<Map<String, Object>> singleSave(Jedis jedis) throws DomainException{
-		List<Map<String, Object>> rv = new ArrayList<>();
+	private List<Dagmap> singleSave(Jedis jedis) throws DomainException{
 		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
 	    	  String xcomname = this.optionals.getProperty("xcom");
 	    	  if(!this.xcom.has(xcomname)) {
@@ -143,25 +125,16 @@ public class RedisOperator extends OperatorStage implements Callable<List<Map<St
 	    	  }
 	    	  var obj = (List<Map<String, Object>>) this.xcom.get(xcomname);
 	    	  jedis.set(this.args.getProperty("keyObject"), new JSONArray(obj).toString());
-	    	  Map<String, Object> item = new HashMap<>();
-	    	  item.put("status", "ok");
-	    	  rv.add(item);
+	    	  return Dagmap.createDagmaps(1, "status", "ok");
 		} else {
 			var body = this.optionals.getProperty("body");
   		    jedis.set(this.args.getProperty("keyObject"), body);
-  		    Map<String, Object> item = new HashMap<>();
-	  	   	item.put("status", "ok");
-	  	   	rv.add(item);  
+  		    return Dagmap.createDagmaps(1, "status", "ok");
 		}
-		return rv;
 	}
-	private List<Map<String, Object>> singleDel(Jedis jedis){
+	private List<Dagmap> singleDel(Jedis jedis){
 		jedis.del(this.args.getProperty("keyObject"));
-		List<Map<String, Object>> rv = new ArrayList<>();
-   	  	Map<String, Object> item = new HashMap<>();
-   	    item.put("status", "ok");
-   	    rv.add(item);
-	  	return rv;
+		return Dagmap.createDagmaps(1, "status", "ok");
 	}
 
 	@Override

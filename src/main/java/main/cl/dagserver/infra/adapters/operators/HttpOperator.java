@@ -6,20 +6,21 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
+import java.util.List;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 @Operator(args={"url","method","timeout","contentType"},optionalv = {"bodyxcom","authorizationHeader"})
-public class HttpOperator extends OperatorStage implements Callable<String> {
+public class HttpOperator extends OperatorStage {
 
 	private static final String AUTHORIZATION_HEADER = "authorizationHeader";
 	
 	@Override
-	public String call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -58,7 +59,8 @@ public class HttpOperator extends OperatorStage implements Callable<String> {
 				}
 				in.close();
 				log.debug(this.getClass()+" end "+this.name);
-				return response.toString();	
+				return Dagmap.createDagmaps(1, "response", response.toString());
+			
 			} else {
 				throw new DomainException(new Exception("request failed!"));
 			}

@@ -2,18 +2,20 @@ package main.cl.dagserver.infra.adapters.operators;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
+import java.util.List;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 @Operator(args={"cmd"})
-public class CmdOperator extends OperatorStage implements Callable<StringBuilder> {
+public class CmdOperator extends OperatorStage {
 
 	@Override
-	public StringBuilder call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		try {
 			ProcessBuilder builder = new ProcessBuilder("cmd", "/c",this.args.getProperty("cmd"));
 		    builder.redirectErrorStream(true);
@@ -26,7 +28,11 @@ public class CmdOperator extends OperatorStage implements Callable<StringBuilder
 		            if (line == null) { break; }
 		            sbuilder.append(line + System.lineSeparator());
 		    }
-			return sbuilder;	
+		    List<Dagmap> list = new ArrayList<>();
+		    Dagmap rv = new Dagmap();
+		    rv.put("output", sbuilder.toString());
+		    list.add(rv);
+			return list;	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

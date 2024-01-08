@@ -8,15 +8,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -26,7 +25,7 @@ import main.cl.dagserver.infra.adapters.confs.DagPathClassLoadHelper;
 
 
 @Operator(args={"url","user","pwd","driver","driverPath","query"},optionalv = { "xcom" })
-public class JdbcOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
+public class JdbcOperator extends OperatorStage {
 	
 	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	private static final String QUERY = "query";
@@ -41,9 +40,9 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 	}
 	
 	@Override
-	public List<Map<String, Object>> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
-		List<Map<String, Object>> result = new ArrayList<>();
+		List<Dagmap> result = new ArrayList<>();
 		List<String> archivosJar = new ArrayList<>();
 		this.searchJarFiles(new File(this.args.getProperty("driverPath")),archivosJar);
 		List<URI> list = this.getListURI(archivosJar);
@@ -60,7 +59,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 					String sql = this.args.getProperty(QUERY);
 					var map = data.get(0);
 					var kv = this.namedParameter(sql, map);
-					result = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
+					result = Dagmap.convertToDagmaps(queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue()));
 				} else {
 					String sql = this.args.getProperty(QUERY);
 					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
@@ -71,7 +70,7 @@ public class JdbcOperator extends OperatorStage implements Callable<List<Map<Str
 				} 
 			} else {
 					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
-						result = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());	
+						result = Dagmap.convertToDagmaps(queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler()));	
 					} else {
 						queryRunner.update(con, this.args.getProperty(QUERY));
 					}

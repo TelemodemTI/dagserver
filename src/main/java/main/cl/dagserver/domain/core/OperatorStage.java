@@ -1,6 +1,8 @@
 package main.cl.dagserver.domain.core;
 
+import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -13,11 +15,12 @@ import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
  
 
-public abstract class OperatorStage {	
+public abstract class OperatorStage implements Callable<List<Dagmap>> {	
 	protected static Logger log = Logger.getLogger("DAG");
 	protected String name;
 
 	
+	public abstract List<Dagmap> call() throws DomainException;
 	
     public abstract JSONObject getMetadataOperator();
 	

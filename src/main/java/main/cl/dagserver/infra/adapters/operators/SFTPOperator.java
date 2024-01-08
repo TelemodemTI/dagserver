@@ -12,10 +12,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Callable;
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -23,6 +20,7 @@ import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -30,10 +28,10 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={"host","port","sftpUser","sftpPass","commands"})
-public class SFTPOperator extends OperatorStage implements Callable<List<Object>> {
+public class SFTPOperator extends OperatorStage  {
 
 	@Override
-	public List<Object> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -50,12 +48,12 @@ public class SFTPOperator extends OperatorStage implements Callable<List<Object>
 			channel.connect();
 			ChannelSftp sftp = (ChannelSftp) channel;
 			
-			List<Object> results = new ArrayList<>();
+			List<Dagmap> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			//list pathremote
 			//download remote local
 			//upload remote local
-			JSONObject status1 = new JSONObject();
+			Dagmap status1 = new Dagmap();
 			status1.put("status", "ok");
 			
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
@@ -63,7 +61,7 @@ public class SFTPOperator extends OperatorStage implements Callable<List<Object>
 				switch (cmd[0]) {
 				case "list":
 					var result = this.list(sftp, cmd[1]);
-					results.add(result);
+					results.addAll(result);
 					break;
 				case "upload":
 					this.upload(sftp, cmd[1], cmd[2]);
@@ -85,12 +83,15 @@ public class SFTPOperator extends OperatorStage implements Callable<List<Object>
 		}	
 	}
 	
-	private JSONArray list(ChannelSftp sftp,String directory) throws SftpException {
+	private List<Dagmap> list(ChannelSftp sftp,String directory) throws SftpException {
 		List<?> vect = sftp.ls(directory);
-		JSONArray content = new JSONArray();
+		List<Dagmap> content = new ArrayList<>();
 		for (Iterator<?> iterator = vect.iterator(); iterator.hasNext();) {
 			LsEntry entry = (LsEntry) iterator.next();
-			content.put(entry.getFilename());
+			Dagmap mp = new Dagmap();
+			mp.put("filename", entry.getFilename());
+			mp.put("longname", entry.getLongname());
+			content.add(mp);
 		}
 		return content;	
 	}
