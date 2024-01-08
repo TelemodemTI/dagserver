@@ -20,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.DAO;
@@ -42,6 +41,9 @@ class SchedulerRepositoryTest {
 	private DAO dao;
 	@Mock
 	private SchedulerMapper mapper;
+	@Mock
+	private InternalStorage storage;
+	
 	
 	private SchedulerRepository repo = new SchedulerRepository();
 	
@@ -49,8 +51,10 @@ class SchedulerRepositoryTest {
     void init() {
 		dao = mock(DAO.class);
 		mapper = new SchedulerMapperImpl();
+		storage = mock(InternalStorage.class);
 		ReflectionTestUtils.setField(repo, "dao", dao);
 		ReflectionTestUtils.setField(repo, "mapper", mapper);
+		ReflectionTestUtils.setField(repo, "storage", storage);
 	}
 	
 	@Test
@@ -233,12 +237,14 @@ class SchedulerRepositoryTest {
 	@Test
     void createInternalStatusTest() throws DomainException {
         JSONObject data = new JSONObject();
+        when(storage.getLocatedb()).thenReturn("testing");
         String locatedAt = repo.createInternalStatus(data);
         assertNotNull(locatedAt);
     }
 	@Test
     void readXcomTest() throws DomainException {
         String locatedAt = "path/to/xcom/data.json";
+        when(storage.get()).thenReturn(new JSONObject());
         JSONObject data = repo.readXcom(locatedAt);
         assertNotNull(data);
     }

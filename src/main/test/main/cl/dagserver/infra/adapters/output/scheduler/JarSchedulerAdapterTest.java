@@ -28,7 +28,6 @@ class JarSchedulerAdapterTest {
 		ReflectionTestUtils.setField(adapter, "quartz", quartz);
 		ReflectionTestUtils.setField(adapter, "eventPublisher", eventPublisher);
 		ReflectionTestUtils.setField(adapter, "pathfolder", "C:\\tmp\\dagrags\\");
-		ReflectionTestUtils.setField(adapter, "xcomfolder", "C:\\tmp\\dagrags\\xcom_files");
 	}
 	
 	@Test
