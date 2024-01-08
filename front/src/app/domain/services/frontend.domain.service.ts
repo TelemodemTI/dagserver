@@ -52,6 +52,17 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  delConsumer(channel: any): Promise<void> {
+    return this.adapter.delConsumer(channel);
+  }
+  addConsumer(topic: any, jarFile: any, dag: any): Promise<void> {
+    return this.adapter.addConsumer(topic,jarFile,dag);
+  }
+  
+  saveKafkaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void> {
+    return this.adapter.saveKaflaChannel(bootstrapServers,groupId,poll);
+  }
   
   getLastLogs(): Promise<Log[]> {
     return this.adapter.getLastLogs();
@@ -206,8 +217,13 @@ export class FrontEndDomainService implements
     this.jwtadapter.removeAccessToken();
   }
   login(user: any, pwd: any): Promise<boolean> {
-    let encrypted = this.encryptor.set(environment.sha256key,pwd)
-    return this.adapter.login(user,encrypted);
+    let desafiostr = this.encryptor.get_desafio();
+    let blindFirm = this.encryptor.generate_blind(pwd,desafiostr)
+    let requestObj = { username: user , challenge:desafiostr }
+    Object.assign(requestObj,blindFirm)
+    console.log(requestObj)
+    //let encrypted = this.encryptor.set(environment.sha256key,pwd)
+    return this.adapter.login(requestObj);
   }
   updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void> {
     return this.adapter.updateParamsCompiled(jarname,idope,typeope,bin);

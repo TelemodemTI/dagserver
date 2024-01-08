@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>main.cl</groupId>
 	<artifactId>dagserver</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<name>dagserver</name>
 	<description>dagserver</description>
 	<properties>
@@ -282,6 +282,24 @@
 		    <artifactId>mapdb</artifactId>
 		    <version>3.0.10</version>
 		</dependency>
+		
+		
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi</artifactId>
+		    <version>4.1.2</version> <!-- Utiliza la versión más reciente disponible -->
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>4.1.2</version> <!-- Utiliza la versión más reciente disponible -->
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.kafka</groupId>
+		    <artifactId>kafka-clients</artifactId>
+		</dependency>
+
 		
 	</dependencies>
 

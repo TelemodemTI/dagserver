@@ -1,20 +1,21 @@
 package main.cl.dagserver.infra.adapters.operators;
 
+import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 @Operator(args={})
-public class RegisterSchedulerOperator extends OperatorStage implements Callable<Void> {
+public class RegisterSchedulerOperator extends OperatorStage {
 
 	@Override
-	public Void call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		try {
 			log.debug(this.getClass()+" init "+this.name);
 			var prop = new Properties();

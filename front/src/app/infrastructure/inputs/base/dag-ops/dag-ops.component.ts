@@ -124,14 +124,19 @@ export class DagOpsComponent {
     }
   }
   collapse(dagname:any){
-    let flag = ($("#props-collapser").attr("aria-expanded").toLowerCase() === 'true')?true:false;
-    let flags = ($("#props-collapser-son").attr("aria-expanded").toLowerCase() === 'true')?true:false;
-    console.log(flag)
-    if(flag && !flags){
-      setTimeout(()=>{
-        $("#props-collapser").trigger("click");
-      },50)
-
+    try {
+      let flag = ($("#props-collapser").attr("aria-expanded").toLowerCase() === 'true')?true:false;
+      let flags = ($("#props-collapser-son").attr("aria-expanded").toLowerCase() === 'true')?true:false;
+      console.log(flag)
+      if(flag && !flags){
+        setTimeout(()=>{
+          $("#props-collapser").trigger("click");
+        },50)
+  
+      }  
+    } catch (error) {
+      console.log("notfound")
     }
+    
   }
 }

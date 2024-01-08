@@ -1,28 +1,26 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import com.plexpt.chatgpt.ChatGPT;
-
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={"apiKey","prompt"},optionalv = {"xcom"})
-public class ChatGPTOperator extends OperatorStage implements Callable<Map<String,String>> {
+public class ChatGPTOperator extends OperatorStage {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String,String> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		String xcomname = this.optionals.getProperty("xcom");
@@ -30,7 +28,7 @@ public class ChatGPTOperator extends OperatorStage implements Callable<Map<Strin
                 .apiKey(this.args.getProperty("akiKey"))
                 .build()
                 .init();
-		Map<String,String> returnv = new HashMap<>();
+		Dagmap returnv = new Dagmap();
 		if(xcomname != null && !xcomname.isEmpty()) {
 			if(!this.xcom.has(xcomname)) {
 				throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
@@ -55,7 +53,9 @@ public class ChatGPTOperator extends OperatorStage implements Callable<Map<Strin
 		}
 		log.debug(this.args);
 		log.debug(this.getClass()+" end "+this.name);
-		return returnv;
+		List<Dagmap> list = new ArrayList<>();
+		list.add(returnv);
+		return list;
 	}
 	
 

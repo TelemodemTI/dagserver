@@ -1,14 +1,11 @@
-package main.cl.dagserver.infra.adapters.input.redis;
+package main.cl.dagserver.infra.adapters.input.channels.redis;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -19,6 +16,7 @@ import main.cl.dagserver.application.ports.input.RedisChannelUseCase;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
@@ -27,52 +25,35 @@ import redis.clients.jedis.JedisCluster;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
-public class RedisInputListener {
+public class RedisInputListener extends InputChannel {
 	
 	
 	private RedisChannelUseCase handler;
-    private ApplicationEventPublisher eventPublisher;
-	
+
 	@Value( "${param.redis.refresh.timeout}" )
 	private Integer redisRefresh;
-	
-	
-	private Map<String,Thread> bindings;
 	private static final String LISTENER = "listener";
-	private Boolean someCondition = false;
+	
 	
 	@Autowired
 	public RedisInputListener(RedisChannelUseCase handler,ApplicationEventPublisher eventPublisher) {
+		super(eventPublisher);
 		this.handler = handler;
-		this.eventPublisher = eventPublisher;
 	}
 	
-	@PostConstruct
-	public void listener() {
-		this.bindings = new HashMap<>();
-		 Thread listenerT = new Thread(() -> {
-            
-            	boolean keepRunning = true;
-            	while(keepRunning) {
-            		try {
-            			Properties redisprops = handler.getRedisChannelProperties();
-                    	String status = redisprops.getProperty("STATUS");
-            			if(status != null && status.equals("ACTIVE")){
-            				listenerActive(redisprops);
-            			}
-            			if (someCondition.equals(Boolean.TRUE)) {
-                             keepRunning = false;
-                        }
-            			Thread.sleep(redisRefresh);	
-            	} catch (InterruptedException ie) {
-            		Thread.currentThread().interrupt();
-            	} catch (Exception e) {
-            		eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), LISTENER));
-                	break;
-				}
+	public void runForever() throws DomainException, InterruptedException {
+		boolean keepRunning = true;
+    	while(keepRunning) {
+    		Properties redisprops = handler.getRedisChannelProperties();
+            String status = redisprops.getProperty("STATUS");
+    		if(status != null && status.equals("ACTIVE")){
+    			listenerActive(redisprops);
+    		}
+    		if (someCondition.equals(Boolean.TRUE)) {
+                     keepRunning = false;
             }
-		});
-		listenerT.start();
+    		Thread.sleep(redisRefresh);	
+	    }
 	}
 	
 	private void listenerActive(Properties redisprops) throws DomainException {
@@ -140,10 +121,7 @@ public class RedisInputListener {
     	    }
     	};
 	}
-	
-	
-	
-	
+
 	protected List<KeyValue<String, Integer>> getConnectionInfoCluster(Properties redisprops) {
 		List<KeyValue<String, Integer>> newarr = new ArrayList<>();
 		String[] hosts = redisprops.getProperty("hostname").split(";");
@@ -160,15 +138,6 @@ public class RedisInputListener {
 		Integer port = Integer.parseInt(redisprops.getProperty("port"));
 		return new KeyValue<>(redisprops.getProperty("hostname"), port);
 	}
-	protected void stopListener() {
-		this.someCondition = true;
-	}
-
-	public void setSomeCondition(Boolean someCondition) {
-		this.someCondition = someCondition;
-	}
-
-	public void setBindings(Map<String, Thread> bindings) {
-		this.bindings = bindings;
-	}
+	
+	
 }

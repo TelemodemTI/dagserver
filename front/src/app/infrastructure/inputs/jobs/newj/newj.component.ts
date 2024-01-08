@@ -176,7 +176,6 @@ export class NewjComponent {
     if(sourceitem.length > 0 && sourceitem[0].source){
       sourceitem[0].source.attributes.attrs.label.text = event.name
     }
-    this.saveJar()
   }
   execStepEvent(event:any){
     alert("save your DAG first")

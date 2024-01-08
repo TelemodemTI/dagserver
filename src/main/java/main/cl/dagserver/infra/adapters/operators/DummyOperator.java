@@ -1,18 +1,19 @@
 package main.cl.dagserver.infra.adapters.operators;
 
-import java.util.concurrent.Callable;
+import java.util.List;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={})
-public class DummyOperator extends OperatorStage implements Callable<Void> {
+public class DummyOperator extends OperatorStage {
 
 	@Override
-	public Void call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);

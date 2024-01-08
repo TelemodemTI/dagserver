@@ -36,6 +36,7 @@ export class InputsChannelsComponent {
   async ngOnInit() {
     this.items = []
     this.items = await this.service.getChannels()
+    console.log(this.items)
     this.jobs = await this.service2.getAvailableJobs()
     let jarsf = this.jobs.map((eleme:any)=>{return eleme.jarname })
     this.jars = [...new Set(jarsf)];
@@ -45,8 +46,10 @@ export class InputsChannelsComponent {
       $("#githubModal").modal('show');
     } else if(item.name == "RABBITMQ") {
       $("#rabbitModal").modal('show');
-    } else {
+    } else if(item.name == "REDIS") {
       $("#redisModal").modal('show');
+    } else {
+      $("#kafkaModal").modal('show');
     }
     this.propsSelected = item.props
   }

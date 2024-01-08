@@ -8,6 +8,9 @@ import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 import { Credential } from 'src/app/domain/models/credential.model';
 
 export abstract class GraphQLOutputPort {
+    public abstract addConsumer(topic: any, jarFile: any, dag: any): Promise<void>
+    public abstract delConsumer(topic: any): Promise<void>
+    public abstract saveKaflaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void>;
     public abstract getLastLogs(): Promise<Log[]>;
     public abstract delListener(channel: string): Promise<void>;
     public abstract addListener(channel: string, jarfile: string, dagname: string): Promise<void>;
@@ -29,7 +32,7 @@ export abstract class GraphQLOutputPort {
     public abstract createAccount(useracc: string, type: string, pwdHash: string): Promise<void>;
     public abstract deleteGroupProperty(name: any, group: any): Promise<void>;
     public abstract deleteUncompiled(uncompiledId: number): Promise<void>;
-    public abstract login(user:any,pwd:any):Promise<boolean>;
+    public abstract login(reqobject:any):Promise<boolean>;
     public abstract operatorsMetadata(): Promise<string>
     public abstract agents(): Promise<Agents[]>;
     public abstract getAvailableJobs(): Promise<AvailableJobs[]>;

@@ -21,12 +21,12 @@
 
 
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#home" data-toggle="tab">Parameters</a></li>
-                    <li><a id="trigger-id" href="#profile" (click)="refreshCodemirror()" data-toggle="tab">Scripts</a></li>
-                    <li><a id="trigger-id" href="#settings" data-toggle="tab">Settings</a></li>
+                    <li id="home_li" *ngIf="tabIsDisplayed('#home')"><a href="#home" data-toggle="tab">Parameters</a></li>
+                    <li id="profile_li" *ngIf="tabIsDisplayed('#profile')"><a href="#profile" (click)="refreshCodemirror()" data-toggle="tab">Scripts</a></li>
+                    <li id="settings_li"><a href="#settings" data-toggle="tab">Settings</a></li>
                 </ul>
                 <div #loader class="loader"></div>
-                <div #form class="tab-content">
+                <div #form class="tab-content">     
                     <div class="tab-pane fade in active" id="home">
                         <div class="form-group" *ngFor="let item of generatedIdParams">
                             <ng-container *ngIf="item.type == 'text'">
@@ -63,12 +63,14 @@
 								<label>Related XCOM</label>
 								<select class="form-control param-value-input" id="param-{{item.key}}-value">
                                     <option selected disabled>Select related XCOM</option>
-                                    <option *ngFor="let opt of xcoms" value="{{opt.id}}" [selected]="item.id == opt.id">{{opt.id}}</option>
+                                    <option *ngFor="let opt of xcoms" value="{{opt.id}}" [selected]="item.value == opt.id">{{opt.id}}</option>
                                 </select>
                                 <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
 							</ng-container>
                         </div>
                     </div>
+                   
+                   
                     <div class="tab-pane fade" id="profile">
                         <div class="form-group" *ngFor="let item of generatedIdParams">
                             <ng-container *ngIf="item?.type == 'sourcecode'">
@@ -78,6 +80,7 @@
                             </ng-container>
                         </div>
                     </div>
+                  
                     <div class="tab-pane fade" id="settings">
                         <br>
                         <div class="form-group">

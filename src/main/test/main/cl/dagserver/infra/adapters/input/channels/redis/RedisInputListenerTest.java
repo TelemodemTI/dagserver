@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.input.redis;
+package main.cl.dagserver.infra.adapters.input.channels.redis;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

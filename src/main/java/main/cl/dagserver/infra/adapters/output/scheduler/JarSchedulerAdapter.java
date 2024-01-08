@@ -3,7 +3,6 @@ package main.cl.dagserver.infra.adapters.output.scheduler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -13,20 +12,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.core.DagExecutable;
@@ -39,18 +33,15 @@ import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 import main.cl.dagserver.infra.adapters.operators.DummyOperator;
 import main.cl.dagserver.infra.adapters.operators.LogsRollupOperator;
 import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
+import main.cl.dagserver.infra.adapters.output.repositories.InternalStorage;
 
 @Component
-@Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class JarSchedulerAdapter implements JarSchedulerOutputPort {
-	
+	@Autowired
+	private InternalStorage storage;
 	@Value("${param.folderpath}")
 	private String pathfolder;
-	
-	@Value("${param.xcompath}")
-	private String xcomfolder;
-	
 	@Autowired
     private ApplicationEventPublisher eventPublisher;
 	@Autowired
@@ -305,7 +296,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 						founded = true;
 						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
 						dag.setExecutionSource(type);
-						
 						quartz.executeInmediate(dag);
 						break;
 					}
@@ -336,24 +326,8 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		}
 	}
 
+	@Override
 	public void deleteXCOM(Date time) throws DomainException {
-	    Path directoryPath = Paths.get(xcomfolder);
-	    if (!Files.isDirectory(directoryPath)) {
-	        throw new DomainException(new Exception(xcomfolder + " is not a valid path"));
-	    }
-
-	    try(Stream<Path> stream = Files.list(directoryPath);) {
-	             stream.filter(file -> Files.isRegularFile(file) && file.toFile().lastModified() < time.getTime())
-	             .forEach(file -> {
-	                 try {
-	                     Files.delete(file);
-	                     log.info("xcom deleted: {}", file);
-	                 } catch (Exception e) {
-	                     log.info("Failed to delete xcom: {}", file);
-	                 }
-	             });
-	    } catch (Exception e) {
-	        throw new DomainException(e);
-	    }
+		storage.deleteXCOM(time);
 	}
 }

@@ -107,10 +107,12 @@ public class QuartzConfig {
 		}
 	}
 	
-	public void executeInmediate(Job jobType) throws DomainException {
-	    try {
+	public void executeInmediate(DagExecutable dag) throws DomainException {
+		Job jobType = (Job) dag;
+		try {
 	    	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
 		    JobDetail jobDetail = JobBuilder.newJob(jobType.getClass()).withIdentity(jobType.getClass().getName()).build();
+		    jobDetail.getJobDataMap().put("channel", dag.getExecutionSource());
 		    this.scheduler.scheduleJob(jobDetail,trigger);	
 		} catch (Exception e) {
 			throw new DomainException(e);

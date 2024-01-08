@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -54,9 +55,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 		evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
 		var fa = this.createDagMemoryAppender(evalstring);
 		xcom = new JSONObject();
-
 		logdag = Logger.getLogger(evalstring);
-		
 		logdag.debug("executing dag::"+this.dagname);
 		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		Map<String,String> parmdata = new HashMap<>();
@@ -69,21 +68,35 @@ public class TemporalDagExecutable extends DagExecutable  {
 		String obj = (stopAtStep.trim().isEmpty())?"COMPLETE":stopAtStep;
 		parmdata.put("objetive",obj);
 		parmdata.put("sourceType","UNCOMPILED");
+		String stepf = "";
 		while (breadthFirstIterator.hasNext()) {
 			
 			DagNode node = breadthFirstIterator.next();
 			status.put(node.name, OperatorStatus.EXECUTING);
-			logdag.debug("executing node::"+node.name);
-			var statusToBe = this.constraints.get(node.name);
-			if(statusToBe != null) {
-				logdag.debug("constraint node::"+statusToBe.toString());	
-			} else {
-				logdag.debug("no constraint");
+			logdag.debug("preparing node::"+node.name);
+			
+			
+			
+			
+			var keys = this.constraints.keySet();
+			List<OperatorStatus> statusNow = new ArrayList<>();
+			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String string = iterator.next();
+				if(string.endsWith("."+node.name)) {
+					stepf = string.split("\\.")[0];
+					statusNow.add(this.constraints.get(string));	
+				}
 			}
 			Map<String,Object> argsr = new HashMap<>();
 			argsr.put("evalstring", evalstring);
-			argsr.put("statusToBe", statusToBe);
+			if(statusNow.size() > 0) {
+				logdag.debug("constraint node::"+statusNow.toString());	
+				argsr.put("statusToBe", statusNow.get(0));
+			} else {
+				logdag.debug("no constraint");
+			}
 			argsr.put("xcom", xcom);
+			argsr.put("stepf", stepf);
 			Future<?> future = this.futureDelegate(node, logdag, parmdata, timestamps, argsr, fa, status);
 			while (!future.isDone()) {
 			    try {

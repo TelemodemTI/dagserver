@@ -9,15 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
+import java.util.List;
 import org.json.JSONObject;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -25,13 +25,13 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={"host","user","port", "cmd"},optionalv = { "pwd","knowhostfile","privateKeyFile" })
-public class SshOperator extends OperatorStage implements Callable<Map<String,String>> {
+public class SshOperator extends OperatorStage {
 
 	private static final String KNOWHOSTFILE = "knowhostfile";
 	private static final String PRIVATEKEYFILE = "privateKeyFile";
 	
 	@Override
-	public Map<String, String> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		try {
 			JSch jsch = new JSch();		
 			Session session = jsch.getSession(this.args.getProperty("user"), this.args.getProperty("host"), Integer.parseInt(this.args.getProperty("port")));
@@ -52,11 +52,13 @@ public class SshOperator extends OperatorStage implements Callable<Map<String,St
 			session.connect();
 			ChannelExec channel = (ChannelExec) session.openChannel("exec");
 			channel.setCommand(this.args.getProperty("cmd"));
-			return this.sendToChannel(channel);
+			List<Dagmap> list = new ArrayList<>();
+			list.add(this.sendToChannel(channel));
+			return list;
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();
-		    return new HashMap<>();
+		    return Dagmap.createDagmaps(1, "error", ie.getMessage());
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -74,8 +76,8 @@ public class SshOperator extends OperatorStage implements Callable<Map<String,St
 			  return resultStringBuilder.toString();
 			}
 	
-	private Map<String, String> sendToChannel(ChannelExec channel) throws IOException, InterruptedException, JSchException {
-		Map<String, String> output = new HashMap<>();
+	private Dagmap sendToChannel(ChannelExec channel) throws IOException, InterruptedException, JSchException {
+		Dagmap output = new Dagmap();
 		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
 		ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
 

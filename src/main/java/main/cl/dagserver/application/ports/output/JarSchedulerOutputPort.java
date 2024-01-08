@@ -17,5 +17,5 @@ public interface JarSchedulerOutputPort {
 	public void execute(String jarname, String dagname, String type) throws DomainException;
 	public List<Map<String,Object>> listScheduled() throws DomainException;
 	public String getIcons(String type) throws DomainException;
-	public void deleteXCOM(Date time) throws DomainException;
+	public void deleteXCOM(Date time)  throws DomainException;
 }

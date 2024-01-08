@@ -1,44 +1,78 @@
 package main.cl.dagserver.infra.adapters.output.repositories;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentMap;
 import org.json.JSONObject;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.stereotype.Component;
+import lombok.extern.log4j.Log4j2;
 
-import main.cl.dagserver.domain.exceptions.DomainException;
-
+@Component
+@Log4j2
+@ImportResource("classpath:properties-config.xml")
 public class InternalStorage {
 	
+	
 	private String locatedb = null;
+	@SuppressWarnings("rawtypes")
+	private ConcurrentMap map = null;
 
-	public InternalStorage(String path ) {
-		this.locatedb = path;
+	
+	public InternalStorage(@Value("${param.xcompath}")String xcomfolder) {
+		deleteExistingFile(xcomfolder);
+		DB db = DBMaker.fileDB(xcomfolder).fileDeleteAfterClose().make();
+		map = db.hashMap("xcom").createOrOpen();
+	}
+	
+	public void init(String name ) {
+		this.locatedb = name;
 	}
 	
 	public String getLocatedb() {
 		return  locatedb;
 	}
-	public void put(JSONObject json) throws DomainException {
-		if(json.length() > 0) {
-			try (FileWriter file = new FileWriter(locatedb)) {
-			    file.write(json.toString());
-			    file.flush();
-			} catch (IOException e) {
-			    throw new DomainException(e);
-			}	
-		}
+	@SuppressWarnings( "unchecked" )
+	public void put(JSONObject json) {
+		map.put(locatedb, json.toString());	
 	}
 	public JSONObject get() {
-		StringBuilder content = new StringBuilder();
-		try(FileReader reader = new FileReader(locatedb);) {
-	        int character;
-	        while ((character = reader.read()) != -1) {
-	                content.append((char) character);
-	        }
-	        return new JSONObject(content.toString());
-		} catch (Exception e) {
-			return new JSONObject();
-		}
+		String jsonstr = (String) map.get(locatedb);
+		return new JSONObject(jsonstr);
 	}
-	
+	private void deleteExistingFile(String xcomfolder) {
+        try {
+        	File file = new File(xcomfolder);
+            if (file.exists()) {
+                Files.delete(file.toPath());
+            }	
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+    }
+
+	@SuppressWarnings("unchecked")
+	public void deleteXCOM(Date time) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+		var keys = map.entrySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String key = iterator.next();
+			try {
+				Date dk = sdf.parse(key);
+				if(dk.before(time)) {
+					map.remove(key);
+				}	
+			} catch (Exception e) {
+				log.debug("key {} not removed from xcom",key);
+			}
+		}
+		
+	}
 }

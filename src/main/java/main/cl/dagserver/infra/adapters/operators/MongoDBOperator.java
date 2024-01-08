@@ -2,17 +2,13 @@ package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.json.JSONObject;
-
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
@@ -22,22 +18,22 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
-
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={"hostname","port","mode","database","collection","timeout"},optionalv = {"username","password","filter","xcom"})
-public class MongoDBOperator extends OperatorStage implements Callable<List<Map<String, Object>>> {
+public class MongoDBOperator extends OperatorStage {
 
 	@Override
-	public List<Map<String, Object>> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
-		List<Map<String, Object>> list = new ArrayList<>();
+		List<Dagmap> list = new ArrayList<>();
 		String conUrl = "";
 		if(this.optionals.containsKey("username")) {
 			conUrl = "mongodb://"+this.optionals.getProperty("username")+":"+this.optionals.getProperty("password")+"@"+this.args.getProperty("hostname")+":"+this.args.getProperty("port")+"/?connectTimeoutMS="+this.args.getProperty("timeout");	
@@ -63,14 +59,14 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 		return list;
 	}
 	
-	private List<Map<String, Object>> read(MongoClient mongoClient) throws DomainException {
+	private List<Dagmap> read(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
 		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
 		  FindIterable<Document> cursor = collection.find();
-		  List<Map<String, Object>> list = new ArrayList<>();
+		  List<Dagmap> list = new ArrayList<>();
 		  try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
 			    while (cursorIterator.hasNext()) {
-			    	Map<String, Object> row = new HashMap<>();
+			    	Dagmap row = new Dagmap();
 			        Document doc = cursorIterator.next();
 			        for (String key : doc.keySet()) {
 			            Object value = doc.get(key);
@@ -84,7 +80,7 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 		}
 	}
 	
-	private List<Map<String, Object>> save(MongoClient mongoClient) throws DomainException {
+	private List<Dagmap> save(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
 		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
 		  if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
@@ -92,14 +88,14 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	    	  if(!this.xcom.has(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
-	    	  List<Map<String, Object>> rv = new ArrayList<>();
+	    	  List<Dagmap> rv = new ArrayList<>();
 	    	  @SuppressWarnings("unchecked")
 	    	  List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
 	    	  List<Document> collectionData = new ArrayList<>();
 	    	  Integer position = 0;
 	    	  for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
 				Map<String, Object> map = iterator.next();
-				Map<String, Object> status = new HashMap<>();
+				Dagmap status = new Dagmap();
 				
 				Document document = new Document();
 				for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -129,7 +125,7 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	}
 	
 
-	private List<Map<String, Object>> insert(MongoClient mongoClient) throws DomainException {
+	private List<Dagmap> insert(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
 		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
 		  if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
@@ -137,15 +133,14 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	    	  if(!this.xcom.has(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
-	    	  List<Map<String, Object>> rv = new ArrayList<>();
+	    	  List<Dagmap> rv = new ArrayList<>();
 	    	  @SuppressWarnings("unchecked")
 	    	  List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
 	    	  List<Document> collectionData = new ArrayList<>();
 	    	  Integer position = 0;
 	    	  for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
 				Map<String, Object> map = iterator.next();
-				Map<String, Object> status = new HashMap<>();
-				
+				Dagmap status = new Dagmap();
 				Document document = new Document();
 				for (Map.Entry<String, Object> entry : map.entrySet()) {
 		            String clave = entry.getKey();
@@ -166,7 +161,7 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	}
 
 
-	private List<Map<String, Object>> delete(MongoClient mongoClient) throws DomainException {
+	private List<Dagmap> delete(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
 		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
 		  if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
@@ -174,13 +169,13 @@ public class MongoDBOperator extends OperatorStage implements Callable<List<Map<
 	    	  if(!this.xcom.has(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
-	    	  List<Map<String, Object>> rv = new ArrayList<>();
+	    	  List<Dagmap> rv = new ArrayList<>();
 	    	  @SuppressWarnings("unchecked")
 	    	  List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
 	    	  Integer position = 0;
 	    	  for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
 					Map<String, Object> map = iterator.next();
-					Map<String, Object> status = new HashMap<>();
+					Dagmap status = new Dagmap();
 					Document document = new Document();
 					for (Map.Entry<String, Object> entry : map.entrySet()) {
 			            String clave = entry.getKey();

@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.input.rabbit;
+package main.cl.dagserver.infra.adapters.input.channels.rabbit;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,43 +25,29 @@ import com.rabbitmq.client.Envelope;
 import main.cl.dagserver.application.ports.input.RabbitChannelUseCase;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 
 
 @Component
 @ImportResource("classpath:properties-config.xml")
-public class RabbitChannel {
+public class RabbitChannel extends InputChannel {
 
 	@Value( "${param.rabbit.refresh.timeout}" )
 	private Integer rabbitRefresh;
 	
 	private static final String QUEUE = "queue";
-	private Boolean someCondition = false;
 	private RabbitChannelUseCase handler;
-    private ApplicationEventPublisher eventPublisher;
+
 	private List<Map<String,String>> runningConsumers;
 	private Channel channel1;
 	
 	@Autowired
 	public RabbitChannel(RabbitChannelUseCase handler,ApplicationEventPublisher eventPublisher){
+		super(eventPublisher);
 		this.handler = handler;
-		this.eventPublisher = eventPublisher;
 	}
 	
-	@PostConstruct
-	public void listenerHandler() {
-		runningConsumers = new ArrayList<>();
-		Thread listener = new Thread(()-> {
-            	try {
-					runForever();
-            	} catch (InterruptedException ie) {
-            		Thread.currentThread().interrupt();
-            	} catch (Exception e) {
-					eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "listenerHandler"));
-				}
-        });
-		listener.start(); 
-	}	
-	private void runForever() throws IOException, TimeoutException, InterruptedException, DomainException {
+	public void runForever() throws Exception {
 		Boolean longRunning = true;
     	while(longRunning.equals(Boolean.TRUE)) {
        		Properties rabbitprops = handler.getRabbitChannelProperties();
@@ -179,10 +164,6 @@ public class RabbitChannel {
 			}
 		}
 		return rv;
-	}
-
-	public void setSomeCondition(Boolean someCondition) {
-		this.someCondition = someCondition;
 	}
 
 	public void setChannel1(Channel channel1) {

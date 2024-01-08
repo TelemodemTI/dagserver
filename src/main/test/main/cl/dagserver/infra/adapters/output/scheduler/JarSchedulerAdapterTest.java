@@ -3,7 +3,6 @@ package main.cl.dagserver.infra.adapters.output.scheduler;
 import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import java.util.Date;
 import java.io.File;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,6 @@ class JarSchedulerAdapterTest {
 		ReflectionTestUtils.setField(adapter, "quartz", quartz);
 		ReflectionTestUtils.setField(adapter, "eventPublisher", eventPublisher);
 		ReflectionTestUtils.setField(adapter, "pathfolder", "C:\\tmp\\dagrags\\");
-		ReflectionTestUtils.setField(adapter, "xcomfolder", "C:\\tmp\\dagrags\\xcom_files");
 	}
 	
 	@Test
@@ -99,13 +97,7 @@ class JarSchedulerAdapterTest {
 		var rv = adapter.getIcons("main.cl.dagserver.infra.adapters.operators.DummyOperator");
 		assertNotNull(rv);
 	}
-	@Test
-	void deleteXCOMTest() throws DomainException {
-		try {
-			adapter.deleteXCOM(new Date());	
-		} catch (Exception e) {}
-		assertTrue(true);
-	}
+	
 	@Test
 	void privateTest() {
 		ReflectionTestUtils.invokeMethod(adapter, "activateDeactivate", "dagname", this.getClass());

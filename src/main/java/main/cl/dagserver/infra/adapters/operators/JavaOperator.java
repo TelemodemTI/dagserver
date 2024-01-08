@@ -10,18 +10,19 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.DagPathClassLoadHelper;
 
 @Operator(args={"classpath","className"})
-public class JavaOperator extends OperatorStage implements Callable<Serializable> {
+public class JavaOperator extends OperatorStage {
 
 	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	
 	@Override
-	public Serializable call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		try {
@@ -36,7 +37,7 @@ public class JavaOperator extends OperatorStage implements Callable<Serializable
 			Serializable result = this.runCallableFromJar(this.args.getProperty("className"),list);
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
-			return result;	
+			return Dagmap.createDagmaps(1, "result", result);	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

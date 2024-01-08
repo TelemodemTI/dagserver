@@ -5,12 +5,13 @@ import { BaseModule } from '../base/base.module';
 import { GitHubModalComponent } from './git-hub-modal/git-hub-modal.component';
 import { RabbitModalComponent } from './rabbit-modal/rabbit-modal.component';
 import { RedisModalComponent } from './redis-modal/redis-modal.component';
+import { KafkaModalComponent } from './kafka-modal/kafka-modal.component';
 
 
 
 @NgModule({
   declarations: [  
-    InputsChannelsComponent, GitHubModalComponent, RabbitModalComponent, RedisModalComponent
+    InputsChannelsComponent, GitHubModalComponent, RabbitModalComponent, RedisModalComponent, KafkaModalComponent
   ],
   imports: [
     CommonModule,

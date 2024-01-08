@@ -32,6 +32,7 @@ export class ParamExistingjComponent {
   name!:any
   statusSel!:any
   xcoms:any[] = []
+
   constructor(private cd: ChangeDetectorRef){
 
   }
@@ -48,7 +49,6 @@ export class ParamExistingjComponent {
             let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
             this.another = obj.boxes.filter((elem:any)=>{ return elem && step && elem.type == step.type && elem.id != step.id})
             this.xcoms = obj.boxes.filter((elem:any)=>{ return elem && step && elem.id != step.id})
-            
             this.name = step.id
             this.statusSel = step.status
             let value;
@@ -58,6 +58,12 @@ export class ParamExistingjComponent {
                   this.editor.setValue(value.value) 
                 }
             } catch (error) {}
+            const activeTabId = this.tabIsActive();
+            $("#settings_li > a").click();
+            setTimeout(()=>{
+              $(activeTabId + " > a").click();
+            },250)
+            
           }
         }
         $("#canvas-codemirror-new-det").on("change", function() {
@@ -77,6 +83,7 @@ export class ParamExistingjComponent {
         clearInterval(interval)
         setTimeout(() => {
           this.editor.refresh()
+          this.cd.detectChanges(); 
         }, 300);
       } 
     },100)
@@ -91,7 +98,6 @@ export class ParamExistingjComponent {
       }
       $('#param-modalexistingj').modal('show');    
   }
-
   updateParams(){
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
     let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedStep})[0]
@@ -241,4 +247,18 @@ export class ParamExistingjComponent {
       this.execStepEvent.emit({dagname:this.selectedTab,step:this.selectedStep})
     }
   }  
+  tabIsDisplayed(jid:string){ 
+    if(jid=="#profile"){
+      return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "sourcecode").length > 0:false
+    } else {
+      return $(jid).text().trim()?true:false;
+    }
+  }
+  tabIsActive(){
+    //return this.tabIsDisplayed('#home')?'#home_li':(this.tabIsDisplayed('#profile')?'#profile_li':'#settings_li')
+    return "#settings_li"
+  }
+  ngAfterContentChecked() {
+    this.cd.detectChanges();
+  }
 }

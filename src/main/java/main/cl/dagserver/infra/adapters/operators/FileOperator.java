@@ -7,30 +7,28 @@ import java.io.FileWriter;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 @Operator(args={"mode","filepath","rowDelimiter","firstRowTitles"},optionalv = {"xcom"})
-public class FileOperator extends OperatorStage implements Callable<List<Object>> {
+public class FileOperator extends OperatorStage {
 
 	private SecureRandom random = new SecureRandom();
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object> call() throws DomainException {		
+	public List<Dagmap> call() throws DomainException {		
 		try {
-			List<Object> result = new ArrayList<>();
+			List<Dagmap> result = new ArrayList<>();
 			log.debug(this.getClass()+" init "+this.name);
 			log.debug("args");
 			log.debug(this.args);
@@ -44,7 +42,9 @@ public class FileOperator extends OperatorStage implements Callable<List<Object>
 				 log.debug("mode:read");
 				 if(rowDelimiter.trim().isEmpty()) {
 					String content = FileUtils.readFileToString(new File(filepath), "UTF-8");
-					result.add(content);
+					Dagmap map = new Dagmap();
+					map.put("content", content);
+					result.add(map);
 				 } else {
 					 this.read(filepath, rowDelimiter, firstrow, result);	 
 				 }
@@ -91,7 +91,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Object>
 		log.debug("write "+filepath+"--lines:"+lines);
 	}
 	
-	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Object> result) {
+	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Dagmap> result) {
 		String line;
 		Integer lineNumber = 0;
 		List<String> titles = new ArrayList<>();
@@ -100,7 +100,7 @@ public class FileOperator extends OperatorStage implements Callable<List<Object>
        		 BufferedReader bufferedReader = new BufferedReader(fileReader);
        	) {
        	 while ((line = bufferedReader.readLine()) != null) {
-	        	 Map<String, String> row = new HashMap<>();
+	        	 Dagmap row = new Dagmap();
 	        	 String[] fields = line.split(rowDelimiter);
 	        	 if(lineNumber.equals(0)) {
 	        		 if(Boolean.TRUE.equals(firstrow)) {

@@ -251,6 +251,33 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
+	
+	public StatusOp saveKafkaChannel(String token,String bootstrapServers,String groupId,Integer poll) {
+		try {
+			handler.saveKafkaChannel(token, bootstrapServers,groupId,poll);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
+	public StatusOp addConsumer(String token, String topic,String jarfile,String dagname) {
+		try {
+			handler.addConsumer(token, topic,jarfile,dagname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp delConsumer(String token,String topic) {
+		try {
+			handler.delConsumer(token, topic);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
 		status.setCode(200);

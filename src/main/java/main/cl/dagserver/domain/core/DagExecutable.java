@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -106,6 +107,7 @@ public class DagExecutable implements Job,JobListener  {
 	
 	@SuppressWarnings("unused")
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		this.executionSource = context.getMergedJobDataMap().getString("channel");
 		if(this.executionSource.isEmpty()) {
 			this.executionSource = "JOB_SCHEDULER";	
 		}
@@ -142,25 +144,38 @@ public class DagExecutable implements Job,JobListener  {
 		parmdata.put("objetive","COMPLETE");
 		parmdata.put("sourceType","COMPILED");
 		repo.setLog(parmdata,status,timestamps);
+		String stepf = "";
 		BreadthFirstIterator breadthFirstIterator  = new BreadthFirstIterator<>(g);
 		while (breadthFirstIterator.hasNext()) {
-			
 			DagNode node = (DagNode) breadthFirstIterator.next();
 			status.put(node.name, OperatorStatus.EXECUTING);
-			logdag.debug("executing node::"+node.name);
-			var statusToBe = this.constraints.get(node.name);
-			if(statusToBe != null) {
-				logdag.debug("constraint node::"+statusToBe.toString());	
+			logdag.debug("preparing node::"+node.name);
+			
+			var keys = this.constraints.keySet();
+			List<OperatorStatus> statusNow = new ArrayList<>();
+			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+				String string = (String) iterator.next();
+				if(string.endsWith("."+node.name)) {
+					stepf = string.split("\\.")[0];
+					statusNow.add(this.constraints.get(string));	
+				}
+			}
+			
+			Map<String,Object> argsr = new HashMap<>();
+			argsr.put(EVALSTRING, evalstring);
+			parmdata.put(VALUE,fa.getResult());
+			repo.setLog(parmdata,status,timestamps);
+			
+			if(statusNow.size() > 0) {
+				logdag.debug("constraint node::"+statusNow.toString());	
+				argsr.put(STATUSTOBE, statusNow.get(0));
 			} else {
 				logdag.debug("no constraint");
 			}
-			parmdata.put(VALUE,fa.getResult());
-			repo.setLog(parmdata,status,timestamps);
-			Map<String,Object> argsr = new HashMap<>();
-			argsr.put(EVALSTRING, evalstring);
-			argsr.put(STATUSTOBE, statusToBe);
 			argsr.put("xcom", xcom);
+			argsr.put("stepf", stepf);
 			Future<?> future = this.futureDelegate(node, logdag, parmdata, timestamps, argsr, fa, status);
+			stepf = node.name;
 			try {
 				future.get(); 
 			    parmdata.put(VALUE,fa.getResult());
@@ -187,6 +202,7 @@ public class DagExecutable implements Job,JobListener  {
 	        Map<String, OperatorStatus> status) {
 	    JSONObject xcom = (JSONObject) argsr.get("xcom");
 	    String evalstring = (String) argsr.get(EVALSTRING);
+	    String stepf = (String) argsr.get("stepf");
 	    OperatorStatus statusToBe = (OperatorStatus) argsr.get(STATUSTOBE);
 	    Class<?> clazz = node.operator;
 	    ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -200,6 +216,7 @@ public class DagExecutable implements Job,JobListener  {
 	            args.put(STATUSTOBE, statusToBe);
 	            args.put("logdag", logdag);
 	            args.put("status", status);
+	            args.put("stepf", stepf);
 	            args.put("fa", fa);
 	            this.instanciateEvaluate(args, parmdata, timestamps);
 	        } catch (JobExecutionException e) {
@@ -213,30 +230,40 @@ public class DagExecutable implements Job,JobListener  {
 		Class<?> clazz = (Class<?>) args.get("clazz");
 		DagNode node = (DagNode) args.get("node");
 		JSONObject xcom = (JSONObject) args.get("xcom");
+		String stepf = (String) args.get("stepf");
 		OperatorStatus statusToBe = (OperatorStatus) args.get(STATUSTOBE);
 		Logger logdag = (Logger) args.get("logdag");
 		Map<String,OperatorStatus> status = (Map<String, OperatorStatus>) args.get("status");
 		InMemoryLoggerAppender fa = (InMemoryLoggerAppender) args.get("fa");
+		
 		try {
-			OperatorStage op = (OperatorStage) clazz.getDeclaredConstructor().newInstance();
-			op.setArgs(node.args);
-			op.setXcom(xcom);
-			op.setName(node.name);
-			op.setOptionals(node.optionals);
-			Callable<?> instance  = (Callable<?>) op; 
-			var result = instance.call();
-			xcom.put(node.name , result );
-			if( (statusToBe == null) || (statusToBe == OperatorStatus.OK ) || (statusToBe == OperatorStatus.ANY)) {
-				logdag.debug("::end execution::");
+			if( (statusToBe == null)  || statusToBe.equals(OperatorStatus.ANY)|| (status.get(stepf).equals(statusToBe))) {
+				OperatorStage op = (OperatorStage) clazz.getDeclaredConstructor().newInstance();
+				op.setArgs(node.args);
+				op.setXcom(xcom);
+				op.setName(node.name);
+				op.setOptionals(node.optionals);
+				Callable<?> instance  = (Callable<?>) op; 
+				var result = instance.call();
+				xcom.put(node.name , result );
+				logdag.debug("::end execution ok::");
 				status.put(node.name, OperatorStatus.OK);
 			} else {
-				status.put(node.name, OperatorStatus.ERROR);				
-				throw new JobExecutionException("constraint failed::"+node.name);	
+				logdag.debug("::execution skipped::");
+				status.put(node.name, OperatorStatus.SKIPPED);
 			}
 		} catch (Exception e) {
-			if(statusToBe == OperatorStatus.ERROR) {
+			var keys = this.constraints.keySet();
+			List<OperatorStatus> statusNow = new ArrayList<>();
+			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String string = iterator.next();
+				if(string.startsWith(node.name+".")) {
+					statusNow.add(this.constraints.get(string));	
+				}
+			}
+			if(statusNow.contains(OperatorStatus.ERROR)) {
 				status.put(node.name, OperatorStatus.ERROR);
-				logdag.debug("result::"+e.getMessage());
+				logdag.debug("error result::"+e.getMessage());
 			} else {
 				status.put(node.name, OperatorStatus.ERROR);
 				logdag.error(e);
@@ -350,7 +377,7 @@ public class DagExecutable implements Job,JobListener  {
 	protected void addDependency(String name1, String name2, OperatorStatus status) {
 		var node1 = this.nodeList.get(name1);
 		var node2 = this.nodeList.get(name2);
-		this.constraints.put(name1, status);
+		this.constraints.put(name1+"."+name2, status);
 		this.g.addEdge(node1, node2);
 	}
 

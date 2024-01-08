@@ -33,4 +33,7 @@ public interface SchedulerMutationUseCase {
 	void saveRedisChannel(String token, String mode, String hostnames, String portnumbers) throws DomainException;
 	void addListener(String token, String listener, String jarfile, String dagname) throws DomainException;
 	void delListener(String token, String listener) throws DomainException;
+	void saveKafkaChannel(String token, String bootstrapServers, String groupId, Integer poll) throws DomainException;
+	void addConsumer(String token, String topic, String jarfile, String dagname) throws DomainException;
+	void delConsumer(String token, String topic) throws DomainException;
 }

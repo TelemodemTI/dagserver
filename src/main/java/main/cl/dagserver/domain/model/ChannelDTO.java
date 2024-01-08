@@ -6,6 +6,7 @@ public class ChannelDTO {
 
 	private String name;
 	private String status;
+	private String icon;
 	private List<ChannelPropsDTO> props;
 	public String getName() {
 		return name;
@@ -24,6 +25,12 @@ public class ChannelDTO {
 	}
 	public void setProps(List<ChannelPropsDTO> props) {
 		this.props = props;
+	}
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 	
 }
