@@ -42,6 +42,7 @@ INSERT INTO `sche_properties` VALUES ('1','STATUS','GITHUB_WEBHOOK_PROPS','INACT
 INSERT INTO `sche_properties` VALUES ('2','STATUS','RABBIT_PROPS','INACTIVE','rabbit channel status');
 INSERT INTO `sche_properties` VALUES ('3','STATUS','REDIS_PROPS','INACTIVE','redis channel status');
 INSERT INTO `sche_properties` VALUES ('4','STATUS','KAFKA_PROPS','INACTIVE','kafka channel status');
+INSERT INTO `sche_properties` VALUES ('5','STATUS','ACTIVEMQ_PROPS','INACTIVE','activemq channel status');
 
 
 CREATE TABLE `sche_metadata` (

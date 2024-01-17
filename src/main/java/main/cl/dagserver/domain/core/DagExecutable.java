@@ -108,7 +108,7 @@ public class DagExecutable implements Job,JobListener  {
 	@SuppressWarnings("unused")
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		this.executionSource = context.getMergedJobDataMap().getString("channel");
-		if(this.executionSource.isEmpty()) {
+		if(this.executionSource == null || this.executionSource.isEmpty()) {
 			this.executionSource = "JOB_SCHEDULER";	
 		}
 		jobDetail = context.getJobDetail();
