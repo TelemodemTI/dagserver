@@ -300,6 +300,12 @@
 		    <artifactId>kafka-clients</artifactId>
 		</dependency>
 
+		<dependency>
+		    <groupId>org.apache.activemq</groupId>
+		    <artifactId>activemq-broker</artifactId>
+		    <version>5.18.3</version>
+		</dependency>
+
 		
 	</dependencies>
 
