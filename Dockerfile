@@ -2,6 +2,7 @@ FROM maven:3.8.5-openjdk-17 as maven_builder
 WORKDIR /app/
 COPY / /app/dagserver/
 WORKDIR /app/dagserver/
+RUN mkdir /root/dags/
 RUN ["mvn","--quiet","clean","install"]
 
 
