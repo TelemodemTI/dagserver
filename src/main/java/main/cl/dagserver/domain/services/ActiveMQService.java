@@ -4,12 +4,14 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import main.cl.dagserver.application.ports.input.ActiveMQChannelUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 
+@Service
 public class ActiveMQService extends BaseServiceComponent implements ActiveMQChannelUseCase {
 	@Value( "${param.activemq.propkey}" )
 	private String activemqPropkey;
