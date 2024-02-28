@@ -2,10 +2,12 @@ FROM maven:3.8.5-openjdk-17 as maven_builder
 WORKDIR /app/
 COPY / /app/dagserver/
 WORKDIR /app/dagserver/
+RUN mkdir /root/dags/
 RUN ["mvn","--quiet","clean","install"]
 
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM openjdk:17-oracle
+#FROM eclipse-temurin:17-jdk-alpine
 COPY --from=maven_builder /app/dagserver/target/dagserver-0.4.0-SNAPSHOT.jar /
 
 EXPOSE 8081
