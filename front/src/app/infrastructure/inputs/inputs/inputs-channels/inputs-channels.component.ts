@@ -46,11 +46,13 @@ export class InputsChannelsComponent {
       $("#githubModal").modal('show');
     } else if(item.name == "RABBITMQ") {
       $("#rabbitModal").modal('show');
-    } else if(item.name == "REDIS") {
+    } else if(item.name == "REDIS_LISTENER") {
       $("#redisModal").modal('show');
-    } else {
+    } else if(item.name == "KAFKA_CONSUMER")  {
       $("#kafkaModal").modal('show');
-    }
+    } else {
+	  $("#activeMQModal").modal('show');
+	}
     this.propsSelected = item.props
   }
 

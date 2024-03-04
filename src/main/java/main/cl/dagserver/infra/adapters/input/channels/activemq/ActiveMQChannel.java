@@ -65,7 +65,6 @@ public class ActiveMQChannel extends InputChannel {
             Queue queue = session.createQueue(queueName);
             MessageConsumer consumer = session.createConsumer(queue);
 
-            // Implementa el MessageListener para manejar los mensajes recibidos
             consumer.setMessageListener(message -> {
                 if (message instanceof TextMessage) {
                     try {
