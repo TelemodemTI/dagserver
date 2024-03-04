@@ -36,4 +36,7 @@ public interface SchedulerMutationUseCase {
 	void saveKafkaChannel(String token, String bootstrapServers, String groupId, Integer poll) throws DomainException;
 	void addConsumer(String token, String topic, String jarfile, String dagname) throws DomainException;
 	void delConsumer(String token, String topic) throws DomainException;
+	void saveActiveMQChannel(String token,String host,String user,String pwd) throws DomainException;
+	void addConsumerAM(String token, String queue, String jarfile, String dagname) throws DomainException;
+	void delConsumerAM(String token,String queue) throws DomainException;
 }
