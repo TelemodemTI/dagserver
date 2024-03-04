@@ -122,7 +122,7 @@ public class MailOperator extends OperatorStage {
 		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("body", "sourcecode");
 		metadata.setOpts("attachedFilename", "text");
-		metadata.setOpts("stepAttachedFilename", "text");
+		metadata.setOpts("stepAttachedFilename", "xcom");
 		return metadata.generate();
 	}
 	@Override
