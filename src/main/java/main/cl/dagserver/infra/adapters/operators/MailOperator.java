@@ -1,5 +1,6 @@
 package main.cl.dagserver.infra.adapters.operators;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -15,14 +16,19 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.BodyPart;
+import javax.mail.Multipart;
 
 
-@Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom"})
+@Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom","attachedFilename","stepAttachedFilename"})
 public class MailOperator extends OperatorStage {
 
 	private static final String FROMMAIL = "fromMail";
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Dagmap> call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -70,7 +76,29 @@ public class MailOperator extends OperatorStage {
 	      }
 	      msg.setContent(body.toString(),"text/html; charset=UTF-8");
 	      msg.setSentDate(new Date());
-	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(this.args.getProperty("toEmail"), false));
+	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):(String) this.xcom.get(this.args.getProperty("toEmail"));
+	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmailString, false));
+	      if(!this.optionals.getProperty("attachedFilename").isEmpty()) {
+	    	  String attachedFilename = this.optionals.getProperty("attachedFilename");
+	    	  String stepAttachedFilename = this.optionals.getProperty("stepAttachedFilename"); 
+	    	  List<Dagmap> lista = (List<Dagmap>) this.xcom.get(stepAttachedFilename);
+	    	  Dagmap obj = lista.get(0);
+	    	  String base64File = (String) obj.get("output");
+	    	  if (base64File  != null && !base64File.isEmpty()) {
+	    	        byte[] fileBytes = Base64.getDecoder().decode(base64File);
+	    	        // Crear una parte del cuerpo del mensaje para el archivo adjunto
+	                BodyPart fileBodyPart = new MimeBodyPart();
+	                fileBodyPart.setContent(fileBytes, "application/octet-stream");
+	                fileBodyPart.setFileName(attachedFilename);
+
+	                // Crear el cuerpo del mensaje y adjuntar la parte del archivo
+	                Multipart multipart = new MimeMultipart();
+	                multipart.addBodyPart(fileBodyPart);
+
+	                // Establecer el contenido del mensaje como multipart
+	                msg.setContent(multipart);
+	    	  }
+	      }
 	      Transport.send(msg);
     	  log.debug(this.getClass()+" end "+this.name);
     	  return Dagmap.createDagmaps(1, "status", "ok");
@@ -93,6 +121,8 @@ public class MailOperator extends OperatorStage {
 		metadata.setParameter("subject", "text");
 		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("body", "sourcecode");
+		metadata.setOpts("attachedFilename", "text");
+		metadata.setOpts("stepAttachedFilename", "text");
 		return metadata.generate();
 	}
 	@Override
