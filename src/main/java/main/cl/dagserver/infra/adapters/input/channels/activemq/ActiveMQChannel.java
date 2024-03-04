@@ -6,15 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.ActiveMQChannelUseCase;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 
 import javax.jms.*;
+
+import java.util.Arrays;
 import java.util.Properties;
 
 @Component
+@Log4j2
 public class ActiveMQChannel extends InputChannel {
 
     @Value("${param.activemq.refresh.timeout}")
@@ -49,7 +53,9 @@ public class ActiveMQChannel extends InputChannel {
         String password = activemqProps.getProperty("password");
         String queueName = activemqProps.getProperty("queueName");
 
-        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerURL);
+        ActiveMQConnectionFactory  connectionFactory = new ActiveMQConnectionFactory(brokerURL);
+        connectionFactory.setTrustedPackages(Arrays.asList("mail.cl.dagserver"));
+        connectionFactory.setTrustAllPackages(false);
         Connection connection = null;
         try {
             connection = connectionFactory.createConnection(username, password);
@@ -75,13 +81,14 @@ public class ActiveMQChannel extends InputChannel {
 
             connection.close(); // Cierra la conexión cuando hayas terminado
         } catch (JMSException | InterruptedException e) {
+        	Thread.currentThread().interrupt();
             throw new DomainException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (JMSException e) {
-                    e.printStackTrace();
+                    log.error("Error in ActiveMq Channel", e);
                 }
             }
         }

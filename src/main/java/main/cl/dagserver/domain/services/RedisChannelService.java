@@ -23,15 +23,7 @@ public class RedisChannelService extends BaseServiceComponent implements RedisCh
 	
 	@Override
 	public Properties getRedisChannelProperties() throws DomainException {
-		var propertyList = repository.getProperties(redisPropkey);
-		Properties props = new Properties();
-		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
-			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(!propertyParameterDTO.getValue().equals("redis_consumer_listener")) {
-				props.put(propertyParameterDTO.getName(),propertyParameterDTO.getValue());	
-			}
-		}
-		return props;
+		return this.getChannelProperties(redisPropkey, "redis_consumer_listener");
 	}
 
 	@Override
