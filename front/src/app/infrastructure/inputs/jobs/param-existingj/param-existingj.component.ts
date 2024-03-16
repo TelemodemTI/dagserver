@@ -111,18 +111,19 @@ export class ParamExistingjComponent {
   }
   loadParams(){
     let paramarr = []
-    for (let index = 0; index < this.selectedStepParams.params.length; index++) {
-      const key = this.selectedStepParams.params[index];
-      if(key.type != "sourcecode"){
-        let vlue = $("#param-"+key.name+"-value").val()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
-      } else {
-        let vlue:string = this.editor.getValue()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
+    if(this.selectedStepParams){
+      for (let index = 0; index < this.selectedStepParams.params.length; index++) {
+        const key = this.selectedStepParams.params[index];
+        if(key.type != "sourcecode"){
+          let vlue = $("#param-"+key.name+"-value").val()
+          paramarr.push({key:key.name,value:vlue,type:key.type})
+        } else {
+          let vlue:string = this.editor.getValue()
+          paramarr.push({key:key.name,value:vlue,type:key.type})
+        }
       }
     }
-
-    if(this.selectedStepParams.opt){
+    if(this.selectedStepParams && this.selectedStepParams.opt){
       for (let index = 0; index < this.selectedStepParams.opt.length; index++) {
         const key = this.selectedStepParams.opt[index];
         if(key.type != "sourcecode"){
