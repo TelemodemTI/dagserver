@@ -55,16 +55,18 @@ export class DagCanvasComponent {
   triggerClick(step:any){
     this.selectedStepParams = this.parameters.filter((el:any)=>{ return el.class == step.type })[0]
     this.generatedIdParams = []
-    this.selectedStepParams.params.forEach((el:any)=>{
-      let defval = undefined
-      let opt = el.opt?el.opt:[]
-      if(step.params){
-                let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
-                defval = parit.value
-      }
-      this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})
-    })
-    if(this.selectedStepParams.opt){
+    if(this.selectedStepParams){
+      this.selectedStepParams.params.forEach((el:any)=>{
+        let defval = undefined
+        let opt = el.opt?el.opt:[]
+        if(step.params){
+                  let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
+                  defval = parit.value
+        }
+        this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})
+      })
+    }
+    if(this.selectedStepParams && this.selectedStepParams.opt){
       this.selectedStepParams.opt.forEach((el:any)=>{
         let defval = undefined
         let opt = el.opt?el.opt:[]
