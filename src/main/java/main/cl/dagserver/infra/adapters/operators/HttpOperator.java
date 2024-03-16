@@ -14,7 +14,7 @@ import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
-@Operator(args={"url","method","timeout","contentType"},optionalv = {"bodyxcom","authorizationHeader"})
+@Operator(args={"url","method","timeout","contentType"},optionalv = {"xcom","authorizationHeader"})
 public class HttpOperator extends OperatorStage {
 
 	private static final String AUTHORIZATION_HEADER = "authorizationHeader";
@@ -40,7 +40,7 @@ public class HttpOperator extends OperatorStage {
 			
 			
 			
-			String xcomname = this.optionals.getProperty("bodyxcom");
+			String xcomname = this.optionals.getProperty("xcom");
 			if(this.xcom.has(xcomname)) {
 				String body = this.xcom.get(xcomname).toString();
 				con.setDoOutput(true);
@@ -77,7 +77,7 @@ public class HttpOperator extends OperatorStage {
 		metadata.setParameter("method", "list",Arrays.asList("GET","POST","PUT","DELETE"));
 		metadata.setParameter("timeout", "number");
 		metadata.setParameter("contentType", "text");
-		metadata.setOpts("bodyxcom", "xcom");
+		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts(AUTHORIZATION_HEADER, "text");
 		return metadata.generate();
 	}
