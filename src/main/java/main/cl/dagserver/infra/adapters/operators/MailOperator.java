@@ -76,14 +76,15 @@ public class MailOperator extends OperatorStage {
 	      }
 	      msg.setContent(body.toString(),"text/html; charset=UTF-8");
 	      msg.setSentDate(new Date());
-	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):(String) this.xcom.get(this.args.getProperty("toEmail"));
+	      
+	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):(String) ((List<Dagmap>) this.xcom.get(this.args.getProperty("toEmail"))).get(0).get("output");;
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmailString, false));
 	      if(!this.optionals.getProperty("attachedFilename").isEmpty()) {
 	    	  String attachedFilename = this.optionals.getProperty("attachedFilename");
 	    	  String stepAttachedFilename = this.optionals.getProperty("stepAttachedFilename"); 
 	    	  List<Dagmap> lista = (List<Dagmap>) this.xcom.get(stepAttachedFilename);
 	    	  Dagmap obj = lista.get(0);
-	    	  String base64File = (String) obj.get("output");
+	    	  String base64File = (String) obj.get("result");
 	    	  if (base64File  != null && !base64File.isEmpty()) {
 	    	        byte[] fileBytes = Base64.getDecoder().decode(base64File);
 	    	        // Crear una parte del cuerpo del mensaje para el archivo adjunto
