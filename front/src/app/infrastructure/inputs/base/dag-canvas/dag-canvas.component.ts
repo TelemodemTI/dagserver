@@ -60,8 +60,8 @@ export class DagCanvasComponent {
         let defval = undefined
         let opt = el.opt?el.opt:[]
         if(step.params){
-                  let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
-                  defval = parit.value
+            let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
+            defval = parit.value
         }
         this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})
       })
@@ -71,8 +71,14 @@ export class DagCanvasComponent {
         let defval = undefined
         let opt = el.opt?el.opt:[]
         if(step.params){
-          let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
-          defval = parit.value
+          let  found = step.params.filter((ela:any)=> ela.key == el.name)
+          if(found.length > 0){
+			      let parit = found[0]
+          	defval = parit.value  
+		      } else {
+            defval = ""
+          }
+          
         }
         this.generatedIdParams.push({key:el.name,type:el.type, value:defval,source:"OPT", domid:this.generateRandomString(5),opt:opt})
       })
