@@ -23,7 +23,7 @@ import javax.mail.BodyPart;
 import javax.mail.Multipart;
 
 
-@Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom","attachedFilename","stepAttachedFilename"})
+@Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom","attachedFilename","stepAttachedFilename","ccList"})
 public class MailOperator extends OperatorStage {
 
 	private static final String FROMMAIL = "fromMail";
@@ -79,6 +79,15 @@ public class MailOperator extends OperatorStage {
 	      
 	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):(String) ((List<Dagmap>) this.xcom.get(this.args.getProperty("toEmail"))).get(0).get("output");;
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmailString, false));
+	      
+	      if(!this.optionals.getProperty("ccList").isEmpty()) {
+	    	  String [] arrcc = this.optionals.getProperty("ccList").split(";");
+	    	  for (int i = 0; i < arrcc.length; i++) {
+				String string = arrcc[i];
+				msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(string, false));
+	    	  }
+	    	    
+	      }
 	      if(!this.optionals.getProperty("attachedFilename").isEmpty()) {
 	    	  String attachedFilename = this.optionals.getProperty("attachedFilename");
 	    	  String stepAttachedFilename = this.optionals.getProperty("stepAttachedFilename"); 
@@ -124,6 +133,7 @@ public class MailOperator extends OperatorStage {
 		metadata.setOpts("body", "sourcecode");
 		metadata.setOpts("attachedFilename", "text");
 		metadata.setOpts("stepAttachedFilename", "xcom");
+		metadata.setOpts("ccList", "text");
 		return metadata.generate();
 	}
 	@Override
