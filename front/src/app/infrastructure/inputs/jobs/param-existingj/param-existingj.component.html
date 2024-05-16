@@ -21,8 +21,8 @@
 
 
                 <ul class="nav nav-tabs">
-                    <li id="home_li" *ngIf="tabIsDisplayed('#home')"><a href="#home" data-toggle="tab">Parameters</a></li>
-                    <li id="profile_li" *ngIf="tabIsDisplayed('#profile')"><a href="#profile" (click)="refreshCodemirror()" data-toggle="tab">Scripts</a></li>
+                    <li id="home_li"><a href="#home" data-toggle="tab">Parameters</a></li>
+                    <li id="profile_li"><a href="#profile" (click)="refreshCodemirror()" data-toggle="tab">Scripts</a></li>
                     <li id="settings_li"><a href="#settings" data-toggle="tab">Settings</a></li>
                 </ul>
                 <div #loader class="loader"></div>
