@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -24,6 +25,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
+import lombok.extern.log4j.Log4j2;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
@@ -46,6 +50,7 @@ import net.bytebuddy.pool.TypePool;
 import net.bytebuddy.pool.TypePool.CacheProvider;
 
 @Component
+@Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class CompilerHandler implements CompilerOutputPort {
 
@@ -56,7 +61,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String NAME = "name";
 	private static final String ONSTART = "onstart";
 	private static final String ONEND = "onend";
-	private static final String BASEOPPKG = "main.cl.dagserver.infra.adapters.operators";
+	private static final String BASEOPPKG = "main.cl.dagserver";
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
@@ -229,28 +234,35 @@ public class CompilerHandler implements CompilerOutputPort {
         
         return transformedString;
     }
-	@Override
-	public JSONArray operators() throws DomainException {	
-		try {
-			Reflections reflections = new Reflections(BASEOPPKG, Scanners.SubTypes);			
-			var lista = reflections.getSubTypesOf(OperatorStage.class).stream().collect(Collectors.toSet());
-			JSONArray arr = new JSONArray();
-			for (Iterator<Class<? extends OperatorStage>> iterator = lista.iterator(); iterator.hasNext();) {
-				Class<? extends OperatorStage> class1 = iterator.next();
-				if(class1.getCanonicalName().startsWith(BASEOPPKG)) {
-					OperatorStage op = class1.getDeclaredConstructor().newInstance();
-					var item = op.getMetadataOperator(); 
-					if(item != null) {
-						arr.put(item);	
-					}	
-				}
-			}
-			return arr;	
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-		
-	}
+    
+    public JSONArray operators() throws DomainException {
+        try {
+            // Scan for subclasses of OperatorStage
+            try (ScanResult scanResult = new ClassGraph()
+                    .acceptPackages(BASEOPPKG)
+                    .scan()) {
+                Set<Class<OperatorStage>> reflecteds = scanResult
+                        .getSubclasses(OperatorStage.class.getName())
+                        .loadClasses(OperatorStage.class)
+                        .stream()
+                        .collect(Collectors.toSet());
+                Set<Class<? extends OperatorStage>> lista = reflecteds.stream().collect(Collectors.toSet());
+                JSONArray arr = new JSONArray();
+                for (Class<? extends OperatorStage> class1 : lista) {
+                    if (class1.getCanonicalName().startsWith(BASEOPPKG)) {
+                        OperatorStage op = class1.getDeclaredConstructor().newInstance();
+                        var item = op.getMetadataOperator();
+                        if (item != null) {
+                            arr.put(item);
+                        }
+                    }
+                }
+                return arr;
+            }
+        } catch (Exception e) {
+            throw new DomainException(e);
+        }
+    }
 	@Override
 	public void deleteJarfile(String jarname) throws DomainException {
 		try {

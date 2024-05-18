@@ -256,4 +256,11 @@ export class ParamExistingjComponent {
   ngAfterContentChecked() {
     this.cd.detectChanges();
   }
+  tabIsDisplayed(jid:string){ 
+    if(jid=="#profile"){
+      return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "sourcecode").length > 0:false
+    } else {
+      return $(jid).text().trim()?true:false;
+    }
+  }
 }
