@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -18,8 +17,6 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,7 +24,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
-import lombok.extern.log4j.Log4j2;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
@@ -50,7 +46,6 @@ import net.bytebuddy.pool.TypePool;
 import net.bytebuddy.pool.TypePool.CacheProvider;
 
 @Component
-@Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class CompilerHandler implements CompilerOutputPort {
 
