@@ -1,14 +1,16 @@
 package main.cl.dagserver.infra.adapters.output.compiler;
 
 import java.io.ByteArrayOutputStream;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -17,8 +19,6 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -229,28 +229,34 @@ public class CompilerHandler implements CompilerOutputPort {
         
         return transformedString;
     }
-	@Override
-	public JSONArray operators() throws DomainException {	
-		try {
-			Reflections reflections = new Reflections(BASEOPPKG, Scanners.SubTypes);			
-			var lista = reflections.getSubTypesOf(OperatorStage.class).stream().collect(Collectors.toSet());
-			JSONArray arr = new JSONArray();
-			for (Iterator<Class<? extends OperatorStage>> iterator = lista.iterator(); iterator.hasNext();) {
-				Class<? extends OperatorStage> class1 = iterator.next();
-				if(class1.getCanonicalName().startsWith(BASEOPPKG)) {
-					OperatorStage op = class1.getDeclaredConstructor().newInstance();
-					var item = op.getMetadataOperator(); 
-					if(item != null) {
-						arr.put(item);	
-					}	
-				}
-			}
-			return arr;	
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-		
-	}
+    public JSONArray operators() throws DomainException {
+        try {
+            // Scan for subclasses of OperatorStage
+            try (ScanResult scanResult = new ClassGraph()
+                    .acceptPackages(BASEOPPKG)
+                    .scan()) {
+                Set<Class<OperatorStage>> reflecteds = scanResult
+                        .getSubclasses(OperatorStage.class.getName())
+                        .loadClasses(OperatorStage.class)
+                        .stream()
+                        .collect(Collectors.toSet());
+                Set<Class<? extends OperatorStage>> lista = reflecteds.stream().collect(Collectors.toSet());
+                JSONArray arr = new JSONArray();
+                for (Class<? extends OperatorStage> class1 : lista) {
+                    if (class1.getCanonicalName().startsWith(BASEOPPKG)) {
+                        OperatorStage op = class1.getDeclaredConstructor().newInstance();
+                        var item = op.getMetadataOperator();
+                        if (item != null) {
+                            arr.put(item);
+                        }
+                    }
+                }
+                return arr;
+            }
+        } catch (Exception e) {
+            throw new DomainException(e);
+        }
+    }
 	@Override
 	public void deleteJarfile(String jarname) throws DomainException {
 		try {
