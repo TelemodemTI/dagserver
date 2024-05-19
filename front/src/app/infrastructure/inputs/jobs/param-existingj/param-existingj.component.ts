@@ -57,13 +57,14 @@ export class ParamExistingjComponent {
                 if(this.editor){    
                   this.editor.setValue(value.value) 
                 }
-            } catch (error) {}
+            } catch (error) {
+				console.log(error)
+			}
             const activeTabId = this.tabIsActive();
             $("#settings_li > a").click();
             setTimeout(()=>{
               $(activeTabId + " > a").click();
             },250)
-            
           }
         }
         $("#canvas-codemirror-new-det").on("change", function() {
@@ -111,18 +112,19 @@ export class ParamExistingjComponent {
   }
   loadParams(){
     let paramarr = []
-    for (let index = 0; index < this.selectedStepParams.params.length; index++) {
-      const key = this.selectedStepParams.params[index];
-      if(key.type != "sourcecode"){
-        let vlue = $("#param-"+key.name+"-value").val()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
-      } else {
-        let vlue:string = this.editor.getValue()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
+    if(this.selectedStepParams){
+      for (let index = 0; index < this.selectedStepParams.params.length; index++) {
+        const key = this.selectedStepParams.params[index];
+        if(key.type != "sourcecode"){
+          let vlue = $("#param-"+key.name+"-value").val()
+          paramarr.push({key:key.name,value:vlue,type:key.type})
+        } else {
+          let vlue:string = this.editor.getValue()
+          paramarr.push({key:key.name,value:vlue,type:key.type})
+        }
       }
     }
-
-    if(this.selectedStepParams.opt){
+    if(this.selectedStepParams && this.selectedStepParams.opt){
       for (let index = 0; index < this.selectedStepParams.opt.length; index++) {
         const key = this.selectedStepParams.opt[index];
         if(key.type != "sourcecode"){
@@ -247,18 +249,18 @@ export class ParamExistingjComponent {
       this.execStepEvent.emit({dagname:this.selectedTab,step:this.selectedStep})
     }
   }  
-  tabIsDisplayed(jid:string){ 
-    if(jid=="#profile"){
-      return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "sourcecode").length > 0:false
-    } else {
-      return $(jid).text().trim()?true:false;
-    }
-  }
   tabIsActive(){
     //return this.tabIsDisplayed('#home')?'#home_li':(this.tabIsDisplayed('#profile')?'#profile_li':'#settings_li')
     return "#settings_li"
   }
   ngAfterContentChecked() {
     this.cd.detectChanges();
+  }
+  tabIsDisplayed(jid:string){ 
+    if(jid=="#profile"){
+      return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "sourcecode").length > 0:false
+    } else {
+      return $(jid).text().trim()?true:false;
+    }
   }
 }

@@ -369,7 +369,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			for (int l = 0; l < box.getJSONArray(params).length(); l++) {
 				JSONObject parm = box.getJSONArray(params).getJSONObject(l);
 				if(this.searchValue(annotation.optionalv(), parm.getString(key))) {
-					this.setProperty(parm.getString(key), "generated optional from editor", parm.getString(value), groupo);	
+					this.setProperty(parm.getString(key), "generated optional from editor",parm.optString(value, ""), groupo);	
 				}
 			}	
 		}

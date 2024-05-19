@@ -2,14 +2,13 @@ FROM maven:3.8.5-openjdk-17 as maven_builder
 WORKDIR /app/
 COPY / /app/dagserver/
 WORKDIR /app/dagserver/
-RUN mkdir /root/dags/
 RUN ["mvn","--quiet","clean","install"]
 
 
-FROM openjdk:17-oracle
-#FROM eclipse-temurin:17-jdk-alpine
-COPY --from=maven_builder /app/dagserver/target/dagserver-0.4.0-SNAPSHOT.jar /
-
+#FROM openjdk:17-oracle
+FROM eclipse-temurin:17-jdk-alpine
+COPY --from=maven_builder /app/dagserver/target/dagserver-0.5.0-SNAPSHOT.jar /
+RUN mkdir /root/dags/
 EXPOSE 8081
 
 ENV env_name APP_JDBC_URL
@@ -20,4 +19,4 @@ ENV env_name APP_MIGRATION_JDBC_TYPE
 ENV env_name APP_HIBERNATE_DIALECT
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
-ENTRYPOINT ["java","-jar","dagserver-0.4.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","dagserver-0.5.0-SNAPSHOT.jar"]

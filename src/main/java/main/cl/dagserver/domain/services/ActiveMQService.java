@@ -19,15 +19,7 @@ public class ActiveMQService extends BaseServiceComponent implements ActiveMQCha
 	
 	@Override
 	public Properties getActiveMQChannelProperties() throws DomainException {
-		var propertyList = repository.getProperties(activemqPropkey);
-		Properties props = new Properties();
-		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
-			PropertyParameterDTO propertyParameterDTO = iterator.next();
-			if(!propertyParameterDTO.getValue().equals("activemq_consumer_listener")) {
-				props.put(propertyParameterDTO.getName(),propertyParameterDTO.getValue());	
-			}
-		}
-		return props;
+		return this.getChannelProperties(activemqPropkey, "activemq_consumer_listener");
 	}
 
 	@Override

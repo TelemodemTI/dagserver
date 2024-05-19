@@ -144,4 +144,7 @@ type Mutation {
 	saveKafkaChannel(token:String,bootstrapServers:String,groupId:String,poll:Int) : StatusOp
 	addConsumer(token:String,topic:String,jarfile:String,dagname:String) : StatusOp
 	delConsumer(token:String,topic:String) : StatusOp
+	saveActiveMQChannel(token:String,host:String, user:String, pwd:String) : StatusOp
+	addConsumerAM(token:String,queue:String,jarfile:String,dagname:String) : StatusOp
+	delConsumerAM(token:String,queue:String) : StatusOp
 }

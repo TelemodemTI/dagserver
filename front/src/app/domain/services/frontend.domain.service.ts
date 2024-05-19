@@ -53,6 +53,13 @@ export class FrontEndDomainService implements
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
 
+  delQueueAM(queue: any): Promise<void> {
+    return this.adapter.delConsumerAM(queue);
+  }
+  addQueueAM(queue: any, jarFile: any, dag: any): Promise<void> {
+    return this.adapter.addConsumerAM(queue,jarFile,dag);
+  }
+
   delConsumer(channel: any): Promise<void> {
     return this.adapter.delConsumer(channel);
   }
@@ -85,6 +92,9 @@ export class FrontEndDomainService implements
 
   saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void> {
     return this.adapter.saveRabbitChannel(host, user, pwd, port)
+  }
+  saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void> {
+    return this.adapter.saveActiveMQChannel(host, user, pwd)
   }
   addQueue(queue: string, jarfile: string, dagname: string): Promise<void> {
     return this.adapter.addQueue(queue,jarfile,dagname);
