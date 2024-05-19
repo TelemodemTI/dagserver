@@ -1,5 +1,7 @@
 package main.cl.dagserver.domain.core;
 import java.util.Iterator;
+import java.util.Properties;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -56,5 +58,18 @@ public class BaseServiceComponent {
 		if(!dagname.isEmpty() && !jarname.isEmpty()) {
 				scanner.init().execute(jarname, dagname,eventType);	
 		}	
+	}
+	
+	
+	protected Properties getChannelProperties(String propkey,String value) throws DomainException {
+		var propertyList = repository.getProperties(propkey);
+		Properties props = new Properties();
+		for (Iterator<PropertyParameterDTO> iterator = propertyList.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			if(!propertyParameterDTO.getValue().equals(value)) {
+				props.put(propertyParameterDTO.getName(),propertyParameterDTO.getValue());	
+			}
+		}
+		return props;
 	}
 }

@@ -67,7 +67,7 @@ public class JavaOperator extends OperatorStage {
                 @SuppressWarnings("unchecked")
                 Callable<T> callableInstance = (Callable<T>) loadedClass.getDeclaredConstructor().newInstance();
                 if(this.methodExist(callableInstance, "setXcom")){
-                	this.execSetParams(callableInstance,"setXcom" , this.xcom);
+                	this.execSetParams(callableInstance,"setXcom" , this.xcom.toString());
                 }
                 if(this.methodExist(callableInstance, "setArgs")){
                 	this.execSetParams(callableInstance,"setArgs" , this.args);

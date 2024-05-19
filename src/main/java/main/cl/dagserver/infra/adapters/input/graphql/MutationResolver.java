@@ -278,6 +278,33 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
+	public StatusOp saveActiveMQChannel(String token,String host,String user,String pwd) {
+		try {
+			handler.saveActiveMQChannel(token, host,user,pwd);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
+	public StatusOp addConsumerAM(String token, String queue, String jarfile, String dagname) {
+		try {
+			handler.addConsumerAM(token, queue,jarfile,dagname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	public StatusOp delConsumerAM(String token,String queue) {
+		try {
+			handler.delConsumerAM(token, queue);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
+	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
 		status.setCode(200);

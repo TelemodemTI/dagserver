@@ -60,7 +60,7 @@
                                 <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'xcom'">
-								<label>Related XCOM</label>
+								<label>{{item.key}}</label>
 								<select class="form-control param-value-input" id="param-{{item.key}}-value">
                                     <option selected disabled>Select related XCOM</option>
                                     <option *ngFor="let opt of xcoms" value="{{opt.id}}" [selected]="item.value == opt.id">{{opt.id}}</option>

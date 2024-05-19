@@ -18,11 +18,48 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+  
+  addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation addConsumerAM($token:String,$queue:String,$jarfile:String,$dagname:String) { addConsumer(token:$token,queue:$queue,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
+      this.query(string,{token:token,queue:queue,jarfile:jarFile,dagname:dag}).subscribe((result:any)=>{
+        if(result && result.addConsumerAM && result.addConsumerAM.status == "ok"){
+          resolve()
+        } else if(result && result.addConsumerAM) {
+          reject(result.addConsumerAM.status)
+        } 
+      })
+    })
+  }
+  delConsumerAM(queue: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation delConsumerAM($token:String,$queue:String) { delConsumer(token:$token,queue:$queue) {status,code,value} }"
+      this.query(string,{token:token,queue:queue}).subscribe((result:any)=>{
+        if(result && result.delConsumerAM && result.delConsumerAM.status == "ok"){
+          resolve()
+        } else if(result && result.delConsumerAM) {
+          reject(result.delConsumerAM.status)
+        } 
+      })
+    })
+  }
 
-  
+  saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation saveActiveMQChannel($token:String,$host:String,$user:String,$pwd:String) { saveRabbitChannel(token:$token,host:$host,user:$user,pwd:$pwd) {status,code,value} }"
+      this.query(string,{token:token,host:host,user:user,pwd:pwd}).subscribe((result:any)=>{
+        if(result && result.saveActiveMQChannel && result.saveActiveMQChannel.status == "ok"){
+          resolve()
+        } else if(result && result.saveActiveMQChannel) {
+          reject(result.saveActiveMQChannel.status)
+        }      
+      })
+    })
+  }
 
-  
-  
   getLastLogs(): Promise<Log[]> {
     return new Promise<Log[]>((resolve, reject) => {
       var string = "query last {last {id,dagname,execDt,value,outputxcom,status, channel,marks}}"

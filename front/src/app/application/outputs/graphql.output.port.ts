@@ -52,4 +52,7 @@ export abstract class GraphQLOutputPort {
     public abstract getCredentials(): Promise<Credential[]>;
     public abstract updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void>;
     public abstract getDependencies(jarname: string,dagname:string):Promise<any>;
+    public abstract saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void>;
+    public abstract addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void>
+    public abstract delConsumerAM(queue: any): Promise<void>
   }

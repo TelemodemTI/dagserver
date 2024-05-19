@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
@@ -56,7 +58,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String NAME = "name";
 	private static final String ONSTART = "onstart";
 	private static final String ONEND = "onend";
-	private static final String BASEOPPKG = "main.cl.dagserver.infra.adapters.operators";
+	private static final String BASEOPPKG = "main.cl.dagserver";
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
@@ -229,6 +231,7 @@ public class CompilerHandler implements CompilerOutputPort {
         
         return transformedString;
     }
+	
     public JSONArray operators() throws DomainException {
         try {
             // Scan for subclasses of OperatorStage

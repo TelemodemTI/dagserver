@@ -38,7 +38,8 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Value( "${param.kafka.propkey}" )
 	private String kafkaPropkey;
 	
-	
+	@Value( "${param.activemq.propkey}" )
+	private String activeMQPropkey;
 	
 	
 	@Override
@@ -330,5 +331,26 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.delProperty(topic, redisPropkey);
 		repository.delGroupProperty(topic);
 	}
+	@Override
+	public void saveActiveMQChannel(String token, String host, String user, String pwd) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.setProperty("host", GENERATED, host, activeMQPropkey );
+		repository.setProperty("user", GENERATED, user, activeMQPropkey );
+		repository.setProperty("pwd", GENERATED, pwd, activeMQPropkey );
+		repository.setProperty(STATUS, "activeMQ channel status", ACTIVE, activeMQPropkey );
+	}
 	
+	@Override
+	public void addConsumerAM(String token, String queue, String jarfile, String dagname) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.setProperty(queue , GENERATED, "activemq_consumer_listener" , activeMQPropkey );
+		repository.setProperty(DAGNAME, GENERATED, dagname, queue);
+		repository.setProperty(JARNAME, GENERATED, jarfile, queue);
+	}
+	@Override
+	public void delConsumerAM(String token,String queue) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		repository.delProperty(queue, activeMQPropkey);
+		repository.delGroupProperty(queue);
+	}
 }

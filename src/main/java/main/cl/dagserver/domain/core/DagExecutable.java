@@ -372,6 +372,7 @@ public class DagExecutable implements Job,JobListener  {
 	}
 	
 	protected void addDependency(String name1, String name2, String status) {
+		status = status.isEmpty()?"ANY": status;
 		this.addDependency(name1, name2, OperatorStatus.valueOf(status));
 	}
 	protected void addDependency(String name1, String name2, OperatorStatus status) {

@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.core.DagExecutable;
@@ -36,6 +38,7 @@ import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
 import main.cl.dagserver.infra.adapters.output.repositories.InternalStorage;
 
 @Component
+@Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Autowired
@@ -57,9 +60,15 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	
 	public JarSchedulerAdapter init () throws DomainException {
-		this.classMap = new HashMap<>();
+		this.classMap = new HashMap<>();;
 		File folder = new File(pathfolder);
-		File[] listOfFiles = folder.listFiles();	
+		File[] listOfFiles = new File[0];
+		try {
+			listOfFiles = folder.listFiles();	
+		} catch (Exception e) {
+			log.error(e);
+		}
+			
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if(listOfFiles[i].getName().endsWith(".jar")) {
 				jars.add(listOfFiles[i]);

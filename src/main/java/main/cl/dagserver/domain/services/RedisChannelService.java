@@ -21,7 +21,7 @@ public class RedisChannelService extends BaseServiceComponent implements RedisCh
 	private String redisPropkey;
 	
 	
-	@Override
+ @Override
 	public Properties getRedisChannelProperties() throws DomainException {
 		var redisList = repository.getProperties(redisPropkey);
 		Properties properties = new Properties();
