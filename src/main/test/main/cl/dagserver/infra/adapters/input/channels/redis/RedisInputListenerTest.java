@@ -37,7 +37,7 @@ class RedisInputListenerTest {
 	}
 	
 	@Test
-	void listenerTest() throws DomainException, InterruptedException {
+	void listenerTest() throws DomainException {
 		Properties rabbitprops = new Properties(); 
 		rabbitprops.setProperty("STATUS", "ACTIVE");
 		rabbitprops.setProperty("redisCluster", "false");

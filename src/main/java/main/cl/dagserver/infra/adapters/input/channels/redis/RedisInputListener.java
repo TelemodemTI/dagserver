@@ -12,10 +12,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.RedisChannelUseCase;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.HostAndPort;
@@ -24,6 +26,7 @@ import redis.clients.jedis.JedisCluster;
 
 
 @Component
+@Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class RedisInputListener extends InputChannel {
 	
@@ -41,19 +44,28 @@ public class RedisInputListener extends InputChannel {
 		this.handler = handler;
 	}
 	
-	public void runForever() throws DomainException, InterruptedException {
-		boolean keepRunning = true;
-    	while(keepRunning) {
-    		Properties redisprops = handler.getRedisChannelProperties();
-            String status = redisprops.getProperty("STATUS");
-    		if(status != null && status.equals("ACTIVE")){
-    			listenerActive(redisprops);
-    		}
-    		if (someCondition.equals(Boolean.TRUE)) {
-                     keepRunning = false;
-            }
-    		Thread.sleep(redisRefresh);	
-	    }
+	public void runForever() throws ChannelException {
+		try {
+			boolean keepRunning = true;
+	    	while(keepRunning) {
+	    		Properties redisprops = handler.getRedisChannelProperties();
+	            String status = redisprops.getProperty("STATUS");
+	    		if(status != null && status.equals("ACTIVE")){
+	    			listenerActive(redisprops);
+	    		}
+	    		if (someCondition.equals(Boolean.TRUE)) {
+	                     keepRunning = false;
+	            }
+	    		Thread.sleep(redisRefresh);	
+		    }	
+		} catch (InterruptedException ie) {
+            log.error("InterruptedException: ", ie);
+            Thread.currentThread().interrupt(); // Vuelve a establecer la interrupción
+            throw new ChannelException(ie); // Relanza la excepción para que sea manejada en el método principal
+        }  catch (DomainException e) {
+			throw new ChannelException(e);
+		}
+		
 	}
 	
 	private void listenerActive(Properties redisprops) throws DomainException {

@@ -175,7 +175,7 @@ class QueryResolverTest {
 		assertEquals(arr.size(),list.size());
 	}
 	@Test
-	void agentsTest() throws DomainException {
+	void agentsTest() {
 		AgentDTO prop = new AgentDTO();
 		List<AgentDTO> arr = new ArrayList<>();
 		arr.add(prop);
