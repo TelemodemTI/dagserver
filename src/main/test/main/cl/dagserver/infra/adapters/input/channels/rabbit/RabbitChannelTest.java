@@ -35,7 +35,7 @@ class RabbitChannelTest {
 	
 	
 	@Test
-	void listenerHandlerNoChannelTest() throws DomainException, InterruptedException {
+	void listenerHandlerNoChannelTest() throws DomainException {
 		Properties rabbitprops = new Properties(); 
 		rabbitprops.setProperty("STATUS", "ACTIVE");
 		rabbitprops.setProperty("username","a");
@@ -48,7 +48,7 @@ class RabbitChannelTest {
 		assertTrue(true);
 	}
 	@Test
-	void listenerHandlerNewChannelTest() throws DomainException, InterruptedException {
+	void listenerHandlerNewChannelTest() throws DomainException {
 		Properties rabbitprops = new Properties(); 
 		rabbitprops.setProperty("STATUS", "ACTIVE");
 		rabbitprops.setProperty("username","a");
@@ -64,7 +64,7 @@ class RabbitChannelTest {
 		assertTrue(true);
 	}
 	@Test
-	void listenerHandlerTest() throws DomainException, InterruptedException {
+	void listenerHandlerTest() throws DomainException {
 		Properties rabbitprops = new Properties(); 
 		rabbitprops.setProperty("STATUS", "ACTIVE");
 		rabbitprops.setProperty("username","a");

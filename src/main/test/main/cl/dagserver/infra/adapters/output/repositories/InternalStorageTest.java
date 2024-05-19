@@ -7,8 +7,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import main.cl.dagserver.domain.exceptions.DomainException;
-
 class InternalStorageTest {
 
 	private InternalStorage storage;
@@ -20,7 +18,7 @@ class InternalStorageTest {
 	}
 	
 	@Test
-	void getLocatedbTest() throws DomainException, JSONException {
+	void getLocatedbTest() throws JSONException {
 		var str = storage.getLocatedb();
 		assertNotNull(str);
 		var json = new JSONObject();

@@ -17,7 +17,7 @@ public abstract class InputChannel {
 	protected Boolean someCondition = false;
 	
 	@Autowired
-	public InputChannel(ApplicationEventPublisher eventPublisher) {
+	protected InputChannel(ApplicationEventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 	}
 	
@@ -27,11 +27,9 @@ public abstract class InputChannel {
 		 Thread listenerT = new Thread(() -> {
 			 try {
 					runForever();
-         	} catch (InterruptedException ie) {
-         		Thread.currentThread().interrupt();
          	} catch (Exception e) {
 					eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "listenerHandler"));
-			}
+			} 
 		});
 		listenerT.start();
 	}
@@ -46,5 +44,5 @@ public abstract class InputChannel {
 		this.someCondition = true;
 	}
 	
-	public abstract void runForever() throws Exception;
+	public abstract void runForever() throws ChannelException;
 }

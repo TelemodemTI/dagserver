@@ -22,13 +22,16 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.RabbitChannelUseCase;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 
 
 @Component
+@Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class RabbitChannel extends InputChannel {
 
@@ -47,22 +50,31 @@ public class RabbitChannel extends InputChannel {
 		this.handler = handler;
 	}
 	
-	public void runForever() throws Exception {
-		Boolean longRunning = true;
-    	while(longRunning.equals(Boolean.TRUE)) {
-       		Properties rabbitprops = handler.getRabbitChannelProperties();
-    		String status = rabbitprops.getProperty("STATUS");
-    		if(status != null && status.equals("ACTIVE")){
-    			if(channel1 == null) {
-    				channel1 = getConnection(rabbitprops);	
-    			}
-    			if (someCondition.equals(Boolean.TRUE)) {
-    				longRunning = false;
-               }
-    			configureListener(rabbitprops);
-    		}
-    		Thread.sleep(rabbitRefresh);	
+	public void runForever() throws ChannelException {
+		try {
+			Boolean longRunning = true;
+	    	while(longRunning.equals(Boolean.TRUE)) {
+	       		Properties rabbitprops = handler.getRabbitChannelProperties();
+	    		String status = rabbitprops.getProperty("STATUS");
+	    		if(status != null && status.equals("ACTIVE")){
+	    			if(channel1 == null) {
+	    				channel1 = getConnection(rabbitprops);	
+	    			}
+	    			if (someCondition.equals(Boolean.TRUE)) {
+	    				longRunning = false;
+	               }
+	    			configureListener(rabbitprops);
+	    		}
+	    		Thread.sleep(rabbitRefresh);	
+			}	
+		} catch (InterruptedException ie) {
+            log.error("InterruptedException: ", ie);
+            Thread.currentThread().interrupt(); // Vuelve a establecer la interrupción
+            throw new ChannelException(ie); // Relanza la excepción para que sea manejada en el método principal
+        } catch (Exception e) {
+			throw new ChannelException(e);
 		}
+		
 	}
 	private Channel getConnection(Properties rabbitprops) throws IOException, TimeoutException {
 		ConnectionFactory factory = new ConnectionFactory();
