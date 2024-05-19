@@ -1,6 +1,8 @@
 package main.cl.dagserver.infra.adapters.output.compiler;
 
 import java.io.ByteArrayOutputStream;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -229,7 +231,7 @@ public class CompilerHandler implements CompilerOutputPort {
         
         return transformedString;
     }
-    
+	
     public JSONArray operators() throws DomainException {
         try {
             // Scan for subclasses of OperatorStage
