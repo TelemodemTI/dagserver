@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
