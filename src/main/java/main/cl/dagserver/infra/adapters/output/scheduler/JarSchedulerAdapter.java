@@ -60,7 +60,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	
 	public JarSchedulerAdapter init () throws DomainException {
-		this.classMap = new HashMap<>();;
+		this.classMap = new HashMap<>();
 		File folder = new File(pathfolder);
 		File[] listOfFiles = new File[0];
 		try {
