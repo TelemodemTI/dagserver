@@ -95,6 +95,13 @@ type Account {
     typeAccount: String
 }
 
+type Exceptions {
+	eventDt: String,
+	classname: String,
+	method: String,
+	stack: String
+}
+
 
 type Query { 
 	login(token: String) : String,
@@ -109,9 +116,10 @@ type Query {
 	getUncompileds(token:String) : [Uncompiled],
 	operatorsMetadata : String,
 	credentials(token: String) : [Account],
-	getDependencies(jarname: String, dagname: String) : Deps
-	channelStatus(token: String) : [Channel]
-	exportUncompiled(token: String,uncompiled:Int): String
+	getDependencies(jarname: String, dagname: String) : Deps,
+	channelStatus(token: String) : [Channel],
+	exportUncompiled(token: String,uncompiled:Int): String,
+	exceptions(token:String): [Exceptions]
 }
 
 type Mutation { 
@@ -147,4 +155,5 @@ type Mutation {
 	saveActiveMQChannel(token:String,host:String, user:String, pwd:String) : StatusOp
 	addConsumerAM(token:String,queue:String,jarfile:String,dagname:String) : StatusOp
 	delConsumerAM(token:String,queue:String) : StatusOp
+	removeException(token:String,eventDt:String) : StatusOp
 }

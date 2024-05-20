@@ -45,7 +45,8 @@ export class FrontEndDomainService implements
     CredentialsInputPort,
     JardetailpInputPort,
     DependenciesInputPort,
-    InputsChannelsInputPort {
+    InputsChannelsInputPort,
+    ExistingJInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
     private httpd: DinamicOutputPort,
@@ -246,5 +247,11 @@ export class FrontEndDomainService implements
   }
   listenEvents(): any {
     return this.shared.listenEvents();
+  }
+  getExceptions() {
+    return this.adapter.getExceptions();
+  }
+  removeException(eventDt:string){
+    return this.adapter.removeException(eventDt);
   }
 }

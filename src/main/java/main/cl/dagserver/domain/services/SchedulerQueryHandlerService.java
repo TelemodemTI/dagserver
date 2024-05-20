@@ -26,6 +26,7 @@ import main.cl.dagserver.domain.model.PropertyDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
+import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
 
 
 
@@ -179,7 +180,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	public List<ChannelDTO> getChannels(String token) throws DomainException {
 	    Map<String, String> claims = extractClaims(token);
 	    validateAdminPermission(claims);
-
+  
 	    List<ChannelDTO> channels = new ArrayList<>();
 	    
 	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
@@ -256,6 +257,24 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 			JSONObject xcom = repository.readXcom(logDTO.getOutputxcom());
 			logDTO.setOutputxcom(xcom.toString());
 			newrv.add(logDTO);
+		}
+		return newrv;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Exceptions> getExceptions() {
+		List<Exceptions> newrv = new ArrayList<>();
+		var exceptions = this.excstorage.list();
+		var keys = exceptions.keySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String dt = iterator.next();
+			Map<String,String> map = (Map<String,String>) exceptions.get(dt);
+			Exceptions ex = new Exceptions();
+			ex.setEventDt(dt);
+			ex.setClassname(map.get("classname"));
+			ex.setMethod(map.get("method"));
+			ex.setStack(map.get("stacktrace"));
+			newrv.add(ex);
 		}
 		return newrv;
 	}

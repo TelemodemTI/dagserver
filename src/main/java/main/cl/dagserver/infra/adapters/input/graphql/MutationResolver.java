@@ -303,7 +303,14 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	
+	public StatusOp removeException(String token,String eventDt){
+		try {
+			handler.removeException(token, eventDt);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();

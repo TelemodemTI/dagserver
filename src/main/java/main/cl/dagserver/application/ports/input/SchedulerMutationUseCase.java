@@ -39,4 +39,5 @@ public interface SchedulerMutationUseCase {
 	void saveActiveMQChannel(String token,String host,String user,String pwd) throws DomainException;
 	void addConsumerAM(String token, String queue, String jarfile, String dagname) throws DomainException;
 	void delConsumerAM(String token,String queue) throws DomainException;
+	void removeException(String token, String eventDt) throws DomainException;
 }

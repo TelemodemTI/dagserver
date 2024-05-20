@@ -24,6 +24,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Channel;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Deps;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Detail;
 import main.cl.dagserver.infra.adapters.input.graphql.types.DetailStatus;
+import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
 import main.cl.dagserver.infra.adapters.input.graphql.types.LogEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Node;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Property;
@@ -207,5 +208,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 	}
 	public String exportUncompiled(String token,Integer uncompiled) throws DomainException {
 		return handler.exportUncompiled(token,uncompiled);
+	}
+	public List<Exceptions> exceptions(String token) throws DomainException {
+		return handler.getExceptions();
 	}
 }

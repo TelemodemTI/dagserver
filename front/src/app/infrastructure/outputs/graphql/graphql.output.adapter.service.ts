@@ -19,6 +19,31 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
   
+  removeException(eventDt: string): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "mutation removeException($token:String,$eventDt:String) { removeException(token:$token,eventDt:$eventDt) {status,code,value} }"
+      this.query(string,{token:token,eventDt:eventDt}).subscribe((result:any)=>{
+        if(result && result.removeException && result.removeException.status == "ok"){
+          resolve()
+        } else if(result && result.removeException) {
+          reject(result.removeException.status)
+        } 
+      })
+    })
+  }
+  
+  getExceptions(): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      var string = "query exceptions($token: String) {exceptions(token:$token) {eventDt,classname,method,stack}}"
+      this.query(string,{}).subscribe((result:any)=>{
+        if(result && result.exceptions){
+          resolve(result.exceptions as any[]);
+        }
+      })
+    })
+  }
+  
   addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

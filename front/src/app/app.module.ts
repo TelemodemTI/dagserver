@@ -37,6 +37,8 @@ import { DinamicOutputPort } from './application/outputs/dinamic.output.port';
 import { DinamicAdapterService } from './infrastructure/outputs/http/dinamic.services.adapter.service';
 import { SharedOutputPort } from './application/outputs/shared.output.port';
 import { SharedAdapterService } from './infrastructure/outputs/shared/shared.adapter.service';
+import { ExceptionsModule } from './infrastructure/inputs/exceptions/exceptions.module';
+import { ExceptionsInputPort } from './application/inputs/exceptions.input.port';
 
 
 declare var window: any;
@@ -55,7 +57,8 @@ declare var window: any;
     LogsModule,
     PropsModule,
     CredentialsModule,
-    InputsModule
+    InputsModule,
+    ExceptionsModule
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: window["base-href"]},
@@ -79,8 +82,8 @@ declare var window: any;
     { provide: CredentialsInputPort, useClass: FrontEndDomainService},
     { provide: JardetailpInputPort, useClass: FrontEndDomainService},
     { provide: DependenciesInputPort, useClass: FrontEndDomainService},
-    { provide: InputsChannelsInputPort, useClass: FrontEndDomainService }
- 
+    { provide: InputsChannelsInputPort, useClass: FrontEndDomainService },
+    { provide: ExceptionsInputPort, useClass: FrontEndDomainService }
   ],
   bootstrap: [AppComponent]
 })

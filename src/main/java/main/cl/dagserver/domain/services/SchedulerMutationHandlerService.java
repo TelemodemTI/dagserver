@@ -353,4 +353,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.delProperty(queue, activeMQPropkey);
 		repository.delGroupProperty(queue);
 	}
+	@Override
+	public void removeException(String token, String eventDt) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		this.excstorage.remove(eventDt);
+	}
 }

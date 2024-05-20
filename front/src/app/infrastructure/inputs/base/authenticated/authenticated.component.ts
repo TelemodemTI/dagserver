@@ -39,6 +39,7 @@ export class AuthenticatedComponent {
   }
 
   start(){
+    this.loadScript("/assets/js/startmin.js",function(){});
     var res = this.service.getDecodedAccessToken()
     if(!res || new Date(res.exp * 1000) < new Date()){
       this.service.removeAccessToken()
@@ -68,6 +69,9 @@ export class AuthenticatedComponent {
   viewChannels(){
     this.router.navigateByUrl("auth/channels")
   }
+  viewExceptions(){
+    this.router.navigateByUrl("auth/exceptions")
+  }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
   }
@@ -87,4 +91,29 @@ export class AuthenticatedComponent {
     let url = uri + "monitoring";
     window.location.href = url
   }
+  loadScript(src:any, callback:any,namespace?:any){
+    var s:any,
+        r:any,
+        t:any;
+    r = false;
+    s = document.createElement('script');
+
+    if(namespace){
+      s.setAttribute("data-namespace",namespace)
+    }
+    
+    s.type = 'text/javascript';
+    s.src = src;
+    s.onload = s.onreadystatechange = function() {
+      //console.log( this.readyState ); //uncomment this line to see which ready states are called.
+      if ( !r && (!this.readyState || this.readyState == 'complete') )
+      {
+        r = true;
+        callback();
+      }
+    };
+    t = document.getElementsByTagName('script')[0];
+    t.parentNode.insertBefore(s, t);
+  }
+
 }
