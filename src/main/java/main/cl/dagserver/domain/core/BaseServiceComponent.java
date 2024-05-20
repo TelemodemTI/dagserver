@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
+import main.cl.dagserver.application.ports.output.ExceptionStorageUseCase;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -38,6 +39,9 @@ public class BaseServiceComponent {
 	
 	@Autowired
 	protected CompilerOutputPort compiler;
+	
+	@Autowired
+	protected ExceptionStorageUseCase excstorage;
 	
 	@Autowired
 	protected TokenEngine tokenEngine;

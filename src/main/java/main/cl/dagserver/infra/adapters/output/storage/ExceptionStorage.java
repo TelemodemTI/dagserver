@@ -23,6 +23,14 @@ public class ExceptionStorage implements ExceptionStorageUseCase {
 	@Value("${param.storage.exception}")
 	private String exceptionstoragefile;
 	
+	@SuppressWarnings("rawtypes")
+	public void remove(String eventDt) {
+		try(DB db = DBMaker.fileDB(exceptionstoragefile).make()){
+			ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
+			map.remove(eventDt);
+		}
+	}
+	
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void add(ExceptionEventLog event) {
@@ -41,6 +49,15 @@ public class ExceptionStorage implements ExceptionStorageUseCase {
 			excpd.put("stacktrace",stacktrace);
 			map.put(sdf.format(new Date()), excpd);	
 		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public Map<String, Object> list() {
+		try(DB db = DBMaker.fileDB(exceptionstoragefile).make()){
+			ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
+			return new HashMap<String,Object>(map);
+        } 
 	}
 
 }

@@ -12,6 +12,7 @@ import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
+import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
 
 
 
@@ -31,4 +32,5 @@ public interface SchedulerQueryUseCase {
 	List<ChannelDTO> getChannels(String token) throws DomainException;
 	String exportUncompiled(String token, Integer uncompiled) throws DomainException;
 	List<LogDTO> getLastLogs() throws DomainException;
+	List<Exceptions> getExceptions();
 }
