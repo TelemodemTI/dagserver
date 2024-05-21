@@ -239,5 +239,10 @@ class QueryResolverTest {
 		var str = resolver.exportUncompiled("test",1);
 		assertNotNull(str);
 	}
-	
+	@Test
+	void exceptionsTest() {
+		when(handler.getExceptions(anyString())).thenReturn(new ArrayList<>());
+		var str = resolver.exceptions("test");
+		assertNotNull(str);
+	}
 }

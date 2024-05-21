@@ -32,5 +32,5 @@ public interface SchedulerQueryUseCase {
 	List<ChannelDTO> getChannels(String token) throws DomainException;
 	String exportUncompiled(String token, Integer uncompiled) throws DomainException;
 	List<LogDTO> getLastLogs() throws DomainException;
-	List<Exceptions> getExceptions();
+	List<Exceptions> getExceptions(String token);
 }

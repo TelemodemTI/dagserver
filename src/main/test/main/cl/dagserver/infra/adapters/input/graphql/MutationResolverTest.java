@@ -253,4 +253,61 @@ class MutationResolverTest {
 		var resp2 = mutation.delListener(anyString(),anyString());
 		assertNotNull(resp2);
 	}
+	@Test
+	void saveKafkaChannelTest() throws DomainException {
+	    var resp = mutation.saveKafkaChannel("testToken", "bootstrapServers", "groupId", 100);
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).saveKafkaChannel(anyString(), anyString(), anyString(), anyInt());
+	    var resp2 = mutation.saveKafkaChannel("testToken", "bootstrapServers", "groupId", 100);
+	    assertNotNull(resp2);
+	}
+	@Test
+	void addConsumerTest() throws DomainException {
+	    var resp = mutation.addConsumer("testToken", "testTopic", "testJarfile", "testDagname");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).addConsumer(anyString(), anyString(), anyString(), anyString());
+	    var resp2 = mutation.addConsumer("testToken", "testTopic", "testJarfile", "testDagname");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void delConsumerTest() throws DomainException {
+	    var resp = mutation.delConsumer("testToken", "testTopic");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).delConsumer(anyString(), anyString());
+	    var resp2 = mutation.delConsumer("testToken", "testTopic");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void saveActiveMQChannelTest() throws DomainException {
+	    var resp = mutation.saveActiveMQChannel("testToken", "testHost", "testUser", "testPwd");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).saveActiveMQChannel(anyString(), anyString(), anyString(), anyString());
+	    var resp2 = mutation.saveActiveMQChannel("testToken", "testHost", "testUser", "testPwd");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void addConsumerAMTest() throws DomainException {
+	    var resp = mutation.addConsumerAM("testToken", "testQueue", "testJarfile", "testDagname");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).addConsumerAM(anyString(), anyString(), anyString(), anyString());
+	    var resp2 = mutation.addConsumerAM("testToken", "testQueue", "testJarfile", "testDagname");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void delConsumerAMTest() throws DomainException {
+	    var resp = mutation.delConsumerAM("testToken", "testQueue");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).delConsumerAM(anyString(), anyString());
+	    var resp2 = mutation.delConsumerAM("testToken", "testQueue");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void removeExceptionTest() throws DomainException {
+	    var resp = mutation.removeException("testToken", "2024-01-01T00:00:00Z");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).removeException(anyString(), anyString());
+	    var resp2 = mutation.removeException("testToken", "2024-01-01T00:00:00Z");
+	    assertNotNull(resp2);
+	}
+
 }
