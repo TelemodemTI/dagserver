@@ -209,7 +209,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 	public String exportUncompiled(String token,Integer uncompiled) throws DomainException {
 		return handler.exportUncompiled(token,uncompiled);
 	}
-	public List<Exceptions> exceptions(String token) throws DomainException {
-		return handler.getExceptions();
+	public List<Exceptions> exceptions(String token) {
+		return handler.getExceptions(token);
 	}
 }

@@ -16,6 +16,7 @@ import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 @Operator(args={})
 public class LogsRollupOperator extends OperatorStage {
 
+	@SuppressWarnings("static-access")
 	@Override
 	public List<Dagmap> call() throws DomainException {		
 		try {

@@ -6,10 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.mapdb.HTreeMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
@@ -20,22 +20,35 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 @ImportResource("classpath:properties-config.xml")
 public class ExceptionStorage implements ExceptionStorageUseCase {
 
+	private static final String EXCEPTIONS =  "exceptions";
+	
 	@Value("${param.storage.exception}")
 	private String exceptionstoragefile;
 	
 	@SuppressWarnings("rawtypes")
 	public void remove(String eventDt) {
-		try(DB db = DBMaker.fileDB(exceptionstoragefile).make()){
-			ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
-			map.remove(eventDt);
-		}
+	    DB db = null;
+	    HTreeMap map = null;
+	    try {
+	        db = DBMaker.fileDB(exceptionstoragefile).make();
+	        map = db.hashMap(EXCEPTIONS).createOrOpen();
+	        map.remove(eventDt);
+	    } finally {
+	        if (map != null) {
+	            map.close();
+	        }
+	        if (db != null) {
+	            db.close();
+	        }
+	    }
 	}
+
 	
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void add(ExceptionEventLog event) {
-		try(DB db = DBMaker.fileDB(exceptionstoragefile).make()){
-			ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
+		try(DB db = DBMaker.fileDB(exceptionstoragefile).make();
+			HTreeMap map = db.hashMap(EXCEPTIONS).createOrOpen();){
 			String classname = event.getSource().getClass().getCanonicalName();
 			String method = event.getMessage();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
@@ -54,9 +67,9 @@ public class ExceptionStorage implements ExceptionStorageUseCase {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Map<String, Object> list() {
-		try(DB db = DBMaker.fileDB(exceptionstoragefile).make()){
-			ConcurrentMap map = db.hashMap("exceptions").createOrOpen();
-			return new HashMap<String,Object>(map);
+		try(DB db = DBMaker.fileDB(exceptionstoragefile).make();
+			HTreeMap map = db.hashMap(EXCEPTIONS).createOrOpen();){
+			return new HashMap<>(map);
         } 
 	}
 
