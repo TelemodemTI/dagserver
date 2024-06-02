@@ -46,7 +46,7 @@ export class InputsChannelsComponent {
       $("#githubModal").modal('show');
     } else if(item.name == "RABBIT_PROPS") {
       $("#rabbitModal").modal('show');
-    } else if(item.name == "REDIS_LISTENER") {
+    } else if(item.name == "REDIS_PROPS") {
       $("#redisModal").modal('show');
     } else if(item.name == "KAFKA_CONSUMER")  {
       $("#kafkaModal").modal('show');
