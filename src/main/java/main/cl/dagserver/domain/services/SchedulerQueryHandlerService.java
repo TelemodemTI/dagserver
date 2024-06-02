@@ -37,7 +37,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	
 	private static final String INACTIVE = "INACTIVE";
 	private static final String STATUS = "STATUS";
-	private static final String RABBITMQ = "RABBITMQ";
+	private static final String RABBITMQ = "RABBIT_PROPS";
 	private static final String REDIS_LISTENER = "REDIS_LISTENER";
 	private static final String KAFKA_CONSUMER = "KAFKA_CONSUMER";
 	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_LISTENER";
@@ -184,7 +184,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    List<ChannelDTO> channels = new ArrayList<>();
 	    
 	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
-	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB"), "github.png", getChannelProps("GITHUB")));
+	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB_WEBHOOK_PROPS"), "github.png", getChannelProps("GITHUB_WEBHOOK_PROPS")));
 	    channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
 	    channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));
 	    channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));
