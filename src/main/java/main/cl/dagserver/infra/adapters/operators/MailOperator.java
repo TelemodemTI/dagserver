@@ -80,7 +80,7 @@ public class MailOperator extends OperatorStage {
 	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):(String) ((List<Dagmap>) this.xcom.get(this.args.getProperty("toEmail"))).get(0).get("output");;
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmailString, false));
 	      
-	      if(!this.optionals.getProperty("ccList").isEmpty()) {
+	      if(this.optionals.getProperty("ccList") != null && !this.optionals.getProperty("ccList").isEmpty()) {
 	    	  String [] arrcc = this.optionals.getProperty("ccList").split(";");
 	    	  for (int i = 0; i < arrcc.length; i++) {
 				String string = arrcc[i];
@@ -88,7 +88,7 @@ public class MailOperator extends OperatorStage {
 	    	  }
 	    	    
 	      }
-	      if(!this.optionals.getProperty("attachedFilename").isEmpty()) {
+	      if(this.optionals.getProperty("attachedFilename") != null && !this.optionals.getProperty("attachedFilename").isEmpty()) {
 	    	  String attachedFilename = this.optionals.getProperty("attachedFilename");
 	    	  String stepAttachedFilename = this.optionals.getProperty("stepAttachedFilename"); 
 	    	  List<Dagmap> lista = (List<Dagmap>) this.xcom.get(stepAttachedFilename);
