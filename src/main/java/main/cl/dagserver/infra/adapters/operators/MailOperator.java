@@ -23,7 +23,7 @@ import javax.mail.BodyPart;
 import javax.mail.Multipart;
 
 
-@Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject"},optionalv = {"body","xcom","attachedFilename","stepAttachedFilename","ccList"})
+@Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject","protocol"},optionalv = {"body","xcom","attachedFilename","stepAttachedFilename","ccList"})
 public class MailOperator extends OperatorStage {
 
 	private static final String FROMMAIL = "fromMail";
@@ -39,9 +39,11 @@ public class MailOperator extends OperatorStage {
 		props.put("mail.transport.protocol", "smtp");
 		props.put("mail.smtp.host", this.args.getProperty("host")); //SMTP Host
 		props.put("mail.smtp.ssl.trust", this.args.getProperty("host"));
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-		props.put("mail.smtp.starttls.required","true");
+		if(!this.args.getProperty("protocol").equals("plaintext")) {
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+			props.put("mail.smtp.starttls.required","true");			
+		}
 		props.put("mail.smtp.port", this.args.getProperty("port")); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
 		//create Authenticator object to pass in Session.getInstance argument
@@ -129,6 +131,7 @@ public class MailOperator extends OperatorStage {
 		metadata.setParameter(FROMMAIL, "text");
 		metadata.setParameter("toEmail", "text");
 		metadata.setParameter("subject", "text");
+		metadata.setParameter("protocol", "list", List.of("plaintext", "TLSv1.2"));
 		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("body", "sourcecode");
 		metadata.setOpts("attachedFilename", "text");
