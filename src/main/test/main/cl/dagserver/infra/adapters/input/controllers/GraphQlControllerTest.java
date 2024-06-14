@@ -11,6 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import graphql.ExecutionInput;
@@ -35,12 +36,16 @@ class GraphQlControllerTest {
 	@Mock
 	GraphQL graphQL;
 	
+	@Mock
+	ApplicationEventPublisher event;
+	
 	@BeforeEach
     public void init() {
 		queryResolver = mock(QueryResolver.class);
 		mutationResolver = mock(MutationResolver.class);
 		graphQL = mock(GraphQL.class);
-		controller = new GraphQlController(queryResolver,mutationResolver);
+		event = mock(ApplicationEventPublisher.class);
+		controller = new GraphQlController(queryResolver,mutationResolver, event);
 		ReflectionTestUtils.setField(controller, "queryResolver", queryResolver);
 		ReflectionTestUtils.setField(controller, "graphQL", graphQL);
 		ReflectionTestUtils.setField(controller, "mutationResolver", mutationResolver);
