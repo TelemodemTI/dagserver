@@ -185,6 +185,7 @@ public class DagExecutable implements Job,JobListener  {
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			} catch (Exception e) {
+				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "evaluate"));
 				throw new JobExecutionException(e);
 			}
 		}
