@@ -47,11 +47,12 @@ public class MailOperator extends OperatorStage {
 		props.put("mail.smtp.port", this.args.getProperty("port")); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
 		//create Authenticator object to pass in Session.getInstance argument
-		var args = this.args;
+		String userSmtp = this.args.getProperty("userSmtp");
+		String pwdSmtp = this.args.getProperty("pwdSmtp");
 		Authenticator auth = new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(args.getProperty("userSmtp"), args.getProperty("pwdSmtp"));
+				return new PasswordAuthentication(userSmtp, pwdSmtp);
 			}
 		};
 		Session session = Session.getInstance(props, auth);
