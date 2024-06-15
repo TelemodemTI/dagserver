@@ -35,8 +35,9 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   
   getExceptions(): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
+      var token = localStorage.getItem("dagserver_token")
       var string = "query exceptions($token: String) {exceptions(token:$token) {eventDt,classname,method,stack}}"
-      this.query(string,{}).subscribe((result:any)=>{
+      this.query(string,{token:token}).subscribe((result:any)=>{
         if(result && result.exceptions){
           resolve(result.exceptions as any[]);
         }
