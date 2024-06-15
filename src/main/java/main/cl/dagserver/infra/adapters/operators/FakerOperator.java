@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.javafaker.Faker;
@@ -18,7 +19,7 @@ import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
-@Operator(args={"fields","count","locale"})
+@Operator(args={"fakerjson","count","locale"})
 public class FakerOperator extends OperatorStage {
 
     @Override
@@ -27,13 +28,19 @@ public class FakerOperator extends OperatorStage {
         log.debug("args");
         log.debug(this.args);
 
-        String fiends = this.args.getProperty("fields");
+        String fiends = this.args.getProperty("fakerjson");
+        
+        JSONArray fields = new JSONArray(fiends);
+        
         String locale = this.args.getProperty("locale");
         Integer count = Integer.parseInt(this.args.getProperty("count"));
         Faker faker = new Faker(new Locale(locale));
-
         
-        List<String> methodsToInvoke = List.of(fiends.split(","));
+        List<String> methodsToInvoke = new ArrayList<>();
+        for (int i = 0; i < fields.length(); i++) {
+			String key = fields.getString(i);
+			methodsToInvoke.add(key);
+		}
         List<Map<String, Object>> maps = new ArrayList<>();
         for (int i = 0; i < count; i++) {
         	Map<String, Object> item = new HashMap<>();
@@ -68,7 +75,7 @@ public class FakerOperator extends OperatorStage {
     @Override
     public JSONObject getMetadataOperator() {
         MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.FakerOperator");
-        metadata.setParameter("fields", "text");
+        metadata.setParameter("fakerjson", "sourcecode");
         metadata.setParameter("count", "number");
         metadata.setParameter("locale", "list", Arrays.asList("en-US","en-UG","es","fr"));
         return metadata.generate();
