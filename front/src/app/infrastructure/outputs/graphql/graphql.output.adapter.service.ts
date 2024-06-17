@@ -48,7 +48,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")
-      var string = "mutation addConsumerAM($token:String,$queue:String,$jarfile:String,$dagname:String) { addConsumer(token:$token,queue:$queue,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
+      var string = "mutation addConsumerAM($token:String,$queue:String,$jarfile:String,$dagname:String) { addConsumerAM(token:$token,queue:$queue,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
       this.query(string,{token:token,queue:queue,jarfile:jarFile,dagname:dag}).subscribe((result:any)=>{
         if(result && result.addConsumerAM && result.addConsumerAM.status == "ok"){
           resolve()
