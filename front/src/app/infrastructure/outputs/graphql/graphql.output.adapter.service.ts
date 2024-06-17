@@ -61,7 +61,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   delConsumerAM(queue: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")
-      var string = "mutation delConsumerAM($token:String,$queue:String) { delConsumer(token:$token,queue:$queue) {status,code,value} }"
+      var string = "mutation delConsumerAM($token:String,$queue:String) { delConsumerAM(token:$token,queue:$queue) {status,code,value} }"
       this.query(string,{token:token,queue:queue}).subscribe((result:any)=>{
         if(result && result.delConsumerAM && result.delConsumerAM.status == "ok"){
           resolve()
@@ -75,7 +75,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")
-      var string = "mutation saveActiveMQChannel($token:String,$host:String,$user:String,$pwd:String) { saveRabbitChannel(token:$token,host:$host,user:$user,pwd:$pwd) {status,code,value} }"
+      var string = "mutation saveActiveMQChannel($token:String,$host:String,$user:String,$pwd:String) { saveActiveMQChannel(token:$token,host:$host,user:$user,pwd:$pwd) {status,code,value} }"
       this.query(string,{token:token,host:host,user:user,pwd:pwd}).subscribe((result:any)=>{
         if(result && result.saveActiveMQChannel && result.saveActiveMQChannel.status == "ok"){
           resolve()

@@ -35,16 +35,20 @@ export class ActivemqModalComponent {
   async ngOnInit() {
     let props = await this.service3.properties()
     let propsrabbit = props.filter((ele:any)=>{ return ele.group == 'ACTIVEMQ_PROPS' })
+    
     for (let index = 0; index < propsrabbit.length; index++) {
       const element = propsrabbit[index];
-      this.amuser = (element.name == "username")?element.value:this.amuser
-      this.ampwd = (element.name == "password")?"******":this.ampwd
+      console.log(element)
+      this.amuser = (element.name == "user")?element.value:this.amuser
+      this.ampwd = (element.name == "pwd")?"******":this.ampwd
       this.amhost = (element.name == "host")?element.value:this.amhost
+      
       if(element.value == "activemq_consumer_listener"){
         let dagname = props.filter((ele:any)=>{ return ele.group == element.name && ele.name == "dagname" })[0].value
         let jarname = props.filter((ele:any)=>{ return ele.group == element.name && ele.name == "jarname" })[0].value
         this.queues.push({queue:element.name,dagname:dagname,jarname:jarname})
       }
+
     }
   }
 
