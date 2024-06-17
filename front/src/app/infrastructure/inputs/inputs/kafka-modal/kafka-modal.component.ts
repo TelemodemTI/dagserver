@@ -86,7 +86,7 @@ export class KafkaModalComponent {
 	}
   }
   async removeConsumer(item:any){
-    await this.service.delConsumer(item.channel)
+    await this.service.delConsumer(item.topic)
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigateByUrl(`auth/channels`);
     });
