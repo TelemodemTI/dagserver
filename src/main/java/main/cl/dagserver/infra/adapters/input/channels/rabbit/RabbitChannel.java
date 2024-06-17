@@ -145,7 +145,7 @@ public class RabbitChannel extends InputChannel {
 		             try {
 		            	handler.raiseEvent(bodyStr,string,routingKey,contentType);	
 		             } catch (Exception e) {
-		            	 eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "addConsumers"));
+		            	 eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "RabbitChannel.addConsumers"));
 		             }
 		             
 		             channel1.basicAck(deliveryTag, false);

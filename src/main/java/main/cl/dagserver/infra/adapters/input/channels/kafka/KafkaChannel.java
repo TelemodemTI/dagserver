@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.KafkaChannelUseCase;
+import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
@@ -102,6 +103,7 @@ public class KafkaChannel extends InputChannel {
 		   	            }
 		        	}
 		         } catch (Exception e) {
+		        	eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "kafkaInputChannel.raiseEvent"));
 					log.error("error in kafka connection");
 		         }	 
 	        }	
