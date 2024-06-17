@@ -69,21 +69,26 @@ public class RedisInputListener extends InputChannel {
 	}
 	
 	private void listenerActive(Properties redisprops) throws DomainException {
-		Boolean mode = Boolean.parseBoolean(redisprops.getProperty("redisCluster"));
-		Properties listenersConfs = handler.getRedisListeners();
-		var publisher = getPublisher();
-		if(mode.equals(Boolean.TRUE)) {	
-			listenerCluster(listenersConfs,redisprops,publisher);
-		} else {
-			for (String clave : listenersConfs.stringPropertyNames()) {
-				if(!bindings.containsKey(clave)) {
-					var kv = this.getConectionInfo(redisprops);
-					Thread bindingThread = getThreadAlt(publisher,clave,kv);
-					bindingThread.start();
-					bindings.put(clave,bindingThread);	
+		try {
+			Boolean mode = Boolean.parseBoolean(redisprops.getProperty("redisCluster"));
+			Properties listenersConfs = handler.getRedisListeners();
+			var publisher = getPublisher();
+			if(mode.equals(Boolean.TRUE)) {	
+				listenerCluster(listenersConfs,redisprops,publisher);
+			} else {
+				for (String clave : listenersConfs.stringPropertyNames()) {
+					if(!bindings.containsKey(clave)) {
+						var kv = this.getConectionInfo(redisprops);
+						Thread bindingThread = getThreadAlt(publisher,clave,kv);
+						bindingThread.start();
+						bindings.put(clave,bindingThread);	
+					}
 				}
-			}
+			}	
+		} catch (Exception e) {
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "RedisInputListener.listenerActive"));
 		}
+		
 	}
 	
 	private void listenerCluster(Properties listenersConfs,Properties redisprops,JedisPubSub publisher) {
