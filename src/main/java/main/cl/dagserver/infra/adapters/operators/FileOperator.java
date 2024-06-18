@@ -18,7 +18,7 @@ import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
-@Operator(args={"mode","filepath","rowDelimiter","firstRowTitles"},optionalv = {"xcom"})
+@Operator(args={"mode","filepath","firstRowTitles"},optionalv = {"xcom","rowDelimiter"})
 public class FileOperator extends OperatorStage {
 
 	private SecureRandom random = new SecureRandom();
@@ -37,7 +37,7 @@ public class FileOperator extends OperatorStage {
 			String xcomname = this.optionals.getProperty("xcom");
 			String filepath = this.args.getProperty("filepath");
 			Boolean firstrow = Boolean.valueOf(this.args.getProperty("firstRowTitles"));
-			String rowDelimiter = this.args.getProperty("rowDelimiter");
+			String rowDelimiter = (this.optionals.getProperty("rowDelimiter") == null || this.optionals.getProperty("rowDelimiter").isEmpty())?"":this.optionals.getProperty("rowDelimiter"); 
 			if(mode.equals(0)) {
 				 log.debug("mode:read");
 				 if(rowDelimiter.trim().isEmpty()) {
@@ -50,10 +50,22 @@ public class FileOperator extends OperatorStage {
 				 }
 			} else {
 				log.debug("mode:write");
-				List<Object> data = (List<Object>) this.xcom.get(xcomname);
+				List<Dagmap> data = (List<Dagmap>) this.xcom.get(xcomname);
 				if(rowDelimiter.trim().isEmpty()) {
 					FileWriter writer = new FileWriter(filepath);
-			        writer.write(data.get(0).toString());
+					var map = data.get(0);
+					List<Map<String,Object>> arr = (List<Map<String,Object>>) map.get("output");
+					Map<String,Object> obj = arr.get(0);
+					StringBuilder sb = new StringBuilder();
+					if(firstrow) {
+						var key = new ArrayList<>(obj.keySet());
+						sb.append(key.get(0));
+						sb.append(obj.get(key.get(0)));
+					} else {	
+						var key = new ArrayList<>(obj.keySet());
+						sb.append(obj.get(key.get(0)));
+					}
+					writer.write( sb.toString() );
 			        writer.close();
 				} else {
 					this.write(filepath, rowDelimiter,firstrow, data);	
@@ -67,20 +79,20 @@ public class FileOperator extends OperatorStage {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Object> data) {
+	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Dagmap> data) {
 		Integer lines = 0;
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
 	        if(firstrow) {
 	        	var first = data.get(0);
-	        	var maps = (Map<String, String>) first;
+	        	var maps = first;
 	        	String titles = String.join(rowDelimiter, maps.keySet());
 	        	writer.write(titles);
 	        	writer.newLine();
 	        }
 	        
-			for (Iterator<Object> iterator = data.iterator(); iterator.hasNext();) {
-				Map<String, String> map =  (Map<String, String>) iterator.next();
-				String resultLine = String.join(rowDelimiter, map.values());
+			for (Iterator<Dagmap> iterator = data.iterator(); iterator.hasNext();) {
+				Dagmap map =   iterator.next();
+				String resultLine = String.join(rowDelimiter, map.values().toString());
 				writer.write(resultLine);
                 writer.newLine();
                 lines ++;
@@ -153,9 +165,9 @@ public class FileOperator extends OperatorStage {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.FileOperator");
 		metadata.setParameter("mode", "list", Arrays.asList("read","write"));
 		metadata.setParameter("filepath", "text");
-		metadata.setParameter("rowDelimiter", "text");
 		metadata.setParameter("firstRowTitles", "boolean");
 		metadata.setOpts("xcom", "xcom");
+		metadata.setOpts("rowDelimiter", "text");
 		return metadata.generate();
 	}
 }
