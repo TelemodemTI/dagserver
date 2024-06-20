@@ -62,7 +62,17 @@ public class MongoDBOperator extends OperatorStage {
 	private List<Dagmap> read(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
 		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
-		  FindIterable<Document> cursor = collection.find();
+		  FindIterable<Document> cursor = null;
+		  if(this.optionals.containsKey("filter")) {
+    		  String totalFilter = this.optionals.getProperty("filter");
+    		  Document filter = Document.parse(totalFilter);
+    		  cursor = collection.find(filter);
+    	  } else {
+    		  cursor = collection.find();
+    	  }
+		  
+		  
+		  
 		  List<Dagmap> list = new ArrayList<>();
 		  try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
 			    while (cursorIterator.hasNext()) {
