@@ -3,6 +3,7 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.*;
@@ -104,23 +105,31 @@ public class ExcelOperator extends OperatorStage {
             Workbook workbook = getWorkbook(filePath, null);
             Sheet sheet = workbook.createSheet(this.args.getProperty("sheetName"));
 
-            List<Object> data = (List<Object>) this.xcom.get(this.optionals.getProperty("xcom"));
+            List<Dagmap> data = (List<Dagmap>) this.xcom.get(this.optionals.getProperty("xcom"));
             int startRow = Integer.parseInt(this.args.getProperty("startRow", "0"));
             int startColumn = Integer.parseInt(this.args.getProperty("startColumn", "0"));
-
-            for (int i = 0; i < data.size(); i++) {
-                Row row = sheet.createRow(startRow + i);
-                Object rowDataObject = data.get(i);
-
-                if (rowDataObject instanceof Map) {
-                    Map<String, String> rowData = (Map<String, String>) rowDataObject;
-                    int cellIndex = startColumn;
-                    for (Map.Entry<String, String> entry : rowData.entrySet()) {
-                        Cell cell = row.createCell(cellIndex++);
-                        cell.setCellValue(entry.getValue());
-                    }
-                } else {
-                    log.warn("Data not in the expected format. Skipping row.");
+            Boolean includeTitles = Boolean.parseBoolean(this.args.getProperty("includeTitles", "true"));
+            Integer realStart = startRow;
+            List<Map<String,Object>> rowDataObject = (List<Map<String, Object>>) data.get(0);
+            if(includeTitles) {
+            	Row row = sheet.createRow(realStart);
+            	Map<String, Object> rowData = rowDataObject.get(0);
+            	var keys = new ArrayList<>(rowData.keySet());
+            	int cellIndex = startColumn;
+            	for (int i = 0; i < keys.size(); i++) {
+					String key = keys.get(i);
+					Cell cell = row.createCell(cellIndex++);
+	                cell.setCellValue(key);
+				}
+            }
+            
+            for (int i = 0; i < rowDataObject.size(); i++) {
+                Row row = sheet.createRow(realStart + i);
+                Map<String, Object> rowData = (Map<String, Object>) rowDataObject.get(i);
+                int cellIndex = startColumn;
+                for (Map.Entry<String, Object> entry : rowData.entrySet()) {
+                   Cell cell = row.createCell(cellIndex++);
+                   cell.setCellValue(entry.getValue().toString());
                 }
             }
 
@@ -160,9 +169,9 @@ public class ExcelOperator extends OperatorStage {
         metadata.setParameter("mode", "list", List.of("read", "write"));
         metadata.setParameter("sheetName", "text");
         metadata.setParameter("startRow", "number");
-        metadata.setParameter("endRow", "number");
+        metadata.setParameter("startColumn", "number");
         metadata.setOpts("xcom", "xcom");
-        metadata.setOpts("startColumn", "number");
+        metadata.setOpts("endRow", "number");
         metadata.setOpts("endColumn", "number");
         return metadata.generate();
     }
