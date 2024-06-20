@@ -3,7 +3,6 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.*;
@@ -110,7 +109,7 @@ public class ExcelOperator extends OperatorStage {
             int startColumn = Integer.parseInt(this.args.getProperty("startColumn", "0"));
             Boolean includeTitles = Boolean.parseBoolean(this.args.getProperty("includeTitles", "true"));
             Integer realStart = startRow;
-            List<Map<String,Object>> rowDataObject = (List<Map<String, Object>>) data.get(0);
+            List<Map<String, Object>> rowDataObject = (List<Map<String, Object>>) data.get(0).get("output");
             if(includeTitles) {
             	Row row = sheet.createRow(realStart);
             	Map<String, Object> rowData = rowDataObject.get(0);
@@ -122,7 +121,7 @@ public class ExcelOperator extends OperatorStage {
 	                cell.setCellValue(key);
 				}
             }
-            
+            realStart ++;
             for (int i = 0; i < rowDataObject.size(); i++) {
                 Row row = sheet.createRow(realStart + i);
                 Map<String, Object> rowData = (Map<String, Object>) rowDataObject.get(i);
@@ -170,6 +169,7 @@ public class ExcelOperator extends OperatorStage {
         metadata.setParameter("sheetName", "text");
         metadata.setParameter("startRow", "number");
         metadata.setParameter("startColumn", "number");
+        metadata.setParameter("includeTitles", "list", List.of("true", "false"));
         metadata.setOpts("xcom", "xcom");
         metadata.setOpts("endRow", "number");
         metadata.setOpts("endColumn", "number");
