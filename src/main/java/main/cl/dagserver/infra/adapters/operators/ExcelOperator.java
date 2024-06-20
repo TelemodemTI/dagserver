@@ -160,9 +160,9 @@ public class ExcelOperator extends OperatorStage {
         metadata.setParameter("mode", "list", List.of("read", "write"));
         metadata.setParameter("sheetName", "text");
         metadata.setParameter("startRow", "number");
-        metadata.setParameter("endRow", "number");
+        metadata.setParameter("startColumn", "number");
         metadata.setOpts("xcom", "xcom");
-        metadata.setOpts("startColumn", "number");
+        metadata.setOpts("endRow", "number");
         metadata.setOpts("endColumn", "number");
         return metadata.generate();
     }
