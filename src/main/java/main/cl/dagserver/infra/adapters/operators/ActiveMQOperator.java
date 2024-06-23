@@ -68,8 +68,11 @@ public class ActiveMQOperator extends OperatorStage {
         try {
             String brokerURL = this.args.getProperty("brokerURL");
             String queueName = this.args.getProperty("queueName");
-            Integer timeout = Integer.parseInt(this.optionals.getProperty("timeout"));
-            timeout = timeout == null ? 10000:timeout;
+            String timeoutStr = this.optionals.getProperty("timeout");
+            Integer timeout = 10000;
+            if(timeoutStr != null && !timeoutStr.isEmpty()) {
+            	timeout = Integer.parseInt(timeoutStr);
+            }
             ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerURL);
             Connection connection = connectionFactory.createConnection();
             connection.start();
