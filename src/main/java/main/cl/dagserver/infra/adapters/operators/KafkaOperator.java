@@ -2,6 +2,7 @@ package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +28,7 @@ import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
-@Operator(args={"mode", "bootstrapServers","topic" }, optionalv={ "xcom","poll","groupId" })
+@Operator(args={"mode", "bootstrapServers","topic","timeoutSeconds" }, optionalv={ "xcom","poll","groupId" })
 public class KafkaOperator extends OperatorStage {
 
 	@Override
@@ -48,7 +49,7 @@ public class KafkaOperator extends OperatorStage {
             String bootstrapServers = this.args.getProperty("bootstrapServers");
             String topic = this.args.getProperty("topic");
             String xcomname = this.optionals.getProperty("xcom");
-    		    	
+            Long timeout = Long.parseLong(this.args.getProperty("timeoutSeconds"));
             Properties properties = new Properties();
             properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -64,7 +65,7 @@ public class KafkaOperator extends OperatorStage {
 				try (Producer<String, String> producer = new KafkaProducer<>(properties)) {
 					String message = map.toString();
 	                ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
-	                producer.send(record).get();
+	                producer.send(record).get(timeout, TimeUnit.SECONDS);
 	            }
 			}
         } catch (Exception e) {
@@ -81,14 +82,17 @@ public class KafkaOperator extends OperatorStage {
             List<Dagmap> rv = new ArrayList<>();
             Properties properties = new Properties();
             properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-            properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+            if(groupId != null && !groupId.isEmpty()) {
+            	properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);	
+            }
             properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
             properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 
-            
+            Long timeoutL = Long.parseLong(this.args.getProperty("timeoutSeconds"));
+            Duration timeout = Duration.ofSeconds(timeoutL); 
             
             try (Consumer<String, String> consumer = new KafkaConsumer<>(properties)) {
-                List<PartitionInfo> partitions = consumer.partitionsFor(topic);
+                List<PartitionInfo> partitions = consumer.partitionsFor(topic,timeout);
                 List<TopicPartition> partitionsToAssign = new ArrayList<>();
                 for (PartitionInfo partition : partitions) {
                     partitionsToAssign.add(new TopicPartition(partition.topic(), partition.partition()));
@@ -119,6 +123,7 @@ public class KafkaOperator extends OperatorStage {
 		metadata.setParameter("mode", "list",Arrays.asList("consume","produce"));
 		metadata.setParameter("bootstrapServers", "text");
 		metadata.setParameter("topic", "text");
+		metadata.setParameter("timeoutSeconds", "number");
 		metadata.setOpts("xcom","xcom");
 		metadata.setOpts("poll", "number");
 		metadata.setOpts("groupId", "text");
