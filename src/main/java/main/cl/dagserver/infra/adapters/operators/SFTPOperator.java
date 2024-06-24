@@ -9,8 +9,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.json.JSONObject;
 import com.jcraft.jsch.JSch;
@@ -19,8 +21,9 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -30,8 +33,9 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"host","port","sftpUser","sftpPass","commands"})
 public class SFTPOperator extends OperatorStage  {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -48,12 +52,9 @@ public class SFTPOperator extends OperatorStage  {
 			channel.connect();
 			ChannelSftp sftp = (ChannelSftp) channel;
 			
-			List<Dagmap> results = new ArrayList<>();
+			List<Map<String,Object>> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
-			//list pathremote
-			//download remote local
-			//upload remote local
-			Dagmap status1 = new Dagmap();
+			Map<String,Object> status1 = new HashMap<String,Object>();
 			status1.put("status", "ok");
 			
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
@@ -77,18 +78,18 @@ public class SFTPOperator extends OperatorStage  {
 			}
 			
 			this.disconnect(sftp);
-			return results;
+			return new DataFrame(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}	
 	}
 	
-	private List<Dagmap> list(ChannelSftp sftp,String directory) throws SftpException {
+	private List<Map<String,Object>> list(ChannelSftp sftp,String directory) throws SftpException {
 		List<?> vect = sftp.ls(directory);
-		List<Dagmap> content = new ArrayList<>();
+		List<Map<String,Object>> content = new ArrayList<>();
 		for (Iterator<?> iterator = vect.iterator(); iterator.hasNext();) {
 			LsEntry entry = (LsEntry) iterator.next();
-			Dagmap mp = new Dagmap();
+			Map<String,Object> mp = new HashMap<String,Object>();
 			mp.put("filename", entry.getFilename());
 			mp.put("longname", entry.getLongname());
 			content.add(mp);

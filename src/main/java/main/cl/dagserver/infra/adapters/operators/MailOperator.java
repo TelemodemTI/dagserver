@@ -3,10 +3,12 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.json.JSONObject;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -28,9 +30,9 @@ public class MailOperator extends OperatorStage {
 
 	private static final String FROMMAIL = "fromMail";
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -79,8 +81,13 @@ public class MailOperator extends OperatorStage {
 	      }
 	      msg.setContent(body.toString(),"text/html; charset=UTF-8");
 	      msg.setSentDate(new Date());
-	      
-	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):(String) ((List<Dagmap>) this.xcom.get(this.args.getProperty("toEmail"))).get(0).get("output");;
+	      String propname = this.args.getProperty("toEmail");
+	      DataFrame xcomdf = (DataFrame) this.xcom.get(propname);
+	      String mailcalc = "";
+	      if(xcomdf != null) {
+	    	  mailcalc = xcomdf.get(0, 0).toString();
+	      }
+	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):mailcalc;
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmailString, false));
 	      
 	      if(this.optionals.getProperty("ccList") != null && !this.optionals.getProperty("ccList").isEmpty()) {
@@ -94,8 +101,9 @@ public class MailOperator extends OperatorStage {
 	      if(this.optionals.getProperty("attachedFilename") != null && !this.optionals.getProperty("attachedFilename").isEmpty()) {
 	    	  String attachedFilename = this.optionals.getProperty("attachedFilename");
 	    	  String stepAttachedFilename = this.optionals.getProperty("stepAttachedFilename"); 
-	    	  List<Dagmap> lista = (List<Dagmap>) this.xcom.get(stepAttachedFilename);
-	    	  Dagmap obj = lista.get(0);
+	    	  var df = (DataFrame) this.xcom.get(stepAttachedFilename);
+	    	  List<Map<String,Object>> lista = df.row(0);
+	    	  Map<String,Object> obj = lista.get(0);
 	    	  String base64File = (String) obj.get("result");
 	    	  if (base64File  != null && !base64File.isEmpty()) {
 	    	        byte[] fileBytes = Base64.getDecoder().decode(base64File);
@@ -114,10 +122,10 @@ public class MailOperator extends OperatorStage {
 	      }
 	      Transport.send(msg);
     	  log.debug(this.getClass()+" end "+this.name);
-    	  return Dagmap.createDagmaps(1, "status", "ok");
+    	  return this.createStatusFrame("ok");
 	    } catch (Exception e) {
 	      log.error(e);
-	      return Dagmap.createDagmaps(1, "status", e.getMessage());
+	      throw new DomainException(e);
 	    }
 	}
 	

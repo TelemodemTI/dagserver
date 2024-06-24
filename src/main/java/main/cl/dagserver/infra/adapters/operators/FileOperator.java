@@ -7,13 +7,15 @@ import java.io.FileWriter;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -24,11 +26,12 @@ public class FileOperator extends OperatorStage {
 	private SecureRandom random = new SecureRandom();
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		try {
-			List<Dagmap> result = new ArrayList<>();
+			DataFrame rv = new DataFrame();
+			List<Map<String,Object>> returnv = new ArrayList<>();
 			log.debug(this.getClass()+" init "+this.name);
 			log.debug("args");
 			log.debug(this.args);
@@ -42,19 +45,18 @@ public class FileOperator extends OperatorStage {
 				 log.debug("mode:read");
 				 if(rowDelimiter.trim().isEmpty()) {
 					String content = FileUtils.readFileToString(new File(filepath), "UTF-8");
-					Dagmap map = new Dagmap();
+					Map<String,Object> map = new HashMap<String,Object>();
 					map.put("content", content);
-					result.add(map);
+					returnv.add(map);
 				 } else {
-					 this.read(filepath, rowDelimiter, firstrow, result);	 
+					 this.read(filepath, rowDelimiter, firstrow, returnv);	 
 				 }
 			} else {
 				log.debug("mode:write");
-				List<Dagmap> data = (List<Dagmap>) this.xcom.get(xcomname);
+				DataFrame outget =  (DataFrame) this.xcom.get(xcomname);
 				if(rowDelimiter.trim().isEmpty()) {
 					FileWriter writer = new FileWriter(filepath);
-					var map = data.get(0);
-					List<Map<String,Object>> arr = (List<Map<String,Object>>) map.get("output");
+					List<Map<String,Object>> arr = outget.row(0);
 					Map<String,Object> obj = arr.get(0);
 					StringBuilder sb = new StringBuilder();
 					if(firstrow) {
@@ -68,18 +70,19 @@ public class FileOperator extends OperatorStage {
 					writer.write( sb.toString() );
 			        writer.close();
 				} else {
-					this.write(filepath, rowDelimiter,firstrow, data);	
+					List<Map<String,Object>> arr = outget.row(0);
+					this.write(filepath, rowDelimiter,firstrow, arr);	
 				}
 
 			}
-			return result;	
+			rv.add(returnv);
+			return rv;	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Dagmap> data) {
+	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String,Object>> data) {
 		Integer lines = 0;
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
 	        if(firstrow) {
@@ -90,8 +93,8 @@ public class FileOperator extends OperatorStage {
 	        	writer.newLine();
 	        }
 	        
-			for (Iterator<Dagmap> iterator = data.iterator(); iterator.hasNext();) {
-				Dagmap map =   iterator.next();
+	        for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
+	        	Map<String, Object> map =   iterator.next();
 				String resultLine = String.join(rowDelimiter, map.values().toString());
 				writer.write(resultLine);
                 writer.newLine();
@@ -103,7 +106,7 @@ public class FileOperator extends OperatorStage {
 		log.debug("write "+filepath+"--lines:"+lines);
 	}
 	
-	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Dagmap> result) {
+	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String,Object>> result) {
 		String line;
 		Integer lineNumber = 0;
 		List<String> titles = new ArrayList<>();
@@ -112,7 +115,7 @@ public class FileOperator extends OperatorStage {
        		 BufferedReader bufferedReader = new BufferedReader(fileReader);
        	) {
        	 while ((line = bufferedReader.readLine()) != null) {
-	        	 Dagmap row = new Dagmap();
+       		 	Map<String,Object> row = new HashMap<String,Object>();	 
 	        	 String[] fields = line.split(rowDelimiter);
 	        	 if(lineNumber.equals(0)) {
 	        		 if(Boolean.TRUE.equals(firstrow)) {

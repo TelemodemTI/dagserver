@@ -2,14 +2,16 @@ package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -22,12 +24,13 @@ import redis.clients.jedis.JedisPool;
 @Operator(args={"hostname","port","mode","redisCluster","keyObject"}, optionalv = {"xcom","body"})
 public class RedisOperator extends OperatorStage {
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
-		List<Dagmap> rv = new ArrayList<>();
+		List<Map<String,Object>> rv = new ArrayList<>();
 		Boolean redisFlag = Boolean.parseBoolean(this.args.getProperty("redisCluster"));
 		String mode = this.args.getProperty("mode");
 		if(redisFlag) {
@@ -62,79 +65,98 @@ public class RedisOperator extends OperatorStage {
 			}	
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return rv;
+		return new DataFrame(rv);
 	}
 	
-	private List<Dagmap> clusterRead(JedisCluster jedisc){
+	private List<Map<String,Object>> clusterRead(JedisCluster jedisc){
 		String data = jedisc.get(this.args.getProperty("keyObject"));
-		List<Dagmap> rv = new ArrayList<>();
+		List<Map<String,Object>> rv = new ArrayList<>();
 		try {
-			Dagmap dm = new Dagmap();
+			Map<String,Object> dm = new HashMap<String,Object>();
 			dm.put("output", data);
 			rv.add(dm);
 		} catch (Exception e) {
-			Dagmap map = new Dagmap();
+			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("value", data);
 			rv.add(map);
 		}
 		return rv;
 	}
-	private List<Dagmap> clusterSave(JedisCluster jedisc) throws DomainException{
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List<Map<String,Object>> clusterSave(JedisCluster jedisc) throws DomainException{
 		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) { 
 			if(this.optionals.containsKey("xcom")) {
 	    		  String xcomname = this.optionals.getProperty("xcom");
 		    	  if(!this.xcom.has(xcomname)) {
 						throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 		    	  }
-		    	  var obj = (Object) this.xcom.get(xcomname);
+		    	  DataFrame df = (DataFrame) this.xcom.get(xcomname);
+		    	  JSONArray obj = this.dataFrameToJson(df);
 		    	  jedisc.set(this.args.getProperty("keyObject"), obj.toString());	  
-		    	  return Dagmap.createDagmaps(1, "status", "ok");
+		    	  
 	    	} else {
 	    		  var body = this.optionals.getProperty("body");
 	    		  jedisc.set(this.args.getProperty("keyObject"), body);
-	    		  return Dagmap.createDagmaps(1, "status", "ok");
 	    	}
+			List<Map<String,Object>> list = new ArrayList<>();
+	    	Map<String,Object> map = new HashMap<String,Object>();
+	    	map.put("status", "ok");
+	    	list.add(map);
+	    	return list;
 		} else { 
 			throw new DomainException(new Exception("no xcom to save"));
 		}
 	}
-	private List<Dagmap> clusterDel(JedisCluster jedisc){
+	private List<Map<String,Object>> clusterDel(JedisCluster jedisc){
 		jedisc.del(this.args.getProperty("keyObject"));
-		return Dagmap.createDagmaps(1, "status", "ok");
+		List<Map<String,Object>> list = new ArrayList<>();
+    	Map<String,Object> map = new HashMap<String,Object>();
+    	map.put("status", "ok");
+    	list.add(map);
+    	return list;
 	}
-	private List<Dagmap> singleRead(Jedis jedis){
+	private List<Map<String,Object>> singleRead(Jedis jedis){
 		String data = jedis.get(this.args.getProperty("keyObject"));
-		List<Dagmap> rv = new ArrayList<>();
+		List<Map<String,Object>> rv = new ArrayList<>();
 		try {
-			Dagmap dm = new Dagmap();
+			Map<String,Object> dm = new HashMap<String,Object>();
 			dm.put("output", data);
 			rv.add(dm);
 		} catch (Exception e) {
-			Dagmap map = new Dagmap();
+			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("value", data);
 			rv.add(map);
 		}
 		return rv;
 	}
-	@SuppressWarnings("unchecked")
-	private List<Dagmap> singleSave(Jedis jedis) throws DomainException{
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<Map<String,Object>> singleSave(Jedis jedis) throws DomainException{
 		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
 	    	  String xcomname = this.optionals.getProperty("xcom");
 	    	  if(!this.xcom.has(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
-	    	  var obj = (List<Map<String, Object>>) this.xcom.get(xcomname);
-	    	  jedis.set(this.args.getProperty("keyObject"), new JSONArray(obj).toString());
-	    	  return Dagmap.createDagmaps(1, "status", "ok");
+	    	  var df = (DataFrame) this.xcom.get(xcomname);
+	    	  var obj = this.dataFrameToJson(df);
+	    	  jedis.set(this.args.getProperty("keyObject"), obj.toString());
 		} else {
 			var body = this.optionals.getProperty("body");
   		    jedis.set(this.args.getProperty("keyObject"), body);
-  		    return Dagmap.createDagmaps(1, "status", "ok");
 		}
+		List<Map<String,Object>> list = new ArrayList<>();
+    	Map<String,Object> map = new HashMap<String,Object>();
+    	map.put("status", "ok");
+    	list.add(map);
+  	  	return list;
 	}
-	private List<Dagmap> singleDel(Jedis jedis){
+	
+	private List<Map<String,Object>> singleDel(Jedis jedis){
 		jedis.del(this.args.getProperty("keyObject"));
-		return Dagmap.createDagmaps(1, "status", "ok");
+		List<Map<String,Object>> list = new ArrayList<>();
+    	Map<String,Object> map = new HashMap<String,Object>();
+    	map.put("status", "ok");
+    	list.add(map);
+		return list;
 	}
 
 	@Override

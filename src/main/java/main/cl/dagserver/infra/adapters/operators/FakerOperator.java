@@ -10,11 +10,9 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import com.github.javafaker.Faker;
-
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -22,8 +20,9 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"fakerjson","count","locale"})
 public class FakerOperator extends OperatorStage {
 
-    @Override
-    public List<Dagmap> call() throws DomainException {        
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+    public DataFrame call() throws DomainException {        
         log.debug(this.getClass() + " init " + this.name);
         log.debug("args");
         log.debug(this.args);
@@ -52,8 +51,7 @@ public class FakerOperator extends OperatorStage {
             }
             maps.add(item);
 		}
-        log.debug(this.getClass() + " end " + this.name);
-        return Dagmap.convertToDagmaps(maps);
+        return new DataFrame(maps);
     }
 
     private String invokeFakerMethod(Faker faker, String methodName) {

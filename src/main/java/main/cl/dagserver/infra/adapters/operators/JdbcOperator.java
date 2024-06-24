@@ -14,8 +14,8 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.json.JSONObject;
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -39,10 +39,10 @@ public class JdbcOperator extends OperatorStage {
 		return list;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
-		List<Dagmap> result = new ArrayList<>();
 		List<String> archivosJar = new ArrayList<>();
 		this.searchJarFiles(new File(this.args.getProperty("driverPath")),archivosJar);
 		List<URI> list = this.getListURI(archivosJar);
@@ -53,13 +53,13 @@ public class JdbcOperator extends OperatorStage {
 				if(!this.xcom.has(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 				}
-				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
 				if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 					String sql = this.args.getProperty(QUERY);
 					var map = data.get(0);
 					var kv = this.namedParameter(sql, map);
-					result = Dagmap.convertToDagmaps(queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue()));
+					var returnv = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
+					return new DataFrame(returnv);
 				} else {
 					String sql = this.args.getProperty(QUERY);
 					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
@@ -67,18 +67,20 @@ public class JdbcOperator extends OperatorStage {
 					    var kv = this.namedParameter(sql, map);
 					    queryRunner.update(con, kv.getKey(), kv.getValue());
 					}
+					return this.createStatusFrame("ok");
 				} 
 			} else {
 					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
-						result = Dagmap.convertToDagmaps(queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler()));	
+						var returningv = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());
+						return new DataFrame(returningv);
 					} else {
 						queryRunner.update(con, this.args.getProperty(QUERY));
+						return this.createStatusFrame("ok");
 					}
 			}	
 		} catch (Exception e) {
-			log.error(e);
+			throw new DomainException(e); 
 		}
-		return result;
 	}
 	private KeyValue<String, Object[]> namedParameter(String sql,Map<String, Object> map) {
 		Pattern pattern = Pattern.compile(":\\w+");

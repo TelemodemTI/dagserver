@@ -1,12 +1,12 @@
 package main.cl.dagserver.infra.adapters.operators;
 
-import java.util.List;
 import java.util.Properties;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
+
+import joinery.DataFrame;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
@@ -14,9 +14,9 @@ import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 @Operator(args={})
 public class RegisterSchedulerOperator extends OperatorStage {
 
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "rawtypes" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		try {
 			log.debug(this.getClass()+" init "+this.name);
 			var prop = new Properties();

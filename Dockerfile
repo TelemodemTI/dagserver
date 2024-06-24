@@ -7,7 +7,7 @@ RUN ["mvn","--quiet","clean","install"]
 
 #FROM openjdk:17-oracle
 FROM eclipse-temurin:17-jdk-alpine
-COPY --from=maven_builder /app/dagserver/target/dagserver-0.6.0-SNAPSHOT.jar /
+COPY --from=maven_builder /app/dagserver/target/dagserver-0.7.0-SNAPSHOT.jar /
 RUN mkdir /root/dags/
 EXPOSE 8081
 

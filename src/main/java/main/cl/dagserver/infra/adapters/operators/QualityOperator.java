@@ -1,13 +1,12 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.json.JSONObject;
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -15,9 +14,9 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"qualityjson","xcom"})
 public class QualityOperator extends OperatorStage {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	@Override
-    public List<Dagmap> call() throws DomainException {        
+    public DataFrame call() throws DomainException {        
         log.debug(this.getClass() + " init " + this.name);
         log.debug("args");
         log.debug(this.args);
@@ -30,22 +29,30 @@ public class QualityOperator extends OperatorStage {
             throw new DomainException(new Exception("xcom not exist for dagname::" + xcomname));
         }
         
-        List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
+        DataFrame df = (DataFrame) this.xcom.get(xcomname);
         List<Map<String, Object>> returningMap = new ArrayList<>();
-        
-        for (Map<String, Object> map : data) {
-            Map<String, Object> row = new HashMap<>();
+        for (Iterator<Map<String, Object>> iterator = df.iterrows(); iterator.hasNext();) {
+        	Map<String, Object> map = iterator.next();
+            
             for (String key : dq.keySet()) {
                 Object value = map.get(key);
-                String dataTypeTarget = dq.getString(key);
-                Object newValue = castValue(value, dataTypeTarget);
-                row.put(key, newValue);
+                String dataTypeTarget = dq.getString(key);    
+                map.put("quality_field", key);
+                map.put("quality_typeTarget", dataTypeTarget);
+                try {
+                	Object newValue = castValue(value, dataTypeTarget);
+                	map.put("quality_status", "ok");
+                	map.put("quality_msg", "");
+				} catch (Exception e) {
+                	map.put("quality_status", "ok");
+                	map.put("quality_msg", e.getMessage());
+				}
             }
-            returningMap.add(row);
+            returningMap.add(map);
         }
         
         log.debug(this.getClass() + " end " + this.name);
-        return Dagmap.convertToDagmaps(returningMap);
+        return new DataFrame(returningMap);
     }
 
     private Object castValue(Object value, String dataTypeTarget) throws DomainException {
