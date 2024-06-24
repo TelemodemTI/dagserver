@@ -44,7 +44,7 @@ public class Samba2Operator extends OperatorStage {
 	private static final String SMBSHARENAME = "smbSharename";
 	
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -84,7 +84,7 @@ public class Samba2Operator extends OperatorStage {
 			}
 		    
 			this.disconnect(smb2session, client);
-			return new DataFrame(results);
+			return this.buildDataFrame(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

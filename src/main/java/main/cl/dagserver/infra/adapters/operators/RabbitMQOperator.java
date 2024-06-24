@@ -71,7 +71,7 @@ public class RabbitMQOperator extends OperatorStage {
 				
 			}
 			log.debug(this.getClass()+" end "+this.name);
-			return new DataFrame(rv);
+			return this.buildDataFrame(rv);
 		} catch (Exception e) {
 			log.error(e);			
 			throw new DomainException(e);

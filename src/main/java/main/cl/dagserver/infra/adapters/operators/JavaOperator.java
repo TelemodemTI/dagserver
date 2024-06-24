@@ -41,7 +41,7 @@ public class JavaOperator extends OperatorStage {
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
 			if (result instanceof List) {
-				return new DataFrame((List) result);
+				return this.buildDataFrame((List) result);
 			} else if (result instanceof Map) {
 				DataFrame df = new DataFrame();
 		        df.add(Arrays.asList((Map) result));

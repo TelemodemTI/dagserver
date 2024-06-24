@@ -111,28 +111,39 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		return df;
 	}
 	
-	 protected JSONArray dataFrameToJson(DataFrame<Object> dataFrame) {
+	protected JSONArray dataFrameToJson(DataFrame<Object> dataFrame) {
 	        JSONArray jsonArray = new JSONArray();
-
-	        // Iterate over the rows of the DataFrame
 	        for (List<Object> row : dataFrame) {
 	            JSONObject jsonObject = new JSONObject();
 	            List<Object> columns = new ArrayList<>(dataFrame.columns());
-
-	            // Iterate over the columns and add each cell to the JSON object
 	            for (int i = 0; i < columns.size(); i++) {
 	                String columnName = columns.get(i).toString();
 	                Object cellValue = row.get(i);
 	                jsonObject.put(columnName, cellValue);
 	            }
-
-	            // Add the JSON object to the JSON array
 	            jsonArray.put(jsonObject);
 	        }
-
 	        return jsonArray;
-	    }
-	
+	}
+	protected DataFrame buildDataFrame(List<Map<String,Object>> list) {
+		DataFrame<Object> dataFrame = new DataFrame<>();
+        if (!list.isEmpty()) {
+            // Assuming all maps have the same keys
+            Map<String, Object> firstRow = list.get(0);
+            List<String> columns = new ArrayList<>(firstRow.keySet());
+            dataFrame.add(columns.toArray());
+
+            // Add each map as a row in the DataFrame
+            for (Map<String, Object> map : list) {
+                List<Object> row = new ArrayList<>();
+                for (String column : columns) {
+                    row.add(map.get(column));
+                }
+                dataFrame.append(row);
+            }
+        }
+        return dataFrame;
+	}
 	public Implementation getDinamicInvoke(String stepName, String propkey, String optkey) throws DomainException {
         try {
             return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class, String.class)).with(stepName, getClass(), propkey,optkey);

@@ -78,7 +78,7 @@ public class KafkaOperator extends OperatorStage {
         }
     }
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	private DataFrame consume() throws DomainException {
         try {
             String bootstrapServers = this.args.getProperty("bootstrapServers");
@@ -116,7 +116,7 @@ public class KafkaOperator extends OperatorStage {
                     	rv.add(map);
                     }	
                 }
-                return new DataFrame(rv);
+                return this.buildDataFrame(rv);
             }
         } catch (Exception e) {
             throw new DomainException(e);

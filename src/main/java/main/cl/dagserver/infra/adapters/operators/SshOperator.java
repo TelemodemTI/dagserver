@@ -34,7 +34,7 @@ public class SshOperator extends OperatorStage {
 	private static final String KNOWHOSTFILE = "knowhostfile";
 	private static final String PRIVATEKEYFILE = "privateKeyFile";
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
@@ -57,29 +57,9 @@ public class SshOperator extends OperatorStage {
 			session.connect();
 			ChannelExec channel = (ChannelExec) session.openChannel("exec");
 			channel.setCommand(this.args.getProperty("cmd"));
-			List<Map<String,String>> list = new ArrayList<>();
+			List<Map<String,Object>> list = new ArrayList<>();
 			list.add(this.sendToChannel(channel));
-
-			DataFrame<Object> dataFrame = new DataFrame<>();
-	        if (!list.isEmpty()) {
-	            // Assuming all maps have the same keys
-	            Map<String, String> firstRow = list.get(0);
-	            List<String> columns = new ArrayList<>(firstRow.keySet());
-	            dataFrame.add(columns.toArray(new String[0]));
-
-	            // Add each map as a row in the DataFrame
-	            for (Map<String, String> map : list) {
-	                List<Object> row = new ArrayList<>();
-	                for (String column : columns) {
-	                    row.add(map.get(column));
-	                }
-	                dataFrame.append(row);
-	            }
-	        }
-			
-			return dataFrame;
-			
-			//return new DataFrame(list);
+			return this.buildDataFrame(list);
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();
@@ -101,8 +81,8 @@ public class SshOperator extends OperatorStage {
 			  return resultStringBuilder.toString();
 			}
 	
-	private Map<String,String> sendToChannel(ChannelExec channel) throws IOException, InterruptedException, JSchException {
-		Map<String,String> output = new HashMap<String,String>();
+	private Map<String,Object> sendToChannel(ChannelExec channel) throws IOException, InterruptedException, JSchException {
+		Map<String,Object> output = new HashMap<String,Object>();
 		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
 		ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
 

@@ -33,7 +33,7 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"host","port","sftpUser","sftpPass","commands"})
 public class SFTPOperator extends OperatorStage  {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -78,7 +78,7 @@ public class SFTPOperator extends OperatorStage  {
 			}
 			
 			this.disconnect(sftp);
-			return new DataFrame(results);
+			return this.buildDataFrame(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}	

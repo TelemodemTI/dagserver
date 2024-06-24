@@ -59,7 +59,7 @@ public class JdbcOperator extends OperatorStage {
 					var map = data.get(0);
 					var kv = this.namedParameter(sql, map);
 					var returnv = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
-					return new DataFrame(returnv);
+					return this.buildDataFrame(returnv);
 				} else {
 					String sql = this.args.getProperty(QUERY);
 					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
@@ -72,7 +72,7 @@ public class JdbcOperator extends OperatorStage {
 			} else {
 					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 						var returningv = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());
-						return new DataFrame(returningv);
+						return this.buildDataFrame(returningv);
 					} else {
 						queryRunner.update(con, this.args.getProperty(QUERY));
 						return this.createStatusFrame("ok");

@@ -52,7 +52,7 @@ public class QualityOperator extends OperatorStage {
         }
         
         log.debug(this.getClass() + " end " + this.name);
-        return new DataFrame(returningMap);
+        return this.buildDataFrame(returningMap);
     }
 
     private Object castValue(Object value, String dataTypeTarget) throws DomainException {

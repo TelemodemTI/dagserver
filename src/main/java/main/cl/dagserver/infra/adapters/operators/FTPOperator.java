@@ -83,7 +83,7 @@ public class FTPOperator extends OperatorStage {
 		}	
 	}	
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	private DataFrame list(FTPClient ftp,String directory) throws IOException {
 		ftp.cwd(directory);
 		FTPFile[] files = ftp.listFiles();
@@ -95,7 +95,7 @@ public class FTPOperator extends OperatorStage {
 			content.add(map);
 		}
 		ftp.enterLocalPassiveMode();
-		return new DataFrame(content);	
+		return this.buildDataFrame(content);	
 	}
 	
 	private void download(FTPClient ftp, String remoteFilePath, String localPath) throws DomainException {
