@@ -6,10 +6,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import org.json.JSONObject;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -19,8 +19,9 @@ public class HttpOperator extends OperatorStage {
 
 	private static final String AUTHORIZATION_HEADER = "authorizationHeader";
 	
+	@SuppressWarnings("rawtypes")
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -42,7 +43,8 @@ public class HttpOperator extends OperatorStage {
 			
 			String xcomname = this.optionals.getProperty("xcom");
 			if(this.xcom.has(xcomname)) {
-				String body = this.xcom.get(xcomname).toString();
+				DataFrame df = (DataFrame) this.xcom.get(xcomname);
+				String body = df.get(0, 0).toString();
 				con.setDoOutput(true);
 				OutputStream os = con.getOutputStream();
 				os.write(body.getBytes());
@@ -59,7 +61,7 @@ public class HttpOperator extends OperatorStage {
 				}
 				in.close();
 				log.debug(this.getClass()+" end "+this.name);
-				return Dagmap.createDagmaps(1, "response", response.toString());
+				return this.createFrame("response", response.toString());
 			
 			} else {
 				throw new DomainException(new Exception("request failed!"));

@@ -10,13 +10,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -34,6 +35,8 @@ import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 
+import joinery.DataFrame;
+
 
 @Operator(args={"host","smbUser","smbPass","smbDomain","smbSharename","commands"})
 public class Samba2Operator extends OperatorStage {
@@ -41,8 +44,9 @@ public class Samba2Operator extends OperatorStage {
 	private static final String SMBSHARENAME = "smbSharename";
 	
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -52,12 +56,12 @@ public class Samba2Operator extends OperatorStage {
 		    AuthenticationContext ac = new AuthenticationContext(this.args.getProperty("smbUser"), this.args.getProperty("smbPass").toCharArray(), this.args.getProperty("smbDomain"));
 		    var smb2session = connection.authenticate(ac);
 		    
-		    List<Dagmap> results = new ArrayList<>();
+		    List<Map<String,Object>> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			//list pathremote
 			//download remote local
 			//upload remote local
-			Dagmap status1 = new Dagmap();
+			Map<String,Object> status1 = new HashMap<String,Object>();
 			status1.put("status", "ok");
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
 				String[] cmd = iterator.next().split(" ");
@@ -80,7 +84,7 @@ public class Samba2Operator extends OperatorStage {
 			}
 		    
 			this.disconnect(smb2session, client);
-			return results;
+			return new DataFrame(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -98,8 +102,8 @@ public class Samba2Operator extends OperatorStage {
 	
 
 	
-	private List<Dagmap> list(Session smb2session , String directory, String smb2sharename) {
-		List<Dagmap> lista = new ArrayList<>(); 
+	private List<Map<String,Object>> list(Session smb2session , String directory, String smb2sharename) {
+		List<Map<String,Object>> lista = new ArrayList<>(); 
 		DiskShare share = (DiskShare) smb2session.connectShare(smb2sharename);
 		if(directory.trim().equals("/")) {
 			directory = "";
@@ -108,7 +112,7 @@ public class Samba2Operator extends OperatorStage {
 			directory = directory.substring(1);
 		}
 	    for (FileIdBothDirectoryInformation f : share.list(directory,"*")) {
-	        Dagmap map = new Dagmap();
+	    	Map<String,Object> map = new HashMap<String,Object>();
 	        map.put("filename", f.getFileName());
 	        map.put("size",f.getEaSize());
 	    	lista.add(map);

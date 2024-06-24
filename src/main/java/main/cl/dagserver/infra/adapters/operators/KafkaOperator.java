@@ -1,11 +1,13 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -21,8 +23,9 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.json.JSONObject;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -31,19 +34,20 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"mode", "bootstrapServers","topic","timeoutSeconds" }, optionalv={ "xcom","poll","groupId" })
 public class KafkaOperator extends OperatorStage {
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		String mode = this.args.getProperty("mode");
         if ("produce".equalsIgnoreCase(mode)) {
         	produce();
-        	return Dagmap.createDagmaps(1, "status", "ok");
+        	return this.createStatusFrame("ok");
         } else {
             return consume();
         } 
 	}
 	
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void produce() throws DomainException {
         try {
             String bootstrapServers = this.args.getProperty("bootstrapServers");
@@ -59,11 +63,12 @@ public class KafkaOperator extends OperatorStage {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 				}
             }
-            List<Object> data = (List<Object>) this.xcom.get(xcomname);
-            for (Iterator<Object> iterator = data.iterator(); iterator.hasNext();) {
-				Object map = iterator.next();
+            DataFrame df = (DataFrame) this.xcom.get(xcomname);
+            
+            for (Iterator<Map<String,Object>> iterator = df.iterrows(); iterator.hasNext();) {
+				Map<String,Object> map = iterator.next();
 				try (Producer<String, String> producer = new KafkaProducer<>(properties)) {
-					String message = map.toString();
+					String message = new JSONObject(map).toString();
 	                ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
 	                producer.send(record).get(timeout, TimeUnit.SECONDS);
 	            }
@@ -73,13 +78,14 @@ public class KafkaOperator extends OperatorStage {
         }
     }
 
-	private List<Dagmap> consume() throws DomainException {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private DataFrame consume() throws DomainException {
         try {
             String bootstrapServers = this.args.getProperty("bootstrapServers");
             String groupId = this.optionals.getProperty("groupId");
             String topic = this.args.getProperty("topic");
             Integer poll = Integer.parseInt(this.optionals.getProperty("poll"));
-            List<Dagmap> rv = new ArrayList<>();
+            List<Map<String,Object>> rv = new ArrayList<>();
             Properties properties = new Properties();
             properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             if(groupId != null && !groupId.isEmpty()) {
@@ -105,12 +111,12 @@ public class KafkaOperator extends OperatorStage {
                         break;  
                     }
                     for (ConsumerRecord<String, String> record : records) {
-                        Dagmap map = new Dagmap();
+                    	Map<String,Object> map = new HashMap<String,Object>();
                         map.put("message", record.value());
                     	rv.add(map);
                     }	
                 }
-                return rv;
+                return new DataFrame(rv);
             }
         } catch (Exception e) {
             throw new DomainException(e);

@@ -3,14 +3,15 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.json.JSONObject;
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -18,8 +19,9 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"filePath", "mode", "sheetName","startRow", "startColumn"}, optionalv={"xcom","endRow", "endColumn"})
 public class ExcelOperator extends OperatorStage {
 
-    @Override
-    public List<Dagmap> call() throws DomainException {
+    @SuppressWarnings("rawtypes")
+	@Override
+    public DataFrame call() throws DomainException {
         try {
             log.debug(this.getClass() + " init " + this.name);
             log.debug("args");
@@ -43,8 +45,10 @@ public class ExcelOperator extends OperatorStage {
         }
     }
 
-    private List<Dagmap> readExcel(String filePath) {
-        List<Dagmap> result = new ArrayList<>();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private DataFrame readExcel(String filePath) {
+        DataFrame rv = new DataFrame();
+    	List<Map<String, Object>> result = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(filePath);
              Workbook workbook = getWorkbook(filePath, fis)) {
@@ -61,7 +65,7 @@ public class ExcelOperator extends OperatorStage {
                 for (int i = startRow; i <= endRow; i++) {
                     Row row = sheet.getRow(i);
                     if (row != null) {
-                        Dagmap rowData = new Dagmap();
+                    	Map<String, Object> rowData = new HashMap<String, Object>();
                         for (int j = startColumn; j <= endColumn; j++) {
                             Cell cell = row.getCell(j);
                             String columnName = "Column" + (j + 1);
@@ -78,8 +82,8 @@ public class ExcelOperator extends OperatorStage {
         } catch (Exception e) {
             log.error("Error reading Excel file: " + filePath, e);
         }
-
-        return result;
+        rv.add(result);
+        return rv;
     }
 
     private int getMaxColumnIndex(Sheet sheet) {
@@ -96,20 +100,24 @@ public class ExcelOperator extends OperatorStage {
         return maxColumnIndex - 1; // Convertimos a base cero
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Dagmap> writeExcel(String filePath) throws DomainException {
-        List<Dagmap> result = new ArrayList<>();
-        Dagmap statusD = new Dagmap();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private DataFrame writeExcel(String filePath) throws DomainException {
+    	DataFrame df = new DataFrame();
+    	List<Map<String,Object>> result = new ArrayList<>();
+        Map<String,Object> statusD = new HashMap<String,Object>();
         try {
             Workbook workbook = getWorkbook(filePath, null);
             Sheet sheet = workbook.createSheet(this.args.getProperty("sheetName"));
 
-            List<Dagmap> data = (List<Dagmap>) this.xcom.get(this.optionals.getProperty("xcom"));
+            DataFrame data = (DataFrame) this.xcom.get(this.optionals.getProperty("xcom"));
+            //List<Dagmap> data = (List<Dagmap>) this.xcom.get(this.optionals.getProperty("xcom"));
             int startRow = Integer.parseInt(this.args.getProperty("startRow", "0"));
             int startColumn = Integer.parseInt(this.args.getProperty("startColumn", "0"));
             Boolean includeTitles = Boolean.parseBoolean(this.args.getProperty("includeTitles", "true"));
             Integer realStart = startRow;
-            List<Map<String, Object>> rowDataObject = (List<Map<String, Object>>) data.get(0).get("output");
+            
+            List<Map<String, Object>> rowDataObject = data.row(0);
+            //List<Map<String, Object>> rowDataObject = (List<Map<String, Object>>) data.get(0).get("output");
             if(includeTitles) {
             	Row row = sheet.createRow(realStart);
             	Map<String, Object> rowData = rowDataObject.get(0);
@@ -139,7 +147,8 @@ public class ExcelOperator extends OperatorStage {
             workbook.close();
             statusD.put("status", "OK");
             result.add(statusD);
-            return result;
+            df.add(result);
+            return df;
         } catch (Exception e) {
             throw new DomainException(e);
         }

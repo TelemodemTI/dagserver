@@ -10,14 +10,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.json.JSONObject;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -30,8 +34,9 @@ public class SshOperator extends OperatorStage {
 	private static final String KNOWHOSTFILE = "knowhostfile";
 	private static final String PRIVATEKEYFILE = "privateKeyFile";
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		try {
 			JSch jsch = new JSch();		
 			Session session = jsch.getSession(this.args.getProperty("user"), this.args.getProperty("host"), Integer.parseInt(this.args.getProperty("port")));
@@ -52,13 +57,13 @@ public class SshOperator extends OperatorStage {
 			session.connect();
 			ChannelExec channel = (ChannelExec) session.openChannel("exec");
 			channel.setCommand(this.args.getProperty("cmd"));
-			List<Dagmap> list = new ArrayList<>();
+			List<Map<String,Object>> list = new ArrayList<>();
 			list.add(this.sendToChannel(channel));
-			return list;
+			return new DataFrame(list);
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();
-		    return Dagmap.createDagmaps(1, "error", ie.getMessage());
+		    throw new DomainException(ie);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -76,8 +81,8 @@ public class SshOperator extends OperatorStage {
 			  return resultStringBuilder.toString();
 			}
 	
-	private Dagmap sendToChannel(ChannelExec channel) throws IOException, InterruptedException, JSchException {
-		Dagmap output = new Dagmap();
+	private Map<String,Object> sendToChannel(ChannelExec channel) throws IOException, InterruptedException, JSchException {
+		Map<String,Object> output = new HashMap<String,Object>();
 		ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
 		ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();
 

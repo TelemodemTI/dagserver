@@ -1,16 +1,18 @@
 package main.cl.dagserver.infra.adapters.operators;
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -21,8 +23,9 @@ public class JavaOperator extends OperatorStage {
 
 	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		try {
@@ -34,10 +37,19 @@ public class JavaOperator extends OperatorStage {
 				String jarpath = iterator.next();
 				list.add(new File(jarpath).toURI());
 			}
-			Serializable result = this.runCallableFromJar(this.args.getProperty("className"),list);
+			Object result = this.runCallableFromJar(this.args.getProperty("className"),list);
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
-			return Dagmap.createDagmaps(1, "result", result);	
+			if (result instanceof List) {
+				return new DataFrame((List) result);
+			} else if (result instanceof Map) {
+				DataFrame df = new DataFrame();
+		        df.add(Arrays.asList((Map) result));
+		        return df;
+			} else {
+				return this.createFrame("result", result);
+			}
+				
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

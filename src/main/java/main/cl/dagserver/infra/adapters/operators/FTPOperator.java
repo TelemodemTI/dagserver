@@ -9,10 +9,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -22,12 +23,16 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.json.JSONObject;
 
+import joinery.DataFrame;
+
 
 @Operator(args={"host","port","ftpUser","ftpPass","commands"})
 public class FTPOperator extends OperatorStage {
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
+		DataFrame df = new DataFrame();
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -45,35 +50,27 @@ public class FTPOperator extends OperatorStage {
 			ftp.enterLocalPassiveMode();
 			log.debug(this.getClass()+" end "+this.name);
 
-			
-			List<Dagmap> results = new ArrayList<>();
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
-			//list pathremote
-			//download local remote
-			//upload local remote
-			Dagmap status1 = new Dagmap();
-			status1.put("status", "ok");
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
 				String[] cmd = iterator.next().split(" ");
 				switch (cmd[0]) {
 				case "list":
-					var result = this.list(ftp, cmd[1]);
-					results.addAll(result);
+					df = this.list(ftp, cmd[1]);
 					break;
 				case "upload":
 					this.upload(ftp, cmd[1], cmd[2]);
-					results.add(status1);
+					df = this.createStatusFrame("ok");
 					break;
 				case "download":
 					this.download(ftp, cmd[1], cmd[2]);
-					results.add(status1);
+					df = this.createStatusFrame("ok");
 					break;
 				 default:
 					throw new DomainException(new Exception("command invalid"));
 				}
 			}
 			this.disconnect(ftp);
-			return results;
+			return df;
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -86,18 +83,19 @@ public class FTPOperator extends OperatorStage {
 		}	
 	}	
 	
-	private List<Dagmap> list(FTPClient ftp,String directory) throws IOException {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private DataFrame list(FTPClient ftp,String directory) throws IOException {
 		ftp.cwd(directory);
 		FTPFile[] files = ftp.listFiles();
-		List<Dagmap> content = new ArrayList<>();
+		List<Map<String,Object>> content = new ArrayList<>();
 		for (FTPFile file : files) {
-			Dagmap map = new Dagmap();
+			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("filename", file.getName());
 			map.put("size",file.getSize());
 			content.add(map);
 		}
 		ftp.enterLocalPassiveMode();
-		return content;	
+		return new DataFrame(content);	
 	}
 	
 	private void download(FTPClient ftp, String remoteFilePath, String localPath) throws DomainException {

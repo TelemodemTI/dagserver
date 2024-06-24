@@ -3,6 +3,7 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -22,12 +23,12 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"host","username","password","port","mode"},optionalv = {"xcom","exchange","routingKey","queue","body"})
 public class RabbitMQOperator extends OperatorStage {
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Dagmap> call() throws DomainException {		
+	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
-		List<Dagmap> rv = new ArrayList<>();
+		List<Map<String,Object>> rv = new ArrayList<>();
 		try {
 			Channel channel = this.getConnection();
 			log.debug(this.args);
@@ -35,13 +36,13 @@ public class RabbitMQOperator extends OperatorStage {
 			if(mode.equals("publish")) {
 				if(this.optionals.containsKey("xcom")) {
 					String xcomname = this.optionals.getProperty("xcom");
-					List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);
+					DataFrame df = (DataFrame) this.xcom.get(xcomname);
 					Integer count = 0;
-					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
+					for (Iterator<Map<String, Object>> iterator = df.iterrows(); iterator.hasNext();) {
 						Map<String, Object> map = iterator.next();
 						JSONObject item = new JSONObject(map);
 						channel.basicPublish(this.optionals.getProperty("exchange"), this.optionals.getProperty("routingKey"), null, item.toString().getBytes());
-						Dagmap dm = new Dagmap();
+						Map<String,Object> dm = new HashMap<String,Object>();
 						dm.put("status", "message "+ count.toString() + " published");
 						rv.add(dm);
 						count++;
@@ -60,7 +61,7 @@ public class RabbitMQOperator extends OperatorStage {
 					    long deliveryTag = response.getEnvelope().getDeliveryTag();
 					    String msg = new String(body);
 					    channel.basicAck(deliveryTag, false);
-					    Dagmap dm = new Dagmap();
+					    Map<String, Object> dm = new HashMap<String, Object>();
 					    dm.put("message", msg);
 					    rv.add(dm);
 					} else {
@@ -70,7 +71,7 @@ public class RabbitMQOperator extends OperatorStage {
 				
 			}
 			log.debug(this.getClass()+" end "+this.name);
-			return rv;
+			return new DataFrame(rv);
 		} catch (Exception e) {
 			log.error(e);			
 			throw new DomainException(e);

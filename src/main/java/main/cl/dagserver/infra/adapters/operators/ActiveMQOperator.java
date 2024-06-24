@@ -3,26 +3,29 @@ package main.cl.dagserver.infra.adapters.operators;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.json.JSONObject;
+
+import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
-import main.cl.dagserver.domain.core.Dagmap;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import javax.jms.*;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Operator(args = {"mode", "brokerURL" , "queueName"}, optionalv = {"xcom","timeout"})
 public class ActiveMQOperator extends OperatorStage {
 
-    @Override
-    public List<Dagmap> call() throws DomainException {
+    @SuppressWarnings("rawtypes")
+	@Override
+    public DataFrame call() throws DomainException {
         String mode = this.args.getProperty("mode");
         if ("produce".equalsIgnoreCase(mode)) {
             produce();
-            return Dagmap.createDagmaps(1, "status", "ok");
+            return this.createStatusFrame("ok");
         } else if ("consume".equalsIgnoreCase(mode)) {
         	return consume();
         } else {
@@ -30,7 +33,7 @@ public class ActiveMQOperator extends OperatorStage {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	private void produce() throws DomainException {
         try {
             String brokerURL = this.args.getProperty("brokerURL");
@@ -49,8 +52,8 @@ public class ActiveMQOperator extends OperatorStage {
             Destination destination = session.createQueue(queueName);
             MessageProducer producer = session.createProducer(destination);
 
-            List<Object> data = (List<Object>) this.xcom.get(xcomname);
-            for (Iterator<Object> iterator = data.iterator(); iterator.hasNext();) {
+            DataFrame data = (DataFrame) this.xcom.get(xcomname);
+            for (Iterator<Map<String, Object>> iterator = data.iterrows(); iterator.hasNext();) {
     				Object map = iterator.next();
     				TextMessage message = new ActiveMQTextMessage();
     				String messageStr = map.toString();
@@ -64,7 +67,8 @@ public class ActiveMQOperator extends OperatorStage {
 	    } 
     }
 
-    private List<Dagmap> consume() throws DomainException {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private DataFrame consume() throws DomainException {
         try {
             String brokerURL = this.args.getProperty("brokerURL");
             String queueName = this.args.getProperty("queueName");
@@ -79,12 +83,13 @@ public class ActiveMQOperator extends OperatorStage {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createQueue(queueName);
             MessageConsumer consumer = session.createConsumer(destination);
-            List<Dagmap> rv = new ArrayList<>();
+            DataFrame df = new DataFrame();
+            List<Map<String,Object>> rv = new ArrayList<>();
             while (true) {
                     Message message = consumer.receive(timeout);
                     if (message instanceof TextMessage) {
                         TextMessage textMessage = (TextMessage) message;
-                        Dagmap map = new Dagmap();
+                        Map<String,Object> map = new HashMap<String,Object>();
                         map.put("messageId", textMessage.getJMSMessageID());
                         map.put("text", textMessage.getText());
                         map.put("jmsExpiration", textMessage.getJMSExpiration());
@@ -96,7 +101,8 @@ public class ActiveMQOperator extends OperatorStage {
                         break; // Salir si no hay más mensajes
                     }
             }
-            return rv;
+            df.add(rv);
+            return df;
         } catch (Exception e) {
             throw new DomainException(e);
         }
