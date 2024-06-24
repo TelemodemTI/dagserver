@@ -15,8 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.view.RedirectView;
 import fr.brouillard.oss.security.xhub.XHub;
 import fr.brouillard.oss.security.xhub.XHub.XHubConverter;
@@ -63,7 +65,13 @@ public class DefaultController {
         redirectView.setUrl(path+"/index.html");
         return redirectView;
 	}
-	
+	@ExceptionHandler(NoHandlerFoundException.class)
+    public RedirectView handle404(HttpServletRequest request, HttpServletResponse response) {
+        String path = request.getContextPath();
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(path + "/index.html");
+        return redirectView;
+    }
 	
 	
 	@PostMapping(value = "/github-webhook")
