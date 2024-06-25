@@ -76,13 +76,15 @@ public class MailOperator extends OperatorStage {
 	    	  if(!this.xcom.has(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
-	    	  String appendstr = this.xcom.get(xcomname).toString();
+	    	  DataFrame dfappend = (DataFrame) this.xcom.get(xcomname);
+	    	  String appendstr = dfappend.get(0, 0).toString();
 	    	  body.append(appendstr);
 	      }
 	      msg.setContent(body.toString(),"text/html; charset=UTF-8");
 	      msg.setSentDate(new Date());
 	      String propname = this.args.getProperty("toEmail");
-	      DataFrame xcomdf = (DataFrame) this.xcom.get(propname);
+	      DataFrame xcomdf = (DataFrame) this.xcom.opt(propname);
+	      //DataFrame xcomdf = (DataFrame) this.xcom.get(propname);
 	      String mailcalc = "";
 	      if(xcomdf != null) {
 	    	  mailcalc = xcomdf.get(0, 0).toString();

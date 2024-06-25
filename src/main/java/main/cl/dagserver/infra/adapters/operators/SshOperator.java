@@ -34,7 +34,7 @@ public class SshOperator extends OperatorStage {
 	private static final String KNOWHOSTFILE = "knowhostfile";
 	private static final String PRIVATEKEYFILE = "privateKeyFile";
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
@@ -59,7 +59,7 @@ public class SshOperator extends OperatorStage {
 			channel.setCommand(this.args.getProperty("cmd"));
 			List<Map<String,Object>> list = new ArrayList<>();
 			list.add(this.sendToChannel(channel));
-			return new DataFrame(list);
+			return this.buildDataFrame(list);
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();

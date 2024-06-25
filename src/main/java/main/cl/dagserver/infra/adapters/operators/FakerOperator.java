@@ -20,7 +20,7 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"fakerjson","count","locale"})
 public class FakerOperator extends OperatorStage {
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes"})
 	@Override
     public DataFrame call() throws DomainException {        
         log.debug(this.getClass() + " init " + this.name);
@@ -51,7 +51,7 @@ public class FakerOperator extends OperatorStage {
             }
             maps.add(item);
 		}
-        return new DataFrame(maps);
+        return this.buildDataFrame(maps);
     }
 
     private String invokeFakerMethod(Faker faker, String methodName) {

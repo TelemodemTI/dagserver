@@ -27,7 +27,7 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"hostname","port","mode","database","collection","timeout"},optionalv = {"username","password","filter","xcom"})
 public class MongoDBOperator extends OperatorStage {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -54,7 +54,7 @@ public class MongoDBOperator extends OperatorStage {
 			list = this.delete(mongoClient);
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return new DataFrame(list);
+		return this.buildDataFrame(list);
 	}
 	
 	private List<Map<String,Object>> read(MongoClient mongoClient) throws DomainException {

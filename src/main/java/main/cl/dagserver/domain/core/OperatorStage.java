@@ -27,43 +27,31 @@ import net.bytebuddy.implementation.MethodCall;
 public abstract class OperatorStage implements Callable<DataFrame> {	
 	protected static Logger log = Logger.getLogger("DAG");
 	protected String name;
-
+	protected Properties args;
+	protected JSONObject xcom = new JSONObject();
+	protected Properties optionals;
 	
 	public abstract DataFrame call() throws DomainException;
-	
     public abstract JSONObject getMetadataOperator();
-	
-	
+		
 	public String getIconImage() {
 		return "internal.png";
 	}
-		
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	protected Properties args;
-	protected JSONObject xcom = new JSONObject();
-
-	
 	public Properties getArgs() {
 		return args;
 	}
-
 	public void setArgs(Properties args) {
 		this.args = args;
 	}
-
-	
-	protected Properties optionals;
 	public Properties getOptionals() {
 		return optionals;
 	}
-
 	public void setOptionals(Properties optionals) {
 		this.optionals = optionals;
 	}
@@ -74,7 +62,6 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		factory.initializeBean( repo, "schedulerRepository" );
 		return repo;
 	}
-
 	protected JarSchedulerAdapter getScheduler(ApplicationContext springContext) {
 		JarSchedulerAdapter adapter = new JarSchedulerAdapter();
 		AutowireCapableBeanFactory factory = springContext.getAutowireCapableBeanFactory();
@@ -82,17 +69,12 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		factory.initializeBean( adapter , "jarSchedulerAdapter" );
 		return adapter;
 	}
-	
-	
 	public JSONObject getXcom() {
 		return xcom;
 	}
-
 	public void setXcom(JSONObject xcom) {
 		this.xcom = xcom;
 	}
-	
-	
 	@SuppressWarnings("unchecked")
 	public DataFrame createStatusFrame(String status) {
 		DataFrame df = new DataFrame();
@@ -101,7 +83,6 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		df.add(Arrays.asList(rmap));
 		return df;
 	}
-	
 	@SuppressWarnings("unchecked")
 	public DataFrame createFrame(String key,Object value) {
 		DataFrame df = new DataFrame();
@@ -110,29 +91,39 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		df.add(Arrays.asList(rmap));
 		return df;
 	}
-	
-	 protected JSONArray dataFrameToJson(DataFrame<Object> dataFrame) {
+	protected JSONArray dataFrameToJson(DataFrame<Object> dataFrame) {
 	        JSONArray jsonArray = new JSONArray();
-
-	        // Iterate over the rows of the DataFrame
 	        for (List<Object> row : dataFrame) {
 	            JSONObject jsonObject = new JSONObject();
 	            List<Object> columns = new ArrayList<>(dataFrame.columns());
-
-	            // Iterate over the columns and add each cell to the JSON object
 	            for (int i = 0; i < columns.size(); i++) {
 	                String columnName = columns.get(i).toString();
 	                Object cellValue = row.get(i);
 	                jsonObject.put(columnName, cellValue);
 	            }
-
-	            // Add the JSON object to the JSON array
 	            jsonArray.put(jsonObject);
 	        }
-
 	        return jsonArray;
-	    }
-	
+	}
+	protected DataFrame buildDataFrame(List<Map<String,Object>> list) {
+		DataFrame<Object> dataFrame = new DataFrame<>();
+        if (!list.isEmpty()) {
+            // Assuming all maps have the same keys
+            Map<String, Object> firstRow = list.get(0);
+            List<String> columns = new ArrayList<>(firstRow.keySet());
+            dataFrame.add(columns.toArray());
+
+            // Add each map as a row in the DataFrame
+            for (Map<String, Object> map : list) {
+                List<Object> row = new ArrayList<>();
+                for (String column : columns) {
+                    row.add(map.get(column));
+                }
+                dataFrame.append(row);
+            }
+        }
+        return dataFrame;
+	}
 	public Implementation getDinamicInvoke(String stepName, String propkey, String optkey) throws DomainException {
         try {
             return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class, String.class)).with(stepName, getClass(), propkey,optkey);

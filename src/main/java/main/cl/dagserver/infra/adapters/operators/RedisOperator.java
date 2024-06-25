@@ -24,7 +24,7 @@ import redis.clients.jedis.JedisPool;
 @Operator(args={"hostname","port","mode","redisCluster","keyObject"}, optionalv = {"xcom","body"})
 public class RedisOperator extends OperatorStage {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -65,7 +65,7 @@ public class RedisOperator extends OperatorStage {
 			}	
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return new DataFrame(rv);
+		return this.buildDataFrame(rv);
 	}
 	
 	private List<Map<String,Object>> clusterRead(JedisCluster jedisc){
