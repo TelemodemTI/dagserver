@@ -74,10 +74,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 			DagNode node = breadthFirstIterator.next();
 			status.put(node.name, OperatorStatus.EXECUTING);
 			logdag.debug("preparing node::"+node.name);
-			
-			
-			
-			
+
 			var keys = this.constraints.keySet();
 			List<OperatorStatus> statusNow = new ArrayList<>();
 			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {

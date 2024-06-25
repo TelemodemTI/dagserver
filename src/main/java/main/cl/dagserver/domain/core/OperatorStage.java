@@ -27,43 +27,31 @@ import net.bytebuddy.implementation.MethodCall;
 public abstract class OperatorStage implements Callable<DataFrame> {	
 	protected static Logger log = Logger.getLogger("DAG");
 	protected String name;
-
+	protected Properties args;
+	protected JSONObject xcom = new JSONObject();
+	protected Properties optionals;
 	
 	public abstract DataFrame call() throws DomainException;
-	
     public abstract JSONObject getMetadataOperator();
-	
-	
+		
 	public String getIconImage() {
 		return "internal.png";
 	}
-		
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	protected Properties args;
-	protected JSONObject xcom = new JSONObject();
-
-	
 	public Properties getArgs() {
 		return args;
 	}
-
 	public void setArgs(Properties args) {
 		this.args = args;
 	}
-
-	
-	protected Properties optionals;
 	public Properties getOptionals() {
 		return optionals;
 	}
-
 	public void setOptionals(Properties optionals) {
 		this.optionals = optionals;
 	}
@@ -74,7 +62,6 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		factory.initializeBean( repo, "schedulerRepository" );
 		return repo;
 	}
-
 	protected JarSchedulerAdapter getScheduler(ApplicationContext springContext) {
 		JarSchedulerAdapter adapter = new JarSchedulerAdapter();
 		AutowireCapableBeanFactory factory = springContext.getAutowireCapableBeanFactory();
@@ -82,17 +69,12 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		factory.initializeBean( adapter , "jarSchedulerAdapter" );
 		return adapter;
 	}
-	
-	
 	public JSONObject getXcom() {
 		return xcom;
 	}
-
 	public void setXcom(JSONObject xcom) {
 		this.xcom = xcom;
 	}
-	
-	
 	@SuppressWarnings("unchecked")
 	public DataFrame createStatusFrame(String status) {
 		DataFrame df = new DataFrame();
@@ -101,7 +83,6 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		df.add(Arrays.asList(rmap));
 		return df;
 	}
-	
 	@SuppressWarnings("unchecked")
 	public DataFrame createFrame(String key,Object value) {
 		DataFrame df = new DataFrame();
@@ -110,7 +91,6 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		df.add(Arrays.asList(rmap));
 		return df;
 	}
-	
 	protected JSONArray dataFrameToJson(DataFrame<Object> dataFrame) {
 	        JSONArray jsonArray = new JSONArray();
 	        for (List<Object> row : dataFrame) {

@@ -9,6 +9,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DagOperatorApi;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -25,8 +26,10 @@ public class GroovyOperator extends OperatorStage {
 		log.debug(this.getClass()+" end "+this.name);
 		String source = this.args.getProperty("source");
 	    Binding binding = new Binding();
+	    var dagapi = new DagOperatorApi();
 	    binding.setVariable("log", log);
 	    binding.setVariable("xcom", xcom);
+	    binding.setVariable("operator", dagapi);
 	    GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), binding);
 	    Object rv = shell.evaluate(source);
 	    var df = new DataFrame();
@@ -36,6 +39,8 @@ public class GroovyOperator extends OperatorStage {
 	    } else if (rv instanceof Map) {
 	    	var rvm = (Map) rv;
 	        df.add(Arrays.asList(rvm));
+	    } else if(rv instanceof DataFrame) {
+	    	df = (DataFrame) rv;
 	    } else {
 	        var newmap = new HashMap<String,Object>();
 	        newmap.put("output", rv);
