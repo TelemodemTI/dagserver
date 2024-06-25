@@ -54,7 +54,7 @@ public class MongoDBOperator extends OperatorStage {
 			list = this.delete(mongoClient);
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return new DataFrame(list);
+		return this.buildDataFrame(list);
 	}
 	
 	private List<Map<String,Object>> read(MongoClient mongoClient) throws DomainException {
