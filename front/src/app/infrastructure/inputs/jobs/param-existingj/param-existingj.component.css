@@ -44,6 +44,7 @@
   }
   .tab-content{
     overflow-y:auto;
+    max-width: 97%;
     max-height: 400em;
   }
   .noDisplay {
@@ -52,4 +53,7 @@
   .modal-body {
 	  overflow: auto;
 	  height: 50em;
+  }
+  .remote-item{
+    width: 90%;
   }

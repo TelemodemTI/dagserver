@@ -32,7 +32,7 @@ export class ParamExistingjComponent {
   name!:any
   statusSel!:any
   xcoms:any[] = []
-
+  remote_cmd:string[] = []
   constructor(private cd: ChangeDetectorRef){
 
   }
@@ -51,15 +51,20 @@ export class ParamExistingjComponent {
             this.xcoms = obj.boxes.filter((elem:any)=>{ return elem && step && elem.id != step.id})
             this.name = step.id
             this.statusSel = step.status
-            let value;
+            let value,variab;
             try {
                 value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
                 if(this.editor){    
                   this.editor.setValue(value.value) 
                 }
+                variab = step.params.filter((ele:any)=>{ return ele.type == "remote" })[0]
+                if(variab){
+                  this.remote_cmd = variab.split(";")
+                }
+
             } catch (error) {
-				console.log(error)
-			}
+				      console.log("error controlado?")
+			      }
             const activeTabId = this.tabIsActive();
             $("#settings_li > a").click();
             setTimeout(()=>{
@@ -115,11 +120,13 @@ export class ParamExistingjComponent {
     if(this.selectedStepParams){
       for (let index = 0; index < this.selectedStepParams.params.length; index++) {
         const key = this.selectedStepParams.params[index];
-        if(key.type != "sourcecode"){
-          let vlue = $("#param-"+key.name+"-value").val()
-          paramarr.push({key:key.name,value:vlue,type:key.type})
-        } else {
+        if(key.type == "sourcecode"){
           let vlue:string = this.editor.getValue()
+          paramarr.push({key:key.name,value:vlue,type:key.type})
+        } else if(key.type == "remote"){
+          paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type})
+        } else {
+          let vlue = $("#param-"+key.name+"-value").val()
           paramarr.push({key:key.name,value:vlue,type:key.type})
         }
       }
@@ -127,11 +134,13 @@ export class ParamExistingjComponent {
     if(this.selectedStepParams && this.selectedStepParams.opt){
       for (let index = 0; index < this.selectedStepParams.opt.length; index++) {
         const key = this.selectedStepParams.opt[index];
-        if(key.type != "sourcecode"){
-          let vlue = $("#param-"+key.name+"-value").val()
-          paramarr.push({key:key.name,value:vlue,type:key.type})
-        } else {
+        if(key.type == "sourcecode"){
           let vlue:string = this.editor.getValue()
+          paramarr.push({key:key.name,value:vlue,type:key.type})
+        } else if(key.type == "remote"){
+          paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type})
+        } else {
+          let vlue = $("#param-"+key.name+"-value").val()
           paramarr.push({key:key.name,value:vlue,type:key.type})
         }
       }
@@ -250,7 +259,6 @@ export class ParamExistingjComponent {
     }
   }  
   tabIsActive(){
-    //return this.tabIsDisplayed('#home')?'#home_li':(this.tabIsDisplayed('#profile')?'#profile_li':'#settings_li')
     return "#settings_li"
   }
   ngAfterContentChecked() {
@@ -259,8 +267,25 @@ export class ParamExistingjComponent {
   tabIsDisplayed(jid:string){ 
     if(jid=="#profile"){
       return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "sourcecode").length > 0:false
+    } else if(jid=="#remoter"){
+      return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "remote").length > 0:false
     } else {
       return $(jid).text().trim()?true:false;
     }
+  }
+  remove(i:number){
+    this.remote_cmd.splice(i,1)
+  }
+  getRemoteCmdValue(i:number,subcat:number){
+    let varb = this.remote_cmd[i].split(" ")
+    if(varb[subcat]){
+      return varb[subcat]
+    } else return ''
+    
+  }
+  remoteAdd(){
+    var action = $("#remoter-action-selector").val()
+    var filepath = $("#remoter-file").val();
+    this.remote_cmd.push(action+" "+filepath)
   }
 }

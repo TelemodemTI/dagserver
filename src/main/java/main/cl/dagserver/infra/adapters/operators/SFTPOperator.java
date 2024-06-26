@@ -141,7 +141,7 @@ public class SFTPOperator extends OperatorStage  {
 		metadata.setParameter("port", "number");
 		metadata.setParameter("sftpUser", "text");
 		metadata.setParameter("sftpPass", "password");
-		metadata.setParameter("commands", "sourcecode");
+		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}
 	@Override

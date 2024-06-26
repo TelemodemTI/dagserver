@@ -122,7 +122,7 @@ public class FTPOperator extends OperatorStage {
 		metadata.setParameter("port", "number");
 		metadata.setParameter("ftpUser", "text");
 		metadata.setParameter("ftpPass", "password");
-		metadata.setParameter("commands", "sourcecode");
+		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}
 	@Override

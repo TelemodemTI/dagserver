@@ -190,7 +190,7 @@ public class Samba2Operator extends OperatorStage {
 		metadata.setParameter("smbPass", "password");
 		metadata.setParameter("smbDomain", "text");
 		metadata.setParameter(SMBSHARENAME, "text");
-		metadata.setParameter("commands", "sourcecode");
+		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}
 	@Override
