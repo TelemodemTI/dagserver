@@ -25,7 +25,6 @@ export class LogdetailComponent {
     this.dagname = this.route.snapshot.paramMap.get('dagname');
     this.logid = this.route.snapshot.paramMap.get('logid');
     var result = await this.service.logs(this.dagname)
-    console.log(result)
     this.item = result.filter((el:any)=>{ return el.id == this.logid})[0]
     this.status = JSON.parse(this.item.status)
     this.xcom = JSON.parse(this.item.outputxcom.replace(/\\n/g, "<br />"))

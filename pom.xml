@@ -317,13 +317,14 @@
 		    <version>1.0.2</version>
 		</dependency>
 
+		
 		<dependency>
-		  <groupId>sh.joinery</groupId>
-		  <artifactId>joinery-dataframe</artifactId>
-		  <version>1.10</version>
+		    <groupId>com.nhl.dflib</groupId>
+		    <artifactId>dflib</artifactId>
+		    <version>0.18</version>
 		</dependency>
-
-
+		
+		
 	</dependencies>
 
 

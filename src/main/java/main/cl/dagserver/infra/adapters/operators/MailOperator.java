@@ -3,11 +3,10 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import org.json.JSONObject;
-
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -29,8 +28,7 @@ import javax.mail.Multipart;
 public class MailOperator extends OperatorStage {
 
 	private static final String FROMMAIL = "fromMail";
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -73,21 +71,21 @@ public class MailOperator extends OperatorStage {
 	      }
 	      if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
 	    	  String xcomname = this.optionals.getProperty("xcom");
-	    	  if(!this.xcom.has(xcomname)) {
+	    	  if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
 	    	  DataFrame dfappend = (DataFrame) this.xcom.get(xcomname);
-	    	  String appendstr = dfappend.get(0, 0).toString();
+	    	  String appendstr = dfappend.getColumn(0).get(0).toString();
 	    	  body.append(appendstr);
 	      }
 	      msg.setContent(body.toString(),"text/html; charset=UTF-8");
 	      msg.setSentDate(new Date());
 	      String propname = this.args.getProperty("toEmail");
-	      DataFrame xcomdf = (DataFrame) this.xcom.opt(propname);
+	      DataFrame xcomdf = (this.xcom.containsKey(propname))?this.xcom.get(propname):null;
 	      //DataFrame xcomdf = (DataFrame) this.xcom.get(propname);
 	      String mailcalc = "";
 	      if(xcomdf != null) {
-	    	  mailcalc = xcomdf.get(0, 0).toString();
+	    	  mailcalc = xcomdf.getColumn(0).get(0).toString();
 	      }
 	      String toEmailString = (this.args.getProperty("toEmail").contains("@"))?this.args.getProperty("toEmail"):mailcalc;
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmailString, false));
@@ -104,8 +102,10 @@ public class MailOperator extends OperatorStage {
 	    	  String attachedFilename = this.optionals.getProperty("attachedFilename");
 	    	  String stepAttachedFilename = this.optionals.getProperty("stepAttachedFilename"); 
 	    	  var df = (DataFrame) this.xcom.get(stepAttachedFilename);
-	    	  List<Map<String,Object>> lista = df.row(0);
-	    	  Map<String,Object> obj = lista.get(0);
+	    	  //List<Map<String,Object>> lista = df.row(0);
+	    	  
+	    	  //Map<String,Object> obj = lista.get(0);
+	    	  RowProxy obj = df.iterator().next();
 	    	  String base64File = (String) obj.get("result");
 	    	  if (base64File  != null && !base64File.isEmpty()) {
 	    	        byte[] fileBytes = Base64.getDecoder().decode(base64File);
@@ -124,7 +124,7 @@ public class MailOperator extends OperatorStage {
 	      }
 	      Transport.send(msg);
     	  log.debug(this.getClass()+" end "+this.name);
-    	  return this.createStatusFrame("ok");
+    	  return OperatorStage.createStatusFrame("ok");
 	    } catch (Exception e) {
 	      log.error(e);
 	      throw new DomainException(e);

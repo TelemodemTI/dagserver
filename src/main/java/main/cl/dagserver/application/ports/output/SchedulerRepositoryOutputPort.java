@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 import org.json.JSONObject;
 
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
@@ -38,8 +40,8 @@ public interface SchedulerRepositoryOutputPort {
 	public String getUncompiledBin(Integer uncompiled);
 	public void deleteUncompiled(Integer uncompiled);
 	public List<String> createParams(String jarname, String bin) throws DomainException;
-	public String createInternalStatus(JSONObject data) throws DomainException;
-	public JSONObject readXcom(String locatedAt) throws DomainException;
+	public String createInternalStatus(Map<String,DataFrame> data) throws DomainException;
+	public Map<String, DataFrame> readXcom(String locatedAt) throws DomainException;
 	public void delGroupProperty(String group);
 	public List<UserDTO> getUsers();
 	public void createAccount(String username, String accountType, String pwdHash);

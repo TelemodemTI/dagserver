@@ -14,7 +14,9 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -26,11 +28,9 @@ public class FileOperator extends OperatorStage {
 	private SecureRandom random = new SecureRandom();
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
-			DataFrame rv = new DataFrame();
 			List<Map<String,Object>> returnv = new ArrayList<>();
 			log.debug(this.getClass()+" init "+this.name);
 			log.debug("args");
@@ -53,49 +53,51 @@ public class FileOperator extends OperatorStage {
 				 }
 			} else {
 				log.debug("mode:write");
-				DataFrame outget =  (DataFrame) this.xcom.get(xcomname);
+				DataFrame outget =  (DataFrame) this.xcom.get(xcomname);				
 				if(rowDelimiter.trim().isEmpty()) {
 					FileWriter writer = new FileWriter(filepath);
-					List<Map<String,Object>> arr = outget.row(0);
-					Map<String,Object> obj = arr.get(0);
 					StringBuilder sb = new StringBuilder();
+					String title = outget.getColumnsIndex().getLabel(0);
+					String firstValue = outget.getColumn(0).get(0).toString();
 					if(firstrow) {
-						var key = new ArrayList<>(obj.keySet());
-						sb.append(key.get(0));
-						sb.append(obj.get(key.get(0)));
+						sb.append(title);
+						sb.append(firstValue);
 					} else {	
-						var key = new ArrayList<>(obj.keySet());
-						sb.append(obj.get(key.get(0)));
+						sb.append(firstValue);
 					}
 					writer.write( sb.toString() );
 			        writer.close();
 				} else {
-					List<Map<String,Object>> arr = outget.row(0);
-					this.write(filepath, rowDelimiter,firstrow, arr);	
+					this.write(filepath, rowDelimiter,firstrow, outget);	
 				}
 
 			}
-			rv.add(returnv);
-			return rv;	
+			return OperatorStage.buildDataFrame(returnv);	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
 	}
 	
-	private void write(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String,Object>> data) {
+	private void write(String filepath,String rowDelimiter,Boolean firstrow,DataFrame data) {
 		Integer lines = 0;
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));) {
 	        if(firstrow) {
-	        	var first = data.get(0);
-	        	var maps = first;
-	        	String titles = String.join(rowDelimiter, maps.keySet());
+	        	List<String> keys = new ArrayList<>();
+	        	for (String columnName : data.getColumnsIndex()) {
+	        		keys.add(columnName);
+            	}
+	        	String titles = String.join(rowDelimiter, keys);
 	        	writer.write(titles);
 	        	writer.newLine();
 	        }
 	        
-	        for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
-	        	Map<String, Object> map =   iterator.next();
-				String resultLine = String.join(rowDelimiter, map.values().toString());
+	        for (Iterator<RowProxy> iterator = data.iterator(); iterator.hasNext();) {
+	        	var row =   iterator.next();
+	        	List<String> values = new ArrayList<>();
+	        	for (String columnName : data.getColumnsIndex()) {
+	        		values.add(row.get(columnName).toString());
+            	}
+				String resultLine = String.join(rowDelimiter, values);
 				writer.write(resultLine);
                 writer.newLine();
                 lines ++;

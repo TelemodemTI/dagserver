@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 
 import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
+import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.domain.model.LogDTO;
@@ -132,7 +134,14 @@ public class QueryResolver implements GraphQLQueryResolver {
 			entry.setExecDt(log.getExecDt());
 			entry.setId(log.getId());
 			entry.setValue(log.getValue());
-			entry.setOutputxcom(log.getOutputxcom());
+			JSONObject wrapper = new JSONObject();
+			var mpa = log.getXcom();
+			var keys = mpa.keySet();
+			for (Iterator<String> iterator2 = keys.iterator(); iterator2.hasNext();) {
+				 var string = iterator2.next();
+				 wrapper.put(string, MetadataManager.dataFrameToJson(mpa.get(string)));
+			}
+			entry.setOutputxcom(wrapper.toString());
 			entry.setChannel(log.getChannel());
 			entry.setStatus(log.getStatus());
 			entry.setMarks(log.getMarks());
@@ -212,4 +221,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 	public List<Exceptions> exceptions(String token) {
 		return handler.getExceptions(token);
 	}
+	public List<String> xcomkeys(String token){
+		return handler.xcomkeys(token);
+	}
+	
 }

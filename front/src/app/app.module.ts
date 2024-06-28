@@ -39,6 +39,8 @@ import { SharedOutputPort } from './application/outputs/shared.output.port';
 import { SharedAdapterService } from './infrastructure/outputs/shared/shared.adapter.service';
 import { ExceptionsModule } from './infrastructure/inputs/exceptions/exceptions.module';
 import { ExceptionsInputPort } from './application/inputs/exceptions.input.port';
+import { XcomBrowserModule } from './infrastructure/inputs/xcom-browser/xcom-browser.module';
+import { BrowserInputPort } from './application/inputs/browser.input.port';
 
 
 declare var window: any;
@@ -58,7 +60,8 @@ declare var window: any;
     PropsModule,
     CredentialsModule,
     InputsModule,
-    ExceptionsModule
+    ExceptionsModule,
+    XcomBrowserModule
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: window["base-href"]},
@@ -83,7 +86,8 @@ declare var window: any;
     { provide: JardetailpInputPort, useClass: FrontEndDomainService},
     { provide: DependenciesInputPort, useClass: FrontEndDomainService},
     { provide: InputsChannelsInputPort, useClass: FrontEndDomainService },
-    { provide: ExceptionsInputPort, useClass: FrontEndDomainService }
+    { provide: ExceptionsInputPort, useClass: FrontEndDomainService },
+    { provide: BrowserInputPort, useClass: FrontEndDomainService }
   ],
   bootstrap: [AppComponent]
 })

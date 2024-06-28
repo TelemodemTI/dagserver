@@ -4,7 +4,8 @@ import java.util.Properties;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -14,7 +15,7 @@ import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 @Operator(args={})
 public class RegisterSchedulerOperator extends OperatorStage {
 
-	@SuppressWarnings({ "static-access", "rawtypes" })
+	@SuppressWarnings({ "static-access" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
@@ -28,7 +29,7 @@ public class RegisterSchedulerOperator extends OperatorStage {
 				repo.setMetadata(prop.getProperty("param.host"), prop.getProperty("param.name"));
 				log.debug(this.getClass()+" end "+this.name);	
 			}	
-			return null;	
+			return createStatusFrame("ok");
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertTrue;
-
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
@@ -96,8 +96,13 @@ class SchedulerQueryHandlerServiceTest {
 		List<LogDTO> list = new ArrayList<>();
 		list.add(log);
 		when(repository.getLogs(anyString())).thenReturn(list);
-		JSONObject xcom = new JSONObject(); 
-		when(repository.readXcom(anyString())).thenReturn(xcom);
+		DataFrame xcom = DataFrame.byArrayRow("status") 
+		        .appender() 
+		        .append("ok")   
+		        .toDataFrame();
+		Map<String,DataFrame> xcomr = new HashMap<>();
+		xcomr.put("test", xcom);
+		when(repository.readXcom(anyString())).thenReturn(xcomr);
 		var rt = service.getLogs("test");
 		assertNotNull(rt);
 	}

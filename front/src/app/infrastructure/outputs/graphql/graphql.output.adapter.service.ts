@@ -18,6 +18,18 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+
+  getXcomKeys(): Promise<any[]> {
+    return new Promise<any[]>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_token")
+      var string = "query xcomkeys($token:String) { xcomkeys(token:$token) }"
+      this.query(string,{token:token}).subscribe((result:any)=>{
+        if(result && result.xcomkeys){
+          resolve(result.xcomkeys)
+        }
+      })
+    })
+  }
   
   removeException(eventDt: string): Promise<void> {
     return new Promise<void>((resolve,reject)=>{

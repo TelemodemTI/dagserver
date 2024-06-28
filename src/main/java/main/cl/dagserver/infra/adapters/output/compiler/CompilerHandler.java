@@ -7,10 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -19,8 +17,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.codehaus.commons.compiler.CompileException;
-import org.codehaus.janino.ClassBodyEvaluator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,12 +79,7 @@ public class CompilerHandler implements CompilerOutputPort {
 			JSONObject def = new JSONObject(bin);
 			String jarname = def.getString(JARNAME);
 			validateOverwrtire(jarname,force);
-			List<String> classnames = new ArrayList<>();
-			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
-				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
-				classnames.add(dag.getString("class"));
-			}
-			var mainb = createMainClass(jarname, classnames);
+			Map<String,byte[]> classBytes = new HashMap<>();
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
 				String crondef = dag.has("cron") ? dag.getString("cron") : ""  ;
@@ -110,13 +101,14 @@ public class CompilerHandler implements CompilerOutputPort {
 				dtomap.put(ONEND, onenddef);
 				dtomap.put("listenerLabel", loc);
 				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
-				this.packageJar(jarname, classname, dagdef1.getBytes(),mainb,props);
+				classBytes.put(classname, dagdef1.getBytes());
 			}	
-			
+			this.packageJar(jarname, classBytes ,props, bin);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
 	}
+	
 	private void validateParams(JSONArray jsonArray) throws DomainException {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject item = jsonArray.getJSONObject(i);
@@ -188,7 +180,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		}
 		return varu;
 	}
-	private void packageJar(String jarname,String classname, byte[] bytes,byte[] main, Properties props) {
+	private void packageJar(String jarname,Map<String, byte[]> classbytes,Properties props, String bin) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try(
         		InputStream fis = classloader.getResourceAsStream("basedag.zip");
@@ -207,20 +199,21 @@ public class CompilerHandler implements CompilerOutputPort {
                 }
                 zos.closeEntry();
             }
-            var strcom = classname.replace(".", "/");
-            zos.putNextEntry(new ZipEntry(this.getPackageDef(classname)));
+            var keys = classbytes.keySet();
+            for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String classname = iterator.next();
+				var strcom = classname.replace(".", "/");
+	            zos.putNextEntry(new ZipEntry(this.getPackageDef(classname)));
+	            zos.closeEntry();
+	            zos.putNextEntry(new ZipEntry(strcom+".class"));
+	            zos.write(classbytes.get(classname));
+	            zos.closeEntry();
+			}
+            
+            zos.putNextEntry(new ZipEntry("dagdef.json"));
+            zos.write(bin.getBytes());
             zos.closeEntry();
 
-            zos.putNextEntry(new ZipEntry(strcom+".class"));
-            zos.write(bytes);
-            zos.closeEntry();
-            
-            zos.putNextEntry(new ZipEntry("MainClass.class"));
-            zos.write(main);
-            zos.closeEntry();
-            
-            
-            
             zos.putNextEntry(new ZipEntry("config.properties"));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             props.store(baos, null);
@@ -287,33 +280,4 @@ public class CompilerHandler implements CompilerOutputPort {
 			Thread.currentThread().interrupt();
 		}
 	}
-	private byte[] createMainClass(String jarname, List<String> classnames) throws IOException, CompileException {
-        String mainClassName = "MainClass"; // Puedes cambiar este nombre según sea necesario
-        String mainMethodSource = generateMainMethodSource(classnames);
-        byte[] mainClassBytes = generateMainMethodWithJanino(mainClassName, mainMethodSource);
-        return mainClassBytes;
-    }
-
-    private String generateMainMethodSource(List<String> classnames) {
-        // Generar dinámicamente el cuerpo del método main como un string de código fuente
-        // Ejemplo básico
-        StringBuilder sb = new StringBuilder();
-        sb.append("public static void main(String[] args) {\n");
-        sb.append("System.out.println(\"Hola Mundo\");");
-        sb.append("}\n");
-    	return  sb.toString();
-    }
-
-
-    private byte[] generateMainMethodWithJanino(String className, String sourceCode) throws IOException, CompileException {
-        ClassBodyEvaluator evaluator = new ClassBodyEvaluator();
-        evaluator.setClassName(className);
-        evaluator.setExtendedClass(Object.class);
-        evaluator.setParentClassLoader(getClass().getClassLoader());
-        evaluator.cook(sourceCode);
-
-        // Obtener el byte[] de la clase compilada por Janino
-        Map<String, byte[]> bytecodes = evaluator.getBytecodes();
-        return bytecodes.get(className);
-    }
 }

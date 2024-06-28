@@ -19,9 +19,7 @@ class ExceptionStorageTest {
     public void init() {
 		ReflectionTestUtils.setField(storage, "exceptionstoragefile", "c:\\tmp\\dagrags\\testdag");
 	}
-	
-	
-	
+
 	@Test
 	void addTest() {
 		ExceptionEventLog event = new ExceptionEventLog(new Object(),new DomainException(new Exception("test")),"message"); 

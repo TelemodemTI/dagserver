@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
-
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
-import org.json.JSONObject;
+import com.nhl.dflib.DataFrame;
 import org.apache.log4j.Logger;
 
 
@@ -22,7 +21,7 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 public class TemporalDagExecutable extends DagExecutable  {
 	
 	private Logger logdag;
-	private JSONObject xcom;
+	private Map<String,DataFrame> xcom;
 	private String logText;
 	private String evalstring;
 	private Map<String,OperatorStatus> status;
@@ -54,7 +53,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
 		var fa = this.createDagMemoryAppender(evalstring);
-		xcom = new JSONObject();
+		xcom = new HashMap<>();
 		logdag = Logger.getLogger(evalstring);
 		logdag.debug("executing dag::"+this.dagname);
 		BreadthFirstIterator<DagNode, DefaultEdge> breadthFirstIterator  = new BreadthFirstIterator<>(g);
@@ -117,10 +116,10 @@ public class TemporalDagExecutable extends DagExecutable  {
 	public void setLogdag(Logger logdag) {
 		this.logdag = logdag;
 	}
-	public JSONObject getXcom() {
+	public Map<String,DataFrame> getXcom() {
 		return xcom;
 	}
-	public void setXcom(JSONObject xcom) {
+	public void setXcom(Map<String,DataFrame> xcom) {
 		this.xcom = xcom;
 	}
 	public String getLogText() {

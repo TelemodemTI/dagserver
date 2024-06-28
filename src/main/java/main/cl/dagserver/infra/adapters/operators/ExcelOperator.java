@@ -3,14 +3,16 @@ package main.cl.dagserver.infra.adapters.operators;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.json.JSONObject;
-import joinery.DataFrame;
+
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -19,7 +21,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"filePath", "mode", "sheetName","startRow", "startColumn"}, optionalv={"xcom","endRow", "endColumn"})
 public class ExcelOperator extends OperatorStage {
 
-    @SuppressWarnings("rawtypes")
 	@Override
     public DataFrame call() throws DomainException {
         try {
@@ -44,12 +45,8 @@ public class ExcelOperator extends OperatorStage {
             throw new DomainException(e);
         }
     }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	private DataFrame readExcel(String filePath) {
-        DataFrame rv = new DataFrame();
-    	List<Map<String, Object>> result = new ArrayList<>();
-
+	private DataFrame readExcel(String filePath) throws DomainException {
+    	
         try (FileInputStream fis = new FileInputStream(filePath);
              Workbook workbook = getWorkbook(filePath, fis)) {
 
@@ -61,29 +58,36 @@ public class ExcelOperator extends OperatorStage {
                 int endRow = Integer.parseInt(this.optionals.getProperty("endRow", String.valueOf(sheet.getLastRowNum())));
                 int startColumn = Integer.parseInt(this.args.getProperty("startColumn", "0"));
                 int endColumn = Integer.parseInt(this.optionals.getProperty("endColumn", String.valueOf(getMaxColumnIndex(sheet))));
-
+                
+                List<String> columnNames = new ArrayList<>();
+                for (int j = startColumn; j <= endColumn; j++) {
+                    String columnName = "Column" + (j + 1);
+                    columnNames.add(columnName);
+                }
+                var appender = DataFrame.byArrayRow(columnNames.toArray(new String[0])).appender();
                 for (int i = startRow; i <= endRow; i++) {
                     Row row = sheet.getRow(i);
                     if (row != null) {
-                    	Map<String, Object> rowData = new HashMap<String, Object>();
+                    	List<Object> data = new ArrayList<>();
                         for (int j = startColumn; j <= endColumn; j++) {
                             Cell cell = row.getCell(j);
-                            String columnName = "Column" + (j + 1);
                             if (cell != null) {
-                                rowData.put(columnName, cell.toString());
+                            	data.add(cell.toString());
                             } else {
-                                rowData.put(columnName, "");
+                                data.add("");
                             }
                         }
-                        result.add(rowData);
+                        appender.append(data.toArray());
                     }
                 }
+                return appender.toDataFrame();
+            } else {
+            	throw new DomainException("invalid sheet");
             }
         } catch (Exception e) {
             log.error("Error reading Excel file: " + filePath, e);
+            throw new DomainException(e);
         }
-        rv.add(result);
-        return rv;
     }
 
     private int getMaxColumnIndex(Sheet sheet) {
@@ -100,11 +104,7 @@ public class ExcelOperator extends OperatorStage {
         return maxColumnIndex - 1; // Convertimos a base cero
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     private DataFrame writeExcel(String filePath) throws DomainException {
-    	DataFrame df = new DataFrame();
-    	List<Map<String,Object>> result = new ArrayList<>();
-        Map<String,Object> statusD = new HashMap<String,Object>();
         try {
             Workbook workbook = getWorkbook(filePath, null);
             Sheet sheet = workbook.createSheet(this.args.getProperty("sheetName"));
@@ -116,39 +116,31 @@ public class ExcelOperator extends OperatorStage {
             Boolean includeTitles = Boolean.parseBoolean(this.args.getProperty("includeTitles", "true"));
             Integer realStart = startRow;
             
-            List<Map<String, Object>> rowDataObject = data.row(0);
-            //List<Map<String, Object>> rowDataObject = (List<Map<String, Object>>) data.get(0).get("output");
             if(includeTitles) {
             	Row row = sheet.createRow(realStart);
-            	Map<String, Object> rowData = rowDataObject.get(0);
-            	var keys = new ArrayList<>(rowData.keySet());
             	int cellIndex = startColumn;
-            	for (int i = 0; i < keys.size(); i++) {
-					String key = keys.get(i);
-					Cell cell = row.createCell(cellIndex++);
-	                cell.setCellValue(key);
-				}
+            	for (String columnName : data.getColumnsIndex()) {
+            		Cell cell = row.createCell(cellIndex++);
+            		cell.setCellValue(columnName);
+            	}
             }
             realStart ++;
-            for (int i = 0; i < rowDataObject.size(); i++) {
-                Row row = sheet.createRow(realStart + i);
-                Map<String, Object> rowData = (Map<String, Object>) rowDataObject.get(i);
-                int cellIndex = startColumn;
-                for (Map.Entry<String, Object> entry : rowData.entrySet()) {
-                   Cell cell = row.createCell(cellIndex++);
-                   cell.setCellValue(entry.getValue().toString());
-                }
-            }
-
+            var i = 0;
+            for (Iterator<RowProxy> iterator = data.iterator(); iterator.hasNext();) {
+				var map = iterator.next();
+				int cellIndex = startColumn;
+				Row row = sheet.createRow(realStart + i);
+				for (String columnName : data.getColumnsIndex()) {
+					Cell cell = row.createCell(cellIndex++);
+	                cell.setCellValue(map.get(columnName).toString());
+				}
+				i++;
+			}
             try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
                 workbook.write(fileOut);
             }
-
             workbook.close();
-            statusD.put("status", "OK");
-            result.add(statusD);
-            df.add(result);
-            return df;
+            return createStatusFrame("ok");
         } catch (Exception e) {
             throw new DomainException(e);
         }

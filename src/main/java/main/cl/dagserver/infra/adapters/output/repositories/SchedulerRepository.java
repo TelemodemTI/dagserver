@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.enums.OperatorStatus;
@@ -396,7 +399,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
     }
 	
 	@Override
-	public String createInternalStatus(JSONObject data) throws DomainException {
+	public String createInternalStatus(Map<String,DataFrame> data) throws DomainException {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 			this.storage.init(sdf.format(new Date()));
@@ -409,7 +412,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 
 	@Override
-	public JSONObject readXcom(String locatedAt) throws DomainException {
+	public Map<String, DataFrame> readXcom(String locatedAt) throws DomainException {
 		try {
 			this.storage.init(locatedAt);
 			return storage.get();

@@ -2,10 +2,14 @@ package main.cl.dagserver.infra.adapters.output.repositories;
 
 import static org.testng.Assert.assertNotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.nhl.dflib.DataFrame;
 
 class InternalStorageTest {
 
@@ -21,9 +25,14 @@ class InternalStorageTest {
 	void getLocatedbTest() throws JSONException {
 		var str = storage.getLocatedb();
 		assertNotNull(str);
-		var json = new JSONObject();
-		json.put("test", "test");
-		storage.put(json);
+		Map<String,DataFrame> map = new HashMap<>();
+		var df = DataFrame
+        	.byArrayRow("status") 
+        	.appender() 
+        	.append("test")   
+        	.toDataFrame();
+		map.put("test", df);
+		storage.put(map);
 		var json2 = storage.get();
 		assertNotNull(json2);
 	}

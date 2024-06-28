@@ -24,7 +24,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.json.JSONObject;
 
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -34,20 +36,17 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"mode", "bootstrapServers","topic","timeoutSeconds" }, optionalv={ "xcom","poll","groupId" })
 public class KafkaOperator extends OperatorStage {
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public DataFrame call() throws DomainException {		
 		String mode = this.args.getProperty("mode");
         if ("produce".equalsIgnoreCase(mode)) {
         	produce();
-        	return this.createStatusFrame("ok");
+        	return OperatorStage.createStatusFrame("ok");
         } else {
             return consume();
         } 
 	}
-	
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void produce() throws DomainException {
         try {
             String bootstrapServers = this.args.getProperty("bootstrapServers");
@@ -59,14 +58,14 @@ public class KafkaOperator extends OperatorStage {
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             if(xcomname != null && !xcomname.isEmpty()) {
-				if(!this.xcom.has(xcomname)) {
+				if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 				}
             }
             DataFrame df = (DataFrame) this.xcom.get(xcomname);
             
-            for (Iterator<Map<String,Object>> iterator = df.iterrows(); iterator.hasNext();) {
-				Map<String,Object> map = iterator.next();
+            for (Iterator<RowProxy> iterator = df.iterator(); iterator.hasNext();) {
+				RowProxy map = iterator.next();
 				try (Producer<String, String> producer = new KafkaProducer<>(properties)) {
 					String message = new JSONObject(map).toString();
 	                ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
@@ -77,8 +76,6 @@ public class KafkaOperator extends OperatorStage {
             throw new DomainException(e);
         }
     }
-
-	@SuppressWarnings({ "rawtypes" })
 	private DataFrame consume() throws DomainException {
         try {
             String bootstrapServers = this.args.getProperty("bootstrapServers");
@@ -116,7 +113,7 @@ public class KafkaOperator extends OperatorStage {
                     	rv.add(map);
                     }	
                 }
-                return this.buildDataFrame(rv);
+                return OperatorStage.buildDataFrame(rv);
             }
         } catch (Exception e) {
             throw new DomainException(e);

@@ -1,8 +1,12 @@
 package main.cl.dagserver.domain.core;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.nhl.dflib.DataFrame;
 
 public class MetadataManager {
 	private String canonicalName;
@@ -52,5 +56,31 @@ public class MetadataManager {
 		tag.put("opt", opts);
 		return tag;
 	}
-	
+	public static JSONArray dataFrameToJson(DataFrame df) {
+        JSONArray jsonArray = new JSONArray();
+        df.iterator().forEachRemaining(row -> {
+        	JSONObject jsonObject = new JSONObject();
+            for (String columnName : df.getColumnsIndex()) {
+                jsonObject.put(columnName, row.get(columnName));
+            }
+            jsonArray.put(jsonObject);
+        });
+        return jsonArray;
+	}
+	public static DataFrame jsonToDataFrame(JSONArray arr) {
+		JSONObject obj = arr.getJSONObject(0);
+		var keys = new ArrayList<String>(obj.keySet());
+		var appender = DataFrame.byArrayRow(keys.toArray(new String[0])).appender();
+		for (int i = 0; i < arr.length(); i++) {
+			JSONObject item = arr.getJSONObject(i);
+			List<Object> values = new ArrayList<>();
+			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String key = iterator.next();
+				var obji = item.get(key);
+				values.add(obji);
+			}
+			appender.append(values.toArray(new Object[0]));
+		}
+		return appender.toDataFrame();
+	}
 }

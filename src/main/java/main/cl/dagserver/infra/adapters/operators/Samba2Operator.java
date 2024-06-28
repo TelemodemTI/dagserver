@@ -34,17 +34,13 @@ import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
-
-import joinery.DataFrame;
-
+import com.nhl.dflib.DataFrame;
 
 @Operator(args={"host","smbUser","smbPass","smbDomain","smbSharename","commands"})
 public class Samba2Operator extends OperatorStage {
 
 	private static final String SMBSHARENAME = "smbSharename";
 	
-	
-	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -84,7 +80,7 @@ public class Samba2Operator extends OperatorStage {
 			}
 		    
 			this.disconnect(smb2session, client);
-			return this.buildDataFrame(results);
+			return OperatorStage.buildDataFrame(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -190,7 +186,7 @@ public class Samba2Operator extends OperatorStage {
 		metadata.setParameter("smbPass", "password");
 		metadata.setParameter("smbDomain", "text");
 		metadata.setParameter(SMBSHARENAME, "text");
-		metadata.setParameter("commands", "sourcecode");
+		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}
 	@Override

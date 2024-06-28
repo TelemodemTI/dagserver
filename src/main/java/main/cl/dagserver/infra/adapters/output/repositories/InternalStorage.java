@@ -3,8 +3,12 @@ package main.cl.dagserver.infra.adapters.output.repositories;
 import java.io.File;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import org.json.JSONObject;
 import org.mapdb.DB;
@@ -12,7 +16,9 @@ import org.mapdb.DBMaker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+import com.nhl.dflib.DataFrame;
 import lombok.extern.log4j.Log4j2;
+import main.cl.dagserver.domain.core.MetadataManager;
 
 @Component
 @Log4j2
@@ -39,12 +45,36 @@ public class InternalStorage {
 		return  locatedb;
 	}
 	@SuppressWarnings( "unchecked" )
-	public void put(JSONObject json) {
-		map.put(locatedb, json.toString());	
+	public void put(Map<String,DataFrame> xcom) {
+		JSONObject wrapper = new JSONObject();
+		var keys = xcom.keySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String string = iterator.next();
+			wrapper.put(string, MetadataManager.dataFrameToJson(xcom.get(string)));
+		}
+		map.put(locatedb, wrapper.toString());	
 	}
-	public JSONObject get() {
-		String jsonstr = (String) map.get(locatedb);
-		return new JSONObject(jsonstr);
+	@SuppressWarnings("unchecked")
+	public List<String> getKeys() {
+		return new ArrayList<String>(map.keySet());
+	}
+	public Map<String,DataFrame> getEntry(String xcomkey) {
+		Map<String,DataFrame> mapa = new HashMap<>();
+		try {
+			JSONObject wrapper = new JSONObject( (String) map.get(xcomkey));
+			var keys = wrapper.keySet();
+			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String stepname = iterator.next();
+				DataFrame df = MetadataManager.jsonToDataFrame(wrapper.getJSONArray(stepname));
+				mapa.put(stepname, df);
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mapa;
+	}
+	public Map<String,DataFrame> get() {
+		return this.getEntry(locatedb);
 	}
 	private void deleteExistingFile(String xcomfolder) {
         try {
@@ -75,4 +105,5 @@ public class InternalStorage {
 		}
 		
 	}
+	
 }

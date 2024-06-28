@@ -23,16 +23,14 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.json.JSONObject;
 
-import joinery.DataFrame;
-
+import com.nhl.dflib.DataFrame;
 
 @Operator(args={"host","port","ftpUser","ftpPass","commands"})
 public class FTPOperator extends OperatorStage {
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public DataFrame call() throws DomainException {		
-		DataFrame df = new DataFrame();
+		DataFrame df = null;
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
@@ -59,11 +57,11 @@ public class FTPOperator extends OperatorStage {
 					break;
 				case "upload":
 					this.upload(ftp, cmd[1], cmd[2]);
-					df = this.createStatusFrame("ok");
+					df = OperatorStage.createStatusFrame("ok");
 					break;
 				case "download":
 					this.download(ftp, cmd[1], cmd[2]);
-					df = this.createStatusFrame("ok");
+					df = OperatorStage.createStatusFrame("ok");
 					break;
 				 default:
 					throw new DomainException(new Exception("command invalid"));
@@ -83,7 +81,6 @@ public class FTPOperator extends OperatorStage {
 		}	
 	}	
 	
-	@SuppressWarnings({ "rawtypes" })
 	private DataFrame list(FTPClient ftp,String directory) throws IOException {
 		ftp.cwd(directory);
 		FTPFile[] files = ftp.listFiles();
@@ -95,7 +92,7 @@ public class FTPOperator extends OperatorStage {
 			content.add(map);
 		}
 		ftp.enterLocalPassiveMode();
-		return this.buildDataFrame(content);	
+		return OperatorStage.buildDataFrame(content);	
 	}
 	
 	private void download(FTPClient ftp, String remoteFilePath, String localPath) throws DomainException {
@@ -122,7 +119,7 @@ public class FTPOperator extends OperatorStage {
 		metadata.setParameter("port", "number");
 		metadata.setParameter("ftpUser", "text");
 		metadata.setParameter("ftpPass", "password");
-		metadata.setParameter("commands", "sourcecode");
+		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}
 	@Override

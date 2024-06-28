@@ -9,7 +9,9 @@ import org.json.JSONObject;
 import org.testng.TestNG;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
-import joinery.DataFrame;
+
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -21,7 +23,6 @@ public class TestNGOperator extends OperatorStage {
 
 	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
 	
-	@SuppressWarnings("rawtypes")
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);

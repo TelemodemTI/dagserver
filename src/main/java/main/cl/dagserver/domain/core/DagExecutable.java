@@ -31,6 +31,8 @@ import org.quartz.JobListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.annotations.Operator;
@@ -131,7 +133,7 @@ public class DagExecutable implements Job,JobListener  {
 		String evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
 		List<String> timestamps = new ArrayList<>();
 		var fa = this.createDagMemoryAppender(evalstring);
-		JSONObject xcom = new JSONObject();
+		Map<String,DataFrame> xcom = new HashMap<>();   
 		Logger logdag = Logger.getLogger(evalstring);
 		logdag.setLevel(Level.INFO);
 		logdag.debug("executing dag::"+this.dagname);
@@ -192,7 +194,7 @@ public class DagExecutable implements Job,JobListener  {
 		return this.setLogEvaluate(fa, xcom, status,parmdata,timestamps);
 	}
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected Future futureDelegate(
 	        DagNode node,
 	        Logger logdag,
@@ -201,7 +203,7 @@ public class DagExecutable implements Job,JobListener  {
 	        Map<String, Object> argsr,
 	        InMemoryLoggerAppender fa,
 	        Map<String, OperatorStatus> status) {
-	    JSONObject xcom = (JSONObject) argsr.get("xcom");
+		Map<String,DataFrame> xcom = (Map<String,DataFrame>) argsr.get("xcom");
 	    String evalstring = (String) argsr.get(EVALSTRING);
 	    String stepf = (String) argsr.get("stepf");
 	    OperatorStatus statusToBe = (OperatorStatus) argsr.get(STATUSTOBE);
@@ -230,7 +232,7 @@ public class DagExecutable implements Job,JobListener  {
 	protected void instanciateEvaluate(Map<String,Object> args,Map<String,String> parmdata, List<String> timestamps) throws JobExecutionException {
 		Class<?> clazz = (Class<?>) args.get("clazz");
 		DagNode node = (DagNode) args.get("node");
-		JSONObject xcom = (JSONObject) args.get("xcom");
+		Map<String,DataFrame> xcom = (Map<String,DataFrame>) args.get("xcom");
 		String stepf = (String) args.get("stepf");
 		OperatorStatus statusToBe = (OperatorStatus) args.get(STATUSTOBE);
 		Logger logdag = (Logger) args.get("logdag");
@@ -244,8 +246,8 @@ public class DagExecutable implements Job,JobListener  {
 				op.setXcom(xcom);
 				op.setName(node.name);
 				op.setOptionals(node.optionals);
-				Callable<?> instance  = (Callable<?>) op; 
-				var result = instance.call();
+				Callable<DataFrame> instance  = (Callable<DataFrame>) op; 
+				DataFrame result = instance.call();
 				xcom.put(node.name , result );
 				logdag.debug("::end execution ok::");
 				status.put(node.name, OperatorStatus.OK);
@@ -281,7 +283,7 @@ public class DagExecutable implements Job,JobListener  {
 			}
 		}
 	}
-	private OperatorStatus setLogEvaluate(InMemoryLoggerAppender fa,JSONObject xcom,Map<String,OperatorStatus> status,Map<String,String> parmdata,List<String> timestamps) throws JobExecutionException {
+	private OperatorStatus setLogEvaluate(InMemoryLoggerAppender fa,Map<String,DataFrame> xcom,Map<String,OperatorStatus> status,Map<String,String> parmdata,List<String> timestamps) throws JobExecutionException {
 		try {
 			fa.close();
 			Logger.getRootLogger().removeAppender(fa);
