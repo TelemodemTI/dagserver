@@ -33,12 +33,22 @@ public class GroovyOperator extends OperatorStage {
 	    
 	    if (rv instanceof List) {
 	        var rvl = (List) rv;
-	        return OperatorStage.buildDataFrame(rvl);	        
+	        if(rvl.isEmpty()) {
+	        	return DataFrame.empty("status");
+	        } else {
+	        	return OperatorStage.buildDataFrame(rvl);	
+	        }
 	    } else if (rv instanceof Map) {
 	    	var rvm = (Map) rv;
-	    	return OperatorStage.buildDataFrame(Arrays.asList(rvm));
+	    	if(rvm.isEmpty()) {
+	    		return DataFrame.empty("status");
+	    	} else {
+	    		return OperatorStage.buildDataFrame(Arrays.asList(rvm));	
+	    	}
 	    } else if(rv instanceof DataFrame) {
 	    	return (DataFrame) rv;
+	    } else if(rv == null) {
+	    	return DataFrame.empty("status");
 	    } else {
 	        return this.createFrame("output", rv);
 	    }
