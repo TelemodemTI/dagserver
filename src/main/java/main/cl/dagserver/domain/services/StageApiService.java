@@ -2,6 +2,7 @@ package main.cl.dagserver.domain.services;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
+import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.TemporalDagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -113,7 +115,14 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			List<String> timestamps = new ArrayList<>();
 			this.repository.setLog(parmdata,dagtmp.getStatus(),timestamps);
 			var xcom = dagtmp.getXcom();
-			output.put("xcom", xcom);
+			JSONObject wrapper = new JSONObject();
+			var keys = xcom.keySet();
+			for (Iterator<String> iterator2 = keys.iterator(); iterator2.hasNext();) {
+				 var string = iterator2.next();
+				 wrapper.put(string, MetadataManager.dataFrameToJson(xcom.get(string)));
+			}
+			
+			output.put("xcom", wrapper);
 			output.put("result", result);
 			output.put("dagname", dagname);
 			output.put("objetive", stepName);
