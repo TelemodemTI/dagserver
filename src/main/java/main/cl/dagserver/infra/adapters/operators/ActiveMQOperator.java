@@ -4,28 +4,26 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.json.JSONObject;
 
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import javax.jms.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 @Operator(args = {"mode", "brokerURL" , "queueName"}, optionalv = {"xcom","timeout"})
 public class ActiveMQOperator extends OperatorStage {
 
-    @SuppressWarnings("rawtypes")
 	@Override
     public DataFrame call() throws DomainException {
         String mode = this.args.getProperty("mode");
         if ("produce".equalsIgnoreCase(mode)) {
             produce();
-            return this.createStatusFrame("ok");
+            return OperatorStage.createStatusFrame("ok");
         } else if ("consume".equalsIgnoreCase(mode)) {
         	return consume();
         } else {
@@ -33,14 +31,13 @@ public class ActiveMQOperator extends OperatorStage {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
 	private void produce() throws DomainException {
         try {
             String brokerURL = this.args.getProperty("brokerURL");
             String queueName = this.args.getProperty("queueName");
             String xcomname = this.optionals.getProperty("xcom");
             if(xcomname != null && !xcomname.isEmpty()) {
-				if(!this.xcom.has(xcomname)) {
+				if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 				}
             }
@@ -53,11 +50,21 @@ public class ActiveMQOperator extends OperatorStage {
             MessageProducer producer = session.createProducer(destination);
 
             DataFrame data = (DataFrame) this.xcom.get(xcomname);
-            for (Iterator<Map<String, Object>> iterator = data.iterrows(); iterator.hasNext();) {
-    				Object map = iterator.next();
+            data.iterator().forEachRemaining(row -> {
+            	JSONObject jsonObject = new JSONObject();
+	            for (String columnName : data.getColumnsIndex()) {
+	                jsonObject.put(columnName, row.get(columnName));
+	            }
+            });
+            
+            for (Iterator<RowProxy> iterator = data.iterator(); iterator.hasNext();) {
+    				var row = iterator.next();
+    				JSONObject jsonObject = new JSONObject();
     				TextMessage message = new ActiveMQTextMessage();
-    				String messageStr = map.toString();
-                    message.setText(messageStr);
+    				for (String columnName : data.getColumnsIndex()) {
+    	                jsonObject.put(columnName, row.get(columnName));
+    	            }
+                    message.setText(jsonObject.toString());
                     producer.send(message);
             }
             log.debug("Message sent to queue: " + queueName);
@@ -67,7 +74,6 @@ public class ActiveMQOperator extends OperatorStage {
 	    } 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	private DataFrame consume() throws DomainException {
         try {
             String brokerURL = this.args.getProperty("brokerURL");
@@ -83,26 +89,17 @@ public class ActiveMQOperator extends OperatorStage {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createQueue(queueName);
             MessageConsumer consumer = session.createConsumer(destination);
-            DataFrame df = new DataFrame();
-            List<Map<String,Object>> rv = new ArrayList<>();
+            var appender = DataFrame.byArrayRow("messageId","text","jmsExpiration","jmsCorrelationID","jmsPriority","jmsReplyTo").appender();
             while (true) {
                     Message message = consumer.receive(timeout);
                     if (message instanceof TextMessage) {
                         TextMessage textMessage = (TextMessage) message;
-                        Map<String,Object> map = new HashMap<String,Object>();
-                        map.put("messageId", textMessage.getJMSMessageID());
-                        map.put("text", textMessage.getText());
-                        map.put("jmsExpiration", textMessage.getJMSExpiration());
-                        map.put("jmsCorrelationID", textMessage.getJMSCorrelationID());
-                        map.put("jmsPriority", textMessage.getJMSPriority());
-                        map.put("jmsReplyTo", textMessage.getJMSReplyTo());
-                    	rv.add(map);
+                        appender.append(textMessage.getJMSMessageID(),textMessage.getText(),textMessage.getJMSExpiration(),textMessage.getJMSCorrelationID(),textMessage.getJMSPriority(),textMessage.getJMSReplyTo());
                     } else if (message == null) {
                         break; // Salir si no hay más mensajes
                     }
             }
-            df.add(rv);
-            return df;
+            return appender.toDataFrame();
         } catch (Exception e) {
             throw new DomainException(e);
         }

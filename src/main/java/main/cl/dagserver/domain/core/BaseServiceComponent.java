@@ -12,6 +12,7 @@ import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
+import main.cl.dagserver.infra.adapters.output.repositories.InternalStorage;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -45,6 +46,9 @@ public class BaseServiceComponent {
 	
 	@Autowired
 	protected TokenEngine tokenEngine;
+	
+	@Autowired
+	protected InternalStorage storage;
 	
 	protected void trigggerEvent(String artifact, String eventType) throws DomainException  {
 		var propertyList = repository.getProperties(artifact);

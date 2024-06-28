@@ -28,6 +28,11 @@ export class AuthenticatedComponent {
     private service: AuthenticatedInputPort){}
 
   ngOnInit(): void {
+
+    setTimeout(()=>{
+      this.loadScript("/assets/js/jstree/jstree.js",function(){});
+      this.loadScript("/assets/js/startmin.js",function(){});
+    },100)
     this.start();
     this.loadServerInfo()
     this.interval = setInterval(()=>{this.start();},3000);
@@ -39,7 +44,9 @@ export class AuthenticatedComponent {
   }
 
   start(){
-    this.loadScript("/assets/js/startmin.js",function(){});
+    
+
+
     var res = this.service.getDecodedAccessToken()
     if(!res || new Date(res.exp * 1000) < new Date()){
       this.service.removeAccessToken()
@@ -71,6 +78,9 @@ export class AuthenticatedComponent {
   }
   viewExceptions(){
     this.router.navigateByUrl("auth/exceptions")
+  }
+  viewXcomExplorer(){
+    this.router.navigateByUrl("auth/xcombrowser")
   }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");

@@ -1,13 +1,11 @@
 package main.cl.dagserver.infra.adapters.operators;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.json.JSONObject;
+import com.nhl.dflib.DataFrame;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DagOperatorApi;
 import main.cl.dagserver.domain.core.MetadataManager;
@@ -32,21 +30,18 @@ public class GroovyOperator extends OperatorStage {
 	    binding.setVariable("operator", dagapi);
 	    GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), binding);
 	    Object rv = shell.evaluate(source);
-	    var df = new DataFrame();
+	    
 	    if (rv instanceof List) {
 	        var rvl = (List) rv;
-	        df.add(rvl);
+	        return OperatorStage.buildDataFrame(rvl);	        
 	    } else if (rv instanceof Map) {
 	    	var rvm = (Map) rv;
-	        df.add(Arrays.asList(rvm));
+	    	return OperatorStage.buildDataFrame(Arrays.asList(rvm));
 	    } else if(rv instanceof DataFrame) {
-	    	df = (DataFrame) rv;
+	    	return (DataFrame) rv;
 	    } else {
-	        var newmap = new HashMap<String,Object>();
-	        newmap.put("output", rv);
-	        df.add(Arrays.asList(newmap));
+	        return this.createFrame("output", rv);
 	    }
-	    return df;
 	}
 	
 	@Override

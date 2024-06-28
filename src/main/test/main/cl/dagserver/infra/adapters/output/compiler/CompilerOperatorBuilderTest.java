@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 class CompilerOperatorBuilderTest {

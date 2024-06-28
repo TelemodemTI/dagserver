@@ -5,16 +5,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
-import joinery.DataFrame;
+
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.Series;
+import com.nhl.dflib.row.RowProxy;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
-
+ 
 @Operator(args={"qualityjson","xcom"})
 public class QualityOperator extends OperatorStage {
 
-    @SuppressWarnings({ "unchecked", "rawtypes", "unused" })
+	@SuppressWarnings("unused")
 	@Override
     public DataFrame call() throws DomainException {        
         log.debug(this.getClass() + " init " + this.name);
@@ -25,34 +29,44 @@ public class QualityOperator extends OperatorStage {
         JSONObject dq = new JSONObject(fiends);
         String xcomname = this.args.getProperty("xcom");
         
-        if (!this.xcom.has(xcomname)) {
+        if (!this.xcom.containsKey(xcomname)) {
             throw new DomainException(new Exception("xcom not exist for dagname::" + xcomname));
         }
         
         DataFrame df = (DataFrame) this.xcom.get(xcomname);
         List<Map<String, Object>> returningMap = new ArrayList<>();
-        for (Iterator<Map<String, Object>> iterator = df.iterrows(); iterator.hasNext();) {
-        	Map<String, Object> map = iterator.next();
-            
+        List<String> quality_fieldList = new ArrayList<>();
+    	List<String> quality_typeTargetList = new ArrayList<>();
+    	List<String> quality_statusList = new ArrayList<>();
+    	List<String> quality_msgList = new ArrayList<>();
+        for (Iterator<RowProxy> iterator = df.iterator(); iterator.hasNext();) {
+        	RowProxy map = iterator.next();
+        	
             for (String key : dq.keySet()) {
                 Object value = map.get(key);
                 String dataTypeTarget = dq.getString(key);    
-                map.put("quality_field", key);
-                map.put("quality_typeTarget", dataTypeTarget);
+                quality_fieldList.add(key);
+                quality_typeTargetList.add(dataTypeTarget);
                 try {
                 	Object newValue = castValue(value, dataTypeTarget);
-                	map.put("quality_status", "ok");
-                	map.put("quality_msg", "");
+                	quality_statusList.add("ok");
+                	quality_msgList.add("");
 				} catch (Exception e) {
-                	map.put("quality_status", "ok");
-                	map.put("quality_msg", e.getMessage());
+					quality_statusList.add("error");
+                	quality_msgList.add(e.getMessage());
 				}
             }
-            returningMap.add(map);
         }
-        
+        Series<String> quality_fieldSeries = Series.of(quality_fieldList.toArray(new String[0]));
+        Series<String> quality_typeTargetSeries = Series.of(quality_typeTargetList.toArray(new String[0]));
+        Series<String> quality_statusSeries = Series.of(quality_statusList.toArray(new String[0]));
+        Series<String> quality_msgListSeries = Series.of(quality_msgList.toArray(new String[0]));
+        df = df.addColumn("quality_field", quality_fieldSeries);
+        df = df.addColumn("quality_typeTarget", quality_typeTargetSeries);
+        df = df.addColumn("quality_status", quality_statusSeries);
+        df = df.addColumn("quality_msgList", quality_msgListSeries);
         log.debug(this.getClass() + " end " + this.name);
-        return this.buildDataFrame(returningMap);
+        return OperatorStage.buildDataFrame(returningMap);
     }
 
     private Object castValue(Object value, String dataTypeTarget) throws DomainException {

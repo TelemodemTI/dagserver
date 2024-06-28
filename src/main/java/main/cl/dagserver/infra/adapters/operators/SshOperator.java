@@ -19,8 +19,8 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.nhl.dflib.DataFrame;
 
-import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -34,7 +34,6 @@ public class SshOperator extends OperatorStage {
 	private static final String KNOWHOSTFILE = "knowhostfile";
 	private static final String PRIVATEKEYFILE = "privateKeyFile";
 	
-	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
@@ -59,7 +58,7 @@ public class SshOperator extends OperatorStage {
 			channel.setCommand(this.args.getProperty("cmd"));
 			List<Map<String,Object>> list = new ArrayList<>();
 			list.add(this.sendToChannel(channel));
-			return this.buildDataFrame(list);
+			return OperatorStage.buildDataFrame(list);
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();

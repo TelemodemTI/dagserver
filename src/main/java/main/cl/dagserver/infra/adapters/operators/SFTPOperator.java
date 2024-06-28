@@ -21,8 +21,8 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import com.nhl.dflib.DataFrame;
 
-import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -33,7 +33,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"host","port","sftpUser","sftpPass","commands"})
 public class SFTPOperator extends OperatorStage  {
 
-	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -78,7 +77,7 @@ public class SFTPOperator extends OperatorStage  {
 			}
 			
 			this.disconnect(sftp);
-			return this.buildDataFrame(results);
+			return OperatorStage.buildDataFrame(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}	

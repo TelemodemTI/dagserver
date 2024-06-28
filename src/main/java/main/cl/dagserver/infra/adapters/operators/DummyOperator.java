@@ -1,7 +1,9 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import org.json.JSONObject;
-import joinery.DataFrame;
+
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -9,7 +11,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 
 
 @Operator(args={})
-@SuppressWarnings("rawtypes")
 public class DummyOperator extends OperatorStage {
 
 	@Override
@@ -18,7 +19,7 @@ public class DummyOperator extends OperatorStage {
 		log.debug("args");
 		log.debug(this.args);
 		log.debug(this.getClass()+" end "+this.name);
-		return new DataFrame();
+		return createStatusFrame("ok");
 	}
 	
 

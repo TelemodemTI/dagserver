@@ -1,19 +1,19 @@
 package main.cl.dagserver.domain.core;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import com.nhl.dflib.DataFrame;
 
-import org.json.JSONObject;
-
-import joinery.DataFrame;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 public class DagOperatorApi {
 	private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	Properties args = new Properties();
 	Properties optionals = new Properties();
-	JSONObject xcom = new JSONObject();
+	Map<String,DataFrame> xcom = new HashMap<>();
 	Callable<?> operator;
 	
 	public DagOperatorApi setArgs(Properties args) {
@@ -52,7 +52,6 @@ public class DagOperatorApi {
 			throw new DomainException(e);
 		}
     }
-	@SuppressWarnings("rawtypes")
 	public DataFrame execute() throws Exception {
         if (operator == null) {
             throw new IllegalStateException("Operator must be set before execution");

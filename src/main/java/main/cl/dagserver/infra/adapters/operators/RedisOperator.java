@@ -10,7 +10,8 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -24,7 +25,6 @@ import redis.clients.jedis.JedisPool;
 @Operator(args={"hostname","port","mode","redisCluster","keyObject"}, optionalv = {"xcom","body"})
 public class RedisOperator extends OperatorStage {
 
-	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -65,7 +65,7 @@ public class RedisOperator extends OperatorStage {
 			}	
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return this.buildDataFrame(rv);
+		return OperatorStage.buildDataFrame(rv);
 	}
 	
 	private List<Map<String,Object>> clusterRead(JedisCluster jedisc){
@@ -82,16 +82,15 @@ public class RedisOperator extends OperatorStage {
 		}
 		return rv;
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private List<Map<String,Object>> clusterSave(JedisCluster jedisc) throws DomainException{
 		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) { 
 			if(this.optionals.containsKey("xcom")) {
 	    		  String xcomname = this.optionals.getProperty("xcom");
-		    	  if(!this.xcom.has(xcomname)) {
+		    	  if(!this.xcom.containsKey(xcomname)) {
 						throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 		    	  }
 		    	  DataFrame df = (DataFrame) this.xcom.get(xcomname);
-		    	  JSONArray obj = this.dataFrameToJson(df);
+		    	  JSONArray obj = MetadataManager.dataFrameToJson(df);
 		    	  jedisc.set(this.args.getProperty("keyObject"), obj.toString());	  
 		    	  
 	    	} else {
@@ -129,15 +128,14 @@ public class RedisOperator extends OperatorStage {
 		}
 		return rv;
 	}
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private List<Map<String,Object>> singleSave(Jedis jedis) throws DomainException{
 		if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
 	    	  String xcomname = this.optionals.getProperty("xcom");
-	    	  if(!this.xcom.has(xcomname)) {
+	    	  if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
 	    	  var df = (DataFrame) this.xcom.get(xcomname);
-	    	  var obj = this.dataFrameToJson(df);
+	    	  var obj = MetadataManager.dataFrameToJson(df);
 	    	  jedis.set(this.args.getProperty("keyObject"), obj.toString());
 		} else {
 			var body = this.optionals.getProperty("body");

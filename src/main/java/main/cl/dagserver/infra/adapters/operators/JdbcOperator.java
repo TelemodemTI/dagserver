@@ -7,14 +7,16 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.json.JSONObject;
-import joinery.DataFrame;
+
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.core.MetadataManager;
@@ -39,7 +41,6 @@ public class JdbcOperator extends OperatorStage {
 		return list;
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
@@ -50,46 +51,48 @@ public class JdbcOperator extends OperatorStage {
 		String xcomname = this.optionals.getProperty("xcom");
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
 			if(xcomname != null && !xcomname.isEmpty()) {
-				if(!this.xcom.has(xcomname)) {
+				if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 				}
-				List<Map<String, Object>> data = (List<Map<String, Object>>) this.xcom.get(xcomname);	
+				DataFrame data = this.xcom.get(xcomname);	
 				if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 					String sql = this.args.getProperty(QUERY);
-					var map = data.get(0);
-					var kv = this.namedParameter(sql, map);
+					RowProxy firstRow = data.iterator().next();
+					var kv = this.namedParameter(sql, firstRow);
 					var returnv = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
-					return this.buildDataFrame(returnv);
+					return OperatorStage.buildDataFrame(returnv);
 				} else {
 					String sql = this.args.getProperty(QUERY);
-					for (Iterator<Map<String, Object>> iterator = data.iterator(); iterator.hasNext();) {
-						Map<String, Object> map =  iterator.next();
+					for (Iterator<RowProxy> iterator = data.iterator(); iterator.hasNext();) {
+						RowProxy map =  iterator.next();
 					    var kv = this.namedParameter(sql, map);
 					    queryRunner.update(con, kv.getKey(), kv.getValue());
 					}
-					return this.createStatusFrame("ok");
+					return OperatorStage.createStatusFrame("ok");
 				} 
 			} else {
 					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 						var returningv = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());
-						return this.buildDataFrame(returningv);
+						return OperatorStage.buildDataFrame(returningv);
 					} else {
 						queryRunner.update(con, this.args.getProperty(QUERY));
-						return this.createStatusFrame("ok");
+						return OperatorStage.createStatusFrame("ok");
 					}
 			}	
 		} catch (Exception e) {
 			throw new DomainException(e); 
 		}
 	}
-	private KeyValue<String, Object[]> namedParameter(String sql,Map<String, Object> map) {
+	private KeyValue<String, Object[]> namedParameter(String sql,RowProxy map) {
 		Pattern pattern = Pattern.compile(":\\w+");
 	    Matcher matcher = pattern.matcher(sql);
+	    
 	    List<String> paramNames = new ArrayList<>();
 	    while (matcher.find()) {
 	        String paramName = matcher.group().substring(1); 
 	        paramNames.add(paramName);
 	    }
+	    
 	    Object[] objList = new Object[paramNames.size()];
 	    String sqlWithPlaceholders = sql.replaceAll(":\\w+", "?");
 	    for (int i = 0; i < paramNames.size(); i++) {

@@ -1,20 +1,15 @@
 package main.cl.dagserver.domain.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Callable;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
-import joinery.DataFrame;
-
+import com.nhl.dflib.DataFrame;
 import org.apache.log4j.Logger;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.output.repositories.SchedulerRepository;
@@ -22,13 +17,11 @@ import main.cl.dagserver.infra.adapters.output.scheduler.JarSchedulerAdapter;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
  
-
-@SuppressWarnings("rawtypes")
 public abstract class OperatorStage implements Callable<DataFrame> {	
 	protected static Logger log = Logger.getLogger("DAG");
 	protected String name;
 	protected Properties args;
-	protected JSONObject xcom = new JSONObject();
+	protected Map<String,DataFrame> xcom;
 	protected Properties optionals;
 	
 	public abstract DataFrame call() throws DomainException;
@@ -69,61 +62,45 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 		factory.initializeBean( adapter , "jarSchedulerAdapter" );
 		return adapter;
 	}
-	public JSONObject getXcom() {
+	public Map<String,DataFrame> getXcom() {
 		return xcom;
 	}
-	public void setXcom(JSONObject xcom) {
+	public void setXcom(Map<String,DataFrame> xcom) {
 		this.xcom = xcom;
 	}
-	@SuppressWarnings("unchecked")
-	public DataFrame createStatusFrame(String status) {
-		DataFrame df = new DataFrame();
-		Map<String,String> rmap = new HashMap<>();
-		rmap.put("status", status);
-		df.add(Arrays.asList(rmap));
-		return df;
-	}
-	@SuppressWarnings("unchecked")
+	public static DataFrame createStatusFrame(String status) {
+		return DataFrame
+		        .byArrayRow("status") 
+		        .appender() 
+		        .append(status)   
+		        .toDataFrame();
+    }
 	public DataFrame createFrame(String key,Object value) {
-		DataFrame df = new DataFrame();
-		Map<String,Object> rmap = new HashMap<>();
-		rmap.put(key, value);
-		df.add(Arrays.asList(rmap));
-		return df;
+		return DataFrame
+		        .byArrayRow(key) 
+		        .appender() 
+		        .append(value)   
+		        .toDataFrame();
 	}
-	protected JSONArray dataFrameToJson(DataFrame<Object> dataFrame) {
-	        JSONArray jsonArray = new JSONArray();
-	        for (List<Object> row : dataFrame) {
-	            JSONObject jsonObject = new JSONObject();
-	            List<Object> columns = new ArrayList<>(dataFrame.columns());
-	            for (int i = 0; i < columns.size(); i++) {
-	                String columnName = columns.get(i).toString();
-	                Object cellValue = row.get(i);
-	                jsonObject.put(columnName, cellValue);
-	            }
-	            jsonArray.put(jsonObject);
-	        }
-	        return jsonArray;
-	}
-	protected DataFrame buildDataFrame(List<Map<String,Object>> list) {
-		DataFrame<Object> dataFrame = new DataFrame<>();
-        if (!list.isEmpty()) {
-            // Assuming all maps have the same keys
-            Map<String, Object> firstRow = list.get(0);
-            List<String> columns = new ArrayList<>(firstRow.keySet());
-            dataFrame.add(columns.toArray());
+	
 
-            // Add each map as a row in the DataFrame
-            for (Map<String, Object> map : list) {
-                List<Object> row = new ArrayList<>();
-                for (String column : columns) {
-                    row.add(map.get(column));
-                }
-                dataFrame.append(row);
-            }
+	protected static DataFrame buildDataFrame(List<Map<String, Object>> list) {
+        if (list == null || list.isEmpty()) {
+            throw new IllegalArgumentException("The input list must not be null or empty");
         }
-        return dataFrame;
-	}
+        Map<String, Object> firstRow = list.get(0);
+        String[] columns = firstRow.keySet().toArray(new String[0]);
+        var apender = DataFrame.byArrayRow(columns).appender();
+        for (Iterator<Map<String, Object>> iterator = list.iterator(); iterator.hasNext();) {
+			Map<String, Object> map = iterator.next();
+			Object[] valuesArray = map.values().toArray(new Object[0]);
+			apender.append(valuesArray);
+		}
+        return apender.toDataFrame(); 
+    }
+
+	
+	
 	public Implementation getDinamicInvoke(String stepName, String propkey, String optkey) throws DomainException {
         try {
             return MethodCall.invoke(DagExecutable.class.getDeclaredMethod("addOperator", String.class, Class.class, String.class, String.class)).with(stepName, getClass(), propkey,optkey);

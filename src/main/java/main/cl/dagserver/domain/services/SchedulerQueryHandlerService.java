@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
+import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -80,8 +80,8 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		var list = repository.getLogs(dagname);
 		for (Iterator<LogDTO> iterator = list.iterator(); iterator.hasNext();) {
 			LogDTO logDTO = iterator.next();
-			JSONObject xcom = repository.readXcom(logDTO.getOutputxcom());
-			logDTO.setOutputxcom(xcom.toString());
+			Map<String, DataFrame> xcom = repository.readXcom(logDTO.getOutputxcom());
+			logDTO.setXcom(xcom);
 			newrv.add(logDTO);
 		}
 		return newrv;
@@ -254,8 +254,8 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		var list = repository.getLastLogs();
 		for (Iterator<LogDTO> iterator = list.iterator(); iterator.hasNext();) {
 			LogDTO logDTO = iterator.next();
-			JSONObject xcom = repository.readXcom(logDTO.getOutputxcom());
-			logDTO.setOutputxcom(xcom.toString());
+			Map<String, DataFrame> xcom = repository.readXcom(logDTO.getOutputxcom());
+			logDTO.setXcom(xcom);
 			newrv.add(logDTO);
 		}
 		return newrv;
@@ -278,5 +278,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 			newrv.add(ex);
 		}
 		return newrv;
+	}
+	@Override
+	public List<String> xcomkeys(String token) {
+		return storage.getKeys();
 	}
 }

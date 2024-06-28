@@ -7,8 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import org.json.JSONObject;
-
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -18,8 +17,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 public class HttpOperator extends OperatorStage {
 
 	private static final String AUTHORIZATION_HEADER = "authorizationHeader";
-	
-	@SuppressWarnings("rawtypes")
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -42,9 +39,9 @@ public class HttpOperator extends OperatorStage {
 			
 			
 			String xcomname = this.optionals.getProperty("xcom");
-			if(this.xcom.has(xcomname)) {
+			if(this.xcom.containsKey(xcomname)) {
 				DataFrame df = (DataFrame) this.xcom.get(xcomname);
-				String body = df.get(0, 0).toString();
+				String body = df.getColumn(0).get(0).toString();
 				con.setDoOutput(true);
 				OutputStream os = con.getOutputStream();
 				os.write(body.getBytes());

@@ -4,7 +4,9 @@ import java.util.Calendar;
 import java.util.Properties;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
-import joinery.DataFrame;
+
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
@@ -15,7 +17,7 @@ import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 @Operator(args={})
 public class LogsRollupOperator extends OperatorStage {
 
-	@SuppressWarnings({ "static-access", "rawtypes" })
+	@SuppressWarnings({ "static-access" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
@@ -34,7 +36,7 @@ public class LogsRollupOperator extends OperatorStage {
 				scheduler.deleteXCOM(rollup.getTime());
 				log.debug(this.getClass()+" end "+this.name);	
 			}
-			return new DataFrame();	
+			return createStatusFrame("ok");
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

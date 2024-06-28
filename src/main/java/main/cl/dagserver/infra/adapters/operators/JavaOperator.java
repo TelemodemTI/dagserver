@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
 
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -40,16 +41,18 @@ public class JavaOperator extends OperatorStage {
 			Object result = this.runCallableFromJar(this.args.getProperty("className"),list);
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
+			
 			if (result instanceof List) {
-				return this.buildDataFrame((List) result);
-			} else if (result instanceof Map) {
-				DataFrame df = new DataFrame();
-		        df.add(Arrays.asList((Map) result));
-		        return df;
-			} else {
-				return this.createFrame("result", result);
-			}
-				
+		        var rvl = (List) result;
+		        return OperatorStage.buildDataFrame(rvl);	        
+		    } else if (result instanceof Map) {
+		    	var rvm = (Map) result;
+		    	return OperatorStage.buildDataFrame(Arrays.asList(rvm));
+		    } else if(result instanceof DataFrame) {
+		    	return (DataFrame) result;
+		    } else {
+		        return this.createFrame("output", result);
+		    }
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

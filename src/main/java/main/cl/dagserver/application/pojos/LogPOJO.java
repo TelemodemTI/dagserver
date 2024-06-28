@@ -1,6 +1,9 @@
 package main.cl.dagserver.application.pojos;
 
 import java.util.Date;
+import java.util.Map;
+
+import com.nhl.dflib.DataFrame;
 
 public class LogPOJO {
 	private Integer id;
@@ -8,6 +11,7 @@ public class LogPOJO {
 	private Date execDt;
 	private String value;
 	private String outputxcom;
+	private Map<String,DataFrame> xcom;
 	private String marks;
 	private String status;
 	private String channel;
@@ -58,6 +62,12 @@ public class LogPOJO {
 	}
 	public void setMarks(String marks) {
 		this.marks = marks;
+	}
+	public Map<String, DataFrame> getXcom() {
+		return xcom;
+	}
+	public void setXcom(Map<String, DataFrame> xcom) {
+		this.xcom = xcom;
 	}
 
 }

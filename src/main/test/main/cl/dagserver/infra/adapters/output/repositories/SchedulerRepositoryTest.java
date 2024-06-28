@@ -20,6 +20,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.DAO;
@@ -236,16 +239,25 @@ class SchedulerRepositoryTest {
     }
 	@Test
     void createInternalStatusTest() throws DomainException {
-        JSONObject data = new JSONObject();
+        Map<String,DataFrame> map = new HashMap<>();
+        var df = DataFrame
+        .byArrayRow("status") 
+        .appender() 
+        .append("testing")   
+        .toDataFrame();
+        map.put("test", df);
         when(storage.getLocatedb()).thenReturn("testing");
-        String locatedAt = repo.createInternalStatus(data);
+        String locatedAt = repo.createInternalStatus(map);
         assertNotNull(locatedAt);
     }
 	@Test
     void readXcomTest() throws DomainException {
         String locatedAt = "path/to/xcom/data.json";
-        when(storage.get()).thenReturn(new JSONObject());
-        JSONObject data = repo.readXcom(locatedAt);
+        Map<String,DataFrame> map = new HashMap<>();
+        var df = DataFrame.byArrayRow("status").appender().append("testing").toDataFrame();
+        map.put("test", df);
+        when(storage.get()).thenReturn(map);
+        Map<String, DataFrame> data = repo.readXcom(locatedAt);
         assertNotNull(data);
     }
 	@Test

@@ -17,7 +17,9 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import joinery.DataFrame;
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
+
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -27,7 +29,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"hostname","port","mode","database","collection","timeout"},optionalv = {"username","password","filter","xcom"})
 public class MongoDBOperator extends OperatorStage {
 
-	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -54,7 +55,7 @@ public class MongoDBOperator extends OperatorStage {
 			list = this.delete(mongoClient);
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return this.buildDataFrame(list);
+		return OperatorStage.buildDataFrame(list);
 	}
 	
 	private List<Map<String,Object>> read(MongoClient mongoClient) throws DomainException {
@@ -87,28 +88,25 @@ public class MongoDBOperator extends OperatorStage {
 	
 	
 	
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private List<Map<String,Object>> insert(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
 		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
 		  if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
 	    	  String xcomname = this.optionals.getProperty("xcom");
-	    	  if(!this.xcom.has(xcomname)) {
+	    	  if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
 	    	  List<Map<String,Object>> rv = new ArrayList<>();
 	    	  DataFrame df = (DataFrame) this.xcom.get(xcomname);
 	    	  List<Document> collectionData = new ArrayList<>();
 	    	  Integer position = 0;
-	    	  for (Iterator<Map<String, Object>> iterator = df.iterrows(); iterator.hasNext();) {
-				Map<String, Object> map = iterator.next();
+	    	  for (Iterator<RowProxy> iterator = df.iterator(); iterator.hasNext();) {
+				RowProxy map = iterator.next();
 				Document document = new Document();
-				for (Map.Entry<String, Object> entry : map.entrySet()) {
-		            String clave = entry.getKey();
-		            Object valor = entry.getValue();
-		            document.put(clave, valor);
-		        }
+				for (String columnName : df.getColumnsIndex()) {
+		            Object valor = map.get(columnName);
+		            document.put(columnName, valor);
+				}
 				collectionData.add(document);
 				Map<String,Object> status = new HashMap<String,Object>();
 				status.put("rownumber", position);
@@ -123,29 +121,24 @@ public class MongoDBOperator extends OperatorStage {
 	}
 
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private List<Map<String,Object>> delete(MongoClient mongoClient) throws DomainException {
 		  MongoDatabase database = mongoClient.getDatabase(this.args.getProperty("database"));
 		  MongoCollection<Document> collection = database.getCollection(this.args.getProperty("collection"));
 		  if(this.optionals.getProperty("xcom") != null && !this.optionals.getProperty("xcom").isEmpty()) {
 	    	  String xcomname = this.optionals.getProperty("xcom");
-	    	  if(!this.xcom.has(xcomname)) {
+	    	  if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
 	    	  List<Map<String,Object>> rv = new ArrayList<>();
-	    	  
 	    	  DataFrame df = (DataFrame) this.xcom.get(xcomname);
-	    	  //List<Map<String,Object>> data1 = (List<Dagmap>) this.xcom.get(xcomname);
-	    	  Integer position = 0;
-	    	  
-	    	  for (Iterator<Map<String, Object>> iterator = df.iterrows(); iterator.hasNext();) {
-					Map<String, Object> map = iterator.next();
+	    	  Integer position = 0;	    	  
+	    	  for (Iterator<RowProxy> iterator = df.iterator(); iterator.hasNext();) {
+					RowProxy map = iterator.next();
 					Document document = new Document();
-					for (Map.Entry<String, Object> entry : map.entrySet()) {
-			            String clave = entry.getKey();
-			            Object valor = entry.getValue();
-			            document.put(clave, valor);
-			        }
+					for (String columnName : df.getColumnsIndex()) {
+						Object valor = map.get(columnName);
+						document.put(columnName, valor);
+					}
 					Map<String,Object> status = new HashMap<String,Object>();
 					collection.deleteOne(document);
 					status.put("rownumber", position);

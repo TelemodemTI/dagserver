@@ -112,7 +112,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			parmdata.put("sourceType","UNCOMPILED");
 			List<String> timestamps = new ArrayList<>();
 			this.repository.setLog(parmdata,dagtmp.getStatus(),timestamps);
-			JSONObject xcom = dagtmp.getXcom();
+			var xcom = dagtmp.getXcom();
 			output.put("xcom", xcom);
 			output.put("result", result);
 			output.put("dagname", dagname);

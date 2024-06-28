@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import org.json.JSONObject;
+
+import com.nhl.dflib.DataFrame;
+import com.nhl.dflib.row.RowProxy;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
-import joinery.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -23,7 +25,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Operator(args={"host","username","password","port","mode"},optionalv = {"xcom","exchange","routingKey","queue","body"})
 public class RabbitMQOperator extends OperatorStage {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -38,8 +39,8 @@ public class RabbitMQOperator extends OperatorStage {
 					String xcomname = this.optionals.getProperty("xcom");
 					DataFrame df = (DataFrame) this.xcom.get(xcomname);
 					Integer count = 0;
-					for (Iterator<Map<String, Object>> iterator = df.iterrows(); iterator.hasNext();) {
-						Map<String, Object> map = iterator.next();
+					for (Iterator<RowProxy> iterator = df.iterator(); iterator.hasNext();) {
+						RowProxy map = iterator.next();
 						JSONObject item = new JSONObject(map);
 						channel.basicPublish(this.optionals.getProperty("exchange"), this.optionals.getProperty("routingKey"), null, item.toString().getBytes());
 						Map<String,Object> dm = new HashMap<String,Object>();
@@ -71,7 +72,7 @@ public class RabbitMQOperator extends OperatorStage {
 				
 			}
 			log.debug(this.getClass()+" end "+this.name);
-			return this.buildDataFrame(rv);
+			return OperatorStage.buildDataFrame(rv);
 		} catch (Exception e) {
 			log.error(e);			
 			throw new DomainException(e);

@@ -9,6 +9,23 @@ const uri =  environment.dagserverUri;
 export class DinamicAdapterService implements DinamicOutputPort {
     
     constructor(private http: HttpClient) {}
+    
+    getEntry(key: string): Promise<any> {
+        return new Promise<any>((resolve,reject)=>{
+            let url = uri + "xcombrowser/";
+            const headers = new HttpHeaders({
+                'Content-Type': 'application/json' // Configura las cabeceras para enviar JSON
+            });
+            var token = localStorage.getItem("dagserver_token")
+            const body = {
+                xcomkey:key,
+                token: token
+            };
+            this.http.post(url, JSON.stringify(body), { headers: headers }).subscribe((result:any)=>{
+                resolve(result)
+            })
+        })
+    }
 
     version(){
         return new Promise<any>((resolve,reject)=>{
