@@ -84,19 +84,22 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 	}
 	
 
+	@SuppressWarnings("removal")
 	protected static DataFrame buildDataFrame(List<Map<String, Object>> list) {
         if (list == null || list.isEmpty()) {
-            throw new IllegalArgumentException("The input list must not be null or empty");
+            return DataFrame.newFrame("status").empty();
+        } else {
+        	Map<String, Object> firstRow = list.get(0);
+            String[] columns = firstRow.keySet().toArray(new String[0]);
+            var apender = DataFrame.byArrayRow(columns).appender();
+            for (Iterator<Map<String, Object>> iterator = list.iterator(); iterator.hasNext();) {
+    			Map<String, Object> map = iterator.next();
+    			Object[] valuesArray = map.values().toArray(new Object[0]);
+    			apender.append(valuesArray);
+    		}
+            return apender.toDataFrame();	
         }
-        Map<String, Object> firstRow = list.get(0);
-        String[] columns = firstRow.keySet().toArray(new String[0]);
-        var apender = DataFrame.byArrayRow(columns).appender();
-        for (Iterator<Map<String, Object>> iterator = list.iterator(); iterator.hasNext();) {
-			Map<String, Object> map = iterator.next();
-			Object[] valuesArray = map.values().toArray(new Object[0]);
-			apender.append(valuesArray);
-		}
-        return apender.toDataFrame(); 
+         
     }
 
 	
