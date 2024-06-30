@@ -23,6 +23,7 @@ public class SchedulerMapperImpl implements SchedulerMapper {
 		l.setId(log.getId());
 		l.setMarks(log.getMarks());
 		l.setOutputxcom(log.getOutputxcom());
+		l.setXcomkey(log.getOutputxcom());	
 		l.setStatus(log.getStatus());
 		l.setValue(log.getValue());
 		return l;

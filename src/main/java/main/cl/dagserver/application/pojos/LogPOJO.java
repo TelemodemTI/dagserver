@@ -11,6 +11,7 @@ public class LogPOJO {
 	private Date execDt;
 	private String value;
 	private String outputxcom;
+	private String xcomkey;
 	private Map<String,DataFrame> xcom;
 	private String marks;
 	private String status;
@@ -68,6 +69,12 @@ public class LogPOJO {
 	}
 	public void setXcom(Map<String, DataFrame> xcom) {
 		this.xcom = xcom;
+	}
+	public String getXcomkey() {
+		return xcomkey;
+	}
+	public void setXcomkey(String xcomkey) {
+		this.xcomkey = xcomkey;
 	}
 
 }

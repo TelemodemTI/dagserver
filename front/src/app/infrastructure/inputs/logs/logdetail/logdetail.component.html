@@ -11,7 +11,7 @@
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Logs of {{dagname}} in {{item?.execDt | date: 'yyy-MM-dd HH:mm:ss' }} triggered by {{item?.channel}}
+                        Logs of {{dagname}} database in {{item?.execDt | date: 'yyy-MM-dd HH:mm:ss' }} triggered by {{item?.channel}}
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
@@ -24,7 +24,7 @@
                         <div class="row">
                             
                             <div class="col-md-6">
-                                <b>XCOM</b>
+                                <b>XCOM Schema: <b>{{item?.xcomkey}}</b></b>
                                 <div class="panel-group" id="accordion-{{itemx.key}}" *ngFor="let itemx of xcom | keyvalue">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
