@@ -79,9 +79,6 @@ export class AuthenticatedComponent {
   viewExceptions(){
     this.router.navigateByUrl("auth/exceptions")
   }
-  viewXcomExplorer(){
-    this.router.navigateByUrl("auth/xcombrowser")
-  }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
   }

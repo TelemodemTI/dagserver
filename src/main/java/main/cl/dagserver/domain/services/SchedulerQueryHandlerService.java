@@ -279,8 +279,5 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		}
 		return newrv;
 	}
-	@Override
-	public List<String> xcomkeys(String token) {
-		return storage.getKeys();
-	}
+	
 }

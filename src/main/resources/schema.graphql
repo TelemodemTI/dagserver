@@ -119,8 +119,7 @@ type Query {
 	getDependencies(jarname: String, dagname: String) : Deps,
 	channelStatus(token: String) : [Channel],
 	exportUncompiled(token: String,uncompiled:Int): String,
-	exceptions(token:String): [Exceptions],
-	xcomkeys(token:String): [String]
+	exceptions(token:String): [Exceptions]
 }
 
 type Mutation { 

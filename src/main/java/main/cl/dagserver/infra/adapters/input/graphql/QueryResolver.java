@@ -221,8 +221,6 @@ public class QueryResolver implements GraphQLQueryResolver {
 	public List<Exceptions> exceptions(String token) {
 		return handler.getExceptions(token);
 	}
-	public List<String> xcomkeys(String token){
-		return handler.xcomkeys(token);
-	}
+	
 	
 }

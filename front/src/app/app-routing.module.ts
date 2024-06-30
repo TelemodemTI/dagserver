@@ -15,7 +15,7 @@ import { CredentialsComponent } from './infrastructure/inputs/credentials/creden
 import { DependenciesComponent } from './infrastructure/inputs/jobs/dependencies/dependencies.component';
 import { InputsChannelsComponent } from './infrastructure/inputs/inputs/inputs-channels/inputs-channels.component';
 import { ExceptionsListComponent } from './infrastructure/inputs/exceptions/exceptions-list/exceptions-list.component';
-import { BrowserComponent } from './infrastructure/inputs/xcom-browser/browser/browser.component';
+
 
 
 const routes: Routes = [
@@ -27,7 +27,6 @@ const routes: Routes = [
     { path: "njob" , component: NewjComponent },
     { path: 'channels' , component: InputsChannelsComponent },
     { path: "exceptions", component: ExceptionsListComponent },
-    { path: "xcombrowser", component: BrowserComponent },
     { path: "admin/credentials", component: CredentialsComponent },
     { path: "njob/:uncompiledId" , component: ExistingjComponent },
     { path: 'jobs/jarname/:jarname/:dagname', component: JardetailComponent },
