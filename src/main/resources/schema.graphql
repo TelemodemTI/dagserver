@@ -84,6 +84,7 @@ type LogEntry {
 	execDt: String,
 	value: String,
 	outputxcom: String,
+	xcomkey: String,
 	marks: String,
 	status: String,
 	channel: String

@@ -142,6 +142,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 				 wrapper.put(string, MetadataManager.dataFrameToJson(mpa.get(string)));
 			}
 			entry.setOutputxcom(wrapper.toString());
+			entry.setXcomkey(log.getXcomkey());
 			entry.setChannel(log.getChannel());
 			entry.setStatus(log.getStatus());
 			entry.setMarks(log.getMarks());
