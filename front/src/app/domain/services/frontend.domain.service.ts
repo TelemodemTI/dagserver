@@ -28,13 +28,11 @@ import { DependenciesInputPort } from 'src/app/application/inputs/dependencies.i
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
 import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { SharedOutputPort } from 'src/app/application/outputs/shared.output.port';
-import { BrowserInputPort } from 'src/app/application/inputs/browser.input.port';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FrontEndDomainService implements 
-    BrowserInputPort,
     LoginInputPort, 
     AuthenticatedInputPort, 
     JobsInputPort, 
@@ -58,10 +56,6 @@ export class FrontEndDomainService implements
   
   getEntry(key: string): Promise<any> {
     return this.httpd.getEntry(key);
-  }
-
-  getXcomKeys(): Promise<any[]> {
-    return this.adapter.getXcomKeys();
   }
 
   delQueueAM(queue: any): Promise<void> {

@@ -33,5 +33,4 @@ public interface SchedulerQueryUseCase {
 	String exportUncompiled(String token, Integer uncompiled) throws DomainException;
 	List<LogDTO> getLastLogs() throws DomainException;
 	List<Exceptions> getExceptions(String token);
-	List<String> xcomkeys(String token);
 }
