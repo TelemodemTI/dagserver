@@ -41,7 +41,7 @@ export class DagParamsComponent {
   copyPropJSON(){
     let jsonobj:any = {}
     this.params.forEach((elem:any)=>{
-      if(elem.source=="prop"){
+      if(elem.source=="props"){
         jsonobj[elem.rkey]=elem.value
       }
     })
