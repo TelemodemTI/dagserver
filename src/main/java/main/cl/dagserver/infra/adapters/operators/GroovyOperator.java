@@ -7,6 +7,7 @@ import com.nhl.dflib.DataFrame;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DagGraphApi;
 import main.cl.dagserver.domain.core.DagOperatorApi;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -25,9 +26,11 @@ public class GroovyOperator extends OperatorStage {
 		String source = this.args.getProperty("source");
 	    Binding binding = new Binding();
 	    var dagapi = new DagOperatorApi();
+	    var dagdag = new DagGraphApi();
 	    binding.setVariable("log", log);
 	    binding.setVariable("xcom", xcom);
 	    binding.setVariable("operator", dagapi);
+	    binding.setVariable("dag", dagdag);
 	    GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), binding);
 	    Object rv = shell.evaluate(source);
 	    

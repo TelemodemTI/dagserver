@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExistingJInputPort } from 'src/app/application/inputs/existingj.input.port';
 import { Uncompileds } from 'src/app/domain/models/uncompiled.model';
@@ -10,6 +10,7 @@ import { ParamExistingjComponent } from '../param-existingj/param-existingj.comp
 import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
 import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { ResultStepModalComponent } from '../../base/result-step-modal/result-step-modal.component';
+import { DagParamsComponent } from '../../base/dag-params/dag-params.component';
 declare var $:any
 declare var joint:any;
 declare var dagre:any
@@ -23,6 +24,8 @@ export class ExistingjComponent {
   @ViewChild("dagPropsComponent") dagProps!:DagPropsComponent;
   @ViewChild("dagOpsComponent") dagOps!:DagOpsComponent;
   @ViewChild("dagCanvasComponent") dagCanvas!:DagCanvasComponent;
+  @ViewChild("dagParamsComponent") dagParams!:DagParamsComponent;
+  
   @ViewChild("modalparam") modalparam!:ParamExistingjComponent;
   @ViewChild("modalparamv") vlmod!:ValueModalComponent;  
   @ViewChild("resultStepModal") resultStepModal!:ResultStepModalComponent;  
@@ -41,6 +44,7 @@ export class ExistingjComponent {
   constructor(private router: Router, 
     private route: ActivatedRoute,
     private service: ExistingJInputPort,
+    private cd: ChangeDetectorRef
     ){
   }
 
@@ -195,6 +199,7 @@ export class ExistingjComponent {
     if(sourceitem.length > 0 && sourceitem[0].source){
       sourceitem[0].source.attrs.label.text = event.name
     }
+    this.cd.detectChanges();
   }
   async execStepEvent(item:any){
     console.log(this.selectedObj)

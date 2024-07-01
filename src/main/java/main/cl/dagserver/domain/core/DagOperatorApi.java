@@ -39,7 +39,6 @@ public class DagOperatorApi {
 	public DagOperatorApi setOperator(String operatorName) throws DomainException {
 	    try {
 	    	Class<?> operatorClass = Class.forName("main.cl.dagserver.infra.adapters.operators." + operatorName);
-		    // Create a new instance of the operator class
 		    OperatorStage op = (OperatorStage) operatorClass.getDeclaredConstructor().newInstance();
 			op.setArgs(args);
 			op.setXcom(xcom);
