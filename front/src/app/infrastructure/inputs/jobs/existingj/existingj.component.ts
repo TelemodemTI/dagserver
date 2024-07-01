@@ -40,6 +40,8 @@ export class ExistingjComponent {
   selectedTab:string = ""
   selectedObj!:any
   hasViewDetail:boolean = false
+  timestamp : number = new Date().getTime();
+
 
   constructor(private router: Router, 
     private route: ActivatedRoute,
@@ -118,6 +120,8 @@ export class ExistingjComponent {
           } else {
             sourceBox = obj.boxes[i].source;  
           }
+          console.log(sourceBox)
+          console.log(targetBox)
           link.source({ id: sourceBox.id });
           link.target({ id: targetBox.id });
           if(obj.boxes[i].status == "ERROR"){
@@ -195,11 +199,14 @@ export class ExistingjComponent {
     let item = obj.boxes.filter((elem:any)=>{ return elem.id == event.old})[0]
     item.id = event.name
     item.status = event.statusLink
-    let sourceitem = obj.boxes.filter((elem:any)=>{ return elem.source && elem.source.attrs.label.text == event.old})
+    console.log(obj.boxes)
+    let sourceitem = obj.boxes.filter((elem:any)=>{ 
+                  return elem.source && elem.source.attrs &&  elem.source.attrs.label && elem.source.attrs.label.text == event.old
+    });
     if(sourceitem.length > 0 && sourceitem[0].source){
       sourceitem[0].source.attrs.label.text = event.name
     }
-    this.cd.detectChanges();
+    this.timestamp = new Date().getTime();
   }
   async execStepEvent(item:any){
     console.log(this.selectedObj)

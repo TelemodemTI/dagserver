@@ -122,7 +122,7 @@ export class ParamExistingjComponent {
         const key = this.selectedStepParams.params[index];
         if(key.type == "sourcecode"){
           let vlue:string = this.editor.getValue()
-          paramarr.push({key:key.name,value:vlue,type:key.type,source:"pros"})
+          paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
         } else if(key.type == "remote"){
           paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"props"})
         } else {
@@ -188,7 +188,7 @@ export class ParamExistingjComponent {
                   lineWrapping: lineWrapping,
                   readOnly: read,
                   matchBrackets: true,
-                  mode: "simplemode",
+                  mode: "text/x-groovy",
                   continueComments: "Enter"
             })
             this.editor.setSize(width,height)  

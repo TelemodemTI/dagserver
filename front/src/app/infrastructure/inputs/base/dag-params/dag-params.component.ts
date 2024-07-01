@@ -11,12 +11,12 @@ export class DagParamsComponent {
   @Input('dagName') dagName!: string;
   @Input('data') data!: any
   @Input('boxes') boxes!: any
+  @Input('timestamp') timestamp!: any
   @ViewChild("dagsavedstatus") dagsavedstatus!:ElementRef;
   
   params:any[] = []
 
   ngOnChanges(changes: SimpleChanges) {
-
     this.params = this.boxes.map((elem:any)=>{ 
       let tmp = this.data.jarname+"."+elem.id+"."+elem.type
       let rv = elem.params.map((elem2:any)=>{
@@ -26,8 +26,6 @@ export class DagParamsComponent {
       })
       return rv
     }).flat(1)
-    console.log(this.boxes)
-    console.log(this.params)
   }
   
   collapse(dagname:any){
@@ -42,6 +40,7 @@ export class DagParamsComponent {
   copyPropJSON(){
     let jsonobj:any = {}
     this.params.forEach((elem:any)=>{
+      console.log(elem)
       if(elem.source=="props"){
         jsonobj[elem.rkey]=elem.value
       }
@@ -60,6 +59,7 @@ export class DagParamsComponent {
     alert("JSONObject copied to clipboard")
   }
   copyToClipboard(item:string): void {
+    console.log(item)
     let listener = (e: ClipboardEvent) => {
         e.clipboardData!.setData('text/plain', (item));
         e.preventDefault();
