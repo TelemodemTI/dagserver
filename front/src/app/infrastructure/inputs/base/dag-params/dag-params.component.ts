@@ -1,0 +1,58 @@
+import { Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
+declare var $:any
+@Component({
+  selector: 'app-dag-params',
+  templateUrl: './dag-params.component.html',
+  styleUrls: ['./dag-params.component.css']
+})
+export class DagParamsComponent {
+  
+  @Input('dagName') dagName!: string;
+  @Input('data') data!: any
+  @Input('boxes') boxes!: any
+  @ViewChild("dagsavedstatus") dagsavedstatus!:ElementRef;
+  
+  params:any[] = []
+
+  ngOnChanges(changes: SimpleChanges) {
+
+    this.params = this.boxes.map((elem:any)=>{ 
+      let tmp = this.data.jarname+"."+elem.id+"."+elem.type
+      let rv = elem.params.map((elem:any)=>{
+        elem.rkey = tmp + ".props."+elem.key
+        return elem
+      })
+      return rv
+    }).flat(1)
+    console.log(this.boxes)
+    console.log(this.params)
+  }
+  
+  collapse(dagname:any){
+    let flag = ($("#props-collapser-"+dagname).attr("aria-expanded").toLowerCase() === 'true')?true:false;
+    let flags = ($("#props-collapser-son-"+dagname).attr("aria-expanded").toLowerCase() === 'true')?true:false;
+    if(flags && !flag){
+      setTimeout(()=>{
+        $("#props-collapser-son").trigger("click");
+      },50)
+    }
+  }
+  copyPropJSON(){
+    let jsonobj:any = {}
+    this.params.forEach((elem:any)=>{
+      if(elem.source=="prop"){
+        jsonobj[elem.key]=elem.value
+      }
+    })
+    alert(JSON.stringify(jsonobj))
+  }
+  copyOptsJSON(){
+    let jsonobj:any = {}
+    this.params.forEach((elem:any)=>{
+      if(elem.source=="opts"){
+        jsonobj[elem.key]=elem.value
+      }
+    })
+    alert(JSON.stringify(jsonobj))
+  }
+}

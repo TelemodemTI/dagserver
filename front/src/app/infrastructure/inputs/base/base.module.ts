@@ -10,6 +10,7 @@ import { DagOpsComponent } from './dag-ops/dag-ops.component';
 import { DagCanvasComponent } from './dag-canvas/dag-canvas.component';
 import { ValueModalComponent } from './value-modal/value-modal.component';
 import { ResultStepModalComponent } from './result-step-modal/result-step-modal.component';
+import { DagParamsComponent } from './dag-params/dag-params.component';
 
 
 
@@ -23,7 +24,8 @@ import { ResultStepModalComponent } from './result-step-modal/result-step-modal.
     DagOpsComponent,
     DagCanvasComponent,
     ValueModalComponent,
-    ResultStepModalComponent
+    ResultStepModalComponent,
+    DagParamsComponent
   ],
   imports: [
     CommonModule,
@@ -38,6 +40,7 @@ import { ResultStepModalComponent } from './result-step-modal/result-step-modal.
     DagOpsComponent,
     DagCanvasComponent,
     DagCanvasComponent,
+    DagParamsComponent,
     ValueModalComponent,
     ResultStepModalComponent
   ]

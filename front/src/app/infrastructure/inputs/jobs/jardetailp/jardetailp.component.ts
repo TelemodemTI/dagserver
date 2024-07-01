@@ -20,7 +20,7 @@ export class JardetailpComponent {
 
   @ViewChild("loader") loader!:ElementRef;
   @ViewChild("form") form!:ElementRef;
-
+  remote_cmd:string[] = []
   editor!:any
 
   constructor(private router: Router,private service: JardetailpInputPort){
@@ -28,12 +28,16 @@ export class JardetailpComponent {
   
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log(this.selectedStepMetadata)
     this.initCodemirror().then((flag)=>{
       this.loader?.nativeElement.classList.add("invisible");
       this.form?.nativeElement.classList.remove("invisible")
       if(this.editor){
         let param = this.selectedStepMetadata.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]
-        this.editor.setValue(this.selectedStepParams[param.name]) 
+        if(param){
+          this.editor.setValue(this.selectedStepParams[param.name]) 
+        }
+        
       }
     })
     
@@ -47,40 +51,44 @@ export class JardetailpComponent {
     $('#param-modaljardetailj').modal('show');
   }
   refreshCodemirror(){
-    let interval = setInterval(()=>{
-      if(this.loader?.nativeElement.classList.contains("invisible")){
-        clearInterval(interval)
-        setTimeout(() => {
-          this.editor.refresh()
-        }, 300);
-      } 
-    },100)
+    if(this.editor){
+      let interval = setInterval(()=>{
+        if(this.loader?.nativeElement.classList.contains("invisible")){
+          clearInterval(interval)
+          setTimeout(() => {
+            this.editor.refresh()
+          }, 300);
+        } 
+      },100)
+    }
   }
   async updateParams(){
 
     let paramarr = []
     for (let index = 0; index < this.selectedStepMetadata.params.length; index++) {
       const key = this.selectedStepMetadata.params[index];
-      if(key.type != "sourcecode"){
-        let vlue = $("#param-"+key.name+"-value").val()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
-      } else {
+      if(key.type == "sourcecode"){
         let vlue:string = this.editor.getValue()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
+        paramarr.push({key:key.name,value:vlue,type:key.type,source:"prop"})
+      } else if(key.type == "remote"){
+        paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"prop"})
+      } else {
+        let vlue = $("#param-"+key.name+"-value").val()
+        paramarr.push({key:key.name,value:vlue,type:key.type,source:"prop"})
       }
     }
-    console.log(this.selectedStepMetadata)
     for (let index = 0; index < this.selectedStepMetadata.opt.length; index++) {
       const key = this.selectedStepMetadata.opt[index];
-      if(key.type != "sourcecode"){
-        let vlue = $("#param-"+key.name+"-value").val()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
-      } else {
+      if(key.type == "sourcecode"){
         let vlue:string = this.editor.getValue()
-        paramarr.push({key:key.name,value:vlue,type:key.type})
+        paramarr.push({key:key.name,value:vlue,type:key.type,source:"opts"})
+      } else if(key.type == "remote"){
+        paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"opts"})
+      } else {
+        let vlue = $("#param-"+key.name+"-value").val()
+        paramarr.push({key:key.name,value:vlue,type:key.type,source:"opts"})
       }
     }
-    console.log(paramarr)
     let bin = btoa(JSON.stringify(paramarr))
     await this.service.updateParamsCompiled(this.jarname,this.selectedStep,this.selectedStepMetadata.class,bin)
     this.close()
@@ -113,5 +121,20 @@ export class JardetailpComponent {
         resolve(true)
       },1)
     })
+  }
+  getRemoteCmdValue(i:number,subcat:number){
+    let varb = this.remote_cmd[i].split(" ")
+    if(varb[subcat]){
+      return varb[subcat]
+    } else return ''
+    
+  }
+  remoteAdd(){
+    var action = $("#remoter-action-selector").val()
+    var filepath = $("#remoter-file").val();
+    this.remote_cmd.push(action+" "+filepath)
+  }
+  remove(i:number){
+    this.remote_cmd.splice(i,1)
   }
 }

@@ -70,6 +70,11 @@
                                             (changeDagNameEvent)="changeDagName($event)"
                                         ></app-dag-props>
                                         
+                                        <app-dag-params #dagParamsComponent
+                                            [dagName]="tabs.name"
+                                            [data]="data"
+                                            [boxes]="boxes"
+                                        ></app-dag-params>
                                         
                                         <app-dag-ops #dagOpsComponent
                                         [dagName]="tabs.name"

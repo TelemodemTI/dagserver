@@ -12,6 +12,8 @@
                     </li>
                     <li><a id="trigger-id" href="#profile"  (click)="refreshCodemirror()" data-toggle="tab">Scripts</a>
                     </li>
+                    <li><a id="remote_li" href="#remoter" data-toggle="tab">Remote</a>
+                    </li>
                 </ul>
                 <div #loader class="loader"></div>
                 <div #form class="tab-content">
@@ -21,20 +23,24 @@
                             <ng-container *ngIf="item.type == 'text'">
                                 <label>{{item.name}}</label>
                                 <input class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepParams[item.name]}}">
+                                <p class="help-block">required</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'password'">
                                 <label>{{item.name}}</label>
                                 <input type="password" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepParams[item.name]}}">
+                                <p class="help-block">required</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'number'">
                                 <label>{{item.name}}</label>
                                 <input type="number" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepParams[item.name]}}">
+                                <p class="help-block">required</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'xcom'">
                                 <label>XCOM</label>
                                 <select class="form-control param-value-input" id="param-{{item.name}}-value">
                                     <option *ngFor="let node of selectedDag.node" [selected]="selectedStepParams[item.name] == node.operations[0]" value="{{node.operations[0]}}">{{node.operations[0]}}</option>
                                 </select>
+                                <p class="help-block">required</p>
                             </ng-container>
                             
                             
@@ -44,12 +50,14 @@
                                     <option value="true">True</option>
                                     <option value="false">False</option>
                                 </select>
+                                <p class="help-block">required</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'list'">
                                 <label>{{item.name}}</label>
                                 <select class="form-control param-value-input" id="param-{{item.name}}-value">
                                     <option *ngFor="let opt of item.opt" value="{{opt}}">{{opt}}</option>
                                 </select>
+                                <p class="help-block">required</p>
                             </ng-container>                        
                         </div>
                         <div class="form-group" *ngFor="let item of selectedStepMetadata?.opt">
@@ -57,14 +65,17 @@
                             <ng-container *ngIf="item.type == 'text'">
                                 <label>{{item.name}}</label>
                                 <input class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepOpts[item.name]}}">
+                                <p class="help-block">optional</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'password'">
                                 <label>{{item.name}}</label>
                                 <input type="password" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepOpts[item.name]}}">
+                                <p class="help-block">optional</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'number'">
                                 <label>{{item.name}}</label>
                                 <input type="number" class="form-control param-value-input" id="param-{{item.name}}-value" value="{{selectedStepOpts[item.name]}}">
+                                <p class="help-block">optional</p>
                             </ng-container>
 
                             <ng-container *ngIf="item.type == 'xcom'">
@@ -72,6 +83,7 @@
                                 <select class="form-control param-value-input" id="param-{{item.name}}-value">
                                     <option *ngFor="let node of selectedDag.node" [selected]="selectedStepOpts[item.name] == node.operations[0]" value="{{node.operations[0]}}">{{node.operations[0]}}</option>
                                 </select>
+                                <p class="help-block">optional</p>
                             </ng-container>
 
                             <ng-container *ngIf="item.type == 'boolean'">
@@ -80,12 +92,14 @@
                                     <option value="true">True</option>
                                     <option value="false">False</option>
                                 </select>
+                                <p class="help-block">optional</p>
                             </ng-container>
                             <ng-container *ngIf="item.type == 'list'">
                                 <label>{{item.name}}</label>
                                 <select class="form-control param-value-input" id="param-{{item.name}}-value">
                                     <option *ngFor="let opt of item.opt" value="{{opt}}">{{opt}}</option>
                                 </select>
+                                <p class="help-block">optional</p>
                             </ng-container>                        
                         </div>
                     </div>
@@ -94,6 +108,69 @@
                             <ng-container *ngIf="item.type == 'sourcecode'">
                                 <label>{{item.name}}</label><br>
                                 <textarea id="queryTextqv" height="300" name="queryText"></textarea>
+                                <input type="text" id="canvas-codemirror-compiled-jar" class="invisible"/>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="remoter">
+                        <div class="form-group" *ngFor="let item of selectedStepMetadata?.params">
+                            <ng-container *ngIf="item?.type == 'remote'">
+                                <label>{{item.key}} to execute on remote</label><br>
+                                <div class="row" *ngFor="let commands of remote_cmd; let i = index;">
+                                    <div class="alert alert-info alert-dismissible remote-item col-md-8">
+                                        <button (click)="remove(i)" type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                        <b>{{getRemoteCmdValue(i,0)}}</b> {{getRemoteCmdValue(i,1)}} {{getRemoteCmdValue(i,2) ? '->' + getRemoteCmdValue(i,2):''}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Remote action</label><br>
+                                        <select id="remoter-action-selector" class="form-control">
+                                            <option value="download">DOWNLOAD</option>
+                                            <option value="upload">UPLOAD</option>
+                                            <option value="list">LIST</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Paths or Files affected</label><br>
+                                        <input id="remoter-file" class="form-control" type="text" value=""/>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <br>
+                                        <button (click)="remoteAdd()" type="button" class="btn btn-info btn-circle"><i class="fa fa-check"></i></button>
+                                    </div>
+                                </div>
+                                
+                            </ng-container>
+                        </div>
+                        <div class="form-group" *ngFor="let item of selectedStepMetadata?.opt">
+                            <ng-container *ngIf="item?.type == 'remote'">
+                                <label>{{item.key}} to execute on remote</label><br>
+                                <div class="row" *ngFor="let commands of remote_cmd; let i = index;">
+                                    <div class="alert alert-info alert-dismissible remote-item col-md-8">
+                                        <button (click)="remove(i)" type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                        <b>{{getRemoteCmdValue(i,0)}}</b> {{getRemoteCmdValue(i,1)}} {{getRemoteCmdValue(i,2) ? '->' + getRemoteCmdValue(i,2):''}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Remote action</label><br>
+                                        <select id="remoter-action-selector" class="form-control">
+                                            <option value="download">DOWNLOAD</option>
+                                            <option value="upload">UPLOAD</option>
+                                            <option value="list">LIST</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Paths or Files affected</label><br>
+                                        <input id="remoter-file" class="form-control" type="text" value=""/>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <br>
+                                        <button (click)="remoteAdd()" type="button" class="btn btn-info btn-circle"><i class="fa fa-check"></i></button>
+                                    </div>
+                                </div>
+                                
                             </ng-container>
                         </div>
                     </div>

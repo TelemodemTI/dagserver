@@ -60,8 +60,10 @@ export class DagCanvasComponent {
         let defval = undefined
         let opt = el.opt?el.opt:[]
         if(step.params){
-            let parit = step.params.filter((ela:any)=> ela.key == el.name)[0]
-            defval = parit.value
+            let parit = step.params.filter((ela:any)=> ela.key == el.name)
+            if(parit.length > 0){
+              defval = parit[0].value
+            }
         }
         this.generatedIdParams.push({key:el.name,type:el.type,value:defval,source:"PAR",domid:this.generateRandomString(5),opt:opt})
       })

@@ -69,7 +69,7 @@ public class InternalStorage {
 				mapa.put(stepname, df);
 			}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.debug("no se ha encontrado key: {}",xcomkey);
 		}
 		return mapa;
 	}

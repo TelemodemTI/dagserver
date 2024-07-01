@@ -10,6 +10,7 @@ import { ParamExistingjComponent } from '../param-existingj/param-existingj.comp
 import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
 import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { ResultStepModalComponent } from '../../base/result-step-modal/result-step-modal.component';
+import { DagParamsComponent } from '../../base/dag-params/dag-params.component';
 declare var $:any
 declare var joint:any;
 declare var dagre:any
@@ -23,6 +24,8 @@ export class ExistingjComponent {
   @ViewChild("dagPropsComponent") dagProps!:DagPropsComponent;
   @ViewChild("dagOpsComponent") dagOps!:DagOpsComponent;
   @ViewChild("dagCanvasComponent") dagCanvas!:DagCanvasComponent;
+  @ViewChild("dagParamsComponent") dagParams!:DagParamsComponent;
+  
   @ViewChild("modalparam") modalparam!:ParamExistingjComponent;
   @ViewChild("modalparamv") vlmod!:ValueModalComponent;  
   @ViewChild("resultStepModal") resultStepModal!:ResultStepModalComponent;  

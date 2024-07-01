@@ -341,9 +341,6 @@ public class DagExecutable implements Job,JobListener  {
 	}
 	
 	protected void addOperator(String name,Class<?> operator,Properties args,Properties optionals) throws DomainException {
-		
-		
-		
 		Operator annotation = operator.getAnnotation(Operator.class);
 		String[] argsarr = annotation.args();
 		for (int i = 0; i < argsarr.length; i++) {
