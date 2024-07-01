@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
+
 declare var $:any
 @Component({
   selector: 'app-dag-params',
@@ -45,7 +46,8 @@ export class DagParamsComponent {
         jsonobj[elem.rkey]=elem.value
       }
     })
-    alert(JSON.stringify(jsonobj))
+    this.copyToClipboard(JSON.stringify(jsonobj))
+    alert("JSONObject copied to clipboard")
   }
   copyOptsJSON(){
     let jsonobj:any = {}
@@ -54,6 +56,16 @@ export class DagParamsComponent {
         jsonobj[elem.rkey]=elem.value
       }
     })
-    alert(JSON.stringify(jsonobj))
+    this.copyToClipboard(JSON.stringify(jsonobj))
+    alert("JSONObject copied to clipboard")
   }
+  copyToClipboard(item:string): void {
+    let listener = (e: ClipboardEvent) => {
+        e.clipboardData!.setData('text/plain', (item));
+        e.preventDefault();
+    };
+    document.addEventListener('copy', listener);
+    document.execCommand('copy');
+    document.removeEventListener('copy', listener);
+}
 }
