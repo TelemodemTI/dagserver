@@ -236,8 +236,6 @@ export class FrontEndDomainService implements
     let blindFirm = this.encryptor.generate_blind(pwd,desafiostr)
     let requestObj = { username: user , challenge:desafiostr }
     Object.assign(requestObj,blindFirm)
-    console.log(requestObj)
-    //let encrypted = this.encryptor.set(environment.sha256key,pwd)
     return this.adapter.login(requestObj);
   }
   updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void> {

@@ -44,7 +44,6 @@ export class LoginComponent {
     const user = this.localinput.nativeElement.value;
     const pwd = this.passinput.nativeElement.value;
     let rv = await this.service.login(user, pwd)
-    console.log(rv)
     if (rv) {
       this.message = ""
       this.router.navigateByUrl("auth");

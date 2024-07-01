@@ -35,7 +35,6 @@ export class KafkaModalComponent {
   async ngOnInit() {
     let props = await this.service3.properties()
     let redisprops = props.filter((ele:any)=>{ return ele.group == 'KAFKA_PROPS' })
-    console.log(redisprops)
     for (let index = 0; index < redisprops.length; index++) {
       const element = redisprops[index];
       this.bootstrapServers = (element.name == "bootstrapServers")?element.value:this.bootstrapServers

@@ -65,7 +65,6 @@ export class DagOpsComponent {
     if(founded.length == 0 && $("#stepinput-"+tabname).val()){
       let rect = this.getShapeWithImage($("#stepinput-"+tabname).val(),await this.getimageByType( $("#steptype-"+tabname).val()))
       this.boxes.push({id:$("#stepinput-"+tabname).val(),type: $("#steptype-"+tabname).val(),status:$("#status-"+tabname).val(),rect:rect, source: this.getsource( $("#sourcestep-"+tabname).val())});
-      console.log(this.boxes)
       rect.addTo(this.diagram);
       $("#stepinput-"+tabname).val("")
       this.createNewStepEvent.emit(tabname)
@@ -127,7 +126,6 @@ export class DagOpsComponent {
     try {
       let flag = ($("#props-collapser").attr("aria-expanded").toLowerCase() === 'true')?true:false;
       let flags = ($("#props-collapser-son").attr("aria-expanded").toLowerCase() === 'true')?true:false;
-      console.log(flag)
       if(flag && !flags){
         setTimeout(()=>{
           $("#props-collapser").trigger("click");

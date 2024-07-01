@@ -38,7 +38,6 @@ export class ActivemqModalComponent {
     
     for (let index = 0; index < propsrabbit.length; index++) {
       const element = propsrabbit[index];
-      console.log(element)
       this.amuser = (element.name == "user")?element.value:this.amuser
       this.ampwd = (element.name == "pwd")?"******":this.ampwd
       this.amhost = (element.name == "host")?element.value:this.amhost

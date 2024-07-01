@@ -120,8 +120,6 @@ export class ExistingjComponent {
           } else {
             sourceBox = obj.boxes[i].source;  
           }
-          console.log(sourceBox)
-          console.log(targetBox)
           link.source({ id: sourceBox.id });
           link.target({ id: targetBox.id });
           if(obj.boxes[i].status == "ERROR"){
@@ -199,7 +197,6 @@ export class ExistingjComponent {
     let item = obj.boxes.filter((elem:any)=>{ return elem.id == event.old})[0]
     item.id = event.name
     item.status = event.statusLink
-    console.log(obj.boxes)
     let sourceitem = obj.boxes.filter((elem:any)=>{ 
                   return elem.source && elem.source.attrs &&  elem.source.attrs.label && elem.source.attrs.label.text == event.old
     });
@@ -209,7 +206,6 @@ export class ExistingjComponent {
     this.timestamp = new Date().getTime();
   }
   async execStepEvent(item:any){
-    console.log(this.selectedObj)
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
     let step = obj.boxes.filter((item:any)=>{ return item.id == this.selectedObj.selectedStep})[0]
     let paramarr = this.modalparam.loadParams()  
@@ -224,7 +220,6 @@ export class ExistingjComponent {
   async playDesignJob(){
     if(this.hasViewDetail){
       let data = await this.service.executeDagUncompiled(this.uncompiled,this.selectedTab,"");    
-      console.log(data)
       this.service.sendResultExecution(data);
       this.resultStepModal.show(data);
     } else {

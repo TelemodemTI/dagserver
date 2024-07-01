@@ -4,3 +4,7 @@
 .linker {
     cursor: pointer;
 }
+.dag-params-body{
+    max-height: 36em;
+    overflow: scroll;
+}
