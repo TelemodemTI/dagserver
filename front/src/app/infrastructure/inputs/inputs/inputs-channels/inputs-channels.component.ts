@@ -36,7 +36,6 @@ export class InputsChannelsComponent {
   async ngOnInit() {
     this.items = []
     this.items = await this.service.getChannels()
-    console.log(this.items)
     this.jobs = await this.service2.getAvailableJobs()
     let jarsf = this.jobs.map((eleme:any)=>{return eleme.jarname })
     this.jars = [...new Set(jarsf)];

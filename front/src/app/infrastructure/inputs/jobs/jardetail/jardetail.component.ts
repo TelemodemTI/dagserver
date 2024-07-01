@@ -31,6 +31,7 @@ export class JardetailComponent {
   last!:any
   dagitem!:any
   dagparsed!:any
+  params:any[] = []
 
   @ViewChild("modalp") modalp!: JardetailpComponent;
 
@@ -47,6 +48,34 @@ export class JardetailComponent {
     let logs = await this.servicel.logs(this.dagname)
     this.last = logs.reduce((a, b) => (a.execDt > b.execDt ? a : b),logs[0]);
     this.calculateAnaliticPane(this.dagname,this.last);
+    this.result.detail.detail.map((dagobj:any)=>{
+      dagobj.node.map((stepobj:any)=>{
+        let stepname = stepobj.operations[0]
+        let opname = stepobj.operations[1]
+        let propsobj = JSON.parse(stepobj.operations[2])
+        let optsobj = JSON.parse(stepobj.operations[3])
+        let stepconfig = JSON.parse(stepobj.operations[4]);
+        stepconfig.opt.map((stepcfg:any)=>{ 
+          if(optsobj[stepcfg.name]){
+            stepcfg.stepid = stepname
+            stepcfg.key = this.jarname+"."+stepname+"."+opname+".opts."+stepcfg.name
+            stepcfg.value = optsobj[stepcfg.name]
+            stepcfg.source = "opts"
+            this.params.push(stepcfg)
+          }
+        }
+        );
+        stepconfig.params.map((stepcfg:any)=>{ 
+          if(propsobj[stepcfg.name]){
+            stepcfg.stepid = stepname
+            stepcfg.key = this.jarname+"."+stepname+"."+opname+".props."+stepcfg.name
+            stepcfg.value = propsobj[stepcfg.name]
+            stepcfg.source = "props"
+            this.params.push(stepcfg)}
+          }
+        );
+      })
+    })
     try {
       this.initui(this.result);
     } catch (error) {
@@ -166,7 +195,6 @@ export class JardetailComponent {
     for (let index = 0; index < result.detail.detail[dagIndex].node.length; index++) {
       const element = result.detail.detail[dagIndex].node[index];
       let rect = this.getShapeWithImage(element,boxes,await this.getimageByType(element.operations[1]))
-      console.log(element)
       rect.addTo(graph);  
       boxes.push({id:element.index,rect:rect});
     }
@@ -281,4 +309,33 @@ export class JardetailComponent {
   goToLogDetail(id:any){
     this.router.navigateByUrl(`auth/jobs/${this.dagname}/${id}`);
   }
+  copyPropJSON(){
+    let jsonobj:any = {}
+    this.params.forEach((elem:any)=>{
+      if(elem.source=="props"){
+        jsonobj[elem.key]=elem.value
+      }
+    })
+    this.copyToClipboard(JSON.stringify(jsonobj))
+    alert("JSONObject copied to clipboard")
+  }
+  copyOptsJSON(){
+    let jsonobj:any = {}
+    this.params.forEach((elem:any)=>{
+      if(elem.source=="opts"){
+        jsonobj[elem.key]=elem.value
+      }
+    })
+    this.copyToClipboard(JSON.stringify(jsonobj))
+    alert("JSONObject copied to clipboard")
+  }
+  copyToClipboard(item:string): void {
+    let listener = (e: ClipboardEvent) => {
+        e.clipboardData!.setData('text/plain', (item));
+        e.preventDefault();
+    };
+    document.addEventListener('copy', listener);
+    document.execCommand('copy');
+    document.removeEventListener('copy', listener);
+}
 }

@@ -40,7 +40,6 @@ export class DagParamsComponent {
   copyPropJSON(){
     let jsonobj:any = {}
     this.params.forEach((elem:any)=>{
-      console.log(elem)
       if(elem.source=="props"){
         jsonobj[elem.rkey]=elem.value
       }
@@ -59,7 +58,6 @@ export class DagParamsComponent {
     alert("JSONObject copied to clipboard")
   }
   copyToClipboard(item:string): void {
-    console.log(item)
     let listener = (e: ClipboardEvent) => {
         e.clipboardData!.setData('text/plain', (item));
         e.preventDefault();

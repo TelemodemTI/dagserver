@@ -38,7 +38,6 @@ export class RedisModalComponent {
   async ngOnInit() {
     let props = await this.service3.properties()
     let redisprops = props.filter((ele:any)=>{ return ele.group == 'REDIS_PROPS' })
-    console.log(redisprops)
     for (let index = 0; index < redisprops.length; index++) {
       const element = redisprops[index];
       this.redmode = (element.name == "mode")?element.value:this.redmode
