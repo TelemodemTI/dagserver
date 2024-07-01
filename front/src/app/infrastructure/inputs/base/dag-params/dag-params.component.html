@@ -3,7 +3,7 @@
 
 
     <div class="form-group" *ngFor="let item of params">
-        <label>{{item.key}}</label>
+        <label>{{item.step}}-{{item.key}}</label>
         <input id="dagnameinput-{{item.rkey}}" class="form-control dagname" value="{{item.value}}" disabled>
         <p class="help-block">{{item.source == 'prop' ? 'required' : 'optional'}}</p>
     </div>

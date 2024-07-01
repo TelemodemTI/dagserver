@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExistingJInputPort } from 'src/app/application/inputs/existingj.input.port';
 import { Uncompileds } from 'src/app/domain/models/uncompiled.model';
@@ -44,6 +44,7 @@ export class ExistingjComponent {
   constructor(private router: Router, 
     private route: ActivatedRoute,
     private service: ExistingJInputPort,
+    private cd: ChangeDetectorRef
     ){
   }
 
@@ -198,6 +199,7 @@ export class ExistingjComponent {
     if(sourceitem.length > 0 && sourceitem[0].source){
       sourceitem[0].source.attrs.label.text = event.name
     }
+    this.cd.detectChanges();
   }
   async execStepEvent(item:any){
     console.log(this.selectedObj)

@@ -18,9 +18,10 @@ export class DagParamsComponent {
 
     this.params = this.boxes.map((elem:any)=>{ 
       let tmp = this.data.jarname+"."+elem.id+"."+elem.type
-      let rv = elem.params.map((elem:any)=>{
-        elem.rkey = tmp + ".props."+elem.key
-        return elem
+      let rv = elem.params.map((elem2:any)=>{
+        elem2.step = elem.id
+        elem2.rkey = tmp + "."+elem2.source+"."+elem2.key
+        return elem2
       })
       return rv
     }).flat(1)
@@ -41,7 +42,7 @@ export class DagParamsComponent {
     let jsonobj:any = {}
     this.params.forEach((elem:any)=>{
       if(elem.source=="prop"){
-        jsonobj[elem.key]=elem.value
+        jsonobj[elem.rkey]=elem.value
       }
     })
     alert(JSON.stringify(jsonobj))
@@ -50,7 +51,7 @@ export class DagParamsComponent {
     let jsonobj:any = {}
     this.params.forEach((elem:any)=>{
       if(elem.source=="opts"){
-        jsonobj[elem.key]=elem.value
+        jsonobj[elem.rkey]=elem.value
       }
     })
     alert(JSON.stringify(jsonobj))

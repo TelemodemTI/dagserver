@@ -122,12 +122,12 @@ export class ParamExistingjComponent {
         const key = this.selectedStepParams.params[index];
         if(key.type == "sourcecode"){
           let vlue:string = this.editor.getValue()
-          paramarr.push({key:key.name,value:vlue,type:key.type,source:"prop"})
+          paramarr.push({key:key.name,value:vlue,type:key.type,source:"pros"})
         } else if(key.type == "remote"){
-          paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"prop"})
+          paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"props"})
         } else {
           let vlue = $("#param-"+key.name+"-value").val()
-          paramarr.push({key:key.name,value:vlue,type:key.type,source:"prop"})
+          paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
         }
       }
     }

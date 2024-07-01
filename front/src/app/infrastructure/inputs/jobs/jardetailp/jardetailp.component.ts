@@ -69,12 +69,12 @@ export class JardetailpComponent {
       const key = this.selectedStepMetadata.params[index];
       if(key.type == "sourcecode"){
         let vlue:string = this.editor.getValue()
-        paramarr.push({key:key.name,value:vlue,type:key.type,source:"prop"})
+        paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
       } else if(key.type == "remote"){
-        paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"prop"})
+        paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"props"})
       } else {
         let vlue = $("#param-"+key.name+"-value").val()
-        paramarr.push({key:key.name,value:vlue,type:key.type,source:"prop"})
+        paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
       }
     }
     for (let index = 0; index < this.selectedStepMetadata.opt.length; index++) {
