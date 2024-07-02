@@ -520,5 +520,11 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
 	}
 
+	@Override
+	public String getUncompiledBinByName(String dagname) {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiled_name = '"+dagname+"'");
+		return list.get(0).getBin();
+	}
+
 	
 }
