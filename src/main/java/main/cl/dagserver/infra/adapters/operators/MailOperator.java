@@ -135,6 +135,7 @@ public class MailOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.MailOperator");
+		metadata.setType("EXTERNAL");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("userSmtp", "text");

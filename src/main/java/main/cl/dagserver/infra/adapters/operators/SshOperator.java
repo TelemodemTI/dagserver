@@ -114,6 +114,7 @@ public class SshOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {	
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.SshOperator");
+		metadata.setType("EXTERNAL");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("user", "text");
 		metadata.setParameter("port", "number");
@@ -128,4 +129,5 @@ public class SshOperator extends OperatorStage {
 	public String getIconImage() {
 		return "ssh.png";
 	}
+	
 }

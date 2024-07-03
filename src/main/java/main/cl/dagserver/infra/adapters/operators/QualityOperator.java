@@ -106,6 +106,7 @@ public class QualityOperator extends OperatorStage {
     @Override
     public JSONObject getMetadataOperator() {
         MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.QualityOperator");
+        metadata.setType("PROCCESS");
         metadata.setParameter("qualityjson", "sourcecode");
         metadata.setOpts("xcom","xcom");
         return metadata.generate();
@@ -115,4 +116,5 @@ public class QualityOperator extends OperatorStage {
     public String getIconImage() {
         return "dataquality.png";
     }
+    
 }

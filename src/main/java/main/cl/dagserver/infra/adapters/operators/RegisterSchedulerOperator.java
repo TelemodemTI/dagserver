@@ -39,4 +39,5 @@ public class RegisterSchedulerOperator extends OperatorStage {
 	public JSONObject getMetadataOperator() {
 		return null;
 	}
+
 }

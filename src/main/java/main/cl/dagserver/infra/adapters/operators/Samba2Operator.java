@@ -181,6 +181,7 @@ public class Samba2Operator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.Samba2Operator");
+		metadata.setType("REMOTE");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("smbUser", "text");
 		metadata.setParameter("smbPass", "password");
@@ -193,5 +194,4 @@ public class Samba2Operator extends OperatorStage {
 	public String getIconImage() {
 		return "smb.jpg";
 	}
-	
 }

@@ -40,15 +40,13 @@ public class ActiveMQOperator extends OperatorStage {
 				if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 				}
-            }
-            
+            }            
             ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerURL);
             Connection connection = connectionFactory.createConnection();
             connection.start();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createQueue(queueName);
             MessageProducer producer = session.createProducer(destination);
-
             DataFrame data = (DataFrame) this.xcom.get(xcomname);
             data.iterator().forEachRemaining(row -> {
             	JSONObject jsonObject = new JSONObject();
@@ -113,6 +111,7 @@ public class ActiveMQOperator extends OperatorStage {
     @Override
     public JSONObject getMetadataOperator() {
         MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.ActiveMQOperator");
+        metadata.setType("MQ");        
         metadata.setParameter("mode", "list", List.of("produce", "consume"));
         metadata.setParameter("queueName", "text");
         metadata.setParameter("brokerURL","text");
@@ -120,4 +119,5 @@ public class ActiveMQOperator extends OperatorStage {
         metadata.setOpts("timeout","number");
         return metadata.generate();
     }
+    
 }

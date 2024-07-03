@@ -26,11 +26,11 @@ public class DummyOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.DummyOperator");
+		metadata.setType("PROCCESS");
 		return metadata.generate();
 	}
 	@Override
 	public String getIconImage() {
 		return "dummy.png";
 	}
-	
 }

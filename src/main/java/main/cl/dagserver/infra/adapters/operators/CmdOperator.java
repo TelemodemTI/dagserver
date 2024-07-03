@@ -41,6 +41,7 @@ public class CmdOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.CmdOperator");
+		metadata.setType("PROCCESS");
 		metadata.setParameter("cmd", "sourcecode");
 		return metadata.generate();
 	}
@@ -48,5 +49,4 @@ public class CmdOperator extends OperatorStage {
 	public String getIconImage() {
 		return "cmd.png";
 	}
-
 }

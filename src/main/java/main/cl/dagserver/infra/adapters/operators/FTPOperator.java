@@ -115,6 +115,7 @@ public class FTPOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.FTPOperator");
+		metadata.setType("REMOTE");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("ftpUser", "text");

@@ -59,6 +59,7 @@ public class DagGraphApi {
 			this.scanner.execute(jarname, dagname, dagname);
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DagGraphApi setArgs(Map propmap,Map optsmap) {
 		this.setArgs(mapToProperties(propmap), mapToProperties(optsmap));
 		return this;

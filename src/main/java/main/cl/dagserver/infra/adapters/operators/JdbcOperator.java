@@ -104,6 +104,7 @@ public class JdbcOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.JdbcOperator");
+		metadata.setType("EXTERNAL");
 		metadata.setParameter("url", "text");
 		metadata.setParameter("user", "text");
 		metadata.setParameter("pwd", "password");
@@ -130,5 +131,5 @@ public class JdbcOperator extends OperatorStage {
             }
         }
     }
-
+	
 }

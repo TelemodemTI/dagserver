@@ -57,3 +57,6 @@
   .remote-item{
     width: 90%;
   }
+  .nooverflow {
+    overflow: hidden;
+  }
