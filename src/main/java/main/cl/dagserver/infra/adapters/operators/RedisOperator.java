@@ -160,6 +160,7 @@ public class RedisOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.RedisOperator");
+		metadata.setType("EXTERNAL");
 		metadata.setParameter("hostname", "text");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("mode", "list", Arrays.asList("READ","SAVE","DELETE"));

@@ -73,6 +73,7 @@ public class FakerOperator extends OperatorStage {
     @Override
     public JSONObject getMetadataOperator() {
         MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.FakerOperator");
+        metadata.setType("PROCCESS");
         metadata.setParameter("fakerjson", "sourcecode");
         metadata.setParameter("count", "number");
         metadata.setParameter("locale", "list", Arrays.asList("en-US","en-UG","es","fr"));
@@ -83,4 +84,5 @@ public class FakerOperator extends OperatorStage {
     public String getIconImage() {
         return "faker.png";
     }
+    
 }

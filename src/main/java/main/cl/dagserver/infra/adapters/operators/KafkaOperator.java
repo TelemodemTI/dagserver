@@ -123,6 +123,7 @@ public class KafkaOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.KafkaOperator");
+		metadata.setType("MQ");
 		metadata.setParameter("mode", "list",Arrays.asList("consume","produce"));
 		metadata.setParameter("bootstrapServers", "text");
 		metadata.setParameter("topic", "text");

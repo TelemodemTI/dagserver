@@ -79,6 +79,7 @@ public class TestNGOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.TestNGOperator");
+		metadata.setType("PROCCESS");
 		metadata.setParameter("classpath", "text");
 		metadata.setParameter("reportOutput", "text");
 		metadata.setParameter("testngXmlFiles", "text");
@@ -88,5 +89,4 @@ public class TestNGOperator extends OperatorStage {
 	public String getIconImage() {
 		return "testng.png";
 	}
-	
 }

@@ -83,6 +83,7 @@ public class RabbitMQOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.RabbitMQOperator");
+		metadata.setType("MQ");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("username", "text");
 		metadata.setParameter("password", "password");
@@ -110,4 +111,5 @@ public class RabbitMQOperator extends OperatorStage {
 		Channel channel = conn.createChannel();
 		return channel;
 	}	
+	
 }

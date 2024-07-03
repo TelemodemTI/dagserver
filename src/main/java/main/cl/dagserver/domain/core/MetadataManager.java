@@ -12,6 +12,7 @@ public class MetadataManager {
 	private String canonicalName;
 	private JSONArray params;
 	private JSONArray opts;
+	private String type;
 	
 	public MetadataManager(String canonicalName) {
 		this.canonicalName = canonicalName;
@@ -54,6 +55,7 @@ public class MetadataManager {
 		tag.put("name", namearr[namearr.length - 1]);
 		tag.put("params", params);
 		tag.put("opt", opts);
+		tag.put("type", this.type);
 		return tag;
 	}
 	public static JSONArray dataFrameToJson(DataFrame df) {
@@ -82,5 +84,13 @@ public class MetadataManager {
 			appender.append(values.toArray(new Object[0]));
 		}
 		return appender.toDataFrame();
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

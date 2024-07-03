@@ -26,6 +26,7 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 	
 	public abstract DataFrame call() throws DomainException;
     public abstract JSONObject getMetadataOperator();
+    
 		
 	public String getIconImage() {
 		return "internal.png";

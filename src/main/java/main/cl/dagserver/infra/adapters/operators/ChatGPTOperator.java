@@ -69,6 +69,7 @@ public class ChatGPTOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.ChatGPTOperator");
+		metadata.setType("EXTERNAL");
 		metadata.setParameter("apiKey", "password");
 		metadata.setParameter("prompt", "sourcecode");
 		metadata.setOpts("xcom", "xcom");	
@@ -93,4 +94,5 @@ public class ChatGPTOperator extends OperatorStage {
 	    }
 	    return prompt;
 	}
+	
 }

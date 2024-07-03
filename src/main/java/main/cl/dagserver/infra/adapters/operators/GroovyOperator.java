@@ -70,6 +70,7 @@ public class GroovyOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.GroovyOperator");
+		metadata.setType("PROCCESS");
 		metadata.setParameter("source", "sourcecode");
 		return metadata.generate();
 	}

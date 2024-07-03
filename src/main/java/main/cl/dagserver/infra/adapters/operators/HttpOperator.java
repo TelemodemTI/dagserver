@@ -72,6 +72,7 @@ public class HttpOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.HttpOperator");
+		metadata.setType("EXTERNAL");
 		metadata.setParameter("url", "text");
 		metadata.setParameter("method", "list",Arrays.asList("GET","POST","PUT","DELETE"));
 		metadata.setParameter("timeout", "number");
@@ -84,4 +85,5 @@ public class HttpOperator extends OperatorStage {
 	public String getIconImage() {
 		return "http.png";
 	}
+	
 }

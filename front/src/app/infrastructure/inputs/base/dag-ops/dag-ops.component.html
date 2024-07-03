@@ -38,7 +38,34 @@
                                                 <div class="form-group">
                                                     <label>or select from the full list of operators</label>
                                                     <select id="steptype-{{dagName}}" class="form-control dagname {{dagName}}">
-                                                        <option *ngFor="let item of parameters" value="{{item.class}}">{{item.name}}</option>
+                                                        <optgroup label="Process operators">
+                                                            <ng-container *ngFor="let item of parameters" >
+                                                                <ng-container *ngIf="item.type == 'PROCCESS'">
+                                                                    <option  value="{{item.class}}">{{item.name}}</option>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </optgroup>
+                                                        <optgroup label="Remote operators">
+                                                            <ng-container *ngFor="let item of parameters" >
+                                                                <ng-container *ngIf="item.type == 'REMOTE'">
+                                                                    <option  value="{{item.class}}">{{item.name}}</option>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </optgroup>
+                                                        <optgroup label="MQ operators">
+                                                            <ng-container *ngFor="let item of parameters" >
+                                                                <ng-container *ngIf="item.type == 'MQ'">
+                                                                    <option  value="{{item.class}}">{{item.name}}</option>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </optgroup>
+                                                        <optgroup label="Integration operators">
+                                                            <ng-container *ngFor="let item of parameters" >
+                                                                <ng-container *ngIf="item.type == 'EXTERNAL'">
+                                                                    <option  value="{{item.class}}">{{item.name}}</option>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </optgroup>
                                                     </select>
                                                 </div>
                                                 <a class="btn btn-primary" (click)="createNewStep(dagName)">

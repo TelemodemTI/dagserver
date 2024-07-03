@@ -155,6 +155,7 @@ public class MongoDBOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.MongoDBOperator");
+		metadata.setType("EXTERNAL");
 		metadata.setParameter("hostname", "text");
 		metadata.setParameter("mode", "list", Arrays.asList("READ","INSERT","DELETE"));
 		metadata.setParameter("port", "number");
@@ -171,5 +172,4 @@ public class MongoDBOperator extends OperatorStage {
 	public String getIconImage() {
 		return "mongodb.png";
 	}
-	
 }
