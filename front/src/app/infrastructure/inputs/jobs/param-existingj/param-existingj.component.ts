@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild, ChangeDetectorRef, Renderer2 } from '@angular/core';
 declare var $:any
 declare var CodeMirror:any
 @Component({
@@ -33,10 +33,17 @@ export class ParamExistingjComponent {
   statusSel!:any
   xcoms:any[] = []
   remote_cmd:string[] = []
-  constructor(private cd: ChangeDetectorRef){
+  private keydownListener!: () => void;
 
+  constructor(private cd: ChangeDetectorRef, private renderer: Renderer2) {}
+
+  handleKeyDown(event: KeyboardEvent) {
+    console.log(event)
+    if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+      event.preventDefault();
+      this.updateParams();
+    }
   }
-
   ngOnChanges(changes: SimpleChanges) {
     let root = this
     if(this.generatedIdParams){
@@ -103,6 +110,7 @@ export class ParamExistingjComponent {
         })
       }
       $('#param-modalexistingj').modal('show');    
+      this.keydownListener = this.renderer.listen('document', 'keydown', (event: KeyboardEvent) => this.handleKeyDown(event));
   }
   updateParams(){
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
@@ -114,6 +122,9 @@ export class ParamExistingjComponent {
     this.updateStepEvent.emit({name:stagename,statusLink:statusLink,old:this.name})
     $('.param-value-input').val('');
     $('#param-modalexistingj').modal('hide');
+    if (this.keydownListener) {
+      this.keydownListener();
+    }
   }
   loadParams(){
     let paramarr = []
@@ -171,6 +182,9 @@ export class ParamExistingjComponent {
     this.close()
   }
   close(){
+    if (this.keydownListener) {
+      this.keydownListener();
+    }
     $('#param-modalexistingj').modal('hide');
   }
   initCodemirror(){
@@ -221,25 +235,20 @@ export class ParamExistingjComponent {
   }
   check(item:any,ischecked:any){
     if(ischecked){
-      console.log("poraki1")
       $("#param-"+item.name+"-value").val("")
       item.value = ""
       delete this.disabledChanges[item.key]
     } else {
       if(this.disabledChanges[item.key]){
-        console.log("poraki2")
         $("#param-"+item.name+"-value").val("")
         item.value = ""
-        console.log(item)
         delete this.disabledChanges[item.key]
       } else {
         if(item.value){
-          console.log("poraki3")
           $("#param-"+item.name+"-value").val("")
           item.value = ""
           delete this.disabledChanges[item.key]
         } else {
-          console.log("poraki")
           this.disabledChanges[item.key]=true
         }
       }
