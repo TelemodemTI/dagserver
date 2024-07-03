@@ -32,6 +32,9 @@
                                                     </ng-container>
                                                     <button type="button" (click)="dependencies(item.jarname,item.dagname)" class="btn btn-default btn-circle" title="Dependencies"><i class="fa fa-chain"></i></button>
                                                     <ng-container *ngIf="item.jarname != 'SYSTEM'">
+                                                        <button type="button" (click)="importJarDesign(item.jarname)" class="btn btn-default btn-circle" title="Import Design"><i class="fa fa-upload"></i></button>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="item.jarname != 'SYSTEM'">
                                                         <button type="button" (click)="remove(item.jarname)" class="btn btn-danger btn-circle" title="Delete Jarfile"><i class="fa fa-trash"></i></button>
                                                     </ng-container>
                                                 </td>

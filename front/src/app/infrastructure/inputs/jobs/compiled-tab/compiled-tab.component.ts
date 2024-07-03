@@ -112,4 +112,7 @@ export class CompiledTabComponent {
     },2000)
     
   }
+  async importJarDesign(jarname:any){
+    alert("not implemented yet")
+  }
 }
