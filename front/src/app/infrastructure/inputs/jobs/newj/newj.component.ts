@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NewJInputPort } from 'src/app/application/inputs/mewj.input.port';
 import {Buffer} from 'buffer';
@@ -24,28 +24,23 @@ export class NewjComponent {
   @ViewChild("dagCanvasComponent") dagCanvas!:DagCanvasComponent;
   @ViewChild("modalparam") modalparam!:ParamExistingjComponent;
   
-  
-  
   data:any = {
     jarname: "",
     dags:[]
   }
   
-  
-  
-
   parameters:any[] = []
   boxes: any = []
   temporaljarname:any = "dagJar1.jar"
   diagram:any 
   selectedTab:string = ""
   selectedObj!:any
-
+  private keydownListener!: () => void;
   
-
-  constructor(private router: Router,private service: NewJInputPort){}
+  constructor(private router: Router,private service: NewJInputPort,private renderer: Renderer2){}
 
   ngOnInit(): void {
+    this.keydownListener = this.renderer.listen('document', 'keydown', (event: KeyboardEvent) => this.handleKeyDown(event));
     this.service.getOperatorMetadata().then((r:any)=>{
       this.parameters = JSON.parse(r)
       this.dagCanvas.setupViewer().then((g:any)=>{
@@ -53,6 +48,18 @@ export class NewjComponent {
         this.data.jarname = this.temporaljarname
       })
     })
+  }
+  handleKeyDown(event: KeyboardEvent) {
+    console.log(event)
+    if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+      event.preventDefault();
+      this.saveJar();
+    }
+  }
+  ngOnDestroy() {
+    if (this.keydownListener) {
+      this.keydownListener();
+    }
   }
   changeTab(dagname:any){
     this.selectedTab = dagname

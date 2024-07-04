@@ -36,7 +36,7 @@ export class CompiledTabComponent {
         for (let job of this.jobs) {
           let scheduledJob = this.scheduled.find((scheduled:any) => scheduled.dagname === job.dagname);
           if (scheduledJob) {
-            job.triggerEvent = scheduledJob.eventTrigger;
+            job.triggerEventTarget = scheduledJob.eventTrigger;
             job.nextFireAt = scheduledJob.nextFireAt;
             job.hasScheduled = true; 
           } else {
@@ -111,5 +111,13 @@ export class CompiledTabComponent {
       });   
     },2000)
     
+  }
+  async importJarDesign(jarname:any){
+    let result = await this.service.reimport(jarname)  
+    if(result.code == 200){
+      alert("dag imported successfully")
+    } else {
+      alert(result.value)
+    }
   }
 }

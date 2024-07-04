@@ -157,7 +157,6 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	private String getCanonicalname(String dagname) throws DomainException {
 		var listop = scanner.init().getOperators();
-		
 		String returnv = "";
 		for (Entry<String, List<Map<String, String>>> entrada : listop.entrySet()) {
             String clave = entrada.getKey();
@@ -180,9 +179,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	public List<ChannelDTO> getChannels(String token) throws DomainException {
 	    Map<String, String> claims = extractClaims(token);
 	    validateAdminPermission(claims);
-  
 	    List<ChannelDTO> channels = new ArrayList<>();
-	    
 	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
 	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB_WEBHOOK_PROPS"), "github.png", getChannelProps("GITHUB_WEBHOOK_PROPS")));
 	    channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
@@ -240,9 +237,6 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    channel.setProps(props);
 	    return channel;
 	}
-	
-	
-	
 	@Override
 	public String exportUncompiled(String token, Integer uncompiled) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);

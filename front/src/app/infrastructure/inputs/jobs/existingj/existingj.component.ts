@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExistingJInputPort } from 'src/app/application/inputs/existingj.input.port';
 import { Uncompileds } from 'src/app/domain/models/uncompiled.model';
@@ -8,7 +8,6 @@ import { DagOpsComponent } from '../../base/dag-ops/dag-ops.component';
 import { DagCanvasComponent } from '../../base/dag-canvas/dag-canvas.component';
 import { ParamExistingjComponent } from '../param-existingj/param-existingj.component';
 import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
-import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { ResultStepModalComponent } from '../../base/result-step-modal/result-step-modal.component';
 import { DagParamsComponent } from '../../base/dag-params/dag-params.component';
 declare var $:any
@@ -41,20 +40,21 @@ export class ExistingjComponent {
   selectedObj!:any
   hasViewDetail:boolean = false
   timestamp : number = new Date().getTime();
-
+  private keydownListener!: () => void;
 
   constructor(private router: Router, 
     private route: ActivatedRoute,
     private service: ExistingJInputPort,
-    private cd: ChangeDetectorRef
+    private renderer: Renderer2
     ){
   }
 
   async ngOnInit() {
+    this.keydownListener = this.renderer.listen('document', 'keydown', (event: KeyboardEvent) => this.handleKeyDown(event));
     this.uncompiled = this.route.snapshot.paramMap.get('uncompiledId');
     let arr = await this.service.getUncompileds()
     this.item = arr.filter((el:Uncompileds)=>{ return (el.uncompiledId == this.uncompiled)})[0]
-    this.data = JSON.parse( this.item.bin)
+    this.data = JSON.parse(this.item.bin)
     let r = await this.service.getOperatorMetadata();
     this.parameters = JSON.parse(r)
     for (let index = 0; index < this.data.dags.length; index++) {
@@ -68,8 +68,20 @@ export class ExistingjComponent {
     }
     this.diagram = await this.dagCanvas.setupViewer()
   }
-  
+  ngOnDestroy() {
+    if (this.keydownListener) {
+      this.keydownListener();
+    }
+  }
+  handleKeyDown(event: KeyboardEvent) {
+    console.log(event)
+    if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+      event.preventDefault();
+      this.saveJar();
+    }
+  }
   async saveJar(){
+    this.dagProps.saveDag(this.selectedTab);
     var base64 = Buffer.from(JSON.stringify(this.data)).toString('base64')
     try {
       await this.service.saveUncompiled(parseInt(this.uncompiled),base64)  
@@ -148,7 +160,7 @@ export class ExistingjComponent {
   }
 
   async createNewStep(tabname:string){  
-    this.dagProps.saveDag(tabname);
+    this.saveDag(tabname);
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == $("#stepinput-"+tabname).val();})[0]
     this.redraw(obj,this.diagram)
   }

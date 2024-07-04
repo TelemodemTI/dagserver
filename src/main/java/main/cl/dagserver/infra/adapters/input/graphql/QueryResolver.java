@@ -90,7 +90,15 @@ public class QueryResolver implements GraphQLQueryResolver {
 				operator.setCronExpr(operatormap.get("cronExpr"));
 				operator.setGroupname(operatormap.get("groupname"));
 				operator.setDagname(operatormap.get("dagname"));
-				operator.setTriggerEvent("CRON STATEMENT");
+				if(!operatormap.get("cronExpr").isEmpty()) {
+					operator.setTriggerEvent("CRON STATEMENT");
+				} else {
+					var starttr = operatormap.get("onStart");
+					var endtr = operatormap.get("onEnd");
+					operator.setTargetDagname(operatormap.get(""));
+					operator.setTriggerEvent("JOB LISTENER");
+				}
+				
 				rv.add(operator);	
 			}
 
@@ -114,7 +122,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		events.setClassname("main.domain.dags.EventSystemDag");
 		events.setDagname("event_system_dag");
 		events.setGroupname("system_dags");
-		events.setTriggerEvent("OnEnd");
+		events.setTriggerEvent("JOB LISTENER");
 		events.setTargetDagname("background_system_dag");
 		rv.add(events);
 		

@@ -12,6 +12,7 @@ import main.cl.dagserver.application.ports.input.SchedulerMutationUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
+import main.cl.dagserver.domain.model.UncompiledDTO;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -357,5 +358,19 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	public void removeException(String token, String eventDt) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 		this.excstorage.remove(eventDt);
+	}
+	@Override
+	public void reimport(String token, String jarname) throws DomainException {
+		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		JSONObject json = compiler.reimport(jarname);
+		var list = repository.getUncompileds();
+		for (Iterator<UncompiledDTO> iterator = list.iterator(); iterator.hasNext();) {
+			UncompiledDTO uncompiledDTO = iterator.next();
+			var dagjson = new JSONObject(uncompiledDTO.getBin());
+			if(dagjson.get("jarname").equals(jarname)) {
+				throw new DomainException("design of jarname already exists");
+			}
+		}
+		repository.addUncompiled(json.getString(JARNAME),json);	
 	}
 }

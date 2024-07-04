@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { JardetailpInputPort } from 'src/app/application/inputs/jardetailp.input.port';
 declare var $:any
@@ -22,8 +22,9 @@ export class JardetailpComponent {
   @ViewChild("form") form!:ElementRef;
   remote_cmd:string[] = []
   editor!:any
+  private keydownListener!: () => void;
 
-  constructor(private router: Router,private service: JardetailpInputPort){
+  constructor(private router: Router,private service: JardetailpInputPort,private renderer: Renderer2){
   }
   
 
@@ -43,12 +44,24 @@ export class JardetailpComponent {
     
   }
   close(){
+    if (this.keydownListener) {
+      this.keydownListener();
+    }
     $('#param-modaljardetailj').modal('hide');
   }
   show(){
     this.loader?.nativeElement.classList.remove("invisible");
     this.form?.nativeElement.classList.add("invisible")
     $('#param-modaljardetailj').modal('show');
+    this.keydownListener = this.renderer.listen('document', 'keydown', (event: KeyboardEvent) => this.handleKeyDown(event));
+  }
+  
+  handleKeyDown(event: KeyboardEvent) {
+    console.log(event)
+    if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+      event.preventDefault();
+      this.updateParams();
+    }
   }
   refreshCodemirror(){
     if(this.editor){
@@ -63,7 +76,6 @@ export class JardetailpComponent {
     }
   }
   async updateParams(){
-
     let paramarr = []
     for (let index = 0; index < this.selectedStepMetadata.params.length; index++) {
       const key = this.selectedStepMetadata.params[index];

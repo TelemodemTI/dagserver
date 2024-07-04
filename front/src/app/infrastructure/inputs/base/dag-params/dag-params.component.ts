@@ -19,12 +19,14 @@ export class DagParamsComponent {
   ngOnChanges(changes: SimpleChanges) {
     this.params = this.boxes.map((elem:any)=>{ 
       let tmp = this.data.jarname+"."+elem.id+"."+elem.type
-      let rv = elem.params.map((elem2:any)=>{
-        elem2.step = elem.id
-        elem2.rkey = tmp + "."+elem2.source+"."+elem2.key
-        return elem2
-      })
-      return rv
+      if(elem.params){
+        let rv = elem.params.map((elem2:any)=>{
+          elem2.step = elem.id
+          elem2.rkey = tmp + "."+elem2.source+"."+elem2.key
+          return elem2
+        })
+        return rv
+      }  
     }).flat(1)
   }
   

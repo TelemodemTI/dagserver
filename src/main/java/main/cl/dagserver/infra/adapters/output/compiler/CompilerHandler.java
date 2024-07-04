@@ -3,15 +3,21 @@ package main.cl.dagserver.infra.adapters.output.compiler;
 import java.io.ByteArrayOutputStream;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
+import lombok.extern.log4j.Log4j2;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -48,6 +54,7 @@ import net.bytebuddy.pool.TypePool.CacheProvider;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
+@Log4j2
 public class CompilerHandler implements CompilerOutputPort {
 
 	private static final String GROUP = "group";
@@ -82,11 +89,17 @@ public class CompilerHandler implements CompilerOutputPort {
 			Map<String,byte[]> classBytes = new HashMap<>();
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
+				validateDagOverwrite(dag.getString("name"),force);
 				String crondef = dag.has("cron") ? dag.getString("cron") : ""  ;
-				String onstartdef = dag.has(ONSTART) ? dag.getString(ONSTART) : "";  
-				String onenddef = dag.has(ONEND) ? dag.getString(ONEND) : "" ;
-				String triggerv = dag.getString("trigger");
 				String loc = dag.getString("loc");
+				String onstartdef = "";
+				String onenddef = "";
+				if(loc.equals("onStart")) {
+					onstartdef = dag.getString("targetDag");  		
+				} else if(loc.equals("onEnd")) {
+					onenddef = dag.getString("targetDag");
+				}
+				String triggerv = dag.getString("trigger");
 				String classname = dag.getString("class");
 				String group = dag.getString(GROUP);
 				validateParams(dag.getJSONArray("boxes"));
@@ -146,11 +159,29 @@ public class CompilerHandler implements CompilerOutputPort {
         }
         return false;
     }
-	private void validateOverwrtire(String jarname, Boolean force) throws DomainException {
+	private void validateOverwrtire(String jarname,Boolean force) throws DomainException {
 		File file = new File(pathfolder+jarname);
         if (file.exists() && Boolean.FALSE.equals(force)) {
             throw new DomainException(new Exception("File exists"));
         }
+	}
+	public void validateDagOverwrite(String dagname, Boolean force) throws DomainException {
+		File folder = new File(pathfolder);
+	    File[] files = folder.listFiles((dir, name) -> name.endsWith(".jar"));
+	    String className = "generated_dag/main/" + dagname + ".class";
+	    for (File file : files) {
+	        try (JarFile jarFile = new JarFile(file)) {
+	            Enumeration<JarEntry> entries = jarFile.entries();
+	            while (entries.hasMoreElements()) {
+	                JarEntry entry = entries.nextElement();
+	                if (entry.getName().equals(className)) {
+	                    throw new DomainException(new Exception("dagname already exists"));
+	                }
+	            }
+	        } catch (IOException e) {
+	            log.debug("Error reading jar file: " + file.getName());
+	        }
+	    }
 	}
 	private Unloaded<DagExecutable> getClassDefinition(Map<String,String> dtomap,JSONArray boxes) throws DomainException {
 		ClassFileLocator classFileLocator = new DirectoryClassFileLocator(pathfolder);
@@ -173,7 +204,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		} else {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
-	                .define(dtomap.get("listenerLabel"), dtomap.get(VALUE))
+	                .define(dtomap.get("listenerLabel"), dtomap.get(dtomap.get("listenerLabel").toLowerCase()))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
 			.make(pool);	
@@ -280,4 +311,32 @@ public class CompilerHandler implements CompilerOutputPort {
 			Thread.currentThread().interrupt();
 		}
 	}
+
+	@Override
+	public JSONObject reimport(String jarname) throws DomainException {
+	    File jarFile = new File(pathfolder + jarname);
+	    if (!jarFile.exists()) {
+	        throw new DomainException(new Exception("Jar file not found"));
+	    }
+
+	    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(jarFile))) {
+	        ZipEntry entry;
+	        while ((entry = zis.getNextEntry()) != null) {
+	            if ("dagdef.json".equals(entry.getName())) {
+	                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	                byte[] buffer = new byte[1024];
+	                int len;
+	                while ((len = zis.read(buffer)) > 0) {
+	                    baos.write(buffer, 0, len);
+	                }
+	                String jsonStr = baos.toString("UTF-8");
+	                return new JSONObject(jsonStr);
+	            }
+	        }
+	        throw new DomainException(new Exception("dagdef.json not found in jar"));
+	    } catch (IOException | JSONException e) {
+	        throw new DomainException(e);
+	    }
+	}
+
 }
