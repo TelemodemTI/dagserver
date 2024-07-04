@@ -157,4 +157,5 @@ type Mutation {
 	addConsumerAM(token:String,queue:String,jarfile:String,dagname:String) : StatusOp
 	delConsumerAM(token:String,queue:String) : StatusOp
 	removeException(token:String,eventDt:String) : StatusOp
+	reimport(token:String,jarname:String): StatusOp
 }

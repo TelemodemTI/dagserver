@@ -40,4 +40,5 @@ public interface SchedulerMutationUseCase {
 	void addConsumerAM(String token, String queue, String jarfile, String dagname) throws DomainException;
 	void delConsumerAM(String token,String queue) throws DomainException;
 	void removeException(String token, String eventDt) throws DomainException;
+	void reimport(String token, String jarname) throws DomainException;
 }

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -280,4 +281,32 @@ public class CompilerHandler implements CompilerOutputPort {
 			Thread.currentThread().interrupt();
 		}
 	}
+
+	@Override
+	public JSONObject reimport(String jarname) throws DomainException {
+	    File jarFile = new File(pathfolder + jarname);
+	    if (!jarFile.exists()) {
+	        throw new DomainException(new Exception("Jar file not found"));
+	    }
+
+	    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(jarFile))) {
+	        ZipEntry entry;
+	        while ((entry = zis.getNextEntry()) != null) {
+	            if ("dagdef.json".equals(entry.getName())) {
+	                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	                byte[] buffer = new byte[1024];
+	                int len;
+	                while ((len = zis.read(buffer)) > 0) {
+	                    baos.write(buffer, 0, len);
+	                }
+	                String jsonStr = baos.toString("UTF-8");
+	                return new JSONObject(jsonStr);
+	            }
+	        }
+	        throw new DomainException(new Exception("dagdef.json not found in jar"));
+	    } catch (IOException | JSONException e) {
+	        throw new DomainException(e);
+	    }
+	}
+
 }

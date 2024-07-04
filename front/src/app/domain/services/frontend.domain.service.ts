@@ -54,6 +54,11 @@ export class FrontEndDomainService implements
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
   
+  
+  reimport(jarname: any): Promise<any> {
+    return this.adapter.reimport(jarname);
+  }
+  
   getEntry(key: string): Promise<any> {
     return this.httpd.getEntry(key);
   }

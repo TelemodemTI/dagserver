@@ -8,4 +8,5 @@ export class AvailableJobs {
 	targetDagname!: String
 	nextFireAt?: number;
 	hasScheduled?: boolean;
+    triggerEventTarget?: String;
 }

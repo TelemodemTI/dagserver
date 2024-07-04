@@ -311,7 +311,14 @@ public class MutationResolver implements GraphQLMutationResolver {
 			return error(e);
 		}
 	}
-	
+	public StatusOp reimport(String token,String jarname) {
+		try {
+			handler.reimport(token, jarname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
 		status.setCode(200);
