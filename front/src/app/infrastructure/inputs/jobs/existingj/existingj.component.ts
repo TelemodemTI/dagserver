@@ -54,7 +54,7 @@ export class ExistingjComponent {
     this.uncompiled = this.route.snapshot.paramMap.get('uncompiledId');
     let arr = await this.service.getUncompileds()
     this.item = arr.filter((el:Uncompileds)=>{ return (el.uncompiledId == this.uncompiled)})[0]
-    this.data = JSON.parse( this.item.bin)
+    this.data = JSON.parse(this.item.bin)
     let r = await this.service.getOperatorMetadata();
     this.parameters = JSON.parse(r)
     for (let index = 0; index < this.data.dags.length; index++) {
@@ -81,6 +81,7 @@ export class ExistingjComponent {
     }
   }
   async saveJar(){
+    this.dagProps.saveDag(this.selectedTab);
     var base64 = Buffer.from(JSON.stringify(this.data)).toString('base64')
     try {
       await this.service.saveUncompiled(parseInt(this.uncompiled),base64)  
@@ -159,7 +160,7 @@ export class ExistingjComponent {
   }
 
   async createNewStep(tabname:string){  
-    this.dagProps.saveDag(tabname);
+    this.saveDag(tabname);
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == $("#stepinput-"+tabname).val();})[0]
     this.redraw(obj,this.diagram)
   }
