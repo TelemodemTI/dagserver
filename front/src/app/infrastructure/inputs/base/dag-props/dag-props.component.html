@@ -11,10 +11,11 @@
         <input id="daggroupinput-{{dagName}}" class="form-control dagname {{dagName}}" value="main.group">
     </div>
     <div class="form-group">
+        
         <ng-container *ngIf="typeTrigger == 'cron';else nocron">
             <label>Cron Expression</label>
         </ng-container>
-        <ng-template #nocron>triggerval
+        <ng-template #nocron>
             <a id="cron-type-link" (click)="changeTrigger('cron')">Cron</a>    
         </ng-template>
         &nbsp;|&nbsp;
@@ -24,10 +25,19 @@
         <ng-template #nolistener>
             <a id="listener-type-link" (click)="changeTrigger('listener')">Listener</a>    
         </ng-template>
-        <ng-container *ngIf="typeTrigger == 'cron';else nocronin">
+        &nbsp;|&nbsp;
+        <ng-container *ngIf="typeTrigger == 'none';else nonone">
+            <label>None</label>
+        </ng-container>
+        <ng-template #nonone>
+            <a id="listener-type-link" (click)="changeTrigger('none')">None</a>    
+        </ng-template>
+
+        <ng-container *ngIf="typeTrigger == 'cron'">
             <input id="dagcroninput-{{dagName}}" class="form-control dagname {{dagName}}" placeholder="cron expression" value="{{triggerval}}">
         </ng-container>
-        <ng-template #nocronin>
+
+        <ng-container *ngIf="typeTrigger == 'listener'">
             <br><br>
             <div class="form-group">
                 <label>Location:</label><br>
@@ -72,7 +82,7 @@
                     </select>
                 </ng-template>
             </div>
-        </ng-template>
+        </ng-container>
         
     </div>
     <div class="form-group">

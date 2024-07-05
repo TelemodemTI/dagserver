@@ -27,7 +27,7 @@
                                 <h5 class="text-muted">{{item.status}}</h5>
                             </div>
                             
-                            <ng-container *ngIf="item.name != 'SCHEDULER'; else nobutton">
+                            <ng-container *ngIf="item.name != 'SCHEDULER' && item.name != 'GRAPHQL'; else nobutton">
                                 <div class="options">
                                     <button class="btn btn-primary btn-lg" (click)="options(item)"><i class="glyphicon glyphicon-plus"></i> Options</button>
                                 </div>

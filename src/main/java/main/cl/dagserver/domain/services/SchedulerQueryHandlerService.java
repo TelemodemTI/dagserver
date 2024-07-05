@@ -181,6 +181,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    validateAdminPermission(claims);
 	    List<ChannelDTO> channels = new ArrayList<>();
 	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
+	    channels.add(createChannel("GRAPHQL", "ACTIVE", "graphql.png", Collections.emptyList()));
 	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB_WEBHOOK_PROPS"), "github.png", getChannelProps("GITHUB_WEBHOOK_PROPS")));
 	    channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
 	    channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));

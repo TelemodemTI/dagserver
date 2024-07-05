@@ -12,7 +12,7 @@ export class ExceptionsListComponent implements OnInit {
   constructor(private service: ExceptionsInputPort,private router: Router){}
   async ngOnInit() {
     this.exceptions = await this.service.getExceptions();
-    setTimeout(function () {
+    setTimeout(()=> {
       var table = $('#dataTables-exceptions').DataTable({responsive: true});
       table.on('search.dt',  (e:any, settings:any)=> {
         alert("Test")
