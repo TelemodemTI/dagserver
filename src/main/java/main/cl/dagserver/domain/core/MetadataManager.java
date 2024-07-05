@@ -1,8 +1,11 @@
 package main.cl.dagserver.domain.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -86,6 +89,19 @@ public class MetadataManager {
 		return appender.toDataFrame();
 	}
 
+	public static List<Map<String, Object>> dataFrameToList(DataFrame df) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        df.iterator().forEachRemaining(row -> {
+            Map<String, Object> map = new HashMap<>();
+            for (String columnName : df.getColumnsIndex()) {
+                map.put(columnName, row.get(columnName));
+            }
+            list.add(map);
+        });
+        return list;
+    }
+	
+	
 	public String getType() {
 		return type;
 	}

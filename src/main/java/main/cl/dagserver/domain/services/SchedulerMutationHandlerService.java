@@ -368,7 +368,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			UncompiledDTO uncompiledDTO = iterator.next();
 			var dagjson = new JSONObject(uncompiledDTO.getBin());
 			if(dagjson.get("jarname").equals(jarname)) {
-				throw new DomainException("design of jarname already exists");
+				throw new DomainException(new Exception("design of jarname already exists"));
 			}
 		}
 		repository.addUncompiled(json.getString(JARNAME),json);	

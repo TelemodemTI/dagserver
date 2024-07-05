@@ -82,7 +82,7 @@ public class ExcelOperator extends OperatorStage {
                 }
                 return appender.toDataFrame();
             } else {
-            	throw new DomainException("invalid sheet");
+            	throw new DomainException(new Exception("invalid sheet"));
             }
         } catch (Exception e) {
             log.error("Error reading Excel file: " + filePath, e);
