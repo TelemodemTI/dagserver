@@ -61,6 +61,10 @@ public class MetadataManager {
 		tag.put("type", this.type);
 		return tag;
 	}
+	public static byte[] dataFrameToBytes(DataFrame df) {
+		JSONArray var1 = MetadataManager.dataFrameToJson(df);
+		return var1.toString().getBytes();
+	}
 	public static JSONArray dataFrameToJson(DataFrame df) {
         JSONArray jsonArray = new JSONArray();
         df.iterator().forEachRemaining(row -> {
