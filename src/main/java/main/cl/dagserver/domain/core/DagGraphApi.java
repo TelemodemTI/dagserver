@@ -35,7 +35,7 @@ public class DagGraphApi {
 				this.executeUncompiledDag(dagname);
 			}	
 		} else {
-			throw new DomainException("invalid dag to execute");
+			throw new DomainException(new Exception("invalid dag to execute"));
 		}
 	}
 	private void executeUncompiledDag(String dagname) throws DomainException {

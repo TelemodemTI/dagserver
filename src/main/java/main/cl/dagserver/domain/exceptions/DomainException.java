@@ -15,11 +15,6 @@ public class DomainException extends Exception {
         this.message = ex.getMessage();
 	}
 
-	public DomainException(String string) {
-		super(string);
-		this.message = string;
-	}
-
 	@Override
 	public String getMessage() {
 		return message;
