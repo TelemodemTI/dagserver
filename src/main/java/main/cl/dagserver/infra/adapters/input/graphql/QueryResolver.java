@@ -96,12 +96,16 @@ public class QueryResolver implements GraphQLQueryResolver {
 					var starttr = operatormap.get("onStart");
 					var endtr = operatormap.get("onEnd");
 					if(!starttr.isEmpty()) {
-						operator.setTargetDagname(operatormap.get(starttr));	
+						operator.setTargetDagname(operatormap.get(starttr));
+						operator.setTriggerEvent("JOB LISTENER");
 					}
 					if(!endtr.isEmpty()) {
-						operator.setTargetDagname(operatormap.get(starttr));	
+						operator.setTargetDagname(operatormap.get(starttr));
+						operator.setTriggerEvent("JOB LISTENER");
 					}
-					operator.setTriggerEvent("JOB LISTENER");
+					if(endtr.isEmpty() && starttr.isEmpty()) {
+						operator.setTriggerEvent("NONE");
+					}
 				}
 				
 				rv.add(operator);	

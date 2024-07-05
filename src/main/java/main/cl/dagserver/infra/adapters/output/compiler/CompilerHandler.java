@@ -201,13 +201,19 @@ public class CompilerHandler implements CompilerOutputPort {
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
 			.make(pool);	
-		} else {
+		} else if(dtomap.get("type").equals("listener")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
 	                .define(dtomap.get("listenerLabel"), dtomap.get(dtomap.get("listenerLabel").toLowerCase()))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
 			.make(pool);	
+		} else {
+			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
+	                .define(NAME, dtomap.get(NAME))
+	                .define(GROUP, dtomap.get(GROUP))
+	                .build())
+			.make(pool);
 		}
 		return varu;
 	}
