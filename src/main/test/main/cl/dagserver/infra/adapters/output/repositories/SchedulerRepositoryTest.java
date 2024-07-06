@@ -34,7 +34,7 @@ import main.cl.dagserver.infra.adapters.output.repositories.entities.ScheUncompi
 import main.cl.dagserver.infra.adapters.output.repositories.entities.User;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapper;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapperImpl;
-import main.cl.dagserver.infra.adapters.output.storage.InternalStorage;
+import main.cl.dagserver.infra.adapters.output.storage.mapdb.MapDBStorage;
 
 import static org.mockito.Mockito.when;
 
@@ -46,7 +46,7 @@ class SchedulerRepositoryTest {
 	@Mock
 	private SchedulerMapper mapper;
 	@Mock
-	private InternalStorage storage;
+	private MapDBStorage storage;
 	
 	
 	private SchedulerRepository repo = new SchedulerRepository();
@@ -55,7 +55,7 @@ class SchedulerRepositoryTest {
     void init() {
 		dao = mock(DAO.class);
 		mapper = new SchedulerMapperImpl();
-		storage = mock(InternalStorage.class);
+		storage = mock(MapDBStorage.class);
 		ReflectionTestUtils.setField(repo, "dao", dao);
 		ReflectionTestUtils.setField(repo, "mapper", mapper);
 		ReflectionTestUtils.setField(repo, "storage", storage);
@@ -247,7 +247,6 @@ class SchedulerRepositoryTest {
         .append("testing")   
         .toDataFrame();
         map.put("test", df);
-        when(storage.getLocatedb()).thenReturn("testing");
         String locatedAt = repo.createInternalStatus(map);
         assertNotNull(locatedAt);
     }
@@ -257,7 +256,7 @@ class SchedulerRepositoryTest {
         Map<String,DataFrame> map = new HashMap<>();
         var df = DataFrame.byArrayRow("status").appender().append("testing").toDataFrame();
         map.put("test", df);
-        when(storage.get()).thenReturn(map);
+        when(storage.getEntry(anyString())).thenReturn(map);
         Map<String, DataFrame> data = repo.readXcom(locatedAt);
         assertNotNull(data);
     }

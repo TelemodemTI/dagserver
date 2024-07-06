@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
+import main.cl.dagserver.application.ports.output.Storage;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -36,7 +37,6 @@ import main.cl.dagserver.infra.adapters.output.repositories.entities.PropertyPar
 import main.cl.dagserver.infra.adapters.output.repositories.entities.ScheUncompiledDags;
 import main.cl.dagserver.infra.adapters.output.repositories.entities.User;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapper;
-import main.cl.dagserver.infra.adapters.output.storage.InternalStorage;
 
 
 @Component
@@ -49,7 +49,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private static final String UNCOMPILEDQUERY = "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = ";
 	
 	@Autowired
-	private InternalStorage storage;
+	private Storage storage;
 
 	@Autowired
 	private DAO dao;

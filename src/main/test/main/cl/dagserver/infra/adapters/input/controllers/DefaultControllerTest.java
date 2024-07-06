@@ -10,7 +10,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ui.Model;
 import main.cl.dagserver.application.ports.input.GitHubWebHookUseCase;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
-import main.cl.dagserver.application.ports.input.XcomBrowserUsecase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -36,15 +35,12 @@ class DefaultControllerTest {
 	@Mock
 	private StageApiUsecase stage;
 	
-	@Mock
-	private XcomBrowserUsecase xcom;
 	
 	@BeforeEach
     public void init() {
 		handler = mock(GitHubWebHookUseCase.class);
 		stage = mock(StageApiUsecase.class);
-		xcom = mock(XcomBrowserUsecase.class);
-		controller = new DefaultController(handler, stage,xcom);
+		controller = new DefaultController(handler, stage);
 		ReflectionTestUtils.setField(controller, "handler", handler);
 		ReflectionTestUtils.setField(controller, "api", stage);
 	}

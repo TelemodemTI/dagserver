@@ -357,7 +357,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Override
 	public void removeException(String token, String eventDt) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-		this.excstorage.remove(eventDt);
+		this.storage.removeException(eventDt);
 	}
 	@Override
 	public void reimport(String token, String jarname) throws DomainException {

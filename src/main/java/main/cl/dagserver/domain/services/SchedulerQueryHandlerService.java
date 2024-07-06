@@ -260,7 +260,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	public List<Exceptions> getExceptions(String token) {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
 		List<Exceptions> newrv = new ArrayList<>();
-		var exceptions = this.excstorage.list();
+		var exceptions = this.storage.listException();
 		var keys = exceptions.keySet();
 		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
 			String dt = iterator.next();
