@@ -137,7 +137,7 @@ public class DagExecutable implements Job,JobListener  {
 		var fa = this.createDagMemoryAppender(evalstring);
 		Map<String,Object> data = new HashMap<>();
 		data.put("data", this.channelData);
-		DataFrame dfdata = OperatorStage.buildDataFrame(Arrays.asList(data));
+		DataFrame dfdata = OperatorStage.buildDataFrameFromMap(Arrays.asList(data));
 		Map<String,DataFrame> xcom = new HashMap<>();
 		xcom.put("args", dfdata);
 		Logger logdag = Logger.getLogger(evalstring);

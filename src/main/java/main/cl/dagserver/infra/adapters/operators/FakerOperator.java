@@ -51,7 +51,7 @@ public class FakerOperator extends OperatorStage {
             }
             maps.add(item);
 		}
-        return OperatorStage.buildDataFrame(maps);
+        return OperatorStage.buildDataFrameFromMap(maps);
     }
 
     private String invokeFakerMethod(Faker faker, String methodName) {

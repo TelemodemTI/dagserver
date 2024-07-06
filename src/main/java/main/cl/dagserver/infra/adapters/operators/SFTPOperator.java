@@ -77,7 +77,7 @@ public class SFTPOperator extends OperatorStage  {
 			}
 			
 			this.disconnect(sftp);
-			return OperatorStage.buildDataFrame(results);
+			return OperatorStage.buildDataFrameFromMap(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}	

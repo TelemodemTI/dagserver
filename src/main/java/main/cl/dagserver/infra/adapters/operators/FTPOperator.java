@@ -84,7 +84,7 @@ public class FTPOperator extends OperatorStage {
 	private DataFrame list(FTPClient ftp,String directory) throws IOException {
 		ftp.cwd(directory);
 		FTPFile[] files = ftp.listFiles();
-		List<Map<String,Object>> content = new ArrayList<>();
+		List<Map<String, Object>> content = new ArrayList<>();
 		for (FTPFile file : files) {
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("filename", file.getName());
@@ -92,7 +92,7 @@ public class FTPOperator extends OperatorStage {
 			content.add(map);
 		}
 		ftp.enterLocalPassiveMode();
-		return OperatorStage.buildDataFrame(content);	
+		return OperatorStage.buildDataFrameFromMap(content);	
 	}
 	
 	private void download(FTPClient ftp, String remoteFilePath, String localPath) throws DomainException {

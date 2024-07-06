@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import com.nhl.dflib.DataFrame;
 
+import main.cl.dagserver.infra.adapters.output.storage.InternalStorage;
+
 class InternalStorageTest {
 
 	private InternalStorage storage;

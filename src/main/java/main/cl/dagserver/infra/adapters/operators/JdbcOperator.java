@@ -60,7 +60,7 @@ public class JdbcOperator extends OperatorStage {
 					RowProxy firstRow = data.iterator().next();
 					var kv = this.namedParameter(sql, firstRow);
 					var returnv = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
-					return OperatorStage.buildDataFrame(returnv);
+					return OperatorStage.buildDataFrameFromMap(returnv);
 				} else {
 					String sql = this.args.getProperty(QUERY);
 					for (Iterator<RowProxy> iterator = data.iterator(); iterator.hasNext();) {
@@ -73,7 +73,7 @@ public class JdbcOperator extends OperatorStage {
 			} else {
 					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 						var returningv = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());
-						return OperatorStage.buildDataFrame(returningv);
+						return OperatorStage.buildDataFrameFromMap(returningv);
 					} else {
 						queryRunner.update(con, this.args.getProperty(QUERY));
 						return OperatorStage.createStatusFrame("ok");

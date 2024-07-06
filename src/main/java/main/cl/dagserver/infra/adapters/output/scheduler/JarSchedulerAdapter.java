@@ -35,7 +35,7 @@ import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 import main.cl.dagserver.infra.adapters.operators.DummyOperator;
 import main.cl.dagserver.infra.adapters.operators.LogsRollupOperator;
 import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
-import main.cl.dagserver.infra.adapters.output.repositories.InternalStorage;
+import main.cl.dagserver.infra.adapters.output.storage.InternalStorage;
 
 @Component
 @Log4j2

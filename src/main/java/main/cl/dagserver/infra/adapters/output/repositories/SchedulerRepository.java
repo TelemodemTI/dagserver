@@ -36,6 +36,7 @@ import main.cl.dagserver.infra.adapters.output.repositories.entities.PropertyPar
 import main.cl.dagserver.infra.adapters.output.repositories.entities.ScheUncompiledDags;
 import main.cl.dagserver.infra.adapters.output.repositories.entities.User;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapper;
+import main.cl.dagserver.infra.adapters.output.storage.InternalStorage;
 
 
 @Component
@@ -402,9 +403,9 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	public String createInternalStatus(Map<String,DataFrame> data) throws DomainException {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-			this.storage.init(sdf.format(new Date()));
-			storage.put(data);
-			return storage.getLocatedb();	
+			var key = sdf.format(new Date());
+			storage.putEntry(key,data);
+			return key;	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -414,8 +415,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	@Override
 	public Map<String, DataFrame> readXcom(String locatedAt) throws DomainException {
 		try {
-			this.storage.init(locatedAt);
-			return storage.get();
+			return storage.getEntry(locatedAt);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

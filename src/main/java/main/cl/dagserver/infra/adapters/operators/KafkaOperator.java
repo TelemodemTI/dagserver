@@ -113,7 +113,7 @@ public class KafkaOperator extends OperatorStage {
                     	rv.add(map);
                     }	
                 }
-                return OperatorStage.buildDataFrame(rv);
+                return OperatorStage.buildDataFrameFromMap(rv);
             }
         } catch (Exception e) {
             throw new DomainException(e);

@@ -80,7 +80,7 @@ public class Samba2Operator extends OperatorStage {
 			}
 		    
 			this.disconnect(smb2session, client);
-			return OperatorStage.buildDataFrame(results);
+			return OperatorStage.buildDataFrameFromMap(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

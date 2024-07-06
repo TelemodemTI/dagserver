@@ -65,7 +65,7 @@ public class RedisOperator extends OperatorStage {
 			}	
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return OperatorStage.buildDataFrame(rv);
+		return OperatorStage.buildDataFrameFromMap(rv);
 	}
 	
 	private List<Map<String,Object>> clusterRead(JedisCluster jedisc){

@@ -54,7 +54,7 @@ public class PathDirOperator extends OperatorStage {
 	        throw new DomainException(e);
 	    }
 	    log.debug(this.getClass() + " end " + this.name);
-	    return OperatorStage.buildDataFrame(returnv);
+	    return OperatorStage.buildDataFrameFromMap(returnv);
 	}
 	
 

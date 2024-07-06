@@ -3,14 +3,10 @@ package main.cl.dagserver.infra.adapters.input.controllers;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.nhl.dflib.DataFrame;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -29,7 +25,6 @@ import fr.brouillard.oss.security.xhub.XHub.XHubConverter;
 import fr.brouillard.oss.security.xhub.XHub.XHubDigest;
 import main.cl.dagserver.application.ports.input.GitHubWebHookUseCase;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
-import main.cl.dagserver.application.ports.input.XcomBrowserUsecase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 
@@ -40,13 +35,11 @@ public class DefaultController {
 	
 	private GitHubWebHookUseCase handler;
 	private StageApiUsecase api;
-	private XcomBrowserUsecase xcomb;
 	
 	@Autowired
-	public DefaultController(GitHubWebHookUseCase handler,StageApiUsecase api,XcomBrowserUsecase xcomb) {
+	public DefaultController(GitHubWebHookUseCase handler,StageApiUsecase api) {
 		this.handler = handler;
 		this.api = api;
-		this.xcomb = xcomb;
 	}
 	
 	@GetMapping(path="/version")
@@ -64,29 +57,7 @@ public class DefaultController {
 		JSONObject responsej = api.executeTmp(uncompiled,dagname,stepname,token);
 		return new ResponseEntity<>(responsej.toString(), HttpStatus.OK);
 	}
-	@PostMapping(path = "/xcombrowser/",consumes = {"application/json"}, produces= {"application/json"})
-	public ResponseEntity<String> xcombrowser(HttpEntity<String> httpEntity,HttpServletResponse response) throws DomainException {
-		JSONObject body = new JSONObject(httpEntity.getBody());
-		String xcomkey = body.getString("xcomkey");
-		String token = body.getString("token");
-		Map<String, DataFrame> responsej = xcomb.getEntry(xcomkey, token);
-		JSONObject rv = new JSONObject();
-		var keys = responsej.keySet();
-		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-			String string = iterator.next();
-			DataFrame df = responsej.get(string);
-			JSONArray jsonArray = new JSONArray();
-			df.iterator().forEachRemaining(row -> {
-	        	JSONObject jsonObject = new JSONObject();
-	            for (String columnName : df.getColumnsIndex()) {
-	                jsonObject.put(columnName, row.get(columnName));
-	            }
-	            jsonArray.put(jsonObject);
-	        });
-			rv.put(string, jsonArray);
-		}
-		return new ResponseEntity<>(rv.toString(), HttpStatus.OK);
-	}
+	
 	
 	@GetMapping(path={"/"})
     public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {		

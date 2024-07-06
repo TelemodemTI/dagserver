@@ -48,14 +48,14 @@ public class GroovyOperator extends OperatorStage {
 	        if(rvl.isEmpty()) {
 	        	return DataFrame.empty("status");
 	        } else {
-	        	return OperatorStage.buildDataFrame(rvl);	
+	        	return OperatorStage.buildDataFrameFromObject(rvl);	
 	        }
 	    } else if (rv instanceof Map) {
 	    	var rvm = (Map) rv;
 	    	if(rvm.isEmpty()) {
 	    		return DataFrame.empty("status");
 	    	} else {
-	    		return OperatorStage.buildDataFrame(Arrays.asList(rvm));	
+	    		return OperatorStage.buildDataFrameFromMap(Arrays.asList(rvm));	
 	    	}
 	    } else if(rv instanceof DataFrame) {
 	    	return (DataFrame) rv;

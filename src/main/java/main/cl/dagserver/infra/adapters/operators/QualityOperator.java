@@ -66,7 +66,7 @@ public class QualityOperator extends OperatorStage {
         df = df.addColumn("quality_status", quality_statusSeries);
         df = df.addColumn("quality_msgList", quality_msgListSeries);
         log.debug(this.getClass() + " end " + this.name);
-        return OperatorStage.buildDataFrame(returningMap);
+        return OperatorStage.buildDataFrameFromMap(returningMap);
     }
 
     private Object castValue(Object value, String dataTypeTarget) throws DomainException {

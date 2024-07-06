@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.output.repositories;
+package main.cl.dagserver.infra.adapters.output.storage;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -24,28 +24,23 @@ import main.cl.dagserver.domain.core.MetadataManager;
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class InternalStorage {
-	
-	
-	private String locatedb = null;
+
 	@SuppressWarnings("rawtypes")
 	private ConcurrentMap map = null;
-
 	
-	public InternalStorage(@Value("${param.xcompath}")String xcomfolder) {
+	@Value("${param.xcompath}")
+	private String xcomfolder;
+	
+	public InternalStorage() {	
+		this.initInternalStorage();
+	}
+	private void initInternalStorage() {
 		deleteExistingFile(xcomfolder);
 		DB db = DBMaker.fileDB(xcomfolder).fileDeleteAfterClose().make();
 		map = db.hashMap("xcom").createOrOpen();
 	}
-	
-	public void init(String name ) {
-		this.locatedb = name;
-	}
-	
-	public String getLocatedb() {
-		return  locatedb;
-	}
 	@SuppressWarnings( "unchecked" )
-	public void put(Map<String,DataFrame> xcom) {
+	public void putEntry(String locatedb,Map<String,DataFrame> xcom) {
 		JSONObject wrapper = new JSONObject();
 		var keys = xcom.keySet();
 		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
@@ -53,10 +48,6 @@ public class InternalStorage {
 			wrapper.put(string, MetadataManager.dataFrameToJson(xcom.get(string)));
 		}
 		map.put(locatedb, wrapper.toString());	
-	}
-	@SuppressWarnings("unchecked")
-	public List<String> getKeys() {
-		return new ArrayList<String>(map.keySet());
 	}
 	public Map<String,DataFrame> getEntry(String xcomkey) {
 		Map<String,DataFrame> mapa = new HashMap<>();
@@ -73,9 +64,6 @@ public class InternalStorage {
 		}
 		return mapa;
 	}
-	public Map<String,DataFrame> get() {
-		return this.getEntry(locatedb);
-	}
 	private void deleteExistingFile(String xcomfolder) {
         try {
         	File file = new File(xcomfolder);
@@ -87,7 +75,6 @@ public class InternalStorage {
 		}
 		
     }
-
 	@SuppressWarnings("unchecked")
 	public void deleteXCOM(Date time) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");

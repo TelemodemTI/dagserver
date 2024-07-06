@@ -58,7 +58,7 @@ public class SshOperator extends OperatorStage {
 			channel.setCommand(this.args.getProperty("cmd"));
 			List<Map<String,Object>> list = new ArrayList<>();
 			list.add(this.sendToChannel(channel));
-			return OperatorStage.buildDataFrame(list);
+			return OperatorStage.buildDataFrameFromMap(list);
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();

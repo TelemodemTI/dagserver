@@ -44,10 +44,10 @@ public class JavaOperator extends OperatorStage {
 			
 			if (result instanceof List) {
 		        var rvl = (List) result;
-		        return OperatorStage.buildDataFrame(rvl);	        
+		        return OperatorStage.buildDataFrameFromObject(rvl);	        
 		    } else if (result instanceof Map) {
 		    	var rvm = (Map) result;
-		    	return OperatorStage.buildDataFrame(Arrays.asList(rvm));
+		    	return OperatorStage.buildDataFrameFromMap(Arrays.asList(rvm));
 		    } else if(result instanceof DataFrame) {
 		    	return (DataFrame) result;
 		    } else {
