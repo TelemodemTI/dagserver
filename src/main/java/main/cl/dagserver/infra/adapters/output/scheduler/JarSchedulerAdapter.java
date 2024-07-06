@@ -291,7 +291,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	}
 	
 	@SuppressWarnings("resource")
-	public void execute(String jarname, String dagname, String type) throws DomainException {
+	public void execute(String jarname, String dagname, String type, String data) throws DomainException {
 		try {
 			List<Map<String,String>> classNames = classMap.get(jarname);
 			File jarfileO = this.findJarFile(jarname);
@@ -304,6 +304,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					if(toschedule.name().equals(dagname)) {
 						founded = true;
 						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+						dag.setChannelData(data);
 						dag.setExecutionSource(type);
 						quartz.executeInmediate(dag);
 						break;

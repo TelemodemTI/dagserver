@@ -28,9 +28,12 @@ public class DagGraphApi {
 	}
 	
 	public void execute(String jarname,String dagname) throws DomainException {
+		this.execute(jarname, dagname,null);
+	}
+	public void execute(String jarname,String dagname, String data) throws DomainException {
 		if(compiled != null && prop != null && opts != null) {
 			if(compiled) {
-				this.executeCompiledDag(jarname,dagname);
+				this.executeCompiledDag(jarname,dagname,data);
 			} else {
 				this.executeUncompiledDag(dagname);
 			}	
@@ -55,8 +58,8 @@ public class DagGraphApi {
 			}
 		}
 	}
-	private void executeCompiledDag(String jarname,String dagname) throws DomainException {
-			this.scanner.execute(jarname, dagname, dagname);
+	private void executeCompiledDag(String jarname,String dagname,String data) throws DomainException {
+			this.scanner.execute(jarname, dagname, dagname,data);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

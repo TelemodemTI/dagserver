@@ -24,7 +24,7 @@ public class ActiveMQService extends BaseServiceComponent implements ActiveMQCha
 
 	@Override
 	public void raiseEvent(String channel, String message) throws DomainException {
-		this.trigggerEvent(channel, "ACTIVEMQ_EVENT");
+		this.trigggerEvent(channel, "ACTIVEMQ_EVENT",message);
 	}
 
 	@Override

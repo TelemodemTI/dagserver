@@ -548,11 +548,11 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
       })
     })
   }
-  executeDag(dagname: String, jarname: String): Promise<ExecuteResult> {
+  executeDag(dagname: String, jarname: String,data:String): Promise<ExecuteResult> {
     return new Promise<ExecuteResult>((resolve, reject) => {
       var token = localStorage.getItem("dagserver_token")
-      var string = "mutation executeDag($token: String!,$dagname:String!, $jarname: String!) {executeDag(token:$token,dagname:$dagname,jarname:$jarname) {status,code,value}}";
-      this.query(string,{dagname:dagname,jarname:jarname,token:token}).subscribe((result:any)=>{
+      var string = "mutation executeDag($token: String!,$dagname:String!, $jarname: String!, $data: String!) {executeDag(token:$token,dagname:$dagname,jarname:$jarname,data:$data) {status,code,value}}";
+      this.query(string,{dagname:dagname,jarname:jarname,token:token,data:data}).subscribe((result:any)=>{
         if(result && result.executeDag && result.executeDag.status){
           let title_msje = (result.executeDag.status == "ok")?"WARNING":"ERROR"
           let error_msje = result.executeDag.value

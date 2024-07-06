@@ -65,9 +65,9 @@ public class MutationResolver implements GraphQLMutationResolver {
 		}
 	}
 	
-	public StatusOp executeDag(String token,String dagname,String jarname) {
+	public StatusOp executeDag(String token,String dagname,String jarname,String data) {
 		try {
-			handler.execute(token,jarname, dagname,"GRAPHQL_ENDPOINT");
+			handler.execute(token,jarname, dagname,"GRAPHQL_ENDPOINT",data);
 			return ok();
 		} catch (Exception e) {
 			return error(e);

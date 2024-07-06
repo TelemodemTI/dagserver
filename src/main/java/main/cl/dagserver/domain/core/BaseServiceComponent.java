@@ -50,7 +50,7 @@ public class BaseServiceComponent {
 	@Autowired
 	protected InternalStorage storage;
 	
-	protected void trigggerEvent(String artifact, String eventType) throws DomainException  {
+	protected void trigggerEvent(String artifact, String eventType, String data) throws DomainException  {
 		var propertyList = repository.getProperties(artifact);
 		String dagname = "";
 		String jarname = "";
@@ -64,7 +64,7 @@ public class BaseServiceComponent {
 				}
 		}
 		if(!dagname.isEmpty() && !jarname.isEmpty()) {
-				scanner.init().execute(jarname, dagname,eventType);	
+				scanner.init().execute(jarname, dagname,eventType,data);	
 		}	
 	}
 	

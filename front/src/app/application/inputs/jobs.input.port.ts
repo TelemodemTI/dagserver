@@ -13,6 +13,6 @@ export abstract class JobsInputPort {
   public abstract getScheduledJobs():Promise<Scheduled[]>;
   public abstract unscheduleDag(dagname:String, jarname: String):Promise<void>;
   public abstract scheduleDag(dagname:String, jarname: String):Promise<void>;
-  public abstract executeDag(dagname:String, jarname: String):Promise<ExecuteResult>
+  public abstract executeDag(dagname:String, jarname: String, data:String):Promise<ExecuteResult>
   public abstract compile(uncompiledId: number):Promise<String>
 }

@@ -32,7 +32,7 @@ public class RabbitChannelService extends BaseServiceComponent implements Rabbit
 
 	@Override
 	public void raiseEvent(String bodyStr, String queue, String routingKey, String contentType) throws DomainException  {
-		this.trigggerEvent(queue, "RABBIT_EVENT");
+		this.trigggerEvent(queue, "RABBIT_EVENT",bodyStr);
 	}
 
 }

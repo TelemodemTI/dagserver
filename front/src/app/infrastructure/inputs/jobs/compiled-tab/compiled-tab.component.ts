@@ -83,7 +83,8 @@ export class CompiledTabComponent {
     }
   }
   async play(jarname:any,dagname:any){
-    let msg = await this.service.executeDag(dagname,jarname);
+    let data = "";
+    let msg = await this.service.executeDag(dagname,jarname,data);
     this.title_msje = msg.title_msje
     this.error_msje = msg.error_msje
     $('#propertyNotFoundModal').modal('show');

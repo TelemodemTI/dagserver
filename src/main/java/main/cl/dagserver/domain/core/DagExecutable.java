@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,6 +98,7 @@ public class DagExecutable implements Job,JobListener  {
 	protected String executionSource = "";
 	protected Graph<DagNode, DefaultEdge> g;
 	protected JobDetail jobDetail;
+	protected String channelData;
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -133,7 +135,11 @@ public class DagExecutable implements Job,JobListener  {
 		String evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
 		List<String> timestamps = new ArrayList<>();
 		var fa = this.createDagMemoryAppender(evalstring);
-		Map<String,DataFrame> xcom = new HashMap<>();   
+		Map<String,Object> data = new HashMap<>();
+		data.put("data", this.channelData);
+		DataFrame dfdata = OperatorStage.buildDataFrame(Arrays.asList(data));
+		Map<String,DataFrame> xcom = new HashMap<>();
+		xcom.put("args", dfdata);
 		Logger logdag = Logger.getLogger(evalstring);
 		logdag.setLevel(Level.INFO);
 		logdag.debug("executing dag::"+this.dagname);
@@ -493,6 +499,14 @@ public class DagExecutable implements Job,JobListener  {
 
 	public void setExecutionSource(String executionSource) {
 		this.executionSource = executionSource;
+	}
+
+	public String getChannelData() {
+		return channelData;
+	}
+
+	public void setChannelData(String channelData) {
+		this.channelData = channelData;
 	}
 
 	
