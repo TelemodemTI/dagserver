@@ -2,7 +2,7 @@ version: "3.9"  # optional since v1.27.0
 services:
 
   dagserver:
-    image: maximolira/dagserver
+    build: .
     container_name: dagserver
     ports:
       - "11000:8081"
