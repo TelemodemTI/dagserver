@@ -18,6 +18,7 @@ import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -60,7 +61,7 @@ public class JdbcOperator extends OperatorStage {
 					RowProxy firstRow = data.iterator().next();
 					var kv = this.namedParameter(sql, firstRow);
 					var returnv = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
-					return OperatorStage.buildDataFrame(returnv);
+					return DataFrameUtils.buildDataFrameFromMap(returnv);
 				} else {
 					String sql = this.args.getProperty(QUERY);
 					for (Iterator<RowProxy> iterator = data.iterator(); iterator.hasNext();) {
@@ -68,15 +69,15 @@ public class JdbcOperator extends OperatorStage {
 					    var kv = this.namedParameter(sql, map);
 					    queryRunner.update(con, kv.getKey(), kv.getValue());
 					}
-					return OperatorStage.createStatusFrame("ok");
+					return DataFrameUtils.createStatusFrame("ok");
 				} 
 			} else {
 					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
 						var returningv = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());
-						return OperatorStage.buildDataFrame(returningv);
+						return DataFrameUtils.buildDataFrameFromMap(returningv);
 					} else {
 						queryRunner.update(con, this.args.getProperty(QUERY));
-						return OperatorStage.createStatusFrame("ok");
+						return DataFrameUtils.createStatusFrame("ok");
 					}
 			}	
 		} catch (Exception e) {

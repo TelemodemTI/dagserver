@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
-import main.cl.dagserver.domain.core.MetadataManager;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.TemporalDagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -119,7 +119,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			var keys = xcom.keySet();
 			for (Iterator<String> iterator2 = keys.iterator(); iterator2.hasNext();) {
 				 var string = iterator2.next();
-				 wrapper.put(string, MetadataManager.dataFrameToJson(xcom.get(string)));
+				 wrapper.put(string, DataFrameUtils.dataFrameToJson(xcom.get(string)));
 			}
 			
 			output.put("xcom", wrapper);

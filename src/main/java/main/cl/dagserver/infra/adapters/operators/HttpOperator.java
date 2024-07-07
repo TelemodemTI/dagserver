@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.json.JSONObject;
 import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -58,7 +59,7 @@ public class HttpOperator extends OperatorStage {
 				}
 				in.close();
 				log.debug(this.getClass()+" end "+this.name);
-				return this.createFrame("response", response.toString());
+				return DataFrameUtils.createFrame("response", response.toString());
 			
 			} else {
 				throw new DomainException(new Exception("request failed!"));

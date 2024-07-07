@@ -76,7 +76,7 @@ class JarSchedulerAdapterTest {
 	}
 	@Test
 	void executeTest() throws DomainException {
-		adapter.execute("jarname", "dagname", "type");
+		adapter.execute("jarname", "dagname", "type","");
 		assertTrue(true);
 	}
 	@Test

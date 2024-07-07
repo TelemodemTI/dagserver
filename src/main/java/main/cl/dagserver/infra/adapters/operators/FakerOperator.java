@@ -14,6 +14,7 @@ import com.github.javafaker.Faker;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -51,7 +52,7 @@ public class FakerOperator extends OperatorStage {
             }
             maps.add(item);
 		}
-        return OperatorStage.buildDataFrame(maps);
+        return DataFrameUtils.buildDataFrameFromMap(maps);
     }
 
     private String invokeFakerMethod(Faker faker, String methodName) {

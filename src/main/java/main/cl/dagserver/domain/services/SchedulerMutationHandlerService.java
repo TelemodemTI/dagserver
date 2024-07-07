@@ -76,10 +76,10 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		}
 	}
 	@Override
-	public void execute(String token, String jarname, String dagname, String source) throws DomainException {
+	public void execute(String token, String jarname, String dagname, String source,String data) throws DomainException {
 		try {
 			tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-			scanner.init().execute(jarname, dagname,source);	
+			scanner.init().execute(jarname, dagname,source,data);	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -357,7 +357,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Override
 	public void removeException(String token, String eventDt) throws DomainException {
 		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-		this.excstorage.remove(eventDt);
+		this.storage.removeException(eventDt);
 	}
 	@Override
 	public void reimport(String token, String jarname) throws DomainException {

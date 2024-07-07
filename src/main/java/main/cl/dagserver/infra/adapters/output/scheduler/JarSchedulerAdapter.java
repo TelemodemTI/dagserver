@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
+import main.cl.dagserver.application.ports.output.Storage;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
@@ -35,14 +36,12 @@ import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 import main.cl.dagserver.infra.adapters.operators.DummyOperator;
 import main.cl.dagserver.infra.adapters.operators.LogsRollupOperator;
 import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
-import main.cl.dagserver.infra.adapters.output.repositories.InternalStorage;
-
 @Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
 public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Autowired
-	private InternalStorage storage;
+	private Storage storage;
 	@Value("${param.folderpath}")
 	private String pathfolder;
 	@Autowired
@@ -291,7 +290,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	}
 	
 	@SuppressWarnings("resource")
-	public void execute(String jarname, String dagname, String type) throws DomainException {
+	public void execute(String jarname, String dagname, String type, String data) throws DomainException {
 		try {
 			List<Map<String,String>> classNames = classMap.get(jarname);
 			File jarfileO = this.findJarFile(jarname);
@@ -304,6 +303,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					if(toschedule.name().equals(dagname)) {
 						founded = true;
 						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+						dag.setChannelData(data);
 						dag.setExecutionSource(type);
 						quartz.executeInmediate(dag);
 						break;

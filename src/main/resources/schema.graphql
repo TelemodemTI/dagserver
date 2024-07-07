@@ -129,7 +129,8 @@ type Mutation {
 	createProperty(token:String, name: String, description: String, value: String,group: String) : StatusOp,
 	deleteProperty(token:String, name: String, group: String) : StatusOp,
 	deleteGroupProperty(token:String, name: String, group: String) : StatusOp,
-	executeDag(token:String, dagname:String, jarname:String) : StatusOp,
+	executeDag(token:String, dagname:String, jarname:String, data: String) : StatusOp,
+	
 	saveUncompiled(token:String, bin:String) : StatusOp,
 	updateUncompiled(token:String, uncompiled:Int , bin:String) : StatusOp,
 	compile(token:String, uncompiled:Int, force: Int) : StatusOp,

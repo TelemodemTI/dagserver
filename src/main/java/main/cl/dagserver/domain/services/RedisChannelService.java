@@ -36,7 +36,7 @@ public class RedisChannelService extends BaseServiceComponent implements RedisCh
 
 	@Override
 	public void raiseEvent(String channel, String message) throws DomainException {
-		this.trigggerEvent(channel, "REDIS_EVENT");
+		this.trigggerEvent(channel, "REDIS_EVENT",message);
 	}
 
 	@Override

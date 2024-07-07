@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -54,7 +55,7 @@ public class PathDirOperator extends OperatorStage {
 	        throw new DomainException(e);
 	    }
 	    log.debug(this.getClass() + " end " + this.name);
-	    return OperatorStage.buildDataFrame(returnv);
+	    return DataFrameUtils.buildDataFrameFromMap(returnv);
 	}
 	
 

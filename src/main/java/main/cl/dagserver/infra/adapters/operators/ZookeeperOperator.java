@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -43,7 +44,7 @@ public class ZookeeperOperator extends OperatorStage {
 			String path = this.args.getProperty("path");
 			
 			if(mode.equals("READ")) {
-				df = MetadataManager.jsonToDataFrame(new JSONArray(new String(zoo.getData(path, true, zoo.exists(path, true)))));
+				df = DataFrameUtils.jsonToDataFrame(new JSONArray(new String(zoo.getData(path, true, zoo.exists(path, true)))));
 			} else if(mode.equals("INSERT")) {
 				String xcomname = this.optionals.getProperty("xcom");
 				if(!this.xcom.containsKey(xcomname)) {
@@ -51,14 +52,14 @@ public class ZookeeperOperator extends OperatorStage {
 				}
 				DataFrame data = this.xcom.get(xcomname);	
 				if (zoo.exists(path, false) == null) {
-					zoo.create(path, MetadataManager.dataFrameToBytes(data), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+					zoo.create(path, DataFrameUtils.dataFrameToBytes(data), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 				} else {
-					zoo.setData(path, MetadataManager.dataFrameToBytes(data), zoo.exists(path, true).getVersion());	
+					zoo.setData(path, DataFrameUtils.dataFrameToBytes(data), zoo.exists(path, true).getVersion());	
 				}
-				df = OperatorStage.createStatusFrame("ok");
+				df = DataFrameUtils.createStatusFrame("ok");
 			} else {
 				zoo.delete(path,  zoo.exists(path, true).getVersion());
-				df = OperatorStage.createStatusFrame("ok");
+				df = DataFrameUtils.createStatusFrame("ok");
 			}
 			zoo.close();
 		} catch (Exception e) {

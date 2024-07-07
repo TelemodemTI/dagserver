@@ -14,7 +14,7 @@ import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 
 import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
-import main.cl.dagserver.domain.core.MetadataManager;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.domain.model.LogDTO;
@@ -156,7 +156,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 			var keys = mpa.keySet();
 			for (Iterator<String> iterator2 = keys.iterator(); iterator2.hasNext();) {
 				 var string = iterator2.next();
-				 wrapper.put(string, MetadataManager.dataFrameToJson(mpa.get(string)));
+				 wrapper.put(string, DataFrameUtils.dataFrameToJson(mpa.get(string)));
 			}
 			entry.setOutputxcom(wrapper.toString());
 			entry.setXcomkey(log.getXcomkey());

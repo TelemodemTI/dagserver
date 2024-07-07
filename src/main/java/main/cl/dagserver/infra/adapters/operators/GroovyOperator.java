@@ -13,6 +13,7 @@ import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DagGraphApi;
 import main.cl.dagserver.domain.core.DagOperatorApi;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -48,21 +49,21 @@ public class GroovyOperator extends OperatorStage {
 	        if(rvl.isEmpty()) {
 	        	return DataFrame.empty("status");
 	        } else {
-	        	return OperatorStage.buildDataFrame(rvl);	
+	        	return DataFrameUtils.buildDataFrameFromObject(rvl);	
 	        }
 	    } else if (rv instanceof Map) {
 	    	var rvm = (Map) rv;
 	    	if(rvm.isEmpty()) {
 	    		return DataFrame.empty("status");
 	    	} else {
-	    		return OperatorStage.buildDataFrame(Arrays.asList(rvm));	
+	    		return DataFrameUtils.buildDataFrameFromMap(Arrays.asList(rvm));	
 	    	}
 	    } else if(rv instanceof DataFrame) {
 	    	return (DataFrame) rv;
 	    } else if(rv == null) {
 	    	return DataFrame.empty("status");
 	    } else {
-	        return this.createFrame("output", rv);
+	        return DataFrameUtils.createFrame("output", rv);
 	    }
 	    
 	}

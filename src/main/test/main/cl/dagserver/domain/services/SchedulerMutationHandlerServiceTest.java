@@ -144,7 +144,7 @@ class SchedulerMutationHandlerServiceTest {
 		JarSchedulerAdapter adapter = mock(JarSchedulerAdapter.class);
 		when(scanner.init()).thenReturn(adapter);
 		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
-		service.execute("token","jarname", "dagname","channel");
+		service.execute("token","jarname", "dagname","channel","");
 		assertTrue(true);
 	}
 	@Test
@@ -153,7 +153,7 @@ class SchedulerMutationHandlerServiceTest {
 		try {
 			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
 			when(scanner.init()).thenThrow(new DomainException(new Exception("test")));
-			service.execute("token","jarname", "dagname","channel");
+			service.execute("token","jarname", "dagname","channel","");
 		} catch (Exception e) {
 			assertTrue(true);
 		}

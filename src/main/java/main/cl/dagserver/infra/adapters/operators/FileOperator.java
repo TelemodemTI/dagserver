@@ -18,6 +18,7 @@ import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -31,7 +32,7 @@ public class FileOperator extends OperatorStage {
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
-			List<Map<String,Object>> returnv = new ArrayList<>();
+			List<Map<String, Object>> returnv = new ArrayList<>();
 			log.debug(this.getClass()+" init "+this.name);
 			log.debug("args");
 			log.debug(this.args);
@@ -72,7 +73,7 @@ public class FileOperator extends OperatorStage {
 				}
 
 			}
-			return OperatorStage.buildDataFrame(returnv);	
+			return DataFrameUtils.buildDataFrameFromMap(returnv);	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -108,7 +109,7 @@ public class FileOperator extends OperatorStage {
 		log.debug("write "+filepath+"--lines:"+lines);
 	}
 	
-	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String,Object>> result) {
+	private void read(String filepath,String rowDelimiter,Boolean firstrow,List<Map<String, Object>> result) {
 		String line;
 		Integer lineNumber = 0;
 		List<String> titles = new ArrayList<>();

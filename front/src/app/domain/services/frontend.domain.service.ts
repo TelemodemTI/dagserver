@@ -209,8 +209,8 @@ export class FrontEndDomainService implements
   getDetail(jarname: String): Promise<Detail> {
     return this.adapter.getDetail(jarname);
   }
-  executeDag(dagname: String, jarname: String): Promise<ExecuteResult> {
-    return this.adapter.executeDag(dagname,jarname);
+  executeDag(dagname: String, jarname: String, data:String): Promise<ExecuteResult> {
+    return this.adapter.executeDag(dagname,jarname,data);
   }
   unscheduleDag(dagname: String, jarname: String): Promise<void> {
     return this.adapter.unscheduleDag(dagname,jarname);

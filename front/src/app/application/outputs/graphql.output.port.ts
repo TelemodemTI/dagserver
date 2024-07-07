@@ -43,7 +43,7 @@ export abstract class GraphQLOutputPort {
     public abstract getScheduledJobs(): Promise<Scheduled[]>;
     public abstract unscheduleDag(dagname:String, jarname: String):Promise<void> ;
     public abstract scheduleDag(dagname:String, jarname: String):Promise<void> ;
-    public abstract executeDag(dagname:String, jarname: String):Promise<ExecuteResult>;
+    public abstract executeDag(dagname:String, jarname: String,data:String):Promise<ExecuteResult>;
     public abstract getDetail(jarname:String):Promise<Detail>;
     public abstract createUncompiled(bin: String): Promise<void>;
     public abstract logs(dagname: String): Promise<Log[]>;

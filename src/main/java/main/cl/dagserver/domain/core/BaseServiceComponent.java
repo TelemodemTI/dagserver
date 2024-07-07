@@ -7,12 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
-import main.cl.dagserver.application.ports.output.ExceptionStorageUseCase;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
+import main.cl.dagserver.application.ports.output.Storage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
-import main.cl.dagserver.infra.adapters.output.repositories.InternalStorage;
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -40,17 +39,14 @@ public class BaseServiceComponent {
 	
 	@Autowired
 	protected CompilerOutputPort compiler;
-	
+
 	@Autowired
-	protected ExceptionStorageUseCase excstorage;
+	protected Storage storage;
 	
 	@Autowired
 	protected TokenEngine tokenEngine;
 	
-	@Autowired
-	protected InternalStorage storage;
-	
-	protected void trigggerEvent(String artifact, String eventType) throws DomainException  {
+	protected void trigggerEvent(String artifact, String eventType, String data) throws DomainException  {
 		var propertyList = repository.getProperties(artifact);
 		String dagname = "";
 		String jarname = "";
@@ -64,7 +60,7 @@ public class BaseServiceComponent {
 				}
 		}
 		if(!dagname.isEmpty() && !jarname.isEmpty()) {
-				scanner.init().execute(jarname, dagname,eventType);	
+				scanner.init().execute(jarname, dagname,eventType,data);	
 		}	
 	}
 	

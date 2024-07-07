@@ -13,6 +13,7 @@ import org.testng.xml.XmlSuite;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -56,7 +57,7 @@ public class TestNGOperator extends OperatorStage {
 	        testng.run();
 			log.debug(this.args);
 			log.debug(this.getClass()+" end "+this.name);
-			return this.createFrame("statusCode", testng.getStatus());
+			return DataFrameUtils.createFrame("statusCode", testng.getStatus());
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

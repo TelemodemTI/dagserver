@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
+import main.cl.dagserver.application.ports.output.Storage;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -48,7 +49,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private static final String UNCOMPILEDQUERY = "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = ";
 	
 	@Autowired
-	private InternalStorage storage;
+	private Storage storage;
 
 	@Autowired
 	private DAO dao;
@@ -402,9 +403,9 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	public String createInternalStatus(Map<String,DataFrame> data) throws DomainException {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-			this.storage.init(sdf.format(new Date()));
-			storage.put(data);
-			return storage.getLocatedb();	
+			var key = sdf.format(new Date());
+			storage.putEntry(key,data);
+			return key;	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -414,8 +415,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	@Override
 	public Map<String, DataFrame> readXcom(String locatedAt) throws DomainException {
 		try {
-			this.storage.init(locatedAt);
-			return storage.get();
+			return storage.getEntry(locatedAt);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

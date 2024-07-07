@@ -25,7 +25,7 @@ public class KafkaChannelService extends BaseServiceComponent implements KafkaCh
 
 	@Override
 	public void raiseEvent(String topic, String message) throws DomainException {
-		this.trigggerEvent(topic, "KAFKA_EVENT");
+		this.trigggerEvent(topic, "KAFKA_EVENT",message);
 	}
 
 	

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import org.json.JSONObject;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -80,7 +81,7 @@ public class Samba2Operator extends OperatorStage {
 			}
 		    
 			this.disconnect(smb2session, client);
-			return OperatorStage.buildDataFrame(results);
+			return DataFrameUtils.buildDataFrameFromMap(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

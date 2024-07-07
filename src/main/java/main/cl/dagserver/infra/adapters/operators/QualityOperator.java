@@ -11,6 +11,7 @@ import com.nhl.dflib.Series;
 import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -66,7 +67,7 @@ public class QualityOperator extends OperatorStage {
         df = df.addColumn("quality_status", quality_statusSeries);
         df = df.addColumn("quality_msgList", quality_msgListSeries);
         log.debug(this.getClass() + " end " + this.name);
-        return OperatorStage.buildDataFrame(returningMap);
+        return DataFrameUtils.buildDataFrameFromMap(returningMap);
     }
 
     private Object castValue(Object value, String dataTypeTarget) throws DomainException {

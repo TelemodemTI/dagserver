@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -65,7 +66,7 @@ public class RedisOperator extends OperatorStage {
 			}	
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return OperatorStage.buildDataFrame(rv);
+		return DataFrameUtils.buildDataFrameFromMap(rv);
 	}
 	
 	private List<Map<String,Object>> clusterRead(JedisCluster jedisc){
@@ -90,7 +91,7 @@ public class RedisOperator extends OperatorStage {
 						throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 		    	  }
 		    	  DataFrame df = (DataFrame) this.xcom.get(xcomname);
-		    	  JSONArray obj = MetadataManager.dataFrameToJson(df);
+		    	  JSONArray obj = DataFrameUtils.dataFrameToJson(df);
 		    	  jedisc.set(this.args.getProperty("keyObject"), obj.toString());	  
 		    	  
 	    	} else {
@@ -135,7 +136,7 @@ public class RedisOperator extends OperatorStage {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 	    	  }
 	    	  var df = (DataFrame) this.xcom.get(xcomname);
-	    	  var obj = MetadataManager.dataFrameToJson(df);
+	    	  var obj = DataFrameUtils.dataFrameToJson(df);
 	    	  jedis.set(this.args.getProperty("keyObject"), obj.toString());
 		} else {
 			var body = this.optionals.getProperty("body");

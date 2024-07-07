@@ -17,6 +17,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -72,7 +73,7 @@ public class RabbitMQOperator extends OperatorStage {
 				
 			}
 			log.debug(this.getClass()+" end "+this.name);
-			return OperatorStage.buildDataFrame(rv);
+			return DataFrameUtils.buildDataFrameFromMap(rv);
 		} catch (Exception e) {
 			log.error(e);			
 			throw new DomainException(e);

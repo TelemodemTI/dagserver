@@ -11,7 +11,7 @@ public interface SchedulerMutationUseCase {
 	void unscheduleDag(String token, String dagname, String jarname) throws DomainException;
 	void createProperty(String token, String name, String description, String value, String group) throws DomainException;
 	void deleteProperty(String token,String name, String group) throws DomainException;
-	public void execute(String token, String jarname, String dagname, String channel) throws DomainException;
+	void execute(String token, String jarname, String dagname, String channel,String data) throws DomainException;
 	void saveUncompiled(String token, JSONObject defobj) throws DomainException;
 	void updateUncompiled(String token,Integer uncompiled, JSONObject json) throws DomainException;
 	void compile(String token, Integer uncompiled,Boolean force) throws DomainException;
@@ -41,4 +41,5 @@ public interface SchedulerMutationUseCase {
 	void delConsumerAM(String token,String queue) throws DomainException;
 	void removeException(String token, String eventDt) throws DomainException;
 	void reimport(String token, String jarname) throws DomainException;
+	
 }
