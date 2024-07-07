@@ -91,9 +91,6 @@ export class AuthenticatedComponent {
   resultLog(item:any){
     this.router.navigateByUrl(`auth/jobs/${item.dagname}/${item.id}`);
   }
-  async goToDocs(){
-    window.location.href = "https://docs.telemodem.cl/books/dagserver-documentation"
-  }
   async goToMonitor(){
     let url = uri + "monitoring";
     window.location.href = url
