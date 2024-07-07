@@ -8,6 +8,7 @@ import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -23,7 +24,7 @@ public class ActiveMQOperator extends OperatorStage {
         String mode = this.args.getProperty("mode");
         if ("produce".equalsIgnoreCase(mode)) {
             produce();
-            return OperatorStage.createStatusFrame("ok");
+            return DataFrameUtils.createStatusFrame("ok");
         } else if ("consume".equalsIgnoreCase(mode)) {
         	return consume();
         } else {

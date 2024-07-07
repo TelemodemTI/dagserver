@@ -21,6 +21,7 @@ import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -55,7 +56,7 @@ public class MongoDBOperator extends OperatorStage {
 			list = this.delete(mongoClient);
 		}
 		log.debug(this.getClass()+" end "+this.name);
-		return OperatorStage.buildDataFrameFromMap(list);
+		return DataFrameUtils.buildDataFrameFromMap(list);
 	}
 	
 	private List<Map<String,Object>> read(MongoClient mongoClient) throws DomainException {

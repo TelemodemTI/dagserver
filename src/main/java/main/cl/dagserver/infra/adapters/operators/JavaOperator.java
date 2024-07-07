@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -44,14 +45,14 @@ public class JavaOperator extends OperatorStage {
 			
 			if (result instanceof List) {
 		        var rvl = (List) result;
-		        return OperatorStage.buildDataFrameFromObject(rvl);	        
+		        return DataFrameUtils.buildDataFrameFromObject(rvl);	        
 		    } else if (result instanceof Map) {
 		    	var rvm = (Map) result;
-		    	return OperatorStage.buildDataFrameFromMap(Arrays.asList(rvm));
+		    	return DataFrameUtils.buildDataFrameFromMap(Arrays.asList(rvm));
 		    } else if(result instanceof DataFrame) {
 		    	return (DataFrame) result;
 		    } else {
-		        return this.createFrame("output", result);
+		        return DataFrameUtils.createFrame("output", result);
 		    }
 		} catch (Exception e) {
 			throw new DomainException(e);

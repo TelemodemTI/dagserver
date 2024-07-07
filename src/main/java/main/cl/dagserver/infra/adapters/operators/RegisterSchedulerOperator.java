@@ -8,6 +8,7 @@ import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
@@ -29,7 +30,7 @@ public class RegisterSchedulerOperator extends OperatorStage {
 				repo.setMetadata(prop.getProperty("param.host"), prop.getProperty("param.name"));
 				log.debug(this.getClass()+" end "+this.name);	
 			}	
-			return createStatusFrame("ok");
+			return DataFrameUtils.createStatusFrame("ok");
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

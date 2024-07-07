@@ -14,6 +14,7 @@ import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -140,7 +141,7 @@ public class ExcelOperator extends OperatorStage {
                 workbook.write(fileOut);
             }
             workbook.close();
-            return createStatusFrame("ok");
+            return DataFrameUtils.createStatusFrame("ok");
         } catch (Exception e) {
             throw new DomainException(e);
         }

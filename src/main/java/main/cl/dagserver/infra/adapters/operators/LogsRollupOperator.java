@@ -10,6 +10,7 @@ import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
@@ -36,7 +37,7 @@ public class LogsRollupOperator extends OperatorStage {
 				scheduler.deleteXCOM(rollup.getTime());
 				log.debug(this.getClass()+" end "+this.name);	
 			}
-			return createStatusFrame("ok");
+			return DataFrameUtils.createStatusFrame("ok");
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

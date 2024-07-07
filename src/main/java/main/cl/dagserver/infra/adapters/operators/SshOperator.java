@@ -22,6 +22,7 @@ import com.jcraft.jsch.Session;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -58,7 +59,7 @@ public class SshOperator extends OperatorStage {
 			channel.setCommand(this.args.getProperty("cmd"));
 			List<Map<String,Object>> list = new ArrayList<>();
 			list.add(this.sendToChannel(channel));
-			return OperatorStage.buildDataFrameFromMap(list);
+			return DataFrameUtils.buildDataFrameFromMap(list);
 		} catch (InterruptedException ie) {
 		    log.error("InterruptedException: ", ie);
 		    Thread.currentThread().interrupt();

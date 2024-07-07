@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 import com.nhl.dflib.DataFrame;
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.Storage;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
-import main.cl.dagserver.domain.core.MetadataManager;
 
 @Component
 @Log4j2
@@ -55,7 +55,7 @@ public class MapDBStorage implements Storage {
 		var keys = xcom.keySet();
 		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
 			String string = iterator.next();
-			wrapper.put(string, MetadataManager.dataFrameToJson(xcom.get(string)));
+			wrapper.put(string, DataFrameUtils.dataFrameToJson(xcom.get(string)));
 		}
 		map.put(locatedb, wrapper.toString());	
 	}
@@ -66,7 +66,7 @@ public class MapDBStorage implements Storage {
 			var keys = wrapper.keySet();
 			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
 				String stepname = iterator.next();
-				DataFrame df = MetadataManager.jsonToDataFrame(wrapper.getJSONArray(stepname));
+				DataFrame df = DataFrameUtils.jsonToDataFrame(wrapper.getJSONArray(stepname));
 				mapa.put(stepname, df);
 			}	
 		} catch (Exception e) {

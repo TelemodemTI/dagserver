@@ -18,6 +18,7 @@ import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -72,7 +73,7 @@ public class FileOperator extends OperatorStage {
 				}
 
 			}
-			return OperatorStage.buildDataFrameFromMap(returnv);	
+			return DataFrameUtils.buildDataFrameFromMap(returnv);	
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

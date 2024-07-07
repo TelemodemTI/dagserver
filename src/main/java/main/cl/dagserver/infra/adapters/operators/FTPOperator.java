@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -57,11 +58,11 @@ public class FTPOperator extends OperatorStage {
 					break;
 				case "upload":
 					this.upload(ftp, cmd[1], cmd[2]);
-					df = OperatorStage.createStatusFrame("ok");
+					df = DataFrameUtils.createStatusFrame("ok");
 					break;
 				case "download":
 					this.download(ftp, cmd[1], cmd[2]);
-					df = OperatorStage.createStatusFrame("ok");
+					df = DataFrameUtils.createStatusFrame("ok");
 					break;
 				 default:
 					throw new DomainException(new Exception("command invalid"));
@@ -92,7 +93,7 @@ public class FTPOperator extends OperatorStage {
 			content.add(map);
 		}
 		ftp.enterLocalPassiveMode();
-		return OperatorStage.buildDataFrameFromMap(content);	
+		return DataFrameUtils.buildDataFrameFromMap(content);	
 	}
 	
 	private void download(FTPClient ftp, String remoteFilePath, String localPath) throws DomainException {

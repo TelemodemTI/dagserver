@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -124,7 +125,7 @@ public class MailOperator extends OperatorStage {
 	      }
 	      Transport.send(msg);
     	  log.debug(this.getClass()+" end "+this.name);
-    	  return OperatorStage.createStatusFrame("ok");
+    	  return DataFrameUtils.createStatusFrame("ok");
 	    } catch (Exception e) {
 	      log.error(e);
 	      throw new DomainException(e);

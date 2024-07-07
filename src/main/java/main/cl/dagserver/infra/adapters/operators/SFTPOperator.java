@@ -24,6 +24,7 @@ import com.jcraft.jsch.SftpException;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -77,7 +78,7 @@ public class SFTPOperator extends OperatorStage  {
 			}
 			
 			this.disconnect(sftp);
-			return OperatorStage.buildDataFrameFromMap(results);
+			return DataFrameUtils.buildDataFrameFromMap(results);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}	
