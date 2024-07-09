@@ -62,8 +62,10 @@ public class RedisOperator extends OperatorStage {
 					rv = this.singleDel(jedis);
 				}	
 		    } catch (Exception e) {
+				pool.close();
 				throw new DomainException(e);
 			}	
+			pool.close();
 		}
 		log.debug(this.getClass()+" end "+this.name);
 		return DataFrameUtils.buildDataFrameFromMap(rv);

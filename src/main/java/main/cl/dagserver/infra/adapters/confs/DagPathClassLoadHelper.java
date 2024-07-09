@@ -19,7 +19,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.quartz.simpl.CascadingClassLoadHelper;
-import org.quartz.spi.ClassLoadHelper;
 import com.linkedin.cytodynamics.nucleus.DelegateRelationshipBuilder;
 import com.linkedin.cytodynamics.nucleus.IsolationLevel;
 import com.linkedin.cytodynamics.nucleus.LoaderBuilder;
@@ -27,7 +26,7 @@ import com.linkedin.cytodynamics.nucleus.OriginRestriction;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
-public class DagPathClassLoadHelper extends CascadingClassLoadHelper implements ClassLoadHelper {
+public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 
 	
 	private static final String CLASSEXT = ".class";

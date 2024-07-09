@@ -51,6 +51,7 @@ public class PathDirOperator extends OperatorStage {
 	            fileInfo.put("isSymbolicLink", Files.isSymbolicLink(filePath));
 	            returnv.add(fileInfo);
 	        }
+			stream.close();
 	    } catch (IOException e) {
 	        throw new DomainException(e);
 	    }
