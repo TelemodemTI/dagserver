@@ -60,13 +60,14 @@ export class ParamExistingjComponent {
             this.statusSel = step.status
             let value,variab;
             try {
+                console.log(step.params)
                 value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
                 if(this.editor){    
                   this.editor.setValue(value.value) 
                 }
                 variab = step.params.filter((ele:any)=>{ return ele.type == "remote" })[0]
                 if(variab){
-                  this.remote_cmd = variab.split(";")
+                  this.remote_cmd = variab.value.split(";")
                 }
 
             } catch (error) {
