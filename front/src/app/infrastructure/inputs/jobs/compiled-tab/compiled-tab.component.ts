@@ -22,7 +22,6 @@ export class CompiledTabComponent {
 
   async ngOnInit(): Promise<void> {
     this.jobs = await this.service.getAvailableJobs()
-    console.log(this.jobs)
     this.calculateActive()
     setTimeout(()=>{
       if(!this.table){

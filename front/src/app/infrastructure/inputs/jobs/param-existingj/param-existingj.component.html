@@ -21,107 +21,18 @@
 
 
                 <ul class="nav nav-tabs">
-                    <li id="home_li" *ngIf="tabIsDisplayed('#home')"><a href="#home" data-toggle="tab">Parameters</a></li>
-                    <li id="profile_li" *ngIf="tabIsDisplayed('#profile')"><a href="#profile" (click)="refreshCodemirror()" data-toggle="tab">Scripts</a></li>
-                    <li id="remote_li" *ngIf="tabIsDisplayed('#remoter')"><a href="#remoter" data-toggle="tab">Remote</a></li>
-                    <li id="settings_li"><a href="#settings" data-toggle="tab">Settings</a></li>
+                    <li id="home_li" *ngIf="tabIsDisplayed('#home')"><a href="#home" (click)="changeTab('#home')" data-toggle="tab">Parameters</a></li>
+                    <li id="profile_li" *ngIf="tabIsDisplayed('#profile')"><a href="#profile" (click)="changeTab('#profile')" data-toggle="tab">Scripts</a></li>
+                    <li id="remote_li" *ngIf="tabIsDisplayed('#remoter')"><a href="#remoter" (click)="changeTab('#remoter')"  data-toggle="tab" >Remote</a></li>
+                    <li id="settings_li" class="active"><a href="#settings" (click)="changeTab('#settings')" data-toggle="tab">Settings</a></li>
                 </ul>
                 <div #loader class="loader"></div>
                 <div #form class="tab-content">     
-                    <div class="tab-pane fade in active" id="home">
-                        <div class="form-group" *ngFor="let item of generatedIdParams">
-                            <ng-container *ngIf="item.type == 'text'">
-                                <label>{{item.key}}</label>
-                                <input class="form-control param-value-input" id="param-{{item.key}}-value" value="{{item.value}}">
-                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
-                            </ng-container>
-                            <ng-container *ngIf="item.type == 'password'">
-                                <label>{{item.key}}</label>
-                                <input class="form-control param-value-input" type="password" id="param-{{item.key}}-value" value="{{item.value}}">
-                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
-                            </ng-container>
-                            <ng-container *ngIf="item.type == 'number'">
-                                <label>{{item.key}}</label>
-                                <input class="form-control param-value-input" type="number" id="param-{{item.key}}-value" value="{{item.value}}">
-                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
-                            </ng-container>
-                            <ng-container *ngIf="item.type == 'boolean'">
-                                <label>{{item.key}}</label>
-                                <select class="form-control param-value-input" id="param-{{item.key}}-value">
-                                    <option value="true" [selected]="item.value == 'true'?true:false" >True</option>
-                                    <option value="false" [selected]="item.value == 'false'?true:false" >False</option>
-                                </select>
-                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
-                            </ng-container>
-                            <ng-container *ngIf="item.type == 'list'">
-                                <label>{{item.key}}</label>
-                                <select class="form-control param-value-input" id="param-{{item.key}}-value">
-                                    <option *ngFor="let opt of item.opt" value="{{opt}}" [selected]="item.value == opt">{{opt}}</option>
-                                </select>
-                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
-                            </ng-container>
-                            <ng-container *ngIf="item.type == 'xcom'">
-								<label>{{item.key}}</label>
-								<select class="form-control param-value-input" id="param-{{item.key}}-value">
-                                    <option selected disabled>Select related XCOM</option>
-                                    <option *ngFor="let opt of xcoms" value="{{opt.id}}" [selected]="item.value == opt.id">{{opt.id}}</option>
-                                </select>
-                                <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
-							</ng-container>
-                        </div>
-                    </div>
-                   
-                   
-                    <div class="tab-pane fade" id="profile">
-                        <div class="form-group" *ngFor="let item of generatedIdParams">
-                            <ng-container *ngIf="item?.type == 'sourcecode'">
-                                <label>{{item.key}}</label><br>
-                                <textarea id="queryTextqv" height="300" name="queryText">{{item.value}}</textarea>
-                                <input type="text" id="canvas-codemirror-new-det" class="noDisplay"/>
-                            </ng-container>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="remoter">
-                        
-                        
-                        
-                        <ng-container *ngFor="let item of generatedIdParams">
-                            <ng-container *ngIf="item?.type == 'remote'">
-                                <div class="form-group nooverflow" >
-                                    <br>
-                                    <label>{{item.key}} to execute on remote</label><br>
-                                    <div class="row" *ngFor="let commands of remote_cmd; let i = index;">
-                                        <div class="alert alert-info alert-dismissible remote-item col-md-8">
-                                            <button (click)="remove(i)" type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                            <b>{{getRemoteCmdValue(i,0)}}</b> {{getRemoteCmdValue(i,1)}} {{getRemoteCmdValue(i,2) ? '->' + getRemoteCmdValue(i,2):''}}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label>Remote action</label><br>
-                                            <select id="remoter-action-selector" class="form-control">
-                                                <option value="download">DOWNLOAD</option>
-                                                <option value="upload">UPLOAD</option>
-                                                <option value="list">LIST</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label>Paths or Files affected</label><br>
-                                            <input id="remoter-file" class="form-control" type="text" value=""/>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <br>
-                                            <button id="remoter-file-btn" (click)="remoteAdd()" type="button" class="btn btn-info btn-circle"><i class="fa fa-check"></i></button>
-                                        </div>
-                                    </div>
-                            </div>    
-                            
-                            </ng-container>
-                        </ng-container>
-                        
-                    </div>
-                  
-                    <div class="tab-pane fade" id="settings">
+
+                    <app-default-type-param #inputDefault [generatedIdParams]="generatedIdParams" [xcoms]="xcoms"></app-default-type-param>
+                    <app-source-type-param #inputSource [generatedIdParams]="generatedIdParams"></app-source-type-param>
+                    <app-remote-type-param #inputRemote [generatedIdParams]="generatedIdParams"></app-remote-type-param>
+                    <div class="tab-pane fade in active param-editor" id="settings">
                         <br>
                         <div class="form-group">
                             <label>Stage Name</label>

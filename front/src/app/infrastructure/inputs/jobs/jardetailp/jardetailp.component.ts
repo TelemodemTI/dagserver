@@ -1,6 +1,9 @@
 import { Component, ElementRef, Input, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { JardetailpInputPort } from 'src/app/application/inputs/jardetailp.input.port';
+import { DefaultTypeParamComponent } from '../../param-editor/default-type-param/default-type-param.component';
+import { SourceTypeParamComponent } from '../../param-editor/source-type-param/source-type-param.component';
+import { RemoteTypeParamComponent } from '../../param-editor/remote-type-param/remote-type-param.component';
 declare var $:any
 declare var CodeMirror:any
 @Component({
@@ -20,8 +23,13 @@ export class JardetailpComponent {
 
   @ViewChild("loader") loader!:ElementRef;
   @ViewChild("form") form!:ElementRef;
-  remote_cmd:string[] = []
-  editor!:any
+  @ViewChild("inputDefault") inputDefault!:DefaultTypeParamComponent;
+  @ViewChild("inputSource") inputSource!:SourceTypeParamComponent;
+  @ViewChild("inputRemote") inputRemote!:RemoteTypeParamComponent;
+  
+  xcoms:any[] = []
+  generatedIdParams:any[] = []
+  
   private keydownListener!: () => void;
 
   constructor(private router: Router,private service: JardetailpInputPort,private renderer: Renderer2){
@@ -30,17 +38,38 @@ export class JardetailpComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     console.log(this.selectedStepMetadata)
-    this.initCodemirror().then((flag)=>{
-      this.loader?.nativeElement.classList.add("invisible");
-      this.form?.nativeElement.classList.remove("invisible")
-      if(this.editor){
-        let param = this.selectedStepMetadata.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]
-        if(param){
-          this.editor.setValue(this.selectedStepParams[param.name]) 
-        }
-        
+    this.loader?.nativeElement.classList.add("invisible");
+    this.form?.nativeElement.classList.remove("invisible")
+    this.xcoms = this.selectedDag ? this.selectedDag.node : [];
+    this.generatedIdParams = []
+    if(this.selectedStepParams){
+      console.log(this.selectedStepParams)
+      this.selectedStepMetadata.params.forEach((el:any)=>{
+        this.generatedIdParams.push({key:el.name,type:el.type,value:this.selectedStepParams[el.name],source:"PAR",domid:this.generateRandomString(5),opt:[]})
+      })
+      this.selectedStepMetadata.opt.forEach((el:any)=>{
+        this.generatedIdParams.push({key:el.name,type:el.type,value:this.selectedStepParams[el.name],source:"OPT",domid:this.generateRandomString(5),opt:[]})
+      })  
+    }
+  }
+  changeTab(jid:string){
+    $(".param-editor").removeClass("in active")
+    $(".param-editor").addClass("noDisplay")
+    $(jid).addClass("in active")
+    $(jid).removeClass("noDisplay")
+    if(jid=="#profile"){
+      this.inputSource.refreshCodemirror()
+    }  
+    if(this.selectedStepMetadata){
+      let paramarr = this.selectedStepMetadata.params.filter((ele:any)=>{ return ele.type == "sourcecode" })
+      if(paramarr.length > 0){  
+        this.inputSource.setValue(this.selectedStepParams[paramarr[0].name]) 
       }
-    })
+      let variabarr = this.selectedStepMetadata.params.filter((ele:any)=>{ return ele.type == "remote" })
+      if(variabarr.length > 0){
+        this.inputRemote.setValue(this.selectedStepParams[variabarr[0].name])
+      }
+    }
     
   }
   close(){
@@ -54,6 +83,7 @@ export class JardetailpComponent {
     this.form?.nativeElement.classList.add("invisible")
     $('#param-modaljardetailj').modal('show');
     this.keydownListener = this.renderer.listen('document', 'keydown', (event: KeyboardEvent) => this.handleKeyDown(event));
+    this.changeTab("#home")
   }
   
   handleKeyDown(event: KeyboardEvent) {
@@ -63,27 +93,15 @@ export class JardetailpComponent {
       this.updateParams();
     }
   }
-  refreshCodemirror(){
-    if(this.editor){
-      let interval = setInterval(()=>{
-        if(this.loader?.nativeElement.classList.contains("invisible")){
-          clearInterval(interval)
-          setTimeout(() => {
-            this.editor.refresh()
-          }, 300);
-        } 
-      },100)
-    }
-  }
   async updateParams(){
     let paramarr = []
     for (let index = 0; index < this.selectedStepMetadata.params.length; index++) {
       const key = this.selectedStepMetadata.params[index];
       if(key.type == "sourcecode"){
-        let vlue:string = this.editor.getValue()
+        let vlue:string = this.inputSource.getValue();
         paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
       } else if(key.type == "remote"){
-        paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"props"})
+        paramarr.push({key:key.name,value:this.inputRemote.getValue(),type:key.type,source:"props"})
       } else {
         let vlue = $("#param-"+key.name+"-value").val()
         paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
@@ -92,10 +110,10 @@ export class JardetailpComponent {
     for (let index = 0; index < this.selectedStepMetadata.opt.length; index++) {
       const key = this.selectedStepMetadata.opt[index];
       if(key.type == "sourcecode"){
-        let vlue:string = this.editor.getValue()
+        let vlue:string = this.inputSource.getValue()
         paramarr.push({key:key.name,value:vlue,type:key.type,source:"opts"})
       } else if(key.type == "remote"){
-        paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"opts"})
+        paramarr.push({key:key.name,value:this.inputRemote.getValue(),type:key.type,source:"opts"})
       } else {
         let vlue = $("#param-"+key.name+"-value").val()
         paramarr.push({key:key.name,value:vlue,type:key.type,source:"opts"})
@@ -107,46 +125,14 @@ export class JardetailpComponent {
     this.router.navigateByUrl("auth/jobs");
     
   }
-  initCodemirror(){
-    return new Promise((resolve,reject)=>{
-      var width = $("#queryTextqv").attr("width");
-      var height = $("#queryTextqv").attr("height");
-      var read = $("#queryTextqv").data("readonly"); 
-      var lineWrapping = (read)?true:false;
-      setTimeout(()=>{
-        try {
-          var obj = document.getElementById("queryTextqv")
-          this.editor = CodeMirror.fromTextArea(obj, {
-                lineNumbers: true,
-                lineWrapping: lineWrapping,
-                readOnly: read,
-                matchBrackets: true,
-                mode: "simplemode",
-                continueComments: "Enter"
-          })
-          this.editor.setSize(width,height)  
-          this.editor.refresh();  
-        } catch (error) {
-          console.log("error en codemirror loading")
-        }
-        
-        resolve(true)
-      },1)
-    })
-  }
-  getRemoteCmdValue(i:number,subcat:number){
-    let varb = this.remote_cmd[i].split(" ")
-    if(varb[subcat]){
-      return varb[subcat]
-    } else return ''
-    
-  }
-  remoteAdd(){
-    var action = $("#remoter-action-selector").val()
-    var filepath = $("#remoter-file").val();
-    this.remote_cmd.push(action+" "+filepath)
-  }
-  remove(i:number){
-    this.remote_cmd.splice(i,1)
-  }
+
+  generateRandomString(length:number) {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+      }
+      return result;
+    }
 }

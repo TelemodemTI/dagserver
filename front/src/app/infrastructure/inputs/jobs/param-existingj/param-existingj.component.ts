@@ -1,4 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild, ChangeDetectorRef, Renderer2 } from '@angular/core';
+import { DefaultTypeParamComponent } from '../../param-editor/default-type-param/default-type-param.component';
+import { SourceTypeParamComponent } from '../../param-editor/source-type-param/source-type-param.component';
+import { RemoteTypeParamComponent } from '../../param-editor/remote-type-param/remote-type-param.component';
 declare var $:any
 declare var CodeMirror:any
 @Component({
@@ -15,6 +18,14 @@ export class ParamExistingjComponent {
   @ViewChild("stagenameinput") stagenameinput!:ElementRef;
   @ViewChild("linkstatusinput") linkstatusinput!:ElementRef;
 
+  @ViewChild("inputDefault") inputDefault!:DefaultTypeParamComponent;
+  @ViewChild("inputSource") inputSource!:SourceTypeParamComponent;
+  @ViewChild("inputRemote") inputRemote!:RemoteTypeParamComponent;
+  
+  
+  
+
+
   @Input("data") data:any
   @Input("selectedTab") selectedTab:any
   @Input("generatedIdParams") generatedIdParams:any
@@ -25,14 +36,14 @@ export class ParamExistingjComponent {
   @Output() updateStepEvent = new EventEmitter<any>();
   @Output() execStepEvent = new EventEmitter<any>();
 
-  editor!:any
+  
   disabledChanges:any = {}
   disabledChecklist:any = {}
   another:any[] = []
   name!:any
   statusSel!:any
   xcoms:any[] = []
-  remote_cmd:string[] = []
+  
   private keydownListener!: () => void;
 
   constructor(private cd: ChangeDetectorRef, private renderer: Renderer2) {}
@@ -47,7 +58,6 @@ export class ParamExistingjComponent {
   ngOnChanges(changes: SimpleChanges) {
     let root = this
     if(this.generatedIdParams){
-      this.initCodemirror().then((flag)=>{
         this.loader?.nativeElement.classList.add("invisible");
         this.form?.nativeElement.classList.remove("invisible")
         if(this.data){
@@ -60,17 +70,18 @@ export class ParamExistingjComponent {
             this.statusSel = step.status
             let value,variab;
             try {
-                console.log(step.params)
-                value = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })[0]  
-                if(this.editor){    
-                  this.editor.setValue(value.value) 
+                let valarr = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })
+                if(valarr.length > 0){
+                  value = valarr[0]
+                  this.inputSource.setValue(value.value)
                 }
-                variab = step.params.filter((ele:any)=>{ return ele.type == "remote" })[0]
-                if(variab){
-                  this.remote_cmd = variab.value.split(";")
+                let variabarr = step.params.filter((ele:any)=>{ return ele.type == "remote" })
+                if(variabarr.length > 0){
+                  variab = variabarr[0];
+                  this.inputRemote.setValue(variab.value)
                 }
-
             } catch (error) {
+              console.log(error)
 				      console.log("error controlado?")
 			      }
             const activeTabId = this.tabIsActive();
@@ -80,38 +91,21 @@ export class ParamExistingjComponent {
             },250)
           }
         }
-        $("#canvas-codemirror-new-det").on("change", function() {
-          var fromSelenium = $("#canvas-codemirror-new-det").val();
-          root.editor.setValue(fromSelenium);
-        })
-    })
     }
   }
   loadFrom(id:any){
     let target = this.another.filter((elem:any)=>{ return elem.id == id})[0]
     this.loadFromStepEvent.emit(target)
   }
-  refreshCodemirror(){
-    let interval = setInterval(()=>{
-      if(this.loader?.nativeElement.classList.contains("invisible")){
-        clearInterval(interval)
-        setTimeout(() => {
-          this.editor.refresh()
-          this.cd.detectChanges(); 
-        }, 300);
-      } 
-    },100)
-  }
+  
   show(){
-      this.loader?.nativeElement.classList.remove("invisible");
-      this.form?.nativeElement.classList.add("invisible")
-      if(!this.editor){
-        this.initCodemirror().then((flag)=>{
-          console.log("wtf")
-        })
-      }
-      $('#param-modalexistingj').modal('show');    
-      this.keydownListener = this.renderer.listen('document', 'keydown', (event: KeyboardEvent) => this.handleKeyDown(event));
+    this.loader?.nativeElement.classList.remove("invisible");
+    this.form?.nativeElement.classList.add("invisible")
+    this.inputSource.show();
+    $('#param-modalexistingj').modal('show');    
+    this.changeTab("#settings");
+    this.keydownListener = this.renderer.listen('document', 'keydown', (event: KeyboardEvent) => this.handleKeyDown(event));
+    
   }
   updateParams(){
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.selectedTab;})[0]
@@ -133,10 +127,10 @@ export class ParamExistingjComponent {
       for (let index = 0; index < this.selectedStepParams.params.length; index++) {
         const key = this.selectedStepParams.params[index];
         if(key.type == "sourcecode"){
-          let vlue:string = this.editor.getValue()
+          let vlue:string = this.inputSource.getValue();
           paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
         } else if(key.type == "remote"){
-          paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"props"})
+          paramarr.push({key:key.name,value:this.inputRemote.getValue(),type:key.type,source:"props"})
         } else {
           let vlue = $("#param-"+key.name+"-value").val()
           paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
@@ -147,10 +141,10 @@ export class ParamExistingjComponent {
       for (let index = 0; index < this.selectedStepParams.opt.length; index++) {
         const key = this.selectedStepParams.opt[index];
         if(key.type == "sourcecode"){
-          let vlue:string = this.editor.getValue()
+          let vlue:string = this.inputSource.getValue()
           paramarr.push({key:key.name,value:vlue,type:key.type,source:"opts"})
         } else if(key.type == "remote"){
-          paramarr.push({key:key.name,value:this.remote_cmd.join(";"),type:key.type,source:"opts"})
+          paramarr.push({key:key.name,value:this.inputRemote.getValue(),type:key.type,source:"opts"})
         } else {
           let vlue = $("#param-"+key.name+"-value").val()
           paramarr.push({key:key.name,value:vlue,type:key.type,source:"opts"})
@@ -158,6 +152,15 @@ export class ParamExistingjComponent {
       }
     }
     return paramarr;
+  }
+  changeTab(jid:string){
+    $(".param-editor").removeClass("in active")
+    $(".param-editor").addClass("noDisplay")
+    $(jid).addClass("in active")
+    $(jid).removeClass("noDisplay")
+    if(jid=="#profile"){
+      this.inputSource.refreshCodemirror()
+    }  
   }
   removeStep(){
     let obj = this.data.dags.filter(( obj:any )=> {return  obj.name == this.selectedTab;})[0]
@@ -187,37 +190,6 @@ export class ParamExistingjComponent {
       this.keydownListener();
     }
     $('#param-modalexistingj').modal('hide');
-  }
-  initCodemirror(){
-    return new Promise((resolve,reject)=>{
-      var width = $("#queryTextqv").attr("width");
-      var height = $("#queryTextqv").attr("height");
-      var read = $("#queryTextqv").data("readonly"); 
-      var lineWrapping = (read)?true:false;
-      setTimeout(()=>{
-        try {
-          var obj = document.getElementById("queryTextqv")
-          if(obj){
-            this.editor = CodeMirror.fromTextArea(obj, {
-                  lineNumbers: true,
-                  lineWrapping: lineWrapping,
-                  readOnly: read,
-                  matchBrackets: true,
-                  mode: "text/x-groovy",
-                  continueComments: "Enter"
-            })
-            this.editor.setSize(width,height)  
-            this.editor.refresh();  
-            console.log(this.editor)
-          }
-        } catch (error) {
-          console.log(error)
-          console.log("error en codemirror loading")
-        }
-        
-        resolve(true)
-      },10)
-    })
   }
   isDisabled(item:any){
     if(item.source == "OPT"){
@@ -283,19 +255,5 @@ export class ParamExistingjComponent {
       return $(jid).text().trim()?true:false;
     }
   }
-  remove(i:number){
-    this.remote_cmd.splice(i,1)
-  }
-  getRemoteCmdValue(i:number,subcat:number){
-    let varb = this.remote_cmd[i].split(" ")
-    if(varb[subcat]){
-      return varb[subcat]
-    } else return ''
-    
-  }
-  remoteAdd(){
-    var action = $("#remoter-action-selector").val()
-    var filepath = $("#remoter-file").val();
-    this.remote_cmd.push(action+" "+filepath)
-  }
+  
 }
