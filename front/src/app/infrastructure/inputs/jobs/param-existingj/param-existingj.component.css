@@ -47,9 +47,7 @@
     max-width: 97%;
     max-height: 400em;
   }
-  .noDisplay {
-    display:none;
-  }
+  
   .modal-body {
 	  overflow: auto;
 	  height: 50em;

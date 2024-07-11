@@ -10,6 +10,7 @@ import { UncompiledTabComponent } from './uncompiled-tab/uncompiled-tab.componen
 import { ParamExistingjComponent } from './param-existingj/param-existingj.component';
 import { JardetailpComponent } from './jardetailp/jardetailp.component';
 import { DependenciesComponent } from './dependencies/dependencies.component';
+import { ParamEditorModule } from '../param-editor/param-editor.module';
 
 
 
@@ -27,7 +28,8 @@ import { DependenciesComponent } from './dependencies/dependencies.component';
   ],
   imports: [
     CommonModule,
-    BaseModule
+    BaseModule,
+    ParamEditorModule
   ],
   exports: [
     JardetailComponent,

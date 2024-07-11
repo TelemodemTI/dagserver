@@ -46,3 +46,4 @@
                                     </table>        
                                 </div>
                                 <app-error-mondal [titleMsje]="title_msje" [errorMsje]="error_msje" [idModal]="'propertyNotFoundModal'"></app-error-mondal>
+                                <app-value-modal #valuer [param]="'args'" [actualValue]="'{}'" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>

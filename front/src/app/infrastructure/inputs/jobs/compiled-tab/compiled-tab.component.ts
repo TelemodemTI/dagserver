@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
 import { AvailableJobs } from 'src/app/domain/models/availableJobs.model';
+import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
 declare var $:any;
 @Component({
   selector: 'app-compiled-tab',
@@ -9,20 +10,21 @@ declare var $:any;
   styleUrls: ['./compiled-tab.component.css']
 })
 export class CompiledTabComponent {
-
+  @ViewChild("valuer") valuer!:ValueModalComponent
   scheduled:any = []
   jobs:AvailableJobs[] = []
   title_msje:any = "Error"
   error_msje:any = ""
   table!:any
 
+  jarname!:string
+  dagname!:string
   constructor(private router: Router, 
     private service: JobsInputPort){
   }
 
   async ngOnInit(): Promise<void> {
     this.jobs = await this.service.getAvailableJobs()
-    console.log(this.jobs)
     this.calculateActive()
     setTimeout(()=>{
       if(!this.table){
@@ -82,8 +84,23 @@ export class CompiledTabComponent {
       $('#propertyNotFoundModal').modal('show');
     }
   }
+  async changeValueEvent(data:any){
+    this.valuer.close();
+    try {
+      let jsonval = JSON.parse(data[1]);
+      this.playReal(this.jarname,this.dagname,jsonval)  
+    } catch (error) {
+      this.title_msje = "error"
+      this.error_msje = error
+      $('#propertyNotFoundModal').modal('show');  
+    }
+  }
   async play(jarname:any,dagname:any){
-    let data = "";
+    this.dagname = dagname
+    this.jarname = jarname
+    this.valuer.show()
+  }
+  async playReal(jarname:any,dagname:any,data:any){
     let msg = await this.service.executeDag(dagname,jarname,data);
     this.title_msje = msg.title_msje
     this.error_msje = msg.error_msje
