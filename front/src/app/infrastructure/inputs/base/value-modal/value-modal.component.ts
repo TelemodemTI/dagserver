@@ -24,4 +24,7 @@ export class ValueModalComponent {
   show(){
     $('#value-inputer').modal('show');    
   }
+  close(){
+    $('#value-inputer').modal('hide');    
+  }
 }

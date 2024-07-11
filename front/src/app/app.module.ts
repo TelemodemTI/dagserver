@@ -39,6 +39,7 @@ import { SharedOutputPort } from './application/outputs/shared.output.port';
 import { SharedAdapterService } from './infrastructure/outputs/shared/shared.adapter.service';
 import { ExceptionsModule } from './infrastructure/inputs/exceptions/exceptions.module';
 import { ExceptionsInputPort } from './application/inputs/exceptions.input.port';
+import { ParamEditorModule } from './infrastructure/inputs/param-editor/param-editor.module';
 
 
 declare var window: any;
@@ -58,7 +59,8 @@ declare var window: any;
     PropsModule,
     CredentialsModule,
     InputsModule,
-    ExceptionsModule
+    ExceptionsModule,
+    ParamEditorModule
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: window["base-href"]},
