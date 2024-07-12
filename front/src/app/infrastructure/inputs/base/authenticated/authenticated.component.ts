@@ -30,7 +30,6 @@ export class AuthenticatedComponent {
   ngOnInit(): void {
 
     setTimeout(()=>{
-      this.loadScript("/assets/js/jstree/jstree.js",function(){});
       this.loadScript("/assets/js/startmin.js",function(){});
     },100)
     this.start();

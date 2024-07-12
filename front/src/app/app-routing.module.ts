@@ -17,7 +17,6 @@ import { InputsChannelsComponent } from './infrastructure/inputs/inputs/inputs-c
 import { ExceptionsListComponent } from './infrastructure/inputs/exceptions/exceptions-list/exceptions-list.component';
 
 
-
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'auth', component: AuthenticatedComponent, children: [

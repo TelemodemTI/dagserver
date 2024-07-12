@@ -25,7 +25,7 @@ import { DagParamsComponent } from './dag-params/dag-params.component';
     DagCanvasComponent,
     ValueModalComponent,
     ResultStepModalComponent,
-    DagParamsComponent
+    DagParamsComponent,
   ],
   imports: [
     CommonModule,
@@ -42,7 +42,7 @@ import { DagParamsComponent } from './dag-params/dag-params.component';
     DagCanvasComponent,
     DagParamsComponent,
     ValueModalComponent,
-    ResultStepModalComponent
+    ResultStepModalComponent,
   ]
 })
 export class BaseModule { }

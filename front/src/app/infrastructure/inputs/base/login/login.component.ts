@@ -54,7 +54,4 @@ export class LoginComponent {
       },5000)
     }
   }
-  async goToDocs(){
-    alert("not implemented")
-  }
 }
