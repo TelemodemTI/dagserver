@@ -54,7 +54,4 @@ export class LoginComponent {
       },5000)
     }
   }
-  async goToDocs(){
-    window.location.href = "https://docs.telemodem.cl/books/dagserver-documentation"
-  }
 }

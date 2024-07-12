@@ -1,6 +1,7 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,7 @@ public class QualityOperator extends OperatorStage {
     public JSONObject getMetadataOperator() {
         MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.QualityOperator");
         metadata.setType("PROCCESS");
-        metadata.setParameter("qualityjson", "sourcecode");
+        metadata.setParameter("qualityjson", "sourcecode",Arrays.asList("application/json"));
         metadata.setOpts("xcom","xcom");
         return metadata.generate();
     }

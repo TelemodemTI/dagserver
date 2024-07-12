@@ -26,11 +26,14 @@ export class SourceTypeParamComponent {
 
   initCodemirror(){
     return new Promise((resolve,reject)=>{
-      var width = $("#queryTextqv").attr("width");
-      var height = $("#queryTextqv").attr("height");
-      var read = $("#queryTextqv").data("readonly"); 
-      var lineWrapping = (read)?true:false;
       setTimeout(()=>{
+        var width = $("#queryTextqv").attr("width");
+        var height = $("#queryTextqv").attr("height");
+        var read = $("#queryTextqv").data("readonly"); 
+        var lenguaje = $("#canvas-codemirror-mode").val(); 
+        var lineWrapping = (read)?true:false;
+        var mime = (lenguaje)?lenguaje:"text"
+        console.log(mime)
         try {
           var obj = document.getElementById("queryTextqv")
           if(obj){
@@ -39,7 +42,7 @@ export class SourceTypeParamComponent {
                   lineWrapping: lineWrapping,
                   readOnly: read,
                   matchBrackets: true,
-                  mode: "text/x-groovy",
+                  mode: mime,
                   continueComments: "Enter"
             })
             this.editor.setSize(width,height)  

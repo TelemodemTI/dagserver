@@ -166,7 +166,7 @@ public class MongoDBOperator extends OperatorStage {
 		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("username", "text");
 		metadata.setOpts("password", "password");
-		metadata.setOpts("filter", "sourcecode");
+		metadata.setOpts("filter", "sourcecode",Arrays.asList("application/json"));
 		return metadata.generate();
 	}
 	@Override
