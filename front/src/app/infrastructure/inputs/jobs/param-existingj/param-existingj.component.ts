@@ -43,6 +43,7 @@ export class ParamExistingjComponent {
   name!:any
   statusSel!:any
   xcoms:any[] = []
+  disabledrm:boolean = true;
   
   private keydownListener!: () => void;
 
@@ -91,6 +92,7 @@ export class ParamExistingjComponent {
             $("#settings_li > a").click();
             setTimeout(()=>{
               $(activeTabId + " > a").click();
+              this.disabledrm = false;
             },250)
           }
         }
@@ -102,6 +104,7 @@ export class ParamExistingjComponent {
   }
   
   show(){
+    this.disabledrm = true;
     this.loader?.nativeElement.classList.remove("invisible");
     this.form?.nativeElement.classList.add("invisible")
     this.inputSource.show();
@@ -193,6 +196,7 @@ export class ParamExistingjComponent {
     if (this.keydownListener) {
       this.keydownListener();
     }
+    this.disabledrm = true;
     $('#param-modalexistingj').modal('hide');
   }
   isDisabled(item:any){
