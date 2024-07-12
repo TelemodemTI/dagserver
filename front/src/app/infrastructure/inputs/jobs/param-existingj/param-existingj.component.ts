@@ -70,6 +70,7 @@ export class ParamExistingjComponent {
             this.statusSel = step.status
             let value,variab;
             try {
+              if(step.params){
                 let valarr = step.params.filter((ele:any)=>{ return ele.type == "sourcecode" })
                 if(valarr.length > 0){
                   value = valarr[0]
@@ -80,6 +81,8 @@ export class ParamExistingjComponent {
                   variab = variabarr[0];
                   this.inputRemote.setValue(variab.value)
                 }
+              }
+
             } catch (error) {
               console.log(error)
 				      console.log("error controlado?")
@@ -124,6 +127,7 @@ export class ParamExistingjComponent {
   loadParams(){
     let paramarr = []
     if(this.selectedStepParams){
+      console.log(this.selectedStepParams)
       for (let index = 0; index < this.selectedStepParams.params.length; index++) {
         const key = this.selectedStepParams.params[index];
         if(key.type == "sourcecode"){

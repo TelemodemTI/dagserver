@@ -75,7 +75,7 @@ public class FakerOperator extends OperatorStage {
     public JSONObject getMetadataOperator() {
         MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.FakerOperator");
         metadata.setType("PROCCESS");
-        metadata.setParameter("fakerjson", "sourcecode");
+        metadata.setParameter("fakerjson", "sourcecode",Arrays.asList("application/json"));
         metadata.setParameter("count", "number");
         metadata.setParameter("locale", "list", Arrays.asList("en-US","en-UG","es","fr"));
         return metadata.generate();

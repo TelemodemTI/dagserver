@@ -2,6 +2,8 @@ package main.cl.dagserver.infra.adapters.operators;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+
 import org.json.JSONObject;
 
 import com.nhl.dflib.DataFrame;
@@ -42,7 +44,7 @@ public class CmdOperator extends OperatorStage {
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.CmdOperator");
 		metadata.setType("PROCCESS");
-		metadata.setParameter("cmd", "sourcecode");
+		metadata.setParameter("cmd", "sourcecode", Arrays.asList("application/x-sh"));
 		return metadata.generate();
 	}
 	@Override

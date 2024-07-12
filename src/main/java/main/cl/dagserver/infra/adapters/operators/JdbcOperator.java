@@ -5,6 +5,7 @@ import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -111,7 +112,7 @@ public class JdbcOperator extends OperatorStage {
 		metadata.setParameter("pwd", "password");
 		metadata.setParameter("driver", "text");
 		metadata.setParameter("driverPath", "text");
-		metadata.setParameter(QUERY, "sourcecode");
+		metadata.setParameter(QUERY, "sourcecode",Arrays.asList("text/x-sql"));
 		metadata.setOpts("xcom","xcom");
 		return metadata.generate();
 	}
