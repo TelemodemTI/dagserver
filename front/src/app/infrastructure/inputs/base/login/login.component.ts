@@ -54,4 +54,7 @@ export class LoginComponent {
       },5000)
     }
   }
+  async goToDocs(){
+    window.location.href = "https://telemodemti.github.io/dagserver/"
+  }
 }
