@@ -32,6 +32,7 @@ Depending on your configuration and the integrations you want to implement on yo
 
 It is possible to run dagserver in HA mode using an external database. This can be configured in the quartz.properties file available in the resources folder.
 
+Documentation is available <a href="https://telemodemti.github.io/dagserver/">here</a>.
 	  
 ## Credentials:
 
