@@ -36,7 +36,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Uncompiled;
 
 @Component
 public class QueryResolver implements GraphQLQueryResolver {
-	
+	private static final String JOBLISTENER = "JOB LISTENER";
 	private SchedulerQueryUseCase handler;
 	private LoginUseCase login;
 	private QueryResolverMapper mapper;
@@ -75,45 +75,49 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}
         return rv;
     }	
-	public List<Available> availableJobs() throws DomainException{
-		var operators = handler.availableJobs();
-		var keys = operators.keySet();
-		var rv = new ArrayList<Available>();
-		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-			String string = iterator.next();
-			var props = operators.get(string);
-			for (Iterator<Map<String,String>> iterator2 = props.iterator(); iterator2.hasNext();) {
-				var operatormap = iterator2.next();
-				var operator = new Available();
-				operator.setJarname(string);
-				operator.setClassname(operatormap.get("classname"));
-				operator.setCronExpr(operatormap.get("cronExpr"));
-				operator.setGroupname(operatormap.get("groupname"));
-				operator.setDagname(operatormap.get("dagname"));
-				if(!operatormap.get("cronExpr").isEmpty()) {
-					operator.setTriggerEvent("CRON STATEMENT");
-				} else {
-					var starttr = operatormap.get("onStart");
-					var endtr = operatormap.get("onEnd");
-					if(!starttr.isEmpty()) {
-						operator.setTargetDagname(operatormap.get(starttr));
-						operator.setTriggerEvent("JOB LISTENER");
-					}
-					if(!endtr.isEmpty()) {
-						operator.setTargetDagname(operatormap.get(starttr));
-						operator.setTriggerEvent("JOB LISTENER");
-					}
-					if(endtr.isEmpty() && starttr.isEmpty()) {
-						operator.setTriggerEvent("NONE");
-					}
-				}
-				
-				rv.add(operator);	
-			}
+	public List<Available> availableJobs() throws DomainException {
+	    var operators = handler.availableJobs();
+	    var rv = new ArrayList<Available>();
 
-		}
-		rv.addAll(getDefaults());
-		return rv;
+	    for (Map.Entry<String, List<Map<String, String>>> entry : operators.entrySet()) {
+	        String jarname = entry.getKey();
+	        for (Map<String, String> operatormap : entry.getValue()) {
+	            var operator = new Available();
+	            operator.setJarname(jarname);
+	            operator.setClassname(operatormap.get("classname"));
+	            operator.setCronExpr(operatormap.get("cronExpr"));
+	            operator.setGroupname(operatormap.get("groupname"));
+	            operator.setDagname(operatormap.get("dagname"));
+
+	            String cronExpr = operatormap.get("cronExpr");
+	            if (!cronExpr.isEmpty()) {
+	                operator.setTriggerEvent("CRON STATEMENT");
+	            } else {
+	                configureListener(operatormap, operator);
+	            }
+
+	            rv.add(operator);
+	        }
+	    }
+
+	    rv.addAll(getDefaults());
+	    return rv;
+	}
+	private void configureListener(Map<String, String> operatormap,Available operator) {
+		 String starttr = operatormap.get("onStart");
+         String endtr = operatormap.get("onEnd");
+
+         if (!starttr.isEmpty()) {
+             operator.setTargetDagname(operatormap.get(starttr));
+             operator.setTriggerEvent(JOBLISTENER);
+         }
+         if (!endtr.isEmpty()) {
+             operator.setTargetDagname(operatormap.get(endtr));
+             operator.setTriggerEvent(JOBLISTENER);
+         }
+         if (starttr.isEmpty() && endtr.isEmpty()) {
+             operator.setTriggerEvent("NONE");
+         }
 	}
 	private List<Available> getDefaults(){
 		var rv = new ArrayList<Available>();
@@ -131,7 +135,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		events.setClassname("main.domain.dags.EventSystemDag");
 		events.setDagname("event_system_dag");
 		events.setGroupname("system_dags");
-		events.setTriggerEvent("JOB LISTENER");
+		events.setTriggerEvent(JOBLISTENER);
 		events.setTargetDagname("background_system_dag");
 		rv.add(events);
 		

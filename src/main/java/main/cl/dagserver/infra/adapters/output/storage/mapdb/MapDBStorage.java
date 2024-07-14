@@ -105,14 +105,14 @@ public class MapDBStorage implements Storage {
 	@SuppressWarnings("rawtypes")
 	public void removeException(String eventDt) {
 	    DB db = null;
-	    HTreeMap map = null;
+	    HTreeMap map1 = null;
 	    try {
 	        db = DBMaker.fileDB(exceptionstoragefile).make();
-	        map = db.hashMap(EXCEPTIONS).createOrOpen();
-	        map.remove(eventDt);
+	        map1 = db.hashMap(EXCEPTIONS).createOrOpen();
+	        map1.remove(eventDt);
 	    } finally {
-	        if (map != null) {
-	            map.close();
+	        if (map1 != null) {
+	            map1.close();
 	        }
 	        if (db != null) {
 	            db.close();
@@ -125,7 +125,7 @@ public class MapDBStorage implements Storage {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void addException(ExceptionEventLog event) {
 		try(DB db = DBMaker.fileDB(exceptionstoragefile).make();
-			HTreeMap map = db.hashMap(EXCEPTIONS).createOrOpen();){
+			HTreeMap map1 = db.hashMap(EXCEPTIONS).createOrOpen();){
 			String classname = event.getSource().getClass().getCanonicalName();
 			String method = event.getMessage();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
@@ -137,7 +137,7 @@ public class MapDBStorage implements Storage {
 			excpd.put("classname", classname);
 			excpd.put("method",method);
 			excpd.put("stacktrace",stacktrace);
-			map.put(sdf.format(new Date()), excpd);	
+			map1.put(sdf.format(new Date()), excpd);	
 		}
 	}
 
@@ -145,8 +145,8 @@ public class MapDBStorage implements Storage {
 	@Override
 	public Map<String, Object> listException() {
 		try(DB db = DBMaker.fileDB(exceptionstoragefile).make();
-			HTreeMap map = db.hashMap(EXCEPTIONS).createOrOpen();){
-			return new HashMap<>(map);
+			HTreeMap map1 = db.hashMap(EXCEPTIONS).createOrOpen();){
+			return new HashMap<>(map1);
         } 
 	}
 }
