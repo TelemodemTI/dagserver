@@ -66,140 +66,931 @@
                                 <h2 class="section-title">Dashboards</h2>
                                 <div class="section-block">
                                     <p>Here you will find documentation for each of the components and operators that are included within Dagserver. You will also find information about how to implement your own operator within the tool.</p>
+                                    <p>Dagserver includes a variety of operators that facilitate different tasks within the system. These operators are categorized into several groups: Process, Remote, MQ, and External. Below is the documentation for each operator within these categories.</p>
                                 </div><!--//section-block-->
                                 
                             </section><!--//doc-section-->
                             
                             <section id="app-components" class="doc-section">
-                                <h2 class="section-title">Process</h2>
+                                <h1 >Process</h2>
                                 <div class="section-block">
-                                    <p>The following operators are found in the "Process" category.</p>
+                                    <p>The "PROCESS" category refers to operators that are used to process data within the DAG execution flow. The following operators are found in the "Process" category.</p>
                                 </div><!--//section-block-->
                                 <div id="projects-CmdOperator" class="section-block">
-                                    <h3 class="block-title">CmdOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">CmdOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/cmd.png" alt="elegant icons" width="30">
+                                    </div>
+                                    <p>The CmdOperator is designed to execute BATCH (DOS Windows) commands. </p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>cmd: Command (code) to be executed by the operator</code></p>
+                                    </div>
+                                    <p>When executed, the CmdOperator runs the provided BATCH command and captures the output. The output is then returned in a DataFrame format with a single column named output.</p>
+                                    <p>When running this operator, if a problem is encountered, a DomainException will be thrown. The detail can be reviewed in the System Exceptions view</p>
+
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path></svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>This operator functions correctly only when Dagserver is running on Windows platforms.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+                                
                                 <div id="projects-DummyOperator" class="section-block">
-                                    <h3 class="block-title">DummyOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">DummyOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/dummy.png" alt="DummyOperator icon" width="30">
+                                    </div>
+                                    <p>The DummyOperator is a simple operator that is mainly used for testing and demonstration purposes. It does not perform any specific operation other than logging its initiation and returning a status DataFrame.</p>
+                                    <div class="code-block">
+                                        <h6>This operator does not require any parameters.</h6>
+                                    </div>
+                                    <p>When executed, the DummyOperator logs its start and end, along with any arguments provided. It then returns a DataFrame with a single status column indicating "ok".</p>
+                                    <p>If a problem is encountered during execution, a DomainException will be thrown. The details can be reviewed in the System Exceptions view.</p>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+                                
                                 <div id="projects-ExcelOperator" class="section-block">
-                                    <h3 class="block-title">ExcelOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">ExcelOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/excel.png" alt="ExcelOperator icon" width="30">
+                                    </div>
+                                    <p>The ExcelOperator is designed to read from and write to Excel files. This operator can be used to import data from Excel sheets into a DataFrame or to export DataFrame data to an Excel sheet.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            filePath: Path to the Excel file<br>
+                                            mode: Operation mode (read or write)<br>
+                                            sheetName: Name of the sheet to read from or write to<br>
+                                            startRow: Starting row for reading or writing<br>
+                                            startColumn: Starting column for reading or writing
+                                        </code></p>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>Optional parameters:</h6>
+                                        <p><code>
+                                            xcom: Name of the DataFrame to be written to the Excel file (used in write mode)<br>
+                                            endRow: Ending row for reading (used in read mode)<br>
+                                            endColumn: Ending column for reading (used in read mode)<br>
+                                            includeTitles: Whether to include column titles when writing (true or false)</code></p>
+                                    </div>
+                                    <p>When executed, the ExcelOperator will perform the specified operation (read or write) on the provided Excel file. If reading, it will import the specified sheet's data into a DataFrame. If writing, it will export the provided DataFrame to the specified sheet.</p>
+                                    <p>If a problem is encountered during execution, a DomainException will be thrown. The details can be reviewed in the System Exceptions view.</p>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+                                
                                 <div id="projects-FakerOperator" class="section-block">
-                                    <h3 class="block-title">FakerOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">FakerOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/faker.png" alt="FakerOperator icon" width="30">
+                                    </div>
+                                    <p>The FakerOperator generates mock data using the JavaFaker library. It constructs DataFrames filled with randomized data based on the specified fields and locale.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            fakerjson: JSON array specifying fields to generate using JavaFaker methods<br>
+                                            count: Number of rows of data to generate<br>
+                                            locale: Locale setting for generating localized data (e.g., en-US, es, fr)
+                                        </code></p>
+                                    </div>
+                                    <p>When executed, the FakerOperator uses the JavaFaker library to create mock data based on the specified fields and locale. It generates a DataFrame containing randomized data for each specified field, repeated for the specified count of rows.</p>
+                                    <p>If a problem occurs during execution, a DomainException will be thrown. Details of the error can be reviewed in the System Exceptions view.</p>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+
+
                                 <div id="projects-FileOperator" class="section-block">
-                                    <h3 class="block-title">FileOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">FileOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/file.png" alt="FileOperator icon" width="30">
+                                    </div>
+                                    <p>The FileOperator allows reading from and writing to files with configurable options for handling structured and unstructured data.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            mode: Operation mode (read or write)<br>
+                                            filepath: Path to the file to read from or write to<br>
+                                            firstRowTitles: Whether the first row contains titles (true or false)
+                                        </code></p>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>Optional parameters:</h6>
+                                        <p><code>
+                                            xcom: Name of the DataFrame to be written to or read from (used in write or read mode)<br>
+                                            rowDelimiter: Delimiter for parsing rows (used in read mode)
+                                        </code></p>
+                                    </div>
+                                    <p>When executed, the FileOperator will perform the specified operation (read or write) on the provided file. If reading, it can handle structured data with defined row delimiters or unstructured data by reading the entire content as a single column DataFrame.</p>
+                                    <p>If a problem is encountered during execution, a DomainException will be thrown. The details can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path></svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>If the rowDelimiter parameter is not defined, the FileOperator will read the file as unstructured data, generating a single-column DataFrame.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+
+
                                 <div id="projects-GroovyOperator" class="section-block">
-                                    <h3 class="block-title">GroovyOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">GroovyOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/groovy.png" alt="GroovyOperator icon" width="30">
+                                    </div>
+                                    <p>The GroovyOperator allows dynamic execution of Groovy scripts, integrating with other operators and DAGs in the DAG Server.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            source: Groovy script source code
+                                        </code></p>
+                                    </div>
+                                    <p>When executed, the GroovyOperator evaluates the provided Groovy script (<code>source</code>). It supports integrating with the "operator api" to execute other operators and the "dag api" to execute other DAGs.</p>
+                                    <p>If the script returns a List or Map, it will be converted into a DataFrame. If it returns a DataFrame directly, it will be used as the output. If null or an empty result is returned, a status DataFrame indicating "empty" will be created.</p>
+                                    <p>If a problem is encountered during execution, a DomainException will be thrown. The details can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The GroovyOperator allows executing other operators using the "operator api" and also executing other DAGs using the "dag api". This capability enhances integration and workflow flexibility within DAG Server.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+
+                                
                                 <div id="projects-JavaOperator" class="section-block">
-                                    <h3 class="block-title">JavaOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">JavaOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/jar.png" alt="JavaOperator icon" width="30">
+                                    </div>
+                                    <p>The JavaOperator allows executing external Java classes dynamically loaded from JAR files. It supports invoking Callable instances that integrate with DAG Server's execution environment.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            classpath: Path to the directory containing JAR files<br>
+                                            className: Fully qualified name of the Java class to execute
+                                        </code></p>
+                                    </div>
+                                    <p>When executed, the JavaOperator dynamically loads JAR files from the specified classpath and executes the designated Java class. The class must implement the Callable interface for integration with DAG Server.</p>
+                                    <p>If a problem occurs during execution, a DomainException will be thrown and details can be reviewed in the System Exceptions view.</p>
+                                   
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The JavaOperator supports executing external Java classes that implement the Callable interface. It integrates with DAG Server by allowing setting parameters using the methods setXcom and setArgs, enhancing flexibility in integrating custom Java functionality within workflows.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+
+
                                 <div id="projects-PathDirOperator" class="section-block">
-                                    <h3 class="block-title">PathDirOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">PathDirOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/pathdir.png" alt="PathDirOperator icon" width="30">
+                                    </div>
+                                    <p>The PathDirOperator retrieves metadata information about files and directories located at the specified path. It returns details such as filename, size, accessibility, and type for each file or directory found.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            path: The full directory path to retrieve metadata from
+                                        </code></p>
+                                    </div>
+                                    <p>If the specified path is invalid or does not exist, the operator throws a DomainException, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The PathDirOperator retrieves file metadata based on the provided path. Ensure the path is correctly formatted and accessible to avoid DomainException errors. It returns a DataFrame containing information about each file or directory found.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:</h6>
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+                                
+                                
                                 <div id="projects-QualityOperator" class="section-block">
-                                    <h3 class="block-title">QualityOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">QualityOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/dataquality.png" alt="QualityOperator icon" width="30">
+                                    </div>
+                                    <p>The QualityOperator evaluates data quality based on criteria provided in a JSON format (`qualityjson`). It checks each field in the DataFrame stored in `xcom` for compliance with specified data types and raises errors for mismatches.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            qualityjson: JSON object defining expected data types for each field<br>
+                                            xcom: Name of the cross-communication data object containing the DataFrame to evaluate
+                                        </code></p>
+                                    </div>
+                                    <p>If the `xcom` specified does not exist for the given `dagname`, a DomainException is thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The QualityOperator evaluates data quality based on the specified criteria in `qualityjson`. Ensure the `xcom` contains the DataFrame to evaluate, and that `qualityjson` accurately defines expected data types. It returns a DataFrame with additional columns indicating the quality status and messages for each field.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:</h6>
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+
+                               
+                                
                                 <div id="projects-TestNGOperator" class="section-block">
-                                    <h3 class="block-title">TestNGOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">TestNGOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/testng.png" alt="TestNGOperator icon" width="30">
+                                    </div>
+                                    <p>The TestNGOperator executes TestNG tests using dynamically loaded JAR files and specified XML suite files. It generates test reports and returns the status code of the test execution as a DataFrame.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            classpath: The directory path containing the necessary JAR files for test execution<br>
+                                            reportOutput: The directory path where TestNG test reports will be generated<br>
+                                            testngXmlFiles: Semi-colon separated list of XML suite files defining TestNG tests to execute
+                                        </code></p>
+                                    </div>
+                                    <p>If any errors occur during test execution, a DomainException is thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The TestNGOperator facilitates dynamic execution of TestNG tests using external JAR files and XML suite definitions. Ensure the `classpath` contains all necessary dependencies, and `testngXmlFiles` correctly lists the XML suite files to execute. Review the `reportOutput` directory for generated test reports.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:</h6>
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 
                             </section><!--//doc-section-->
 
 
-                            <section id="app-components" class="doc-section">
-                                <h2 class="section-title">Remote</h2>
+                            <section id="remote-components" class="doc-section">
+                                <h1>Remote</h1>
                                 <div class="section-block">
-                                    <p>The following operators are found in the "Remote" category.</p>
+                                    <p>The "REMOTE" category refers to operators that are used to interact with remote repositories or file systems. The following operators are found in the "Remote" category.</p>
+                                    <p>
+                                        The Remote API implementation only allows standard operations, such as listing directory contents and uploading and downloading files. Commands are defined using the "Remote" UI in the operator parameter editor.</p>
                                 </div><!--//section-block-->
+                                
+                                
                                 <div id="projects-FTPOperator" class="section-block">
-                                    <h3 class="block-title">FTPOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">FTPOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/ftp.png" alt="FTPOperator icon" width="30">
+                                    </div>
+                                    <p>The FTPOperator facilitates FTP operations such as listing files, uploading files, and downloading files between the specified FTP server and local system.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            host: The FTP server hostname or IP address<br>
+                                            port: The FTP server port number<br>
+                                            ftpUser: The FTP username<br>
+                                            ftpPass: The FTP password<br>
+                                            commands: Semi-colon separated list of FTP commands formatted as "command argument1 argument2"
+                                        </code></p>
+                                    </div>
+                                    <p>If any errors occur during FTP operations, a DomainException is thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The FTPOperator supports FTP operations for file management. Ensure the `host`, `port`, `ftpUser`, `ftpPass`, and `commands` are correctly configured for seamless FTP interaction. Review logs for detailed operation results.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:</h6>
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+
                                 <div id="projects-SFTPOperator" class="section-block">
-                                    <h3 class="block-title">SFTPOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">SFTPOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/sftp.png" alt="SFTPOperator icon" width="30">
+                                    </div>
+                                    <p>The SFTPOperator facilitates SFTP operations such as listing files, uploading files, and downloading files between the specified SFTP server and local system.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            host: The SFTP server hostname or IP address<br>
+                                            port: The SFTP server port number<br>
+                                            sftpUser: The SFTP username<br>
+                                            sftpPass: The SFTP password<br>
+                                            commands: Semi-colon separated list of SFTP commands formatted as "command argument1 argument2"
+                                        </code></p>
+                                    </div>
+                                    <p>If any errors occur during SFTP operations, a DomainException is thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The SFTPOperator supports SFTP operations for secure file management. Ensure the `host`, `port`, `sftpUser`, `sftpPass`, and `commands` are correctly configured for seamless SFTP interaction. Review logs for detailed operation results.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:</h6>
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
-                                <div id="projects-SFTPOperator" class="section-block">
-                                    <h3 class="block-title">Samba2Operator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                
+
+
+                                <div id="projects-Samba2Operator" class="section-block">
+                                    <h2 class="section-title">Samba2Operator</h2>
+                                    <div class="section-block">
+                                        <h6>Image of the operator on the canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/smb.jpg" alt="Samba2Operator icon" width="30">
+                                    </div>
+                                    <p>The Samba2Operator facilitates operations with Samba (SMB) shares, enabling functionalities such as listing files, uploading files, and downloading files between the specified Samba server and the local system.</p>
+                                    <div class="code-block">
+                                        <h6>The parameters to use this operator are the following:</h6>
+                                        <p><code>
+                                            host: The Samba server hostname or IP address<br>
+                                            smbUser: The Samba username<br>
+                                            smbPass: The Samba password<br>
+                                            smbDomain: The Samba domain (if applicable)<br>
+                                            smbSharename: The name of the Samba share to interact with<br>
+                                            commands: Semi-colon separated list of Samba commands formatted as "command argument1 argument2"
+                                        </code></p>
+                                    </div>
+                                    <p>If any errors occur during Samba operations, a DomainException is thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful tip</h4>
+                                            <p>The Samba2Operator provides robust integration with Samba (SMB) shares for efficient file management. Ensure the `host`, `smbUser`, `smbPass`, `smbDomain`, `smbSharename`, and `commands` are correctly configured for seamless interaction. Review logs for detailed operation results.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameters form for this operator:</h6>
+                                        <!-- Here will be the image of the parameters form. -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+                                
+
+
                                 <div id="projects-WebDAVOperator" class="section-block">
-                                    <h3 class="block-title">WebDAVOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
-                                </div><!--//section-block-->
+                                    <h2 class="section-title">WebDAVOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/webdav.png" alt="WebDAVOperator Icon" width="30">
+                                    </div>
+                                    <p>The WebDAVOperator facilitates operations with WebDAV servers, allowing functionalities such as listing files, uploading files, and downloading files between the specified server and the local system.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            host: The host name or IP address of the WebDAV server<br>
+                                            port: The port number of the WebDAV server<br>
+                                            username: The username for authentication on the server (leave empty if not required)<br>
+                                            password: The password for authentication on the server (leave empty if not required)<br>
+                                            commands: A list of commands separated by semicolons, in the format "command argument1 argument2"
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during WebDAV operations, a DomainException will be thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The WebDAVOperator offers efficient integration with WebDAV servers for file management. Ensure to configure `host`, `port`, `username`, `password`, and `commands` correctly for seamless interaction. Check the logs for detailed outcomes of the operations.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
+                            </div><!--//section-block-->
+                                
+                                
                                  
                             </section><!--//doc-section-->
                            
-                            <section id="app-components" class="doc-section">
-                                <h2 class="section-title">MQ</h2>
+                            <section id="mq-components" class="doc-section">
+                                <h1>MQ</h2>
                                 <div class="section-block">
-                                    <p>The following operators are found in the "MQ" category.</p>
+                                    <p>The following operators mainly refer to integrations with different message queues. The following operators are found in the "MQ" category.</p>
                                 </div><!--//section-block-->
+
+
+
                                 <div id="projects-ActiveMQOperator" class="section-block">
-                                    <h3 class="block-title">ActiveMQOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">ActiveMQOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/activemq.png" alt="ActiveMQOperator Icon" width="30">
+                                    </div>
+                                    <p>The ActiveMQOperator facilitates interaction with ActiveMQ message queues, supporting both message production and consumption based on specified modes.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            mode: Specifies the mode of operation, either "produce" for message production or "consume" for message consumption<br>
+                                            brokerURL: The URL of the ActiveMQ broker<br>
+                                            queueName: The name of the queue to interact with<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) associated with the data frame to be produced<br>
+                                            timeout (optional): Timeout value in milliseconds for consuming messages (default is 10000)
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during ActiveMQ operations, a DomainException will be thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The ActiveMQOperator provides robust integration with ActiveMQ message queues for effective message handling. Ensure to configure `mode`, `brokerURL`, and `queueName` correctly based on your operational requirements. Refer to the logs for detailed insights into the messaging operations.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+
                                 <div id="projects-KafkaOperator" class="section-block">
-                                    <h3 class="block-title">KafkaOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">KafkaOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/kafka.png" alt="KafkaOperator Icon" width="30">
+                                    </div>
+                                    <p>The KafkaOperator enables interaction with Kafka messaging queues, supporting both message production and consumption based on specified modes.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            mode: Specifies the mode of operation, either "produce" for message production or "consume" for message consumption<br>
+                                            bootstrapServers: The comma-separated list of host and port pairs that Kafka broker will use to establish initial connections to the Kafka cluster<br>
+                                            topic: The Kafka topic name to interact with<br>
+                                            timeoutSeconds: Timeout value in seconds for producer/consumer operations<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) associated with the data frame to be produced<br>
+                                            poll (optional): Polling timeout in milliseconds for consuming messages (default is 10000)<br>
+                                            groupId (optional): The consumer group id for Kafka consumer (required for consuming messages)
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during Kafka operations, a DomainException will be thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The KafkaOperator provides robust integration with Kafka messaging queues for efficient message handling. Ensure to configure `mode`, `bootstrapServers`, `topic`, and `timeoutSeconds` according to your application's requirements. Refer to the logs for detailed insights into the messaging operations.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+                                
+                                
                                 <div id="projects-RabbitMQOperator" class="section-block">
-                                    <h3 class="block-title">RabbitMQOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">RabbitMQOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/rabbit.png" alt="RabbitMQOperator Icon" width="30">
+                                    </div>
+                                    <p>The RabbitMQOperator facilitates interaction with RabbitMQ messaging queues, supporting operations such as message publishing and consumption based on specified modes.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            host: The hostname or IP address of the RabbitMQ server<br>
+                                            username: The username for authentication on the RabbitMQ server<br>
+                                            password: The password for authentication on the RabbitMQ server<br>
+                                            port: The port number for the RabbitMQ server<br>
+                                            mode: Specifies the mode of operation, either "publish" for message publishing or "consume" for message consumption<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) associated with the data frame to be published<br>
+                                            exchange (optional): The RabbitMQ exchange to interact with when publishing messages<br>
+                                            routingKey (optional): The routing key used for message publishing<br>
+                                            queue (optional): The queue name to consume messages from<br>
+                                            body (optional): The message body content to be published (source code format)
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during RabbitMQ operations, a DomainException will be thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The RabbitMQOperator offers seamless integration with RabbitMQ messaging queues for efficient message handling. Ensure to configure `host`, `username`, `password`, `port`, and `mode` appropriately for your use case. Refer to the logs for detailed information on message operations.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                             </section><!--//doc-section-->
                             
 
-                            <section id="app-components" class="doc-section">
-                                <h2 class="section-title">External</h2>
+                            <section id="ext-components" class="doc-section">
+                                <h1>External</h1>
                                 <div class="section-block">
-                                    <p>The following operators are found in the "MQ" category.</p>
+                                    <p>The following operators mainly refer to integrations with various systems and tools on the market. The following operators are found in the "EXTERNAL" category.</p>
                                 </div><!--//section-block-->
+                                
                                 <div id="projects-ChatGPTOperator" class="section-block">
-                                    <h3 class="block-title">ChatGPTOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">ChatGPTOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/chatGpt.png" alt="ChatGPTOperator Icon" width="30">
+                                    </div>
+                                    <p>The ChatGPTOperator integrates with the ChatGPT API for natural language processing tasks, allowing interactions based on provided prompts.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            apiKey: The API key for accessing the ChatGPT API (password type)<br>
+                                            prompt: The prompt or source code snippet to interact with ChatGPT, supporting named parameters in the format ":paramName"<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) containing prompts and results for batch processing
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during ChatGPT interactions, a DomainException will be thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The ChatGPTOperator allows seamless integration with the ChatGPT API for natural language processing tasks. Ensure to provide the correct `apiKey` and `prompt` parameters, including named parameters for dynamic prompts. Review the logs for detailed information on each interaction.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
+
                                 <div id="projects-HttpOperator" class="section-block">
-                                    <h3 class="block-title">HttpOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">HttpOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/http.png" alt="HttpOperator Icon" width="30">
+                                    </div>
+                                    <p>The HttpOperator facilitates HTTP requests to external APIs or services, supporting methods such as GET, POST, PUT, and DELETE.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            url: The URL endpoint for the HTTP request<br>
+                                            method: The HTTP method to use (GET, POST, PUT, DELETE)<br>
+                                            timeout: Timeout duration in milliseconds for the HTTP connection<br>
+                                            contentType: The content type of the request payload (e.g., application/json)<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) containing request body data for POST requests<br>
+                                            authorizationHeader (optional): Authorization token or credentials for authenticated requests
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during HTTP requests, a DomainException will be thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The HttpOperator supports various HTTP methods for interaction with external APIs. Ensure to set up the `url`, `method`, `timeout`, and `contentType` parameters correctly. For POST requests, provide the request body via XCom and handle authentication with the `authorizationHeader` option.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 <div id="projects-JdbcOperator" class="section-block">
-                                    <h3 class="block-title">JdbcOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">JdbcOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/jdbc.png" alt="JdbcOperator Icon" width="30">
+                                    </div>
+                                    <p>The JdbcOperator facilitates interaction with JDBC-compliant databases, supporting SQL queries and updates.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            url: The JDBC URL to connect to the database<br>
+                                            user: The username for database authentication<br>
+                                            pwd: The password for database authentication<br>
+                                            driver: The JDBC driver class name<br>
+                                            driverPath: The path to the JDBC driver JAR files<br>
+                                            query: The SQL query to execute, supports SELECT, INSERT, UPDATE, DELETE queries<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) containing data for parameterized queries
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during database interactions, a DomainException will be thrown, which can be reviewed in the System Exceptions view.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The JdbcOperator supports SQL queries such as SELECT, INSERT, UPDATE, and DELETE against JDBC-compliant databases. Ensure to set up the `url`, `user`, `pwd`, `driver`, `driverPath`, and `query` parameters correctly. For parameterized queries, use the `xcom` option to pass dynamic data.</p>
+                                            <p>This operator supports named parameters in SQL queries. Use :parameterName syntax in your SQL queries to dynamically substitute values from the DataFrame rows.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 <div id="projects-MailOperator" class="section-block">
-                                    <h3 class="block-title">MailOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">MailOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/mail.png" alt="MailOperator Icon" width="30">
+                                    </div>
+                                    <p>The MailOperator sends an email using SMTP protocol. It supports authentication, plaintext or TLS encryption, and allows optional attachments and carbon copy (CC) recipients.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            host: SMTP server hostname or IP address<br>
+                                            port: Port number for SMTP server<br>
+                                            userSmtp: SMTP username for authentication<br>
+                                            pwdSmtp: SMTP password for authentication<br>
+                                            fromMail: Sender's email address<br>
+                                            toEmail: Recipient's email address<br>
+                                            subject: Subject of the email<br>
+                                            protocol: Email protocol, choose from "plaintext" or "TLSv1.2"<br>
+                                            body (optional): Optional email body content in HTML format<br>
+                                            xcom (optional): Optional name of cross-communication data (XCom) to append to the email body<br>
+                                            attachedFilename (optional): Optional filename for attachment<br>
+                                            stepAttachedFilename (optional): Optional name of cross-communication data (XCom) containing attachment content<br>
+                                            ccList (optional): Optional semicolon-separated list of email addresses for CC
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during email sending, a DomainException will be thrown.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The MailOperator supports sending emails with optional attachments and CC recipients. Ensure to configure the `host`, `port`, `userSmtp`, `pwdSmtp`, `fromMail`, `toEmail`, `subject`, and `protocol` parameters correctly for successful email delivery. Use `body`, `xcom`, `attachedFilename`, `stepAttachedFilename`, and `ccList` options as needed.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 <div id="projects-MongoDBOperator" class="section-block">
-                                    <h3 class="block-title">MongoDBOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">MongoDBOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/mongodb.png" alt="MongoDBOperator Icon" width="30">
+                                    </div>
+                                    <p>The MongoDBOperator facilitates interactions with MongoDB databases, supporting read, insert, and delete operations.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            hostname: MongoDB server hostname or IP address<br>
+                                            port: Port number for MongoDB server<br>
+                                            mode: Operation mode, choose from "READ", "INSERT", or "DELETE"<br>
+                                            database: Name of the MongoDB database<br>
+                                            collection: Name of the MongoDB collection<br>
+                                            timeout: Timeout in milliseconds for connection<br>
+                                            username (optional): MongoDB username for authentication<br>
+                                            password (optional): MongoDB password for authentication<br>
+                                            filter (optional): Optional JSON filter for read operations<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) containing data for operations
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during MongoDB operations, a DomainException will be thrown.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The MongoDBOperator supports read, insert, and delete operations against MongoDB databases. Ensure to set up the `hostname`, `port`, `mode`, `database`, `collection`, and `timeout` parameters correctly. Use `username`, `password`, `filter`, and `xcom` options as needed for authentication, query filtering, and cross-communication.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 <div id="projects-RedisOperator" class="section-block">
-                                    <h3 class="block-title">RedisOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">RedisOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/redis.png" alt="RedisOperator Icon" width="30">
+                                    </div>
+                                    <p>The RedisOperator facilitates interactions with Redis databases, supporting read, save, and delete operations.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            hostname: Redis server hostname or IP address<br>
+                                            port: Port number for Redis server<br>
+                                            mode: Operation mode, choose from "READ", "SAVE", or "DELETE"<br>
+                                            redisCluster: Boolean indicating whether Redis operates in cluster mode<br>
+                                            keyObject: Key name or identifier for Redis data manipulation<br>
+                                            xcom (optional): Name of the cross-communication object (XCom) containing data for operations<br>
+                                            body (optional): Body or content for save operations
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during Redis operations, a DomainException will be thrown.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The RedisOperator supports read, save, and delete operations against Redis databases. Ensure to set up the `hostname`, `port`, `mode`, `redisCluster`, and `keyObject` parameters correctly. Use `xcom` and `body` options as needed for cross-communication and data manipulation.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 <div id="projects-SshOperator" class="section-block">
-                                    <h3 class="block-title">SshOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">SshOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/ssh.png" alt="SshOperator Icon" width="30">
+                                    </div>
+                                    <p>The SshOperator executes remote commands via SSH on a specified host.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            host: SSH server hostname or IP address<br>
+                                            user: Username for SSH authentication<br>
+                                            port: Port number for SSH connection<br>
+                                            cmd: Command to execute on the remote SSH server (Shell script or command)<br>
+                                            pwd (optional): Password for SSH authentication<br>
+                                            knowhostfile (optional): Path to a known hosts file for SSH<br>
+                                            privateKeyFile (optional): Path to the private key file for SSH authentication
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during SSH command execution, a DomainException will be thrown.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The SshOperator supports executing commands on remote servers using SSH. Ensure to configure `host`, `user`, `port`, and `cmd` parameters correctly. Use `pwd`, `knowhostfile`, and `privateKeyFile` options as needed for authentication and known hosts management.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 <div id="projects-ZookeeperOperator" class="section-block">
-                                    <h3 class="block-title">ZookeeperOperator</h3>
-                                    <p>Intro goes here lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis</p>
+                                    <h2 class="section-title">ZookeeperOperator</h2>
+                                    <div class="section-block">
+                                        <h6>Operator Icon on Canvas</h6>
+                                        <img class="img-fluid" src="assets/images/operators/zookeeper.png" alt="ZookeeperOperator Icon" width="30">
+                                    </div>
+                                    <p>The ZookeeperOperator interacts with Apache ZooKeeper for managing distributed configuration and synchronization.</p>
+                                    <div class="code-block">
+                                        <h6>Parameters to use this operator:</h6>
+                                        <p><code>
+                                            host: ZooKeeper server hostname or IP address<br>
+                                            mode: Operation mode (READ, INSERT, DELETE)<br>
+                                            path: ZooKeeper node path<br>
+                                            timeout: Timeout in milliseconds for ZooKeeper connection<br>
+                                            xcom (optional): Cross-communication variable name
+                                        </code></p>
+                                    </div>
+                                    <p>If errors occur during interaction with ZooKeeper, a DomainException will be thrown.</p>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <svg class="svg-inline--fa fa-circle-info" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path>
+                                            </svg><!-- <i class="fas fa-info-circle"></i> Font Awesome fontawesome.com -->
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Useful Tip</h4>
+                                            <p>The ZookeeperOperator supports managing ZooKeeper nodes with operations like read, insert, and delete. Configure `host`, `mode`, `path`, and `timeout` parameters correctly. Optionally, use `xcom` for cross-dag communication.</p>
+                                        </div>
+                                    </div>
+                                    <div class="code-block">
+                                        <h6>The following image shows the parameter form for this operator:</h6>
+                                        <!-- Placeholder for parameter form image -->
+                                    </div>
                                 </div><!--//section-block-->
+                                
                                 
                             </section><!--//doc-section-->
 
@@ -214,109 +1005,16 @@
 	                            <li class="nav-item">
                                     <a class="nav-link scrollto" href="#app-components">Process Components</a>
 	                            </li>
-	                            <li class="nav-item">
-                                    <ul class="nav doc-sub-menu nav flex-column">
-	                                    <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-CmdOperator">CmdOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-DummyOperator">DummyOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-ExcelOperator">ExcelOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-CmdOperator">CmdOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-FakerOperator">FakerOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-FileOperator">FileOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-GroovyOperator">GroovyOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-JavaOperator">JavaOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-PathDirOperator">PathDirOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-QualityOperator">QualityOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-TestNGOperator">TestNGOperator</a>
-	                                    </li>
-                                    </ul><!--//nav-->
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#remote-components">Remote Components</a>
+	                            </li>
+	                           
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#mq-components">MQ Components</a>
 	                            </li>
                                 <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#app-components">Remote Components</a>
+                                    <a class="nav-link scrollto" href="#ext-components">External Components</a>
 	                            </li>
-	                            <li class="nav-item">
-                                    <ul class="nav doc-sub-menu nav flex-column">
-	                                    <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-FTPOperator">FTPOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-SFTPOperator">SFTPOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-Samba2Operator">Samba2Operator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-WebDAVOperator">WebDAVOperator</a>
-	                                    </li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#app-components">MQ Components</a>
-	                            </li>
-	                            <li class="nav-item">
-                                    <ul class="nav doc-sub-menu nav flex-column">
-	                                    <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-ActiveMQOperator">ActiveMQOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-KafkaOperator">KafkaOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-RabbitMQOperator">RabbitMQOperator</a>
-	                                    </li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link scrollto" href="#app-components">External Components</a>
-	                            </li>
-	                            <li class="nav-item">
-                                    <ul class="nav doc-sub-menu nav flex-column">
-	                                    <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-ChatGPTOperator">ChatGPTOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-HttpOperator">HttpOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-JdbcOperator">JdbcOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-MailOperator">MailOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-MongoDBOperator">MongoDBOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-RedisOperator">RedisOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-SshOperator">SshOperator</a>
-	                                    </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link scrollto" href="#projects-ZookeeperOperator">ZookeeperOperator</a>
-	                                    </li>
-                                    </ul>
-                                </li>
                             </ul><!--//doc-menu-->
                         </div><!--//doc-nav-->
                     </div><!--//doc-sidebar-->
@@ -328,10 +1026,10 @@
         
     </div><!--//page-wrapper-->
     
-    <footer id="footer" class="footer text-center">
+    <footer class="footer text-center">
         <div class="container">
             <!--/* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
-            <small class="copyright">Designed with <span class="sr-only">love</span><i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+            <small class="copyright">Designed by <a href="https://www.telemodem.cl/" target="_blank">Telemodem TI</a> </small>
             
         </div><!--//container-->
     </footer><!--//footer-->
