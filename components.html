@@ -991,6 +991,65 @@
                                     </div>
                                 </div><!--//section-block-->
                                 
+                                <section id="execution-channels" class="doc-section">
+                                    <h1>Execution channels</h1>
+                                    <div class="section-block">
+                                        <p>The technical details that correspond to the different execution channels of a DAG will be detailed.</p>
+                                    </div><!--//section-block-->
+                                    
+                                    <div id="projects-channel-scheduler" class="section-block">
+                                        <h2 class="section-title">Scheduler Input Channel</h2>
+                                        <p>This channel is always active, and it is not possible to deactivate it. Represents the main form of execution of a DAG, when it is executed on a schedule.</p>
+                                        <div class="code-block">
+                                            <h6>The following image shows the input channel configuration:</h6>
+                                        </div>
+                                    </div>
+                                    <div id="projects-channel-graphql" class="section-block">
+                                        <h2 class="section-title">Graphql Input Channel</h2>
+                                        <p>This channel is always active, and it is not possible to deactivate it. This channel is used when executing an on-demand dag via an HTTP call.</p>
+                                        <div class="code-block">
+                                            <h6>The following image shows the input channel configuration:</h6>
+                                        </div>
+                                    </div>
+                                    <div id="projects-channel-github" class="section-block">
+                                        <h2 class="section-title">Github Input Channel</h2>
+                                        <p>This channel can be activated/deactivated. You can configure the repository that this channel will listen to and the dag that it will execute from the input channels menu.</p>
+                                        <div class="code-block">
+                                            <h6>The following image shows the input channel configuration:</h6>
+                                        </div>
+                                    </div>
+                                    <div id="projects-channel-rabbit" class="section-block">
+                                        <h2 class="section-title">Rabbit Input Channel</h2>
+                                        <p>This channel can be activated/deactivated. You can configure the queue that this channel will listen to and the dag that it will execute from the input channels menu.</p>
+                                        <div class="code-block">
+                                            <h6>The following image shows the input channel configuration:</h6>
+                                        </div>
+                                    </div>
+                                    <div id="projects-channel-redis" class="section-block">
+                                        <h2 class="section-title">Redis Input Channel</h2>
+                                        <p>This channel can be activated/deactivated. You can configure the subscription that this channel will listen to and the dag that it will execute from the input channels menu.</p>
+                                        <div class="code-block">
+                                            <h6>The following image shows the input channel configuration:</h6>
+                                        </div>
+                                    </div>
+                                    <div id="projects-channel-kafka" class="section-block">
+                                        <h2 class="section-title">Kafka Input Channel</h2>
+                                        <p>This channel can be activated/deactivated. You can configure the subscription that this channel will listen to and the dag that it will execute from the input channels menu.</p>
+                                        <div class="code-block">
+                                            <h6>The following image shows the input channel configuration:</h6>
+                                        </div>
+                                    </div>
+                                    <div id="projects-channel-activemq" class="section-block">
+                                        <h2 class="section-title">ActiveMQ Input Channel</h2>
+                                        <p>This channel can be activated/deactivated. You can configure the queue that this channel will listen to and the dag that it will execute from the input channels menu.</p>
+                                        <div class="code-block">
+                                            <h6>The following image shows the input channel configuration:</h6>
+                                        </div>
+                                    </div>
+
+
+
+                                </section>
                                 
                             </section><!--//doc-section-->
 
@@ -1015,6 +1074,11 @@
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#ext-components">External Components</a>
 	                            </li>
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#execution-channels">Input channels execution</a>
+	                            </li>
+
+                                
                             </ul><!--//doc-menu-->
                         </div><!--//doc-nav-->
                     </div><!--//doc-sidebar-->
