@@ -364,4 +364,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		}
 		repository.addUncompiled(json.getString(JARNAME),json);	
 	}
+	@Override
+	public void logout(String token) {
+		auth.logout(token);
+		
+	}
 }

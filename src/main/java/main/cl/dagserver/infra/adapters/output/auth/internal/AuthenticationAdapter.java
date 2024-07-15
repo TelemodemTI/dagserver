@@ -22,6 +22,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.enums.AccountType;
@@ -30,6 +31,7 @@ import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 
 @Component
+@Log4j2
 @ImportResource("classpath:properties-config.xml")
 @Profile("auth-internal")
 public class AuthenticationAdapter implements AuthenticationOutputPort {
@@ -121,5 +123,9 @@ public class AuthenticationAdapter implements AuthenticationOutputPort {
             hexString.append(hex);
         }
         return hexString.toString();
+	}
+	@Override
+	public void logout(String token) {
+		log.debug(token);
 	}
 }

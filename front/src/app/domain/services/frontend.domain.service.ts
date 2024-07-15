@@ -233,7 +233,8 @@ export class FrontEndDomainService implements
   getDecodedAccessToken(): DagToken {
     return this.jwtadapter.getDecodedAccessToken();
   }
-  removeAccessToken(): void {
+  logout(): void {
+	this.adapter.logout()
     this.jwtadapter.removeAccessToken();
   }
   login(user: any, pwd: any): Promise<boolean> {

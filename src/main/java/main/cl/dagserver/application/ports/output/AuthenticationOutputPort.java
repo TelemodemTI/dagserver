@@ -6,5 +6,6 @@ import main.cl.dagserver.domain.model.AuthDTO;
 
 public interface AuthenticationOutputPort {
 	public String login(JSONObject reqobject) throws DomainException;
-	public AuthDTO untokenize(String token);	
+	public AuthDTO untokenize(String token);
+	public void logout(String token);	
 }

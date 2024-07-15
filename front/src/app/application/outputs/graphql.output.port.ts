@@ -15,6 +15,7 @@ export abstract class GraphQLOutputPort {
     public abstract delConsumer(topic: any): Promise<void>
     public abstract saveKaflaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void>;
     public abstract getLastLogs(): Promise<Log[]>;
+    public abstract logout(): Promise<void>;
     public abstract delListener(channel: string): Promise<void>;
     public abstract addListener(channel: string, jarfile: string, dagname: string): Promise<void>;
     public abstract saveRedisChannel(mode: any, hostnames: string, ports: any): Promise<void>;

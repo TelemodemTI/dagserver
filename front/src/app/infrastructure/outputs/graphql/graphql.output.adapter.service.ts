@@ -19,6 +19,18 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
 
+  logout(): Promise<void> {
+	return new Promise<void>((resolve,reject)=>{
+		var token = localStorage.getItem("dagserver_token")
+		var string = "mutation logout($token:String) { logout(token:$token) {status,code,value} }"
+		this.query(string,{token:token}).subscribe((result:any)=>{
+			if(result && result.logout && result.logout.status == "ok"){
+	          resolve();
+	        }
+		})
+	});
+  }
+
   reimport(jarname: any): Promise<any> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")

@@ -5,7 +5,7 @@ import { Log } from "src/app/domain/models/log.model";
 export abstract class AuthenticatedInputPort {
   public abstract getLastLogs(): Promise<Log[]>;
   public abstract getDecodedAccessToken():DagToken;
-  public abstract removeAccessToken():void;
+  public abstract logout():void;
   public abstract getServerInfo():Promise<Agents[]>;
   public abstract listenEvents(): any;
 }

@@ -23,6 +23,15 @@ public class MutationResolver implements GraphQLMutationResolver {
 		this.handler = handler;
 	}
 	
+	public StatusOp logout(String token) {
+		try {
+			handler.logout(token);
+			return ok();	
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	public StatusOp scheduleDag(String token,String dagname,String jarname) throws DomainException {
 		try {
 			handler.scheduleDag(token,dagname,jarname);
@@ -338,4 +347,5 @@ public class MutationResolver implements GraphQLMutationResolver {
         String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
         return new JSONObject(decodedString);
     }
+	
 }
