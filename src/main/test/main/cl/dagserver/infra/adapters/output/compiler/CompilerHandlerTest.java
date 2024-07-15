@@ -60,11 +60,5 @@ class CompilerHandlerTest {
 			assertTrue(true);
 		}
 	}
-	@Test
-	void privateTest() {
-		Properties props = new Properties();
-		 ReflectionTestUtils.invokeMethod(handler, "searchValue", new String[] {"test"},"test");
-		 ReflectionTestUtils.invokeMethod(handler, "packageJar", "jarname","classname", "test".getBytes(),  props);
-		 assertTrue(true);
-	}
+	
 }

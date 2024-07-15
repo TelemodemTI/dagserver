@@ -297,13 +297,14 @@ public class CompilerHandler implements CompilerOutputPort {
                         OperatorStage op = class1.getDeclaredConstructor().newInstance();
                         var item = op.getMetadataOperator();
                         if (item != null) {
-                            arr.put(item);
+                        	arr.put(item);
                         }
                     }
                 }
                 return arr;
             }
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new DomainException(e);
         }
     }

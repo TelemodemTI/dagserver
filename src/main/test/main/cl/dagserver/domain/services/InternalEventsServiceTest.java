@@ -6,20 +6,20 @@ import static org.testng.Assert.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import main.cl.dagserver.application.ports.output.Storage;
+import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 class InternalEventsServiceTest {
 
 	@Mock
-	Storage storage;
+	StorageOutputPort storage;
 	
 	private InternalEventsService service;
 	
 	@BeforeEach
     void init() {
-		storage = mock(Storage.class);
+		storage = mock(StorageOutputPort.class);
 		service = new InternalEventsService(storage);
 	}
 	

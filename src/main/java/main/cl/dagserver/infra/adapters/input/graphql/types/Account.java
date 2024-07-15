@@ -1,12 +1,12 @@
 package main.cl.dagserver.infra.adapters.input.graphql.types;
 
-
+import main.cl.dagserver.domain.enums.AccountType;
 
 public class Account {
 
 	private Integer id;
     private String username;
-    private String typeAccount;
+    private AccountType typeAccount;
     
 	
 	public String getUsername() {
@@ -15,10 +15,10 @@ public class Account {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	public String getTypeAccount() {
+	public AccountType getTypeAccount() {
 		return typeAccount;
 	}
-	public void setTypeAccount(String typeAccount) {
+	public void setTypeAccount(AccountType typeAccount) {
 		this.typeAccount = typeAccount;
 	}
 	public Integer getId() {

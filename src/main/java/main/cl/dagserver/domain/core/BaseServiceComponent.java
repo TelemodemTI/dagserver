@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+
+import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
-import main.cl.dagserver.application.ports.output.Storage;
+import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 
@@ -17,17 +19,6 @@ import main.cl.dagserver.domain.model.PropertyParameterDTO;
 @ImportResource("classpath:properties-config.xml")
 public class BaseServiceComponent {
 
-	@Value( "${param.jwt_secret}" )
-	protected String jwtSecret;
-	@Value( "${param.jwt_signer}" )
-	protected String jwtSigner;
-	
-	@Value( "${param.jwt_subject}" )
-	protected String jwtSubject;
-	
-	@Value( "${param.jwt_ttl}" )
-	protected Integer jwtTtl;
-	
 	@Value( "${param.folderpath}" )
 	protected String path;
 	
@@ -41,10 +32,10 @@ public class BaseServiceComponent {
 	protected CompilerOutputPort compiler;
 
 	@Autowired
-	protected Storage storage;
+	protected StorageOutputPort storage;
 	
 	@Autowired
-	protected TokenEngine tokenEngine;
+	protected AuthenticationOutputPort auth;
 	
 	protected void trigggerEvent(String artifact, String eventType, String data) throws DomainException  {
 		var propertyList = repository.getProperties(artifact);

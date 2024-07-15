@@ -16,17 +16,19 @@ import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import com.nhl.dflib.DataFrame;
 import lombok.extern.log4j.Log4j2;
-import main.cl.dagserver.application.ports.output.Storage;
+import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 
 @Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
-public class MapDBStorage implements Storage {
+@Profile("storage-map-db")
+public class MapDBStorage implements StorageOutputPort {
 
 	private static final String EXCEPTIONS =  "exceptions";
 	
@@ -57,7 +59,7 @@ public class MapDBStorage implements Storage {
 			String string = iterator.next();
 			wrapper.put(string, DataFrameUtils.dataFrameToJson(xcom.get(string)));
 		}
-		map.put(locatedb, wrapper.toString());	
+		map.put(locatedb, wrapper.toString());
 	}
 	public Map<String,DataFrame> getEntry(String xcomkey) {
 		Map<String,DataFrame> mapa = new HashMap<>();
@@ -100,7 +102,6 @@ public class MapDBStorage implements Storage {
 				log.debug("key {} not removed from xcom",key);
 			}
 		}
-		
 	}
 	@SuppressWarnings("rawtypes")
 	public void removeException(String eventDt) {

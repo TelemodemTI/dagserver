@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
-import main.cl.dagserver.application.ports.output.Storage;
+import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
@@ -41,7 +41,7 @@ import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
 @ImportResource("classpath:properties-config.xml")
 public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Autowired
-	private Storage storage;
+	private StorageOutputPort storage;
 	@Value("${param.folderpath}")
 	private String pathfolder;
 	@Autowired

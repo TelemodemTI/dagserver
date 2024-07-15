@@ -4,10 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,8 +12,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
+
+import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
-import main.cl.dagserver.domain.core.TokenEngine;
+import main.cl.dagserver.domain.enums.AccountType;
+import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertTrue;
@@ -29,20 +29,14 @@ class LoginServiceTest {
 	SchedulerRepositoryOutputPort repo;
 	
 	@Mock
-	TokenEngine tokenEngine;
+	AuthenticationOutputPort tokenEngine;
 	
 	@BeforeEach
     public void init() {
 		repo = mock(SchedulerRepositoryOutputPort.class);
-		tokenEngine = mock(TokenEngine.class);
-		login = new LoginService(tokenEngine,repo);
-		ReflectionTestUtils.setField(login, "repository", repo);
-		ReflectionTestUtils.setField(login, "tokenEngine", tokenEngine);
-		ReflectionTestUtils.setField(login, "jwtSecret", "jwtSecret");
-		ReflectionTestUtils.setField(login, "jwtSigner", "jwtSigner");
-		ReflectionTestUtils.setField(login, "jwtSubject", "jwtSubject");
-		ReflectionTestUtils.setField(login, "jwtTtl", 1);
-		
+		tokenEngine = mock(AuthenticationOutputPort.class);
+		login = new LoginService();
+		ReflectionTestUtils.setField(login, "auth", tokenEngine);
 	}
 	
 	@Test
@@ -50,17 +44,15 @@ class LoginServiceTest {
 		UserDTO user = new UserDTO();
 		user.setCreatedAt(new Date());
 		user.setPwdhash("test");
-		user.setTypeAccount("ADMIN");
+		user.setTypeAccount(AccountType.ADMIN);
 		user.setUsername("username");
 		user.setId(1);
 		List<UserDTO> list = new ArrayList<>();
 		list.add(user);
-		
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "USER");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+
+		AuthDTO claims = new AuthDTO();
+		claims.setAccountType(AccountType.USER);
+		when(tokenEngine.untokenize(anyString())).thenReturn(claims);
 		
 		when(repo.findUser(anyString())).thenReturn(list);
 		login.apply("test");
@@ -72,17 +64,15 @@ class LoginServiceTest {
 		UserDTO user = new UserDTO();
 		user.setCreatedAt(new Date());
 		user.setPwdhash("test123");
-		user.setTypeAccount("ADMIN");
+		user.setTypeAccount(AccountType.ADMIN);
 		user.setUsername("username");
 		user.setId(1);
 		List<UserDTO> list = new ArrayList<>();
 		list.add(user);
 		
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "USER");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO claims = new AuthDTO();
+		claims.setAccountType(AccountType.USER);
+		when(tokenEngine.untokenize(anyString())).thenReturn(claims);
 		
 		when(repo.findUser(anyString())).thenReturn(list);
 		var str = login.apply("test");

@@ -37,7 +37,7 @@ public class MetadataManager {
 		par.put("name", key);
 		par.put("type", type);
 		if(options != null) {
-			par.put("opt", options);
+			par.put("opt", new JSONArray(options));
 		}
 		opts.put(par);
 	}

@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
+import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
+import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DagDTO;
@@ -41,6 +43,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	private static final String REDIS_LISTENER = "REDIS_PROPS";
 	private static final String KAFKA_CONSUMER = "KAFKA_CONSUMER";
 	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_LISTENER";
+	
 	
 	@Value( "${param.git_hub.propkey}" )
 	private String gitHubPropkey;
@@ -110,7 +113,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@Override
 	public List<UncompiledDTO> getUncompileds(String token) throws DomainException {
 		try {
-			tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+			auth.untokenize(token);
 			return repository.getUncompileds();	
 		} catch (Exception e) {
 			throw new DomainException(e);
@@ -120,13 +123,11 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	public JSONArray operators() throws DomainException {
 		return compiler.operators();
 	}
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<UserDTO> credentials(String token) throws DomainException {
 		try {
-			var map = tokenEngine.untokenize(token, jwtSecret, jwtSigner);
-			Map<String,String> claims = (Map<String, String>) map.get("claims");
-			if(claims.get("typeAccount").equals("ADMIN")) {
+			var map = auth.untokenize(token);
+			if(map.getAccountType().equals(AccountType.ADMIN)) {
 				return repository.getUsers();	
 			} else {
 				return new ArrayList<>();
@@ -177,7 +178,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	
 	@Override
 	public List<ChannelDTO> getChannels(String token) throws DomainException {
-	    Map<String, String> claims = extractClaims(token);
+		var claims = auth.untokenize(token);
 	    validateAdminPermission(claims);
 	    List<ChannelDTO> channels = new ArrayList<>();
 	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
@@ -190,13 +191,10 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    return channels;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private Map<String, String> extractClaims(String token) {
-	    return (Map<String, String>) tokenEngine.untokenize(token, jwtSecret, jwtSigner).get("claims");
-	}
+	
 
-	private void validateAdminPermission(Map<String, String> claims) throws DomainException {
-	    if (!"ADMIN".equals(claims.get("typeAccount"))) {
+	private void validateAdminPermission(AuthDTO claims) throws DomainException {
+	    if (!AccountType.ADMIN.equals(claims.getAccountType())) {
 	        throw new DomainException(new Exception("unauthorized"));
 	    }
 	}
@@ -240,7 +238,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	@Override
 	public String exportUncompiled(String token, Integer uncompiled) throws DomainException {
-		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		auth.untokenize(token);
 		return repository.getUncompiledBin(uncompiled);
 	}
 	@Override
@@ -258,7 +256,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Exceptions> getExceptions(String token) {
-		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		auth.untokenize(token);
 		List<Exceptions> newrv = new ArrayList<>();
 		var exceptions = this.storage.listException();
 		var keys = exceptions.keySet();
