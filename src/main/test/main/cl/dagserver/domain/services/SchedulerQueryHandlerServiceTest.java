@@ -15,15 +15,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import com.nhl.dflib.DataFrame;
-
+import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
-import main.cl.dagserver.domain.core.TokenEngine;
+import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
+import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.EventListenerDTO;
 import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
@@ -40,7 +40,7 @@ class SchedulerQueryHandlerServiceTest {
 	private SchedulerRepositoryOutputPort repository;
 	
 	@Mock
-	protected TokenEngine tokenEngine;
+	protected AuthenticationOutputPort tokenEngine;
 	
 	@Mock
 	protected CompilerOutputPort compiler;
@@ -49,18 +49,14 @@ class SchedulerQueryHandlerServiceTest {
     public void init() {
 		scanner = mock(JarSchedulerOutputPort.class);
 		repository = mock(SchedulerRepositoryOutputPort.class);
-		tokenEngine = mock(TokenEngine.class);
+		tokenEngine = mock(AuthenticationOutputPort.class);
 		compiler = mock(CompilerOutputPort.class);
 		ReflectionTestUtils.setField(service, "scanner", scanner);
 		ReflectionTestUtils.setField(service, "repository", repository);
-		ReflectionTestUtils.setField(service, "tokenEngine", tokenEngine);
+		ReflectionTestUtils.setField(service, "auth", tokenEngine);
 		ReflectionTestUtils.setField(service, "compiler", compiler);
-		ReflectionTestUtils.setField(service, "jwtSecret", "jwtSecret");
-		ReflectionTestUtils.setField(service, "jwtSigner", "jwtSigner");
-		ReflectionTestUtils.setField(service, "jwtSubject", "jwtSubject");
 		ReflectionTestUtils.setField(service, "gitHubPropkey", "gitHubPropkey");
 		ReflectionTestUtils.setField(service, "rabbitPropkey", "rabbitPropkey");
-		ReflectionTestUtils.setField(service, "jwtTtl", 1);
 	}
 	
 	@Test
@@ -145,8 +141,8 @@ class SchedulerQueryHandlerServiceTest {
 	}
 	@Test
 	void getUncompiledsTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		when(repository.getUncompileds()).thenReturn(new ArrayList<>());
 		var rt = service.getUncompileds("token");
 		assertNotNull(rt);
@@ -159,33 +155,27 @@ class SchedulerQueryHandlerServiceTest {
 	}
 	@Test
 	void credentialsTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		when(repository.getUsers()).thenReturn(new ArrayList<>());
 		var rt = service.credentials("asdfg");
 		assertNotNull(rt);
 	}
 	@Test
 	void credentialsUserTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "USER");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.USER);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		when(repository.getUsers()).thenReturn(new ArrayList<>());
 		var rt = service.credentials("asdfg");
 		assertNotNull(rt);
 	}
 	@Test
 	void credentialsErrorTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		doThrow(new RuntimeException("Test")).when(repository).getUsers();
 		try {
 			service.credentials("asdfg");	
@@ -245,11 +235,9 @@ class SchedulerQueryHandlerServiceTest {
 	}
 	@Test
 	void getChannelsTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		PropertyParameterDTO prop = new PropertyParameterDTO();
 		prop.setName("STATUS");
 		PropertyParameterDTO prop1 = new PropertyParameterDTO();
@@ -264,11 +252,9 @@ class SchedulerQueryHandlerServiceTest {
 	}
 	@Test
 	void getChannelsErrorTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "USER");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.USER);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		PropertyParameterDTO prop = new PropertyParameterDTO();
 		prop.setName("STATUS");
 		PropertyParameterDTO prop1 = new PropertyParameterDTO();
@@ -285,8 +271,8 @@ class SchedulerQueryHandlerServiceTest {
 	}
 	@Test
 	void exportUncompiledTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		when(repository.getUncompiledBin(anyInt())).thenReturn("test");
 		var rt = service.exportUncompiled("token",1);
 		assertNotNull(rt);
