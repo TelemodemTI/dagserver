@@ -2,12 +2,14 @@ package main.cl.dagserver.domain.model;
 
 import java.util.Date;
 
+import main.cl.dagserver.domain.enums.AccountType;
+
 public class UserDTO {
 	
 	private Integer id;
 	private String username;
 	private String pwdhash;
-	private String typeAccount;
+	private AccountType typeAccount;
 	private Date createdAt;
 	public Integer getId() {
 		return id;
@@ -27,10 +29,10 @@ public class UserDTO {
 	public void setPwdhash(String pwdhash) {
 		this.pwdhash = pwdhash;
 	}
-	public String getTypeAccount() {
+	public AccountType getTypeAccount() {
 		return typeAccount;
 	}
-	public void setTypeAccount(String typeAccount) {
+	public void setTypeAccount(AccountType typeAccount) {
 		this.typeAccount = typeAccount;
 	}
 	public Date getCreatedAt() {

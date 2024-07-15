@@ -17,7 +17,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
-import main.cl.dagserver.domain.core.TokenEngine;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 
@@ -34,24 +33,16 @@ class GitHubWebHookServiceTest {
 	@Mock
 	protected CompilerOutputPort compiler;
 	
-	@Mock
-	protected TokenEngine tokenEngine;
 	
 	@BeforeEach
     public void init() {
 		scanner = mock(JarSchedulerOutputPort.class);
 		repository = mock(SchedulerRepositoryOutputPort.class);
 		compiler = mock(CompilerOutputPort.class);
-		tokenEngine = mock(TokenEngine.class);
 		ReflectionTestUtils.setField(service, "scanner", scanner);
 		ReflectionTestUtils.setField(service, "repository", repository);
 		ReflectionTestUtils.setField(service, "compiler", compiler);
-		ReflectionTestUtils.setField(service, "tokenEngine", tokenEngine);
-		ReflectionTestUtils.setField(service, "jwtSecret", "jwtSecret");
-		ReflectionTestUtils.setField(service, "jwtSigner", "jwtSigner");
-		ReflectionTestUtils.setField(service, "jwtSubject", "jwtSubject");
 		ReflectionTestUtils.setField(service, "gitHubPropkey", "gitHubPropkey");
-		ReflectionTestUtils.setField(service, "jwtTtl", 1);
 	}
 	@Test
 	void getChannelPropsFromRepoTest() throws DomainException {

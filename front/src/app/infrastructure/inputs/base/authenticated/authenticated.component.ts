@@ -43,12 +43,9 @@ export class AuthenticatedComponent {
   }
 
   start(){
-    
-
-
     var res = this.service.getDecodedAccessToken()
     if(!res || new Date(res.exp * 1000) < new Date()){
-      this.service.removeAccessToken()
+      this.service.logout()
       this.router.navigateByUrl("");
     } else {
       this.username = res.username
@@ -63,7 +60,8 @@ export class AuthenticatedComponent {
     this.logs = await this.service.getLastLogs();
   }
   logout():void {
-    this.service.removeAccessToken()
+    this.service.logout();
+    clearInterval(this.interval)
     this.router.navigateByUrl("");
   }
   viewJobs() {

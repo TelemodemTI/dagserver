@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -118,12 +120,14 @@ class QueryResolverTest {
 	@Test
 	void logsTest() throws DomainException {
 		LogDTO dto = new LogDTO();
+		Map<String,DataFrame> mapa = new HashMap<>();
 		dto.setDagname("test");
 		dto.setExecDt(new Date());
 		dto.setId(1);
 		dto.setOutputxcom("test");
 		dto.setStatus("status");
 		dto.setValue("value");
+		dto.setXcom(mapa);
 		List<LogDTO> arr = new ArrayList<>();
 		arr.add(dto);
 		when(handler.getLogs(anyString())).thenReturn(arr);

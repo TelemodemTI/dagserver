@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,6 +66,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String ONSTART = "onstart";
 	private static final String ONEND = "onend";
 	private static final String BASEOPPKG = "main.cl.dagserver";
+	private static final String LISTENERLABEL = "listenerLabel";
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
@@ -89,7 +91,7 @@ public class CompilerHandler implements CompilerOutputPort {
 			Map<String,byte[]> classBytes = new HashMap<>();
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
-				validateDagOverwrite(dag.getString("name"),force);
+				validateDagOverwrite(dag.getString("name"));
 				String crondef = dag.has("cron") ? dag.getString("cron") : ""  ;
 				String loc = dag.getString("loc");
 				String onstartdef = "";
@@ -112,7 +114,7 @@ public class CompilerHandler implements CompilerOutputPort {
 				dtomap.put(GROUP, group);
 				dtomap.put(ONSTART, onstartdef);
 				dtomap.put(ONEND, onenddef);
-				dtomap.put("listenerLabel", loc);
+				dtomap.put(LISTENERLABEL, loc);
 				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
 				classBytes.put(classname, dagdef1.getBytes());
 			}	
@@ -165,7 +167,7 @@ public class CompilerHandler implements CompilerOutputPort {
             throw new DomainException(new Exception("File exists"));
         }
 	}
-	public void validateDagOverwrite(String dagname, Boolean force) throws DomainException {
+	public void validateDagOverwrite(String dagname) throws DomainException {
 		File folder = new File(pathfolder);
 	    File[] files = folder.listFiles((dir, name) -> name.endsWith(".jar"));
 	    String className = "generated_dag/main/" + dagname + ".class";
@@ -176,7 +178,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	                JarEntry entry = entries.nextElement();
 	                if (entry.getName().equals(className)) {
 	                    throw new DomainException(new Exception("dagname already exists"));
-	                }
+	                } 
 	            }
 	        } catch (IOException e) {
 	            log.debug("Error reading jar file: " + file.getName());
@@ -204,7 +206,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		} else if(dtomap.get("type").equals("listener")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
-	                .define(dtomap.get("listenerLabel"), dtomap.get(dtomap.get("listenerLabel").toLowerCase()))
+	                .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase()))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
 			.make(pool);	
@@ -295,13 +297,14 @@ public class CompilerHandler implements CompilerOutputPort {
                         OperatorStage op = class1.getDeclaredConstructor().newInstance();
                         var item = op.getMetadataOperator();
                         if (item != null) {
-                            arr.put(item);
+                        	arr.put(item);
                         }
                     }
                 }
                 return arr;
             }
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new DomainException(e);
         }
     }
@@ -335,7 +338,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	                while ((len = zis.read(buffer)) > 0) {
 	                    baos.write(buffer, 0, len);
 	                }
-	                String jsonStr = baos.toString("UTF-8");
+	                String jsonStr = baos.toString(StandardCharsets.UTF_8);
 	                return new JSONObject(jsonStr);
 	            }
 	        }

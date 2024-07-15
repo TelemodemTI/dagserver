@@ -25,7 +25,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 	
 	@Override
 	public JSONObject executeTmp(Integer uncompiled, String dagname, String stepName, String token) throws DomainException {
-		tokenEngine.untokenize(token, jwtSecret, jwtSigner);
+		auth.untokenize(token);
 		String json = repository.getUncompiledBin(uncompiled);
 		JSONObject daguncompiled = new JSONObject(json);
 		JSONArray dags = daguncompiled.getJSONArray("dags");

@@ -8,11 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
-import main.cl.dagserver.domain.core.TokenEngine;
+import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import main.cl.dagserver.infra.adapters.output.scheduler.JarSchedulerAdapter;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -20,11 +23,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SchedulerMutationHandlerServiceTest {
@@ -41,39 +41,35 @@ class SchedulerMutationHandlerServiceTest {
 	protected CompilerOutputPort compiler;
 	
 	@Mock
-	protected TokenEngine tokenEngine;
+	protected AuthenticationOutputPort tokenEngine;
 	
 	@BeforeEach
     public void init() {
 		scanner = mock(JarSchedulerOutputPort.class);
 		repository = mock(SchedulerRepositoryOutputPort.class);
 		compiler = mock(CompilerOutputPort.class);
-		tokenEngine = mock(TokenEngine.class);
+		tokenEngine = mock(AuthenticationOutputPort.class);
 		ReflectionTestUtils.setField(service, "scanner", scanner);
 		ReflectionTestUtils.setField(service, "repository", repository);
 		ReflectionTestUtils.setField(service, "compiler", compiler);
-		ReflectionTestUtils.setField(service, "tokenEngine", tokenEngine);
-		ReflectionTestUtils.setField(service, "jwtSecret", "jwtSecret");
-		ReflectionTestUtils.setField(service, "jwtSigner", "jwtSigner");
-		ReflectionTestUtils.setField(service, "jwtSubject", "jwtSubject");
-		ReflectionTestUtils.setField(service, "jwtTtl", 1);
+		ReflectionTestUtils.setField(service, "auth", tokenEngine);
 	}
 	
 	@Test
 	void scheduleDagTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO auth = new AuthDTO();
 		JarSchedulerAdapter adapter = mock(JarSchedulerAdapter.class);
 		when(scanner.init()).thenReturn(adapter);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		when(tokenEngine.untokenize(anyString())).thenReturn(auth);
 		service.scheduleDag("token", "dagname", "jarname");
 		assertTrue(true);
 	}
 	@Test
 	void scheduleDagErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		JarSchedulerAdapter adapter = mock(JarSchedulerAdapter.class);
 		when(scanner.init()).thenReturn(adapter);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		try {
 			when(scanner.init()).thenThrow(new DomainException(new Exception("test")));
 			service.scheduleDag("token", "dagname", "jarname");	
@@ -84,18 +80,18 @@ class SchedulerMutationHandlerServiceTest {
 	
 	@Test
 	void unscheduleDagTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		JarSchedulerAdapter adapter = mock(JarSchedulerAdapter.class);
 		when(scanner.init()).thenReturn(adapter);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.unscheduleDag("token", "dagname", "jarname");
 		assertTrue(true);
 	}
 	@Test
 	void unscheduleDagErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		when(scanner.init()).thenThrow(new DomainException(new Exception("test")));
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		try {
 			service.unscheduleDag("token", "dagname", "jarname");
 		} catch (Exception e) {
@@ -104,17 +100,17 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void createPropertyTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.createProperty("token", "name", "descr", "value", "group");
 		assertTrue(true);
 	}
 	@Test
 	void createPropertyErrorTest() throws DomainException {
 		try {
-			Map<String,Object> ret = new HashMap<>();
+			AuthDTO ret = new AuthDTO();
 			doThrow(new RuntimeException("Test")).when(repository).setProperty(anyString(), anyString(), anyString(), anyString());
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.createProperty("token", "name", "descr", "value", "group");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -122,17 +118,17 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void deletePropertyTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.deleteProperty("test", "name", "group");
 		assertTrue(true);
 	}
 	@Test
 	void deletePropertyErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		doThrow(new RuntimeException("Test")).when(repository).delProperty(anyString(), anyString());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.deleteProperty("test", "name", "group");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -140,18 +136,18 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void execute() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		JarSchedulerAdapter adapter = mock(JarSchedulerAdapter.class);
 		when(scanner.init()).thenReturn(adapter);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.execute("token","jarname", "dagname","channel","");
 		assertTrue(true);
 	}
 	@Test
 	void executeTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			when(scanner.init()).thenThrow(new DomainException(new Exception("test")));
 			service.execute("token","jarname", "dagname","channel","");
 		} catch (Exception e) {
@@ -161,10 +157,10 @@ class SchedulerMutationHandlerServiceTest {
 	
 	@Test
 	void saveUncompiledTest() throws DomainException, JSONException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		var obj = new JSONObject();
 		obj.put("jarname", "jarname");
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.saveUncompiled("token", obj);
 		assertTrue(true);
 	}
@@ -172,10 +168,10 @@ class SchedulerMutationHandlerServiceTest {
 	void saveUncompiledErrorTest() throws DomainException, JSONException {
 		var obj = new JSONObject();
 		obj.put("jarname", "jarname");
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		doThrow(new RuntimeException("Test")).when(repository).addUncompiled(anyString(), any());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.saveUncompiled("token", obj);
 		} catch (Exception e) {
 			assertTrue(true);
@@ -183,17 +179,17 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void updateUncompiledTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.updateUncompiled("token", 1, new JSONObject());
 		assertTrue(true);
 	}
 	@Test
 	void updateUncompiledErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		doThrow(new RuntimeException("Test")).when(repository).updateUncompiled(anyInt(), any());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.updateUncompiled("token", 1, new JSONObject());
 		} catch (Exception e) {
 			assertTrue(true);
@@ -201,19 +197,19 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void compileTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		var json = "{\"jarname\":\"test\"}";
 		when(repository.getUncompiledBin(anyInt())).thenReturn(json);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.compile("token", 1, true);
 		assertTrue(true);
 	}
 	@Test
 	void compileErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		doThrow(new DomainException(new Exception("test"))).when(compiler).createJar(anyString(),any(),any());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.compile("token", 1, true);
 		} catch (Exception e) {
 			assertTrue(true);
@@ -221,17 +217,17 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void deleteUncompiledTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.deleteUncompiled("token", 1);
 		assertTrue(true);
 	}
 	@Test
 	void deleteUncompileErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		doThrow(new RuntimeException("Test")).when(repository).deleteUncompiled(anyInt());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.deleteUncompiled("token", 1);
 		} catch (Exception e) {
 			assertTrue(true);
@@ -239,17 +235,17 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void deleteGroupPropertyTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.deleteGroupProperty("token","name","group");
 		assertTrue(true);
 	}
 	@Test
 	void deleteGroupPropertyErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
+		AuthDTO ret = new AuthDTO();
 		doThrow(new RuntimeException("Test")).when(repository).delGroupProperty(anyString());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.deleteGroupProperty("token","name","group");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -257,10 +253,10 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void createAccountErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("typeAccount", "ADMIN");
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.createAccount("token", "username", "type", "hash");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -268,11 +264,9 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void createAccountUserTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "USER");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.USER);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		try {
 			service.createAccount("token", "username", "type", "hash");
 		} catch (Exception e) {
@@ -281,21 +275,17 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void createAccountTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.createAccount("token", "username", "type", "hash");
 		assertTrue(true);
 	}
 	@Test
 	void createAccountAlreadyTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		UserDTO user = new UserDTO();
 		user.setId(1);
 		List<UserDTO> list = new ArrayList<>();
@@ -309,21 +299,17 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void deleteAccountTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.deleteAccount("token", "username");
 		assertTrue(true);
 	}
 	@Test
 	void deleteAccountUserTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "USER");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		try {
 			service.deleteAccount("token", "username");	
 		} catch (Exception e) {
@@ -332,11 +318,9 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void deleteAccountErrorTest() throws DomainException {
-		Map<String,String> claimsmap = new HashMap<>();
-		claimsmap.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claimsmap);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		doThrow(new RuntimeException("Test")).when(repository).delAccount(anyString());
 		try {
 			service.deleteAccount("token", "username");	
@@ -346,13 +330,13 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void updateParamsCompiledTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.updateParamsCompiled("token","name","group","s3","s4");
 		assertTrue(true);
 		doThrow(new RuntimeException("Test")).when(repository).updateParams(anyString(),anyString(),anyString(),anyString());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.updateParamsCompiled("token","name","group","s3","s4");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -361,13 +345,13 @@ class SchedulerMutationHandlerServiceTest {
 	
 	@Test
 	void updatePropTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.updateProp("token","name","group","s3");
 		assertTrue(true);
 		doThrow(new RuntimeException("Test")).when(repository).updateprop(anyString(),anyString(),anyString());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.updateProp("token","name","group","s3");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -376,22 +360,18 @@ class SchedulerMutationHandlerServiceTest {
 	
 	@Test
 	void deleteJarfileTest() throws DomainException {
-		Map<String,Object> claims = new HashMap<>();
-		claims.put("typeAccount", "ADMIN");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claims);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.ADMIN);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.deleteJarfile("token","name");
 		assertTrue(true);
 		
 	}
 	@Test
 	void deleteJarfileError1Test() throws DomainException {
-		Map<String,Object> claims = new HashMap<>();
-		claims.put("typeAccount", "USER");
-		Map<String,Object> ret = new HashMap<>();
-		ret.put("claims", claims);
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		ret.setAccountType(AccountType.USER);
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		try {
 			service.deleteJarfile("token","name");	
 		} catch (Exception e) {
@@ -400,8 +380,8 @@ class SchedulerMutationHandlerServiceTest {
 	}
 	@Test
 	void deleteJarfileErrorTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		try {
 			service.deleteJarfile("token","name");	
 		} catch (Exception e) {
@@ -411,13 +391,13 @@ class SchedulerMutationHandlerServiceTest {
 	
 	@Test
 	void addGitHubWebhookTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.addGitHubWebhook("token","name","group","s3","s4","s5");
 		assertTrue(true);
 		doThrow(new RuntimeException("Test")).when(repository).setProperty(anyString(),anyString(),anyString(),anyString());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.addGitHubWebhook("token","name","group","s3","s4","s5");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -426,13 +406,13 @@ class SchedulerMutationHandlerServiceTest {
 	
 	@Test
 	void removeGithubWebhookTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.removeGithubWebhook("token","name");
 		assertTrue(true);
 		doThrow(new RuntimeException("Test")).when(repository).delProperty(anyString(),anyString());
 		try {
-			when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.removeGithubWebhook("token","name");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -441,64 +421,64 @@ class SchedulerMutationHandlerServiceTest {
 	
 	@Test
 	void deleteLogTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.deleteLog("token",1);
 		assertTrue(true);
 	}
 	@Test
 	void deleteAllLogsTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.deleteAllLogs("token","asdf");
 		assertTrue(true);
 	}
 	@Test
 	void renameUncompiledTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.renameUncompiled("token",1,"asdf");
 		assertTrue(true);
 	}
 	@Test
 	void saveRabbitChannelTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.saveRabbitChannel("token","asdf","asdf","asdf",1);
 		assertTrue(true);
 	}
 	@Test
 	void addQueueTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.addQueue("token","asdf","asdf","asdf");
 		assertTrue(true);
 	}
 	@Test
 	void delQueueTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.delQueue("token","asdf");
 		assertTrue(true);
 	}
 	@Test
 	void saveRedisChannelTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.saveRedisChannel("token","asdf","asdf","asdf");
 		assertTrue(true);
 	}
 	@Test
 	void addListenerTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.addListener("token","asdf","asdf","asdf");
 		assertTrue(true);
 	}
 	@Test
 	void delListenerTest() throws DomainException {
-		Map<String,Object> ret = new HashMap<>();
-		when(tokenEngine.untokenize(anyString(),anyString(),anyString())).thenReturn(ret);
+		AuthDTO ret = new AuthDTO();
+		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 		service.delListener("token","asdf");
 		assertTrue(true);
 	}

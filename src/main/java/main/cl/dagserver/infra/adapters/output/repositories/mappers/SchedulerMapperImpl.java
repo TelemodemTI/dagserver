@@ -2,6 +2,7 @@ package main.cl.dagserver.infra.adapters.output.repositories.mappers;
 
 import org.springframework.stereotype.Component;
 
+import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.model.EventListenerDTO;
 import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
@@ -45,7 +46,7 @@ public class SchedulerMapperImpl implements SchedulerMapper {
 		u.setCreatedAt(user.getCreatedAt());
 		u.setId(user.getId());
 		u.setPwdhash(user.getPwdhash());
-		u.setTypeAccount(user.getTypeAccount());
+		u.setTypeAccount(AccountType.valueOf(user.getTypeAccount()));
 		u.setUsername(user.getUsername());
 		return u;
 	}

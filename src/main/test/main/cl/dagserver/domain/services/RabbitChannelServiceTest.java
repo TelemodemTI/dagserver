@@ -5,20 +5,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.jupiter.api.Test;
+import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
-import main.cl.dagserver.domain.core.TokenEngine;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
-
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.mockito.ArgumentMatchers.anyString;
 
 class RabbitChannelServiceTest {
@@ -35,23 +32,19 @@ class RabbitChannelServiceTest {
 	protected CompilerOutputPort compiler;
 	
 	@Mock
-	protected TokenEngine tokenEngine;
+	protected AuthenticationOutputPort tokenEngine;
 	
 	@BeforeEach
     public void init() {
 		scanner = mock(JarSchedulerOutputPort.class);
 		repository = mock(SchedulerRepositoryOutputPort.class);
 		compiler = mock(CompilerOutputPort.class);
-		tokenEngine = mock(TokenEngine.class);
+		tokenEngine = mock(AuthenticationOutputPort.class);
 		ReflectionTestUtils.setField(service, "scanner", scanner);
 		ReflectionTestUtils.setField(service, "repository", repository);
 		ReflectionTestUtils.setField(service, "compiler", compiler);
-		ReflectionTestUtils.setField(service, "tokenEngine", tokenEngine);
-		ReflectionTestUtils.setField(service, "jwtSecret", "jwtSecret");
-		ReflectionTestUtils.setField(service, "jwtSigner", "jwtSigner");
-		ReflectionTestUtils.setField(service, "jwtSubject", "jwtSubject");
+		ReflectionTestUtils.setField(service, "auth", tokenEngine);
 		ReflectionTestUtils.setField(service, "rabbitPropkey", "rabbitPropkey");
-		ReflectionTestUtils.setField(service, "jwtTtl", 1);
 	}
 	
 	@Test
