@@ -1088,10 +1088,46 @@
                                             </div>
                                         </div>
                                     </div>
+                                </section>
 
+                                <section id="aditional-features" class="doc-section">
+                                    <h1>Aditional features</h1>
+                                    <div class="section-block">
+                                        <p>Additional features of the application will be documented here.</p>
+                                    </div>
+                                    <div id="feature-database" class="section-block">
+                                        <h2 class="section-title">Scheduler Cluster</h2>
+                                        <p>The scheduler implemented internally within Dag Server is Quartz. The Quartz scheduler supports the clustering mechanism through a database. Currently only the mysql engine (MariaDB) is supported.</p>
+                                        <div class="code-block">
+                                            <h6>How to configure this feature:</h6>
+                                            <p>The database connection must be configured in the quartz.properties file. For this, the connection url and credentials must be configured in the "org.quartz.dataSource.quartzDS" parameters.</p>
+                                            <ul class="list">
+                                                <li>org.quartz.dataSource.quartzDS.driver</li>
+                                                <li>org.quartz.dataSource.quartzDS.URL</li>
+                                                <li>org.quartz.dataSource.quartzDS.user</li>
+                                                <li>org.quartz.dataSource.quartzDS.password</li>
+                                            </ul>
+                                            <p>By default, dagserver sets up an in-memory h2 database</p>
+                                        </div>
+                                    </div>
 
+                                    <div id="feature-persistence" class="section-block">
+                                        <h2 class="section-title">XCOM Persistence</h2>
+                                        <p>By default, Dagserver loads and maintains data in xcom memory and exceptions occur in the system. This is not recommended in a productive environment.</p>
+                                        <p>This can be configured to use disk persistence by configuring two mapDB files. one to save the XCOMs, and another to save the exceptions</p>
+                                        <div class="code-block">
+                                            <h6>How to configure this feature:</h6>
+                                            <p>You must replace the "storage-hashmap" profile, with the "storage-map-db" profile, in the spring.profiles.active variable within the application.properties file.</p>
+                                            <p>In addition, the following variables must be configured in the same file:</p>
+                                            <ul class="list">
+                                                <li><b>param.storage.exception</b>:path/to/file.db ej: /root/dags/xcom.db</li>
+                                                <li><b>param.xcompath</b>:path/to/exceptions.db ej: /root/dags/exceptions.db</li>
+                                            </ul>
+                                        </div>
+                                    </div>
 
                                 </section>
+                                
                                 
                             </section><!--//doc-section-->
 
@@ -1119,8 +1155,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link scrollto" href="#execution-channels">Input channels execution</a>
 	                            </li>
-
-                                
+                                <li class="nav-item">
+                                    <a class="nav-link scrollto" href="#aditional-features">Aditional Features</a>
+	                            </li>
                             </ul><!--//doc-menu-->
                         </div><!--//doc-nav-->
                     </div><!--//doc-sidebar-->
