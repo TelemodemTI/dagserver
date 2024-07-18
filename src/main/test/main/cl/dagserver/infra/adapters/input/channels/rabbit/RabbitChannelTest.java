@@ -1,7 +1,7 @@
 package main.cl.dagserver.infra.adapters.input.channels.rabbit;
 
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;

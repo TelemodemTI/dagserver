@@ -18,7 +18,6 @@ import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
-import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DagDTO;
@@ -178,8 +177,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	
 	@Override
 	public List<ChannelDTO> getChannels(String token) throws DomainException {
-		var claims = auth.untokenize(token);
-	    validateAdminPermission(claims);
+		auth.untokenize(token);
 	    List<ChannelDTO> channels = new ArrayList<>();
 	    channels.add(createChannel("SCHEDULER", "ACTIVE", "scheduler.png", Collections.emptyList()));
 	    channels.add(createChannel("GRAPHQL", "ACTIVE", "graphql.png", Collections.emptyList()));
@@ -189,14 +187,6 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));
 	    channels.add(createChannel(ACTIVEMQ_LISTENER, getChannelStatus(ACTIVEMQ_LISTENER), "activemq.png", getChannelProps(ACTIVEMQ_LISTENER)));
 	    return channels;
-	}
-	
-	
-
-	private void validateAdminPermission(AuthDTO claims) throws DomainException {
-	    if (!AccountType.ADMIN.equals(claims.getAccountType())) {
-	        throw new DomainException(new Exception("unauthorized"));
-	    }
 	}
 
 	private String getChannelStatus(String channelName) throws DomainException {
@@ -272,5 +262,4 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		}
 		return newrv;
 	}
-	
 }

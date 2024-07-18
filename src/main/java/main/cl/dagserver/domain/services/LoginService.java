@@ -13,8 +13,14 @@ import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 @Service
 public class LoginService implements LoginUseCase ,UnaryOperator<String> {
 
-	@Autowired
-	AuthenticationOutputPort auth;
+	private final AuthenticationOutputPort auth;
+
+    @Autowired
+    public LoginService(AuthenticationOutputPort auth) {
+        this.auth = auth;
+    }
+	
+	
 	
 	@Override
 	public String apply(String t) {

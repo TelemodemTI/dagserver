@@ -46,10 +46,14 @@ public class AuthenticationAdapter implements AuthenticationOutputPort {
 	
 	@Value( "${param.jwt_ttl}" )
 	protected Integer jwtTtl;
+		
+	protected final SchedulerRepositoryOutputPort repository;
 	
-	@Autowired
-	protected SchedulerRepositoryOutputPort repository;
-	
+    @Autowired
+    public AuthenticationAdapter(SchedulerRepositoryOutputPort repo) {
+        this.repository = repo;
+    }
+
 	private String tokenize(String secret, String issuer, String subject, Integer milisec, Map<String, String> claims) {
 		Algorithm algorithm = Algorithm.HMAC256(secret);
 		Builder builder = JWT.create().withIssuer(issuer); 

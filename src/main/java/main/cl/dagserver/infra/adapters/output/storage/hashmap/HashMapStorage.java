@@ -23,6 +23,7 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 @Profile("storage-hashmap")
 public class HashMapStorage implements StorageOutputPort {
 
+	
 	private Map<String,Object> map = new HashMap<>();
 	private Map<String,Object> mapExceptions = new HashMap<>();
 	
@@ -42,8 +43,8 @@ public class HashMapStorage implements StorageOutputPort {
 		Map<String,DataFrame> mapa = new HashMap<>();
 		try {
 			JSONObject wrapper = new JSONObject( (String) map.get(xcomkey));
-			var keys = wrapper.keySet();
-			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			var keys = wrapper.keys();
+			for (Iterator<String> iterator = keys; iterator.hasNext();) {
 				String stepname = iterator.next();
 				DataFrame df = DataFrameUtils.jsonToDataFrame(wrapper.getJSONArray(stepname));
 				mapa.put(stepname, df);

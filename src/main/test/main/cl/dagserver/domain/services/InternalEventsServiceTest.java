@@ -1,7 +1,7 @@
 package main.cl.dagserver.domain.services;
 
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

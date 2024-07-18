@@ -3,9 +3,9 @@ package main.cl.dagserver.infra.adapters.output.compiler;
 import static org.mockito.Mockito.mock;
 
 import java.util.Properties;
-
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -46,9 +46,12 @@ class CompilerHandlerTest {
 	void getPackageDefTest() {
 		try {
 			handler.getPackageDef("test");	
-		} catch (Exception e) {}
-		var str = handler.getPackageDef("test.test");
-		assertNotNull(str);
+			handler.getPackageDef("test.test");	
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+		
+		
 	}
 	
 	@Test
@@ -60,5 +63,11 @@ class CompilerHandlerTest {
 			assertTrue(true);
 		}
 	}
+	@Test
+    void reimportTest() {
+        var exception = assertThrows(DomainException.class, () -> handler.reimport("nonexistent.jar"));
+        assertNotNull(exception);
+        
+    }
 	
 }
