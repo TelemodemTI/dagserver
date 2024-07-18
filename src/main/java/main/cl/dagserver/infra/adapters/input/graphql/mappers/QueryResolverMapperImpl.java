@@ -7,6 +7,7 @@ import main.cl.dagserver.domain.model.AgentDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
+import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Account;
@@ -14,6 +15,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Agent;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Channel;
 import main.cl.dagserver.infra.adapters.input.graphql.types.ChannelProps;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Property;
+import main.cl.dagserver.infra.adapters.input.graphql.types.Session;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Uncompiled;
 
 @Component
@@ -79,6 +81,14 @@ public class QueryResolverMapperImpl implements QueryResolverMapper {
 		cp.setKey(dto.getKey());
 		cp.setValue(dto.getValue());
 		return cp;
+	}
+
+	@Override
+	public Session toSession(SessionDTO dto) {
+		Session session = new Session();
+		session.setRefreshToken(dto.getRefreshToken());
+		session.setToken(dto.getToken());
+		return session;
 	}
 
 }

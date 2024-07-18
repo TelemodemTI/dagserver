@@ -6,14 +6,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +20,6 @@ import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.nhl.dflib.DataFrame;
-
 import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -32,6 +29,7 @@ import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
+import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import main.cl.dagserver.infra.adapters.input.graphql.mappers.QueryResolverMapper;
@@ -63,7 +61,10 @@ class QueryResolverTest {
 	}
 	@Test
 	void loginTest() {
-		when(login.apply(anyString())).thenReturn("test");
+		SessionDTO rv = new SessionDTO();
+		rv.setToken("test");
+		rv.setRefreshToken("refresh");
+		when(login.apply(anyString())).thenReturn(rv);
 		var test = resolver.login("test");
 		assertEquals("test", test);
 	}
@@ -244,7 +245,7 @@ class QueryResolverTest {
 		assertNotNull(str);
 	}
 	@Test
-	void exceptionsTest() {
+	void exceptionsTest() throws DomainException {
 		when(handler.getExceptions(anyString())).thenReturn(new ArrayList<>());
 		var str = resolver.exceptions("test");
 		assertNotNull(str);

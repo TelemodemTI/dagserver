@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.enums.AccountType;
+import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import static org.mockito.Mockito.when;
@@ -37,7 +38,7 @@ class LoginServiceTest {
 	}
 	
 	@Test
-	void applyTest() {
+	void applyTest() throws DomainException {
 		UserDTO user = new UserDTO();
 		user.setCreatedAt(new Date());
 		user.setPwdhash("test");
@@ -57,7 +58,7 @@ class LoginServiceTest {
 	}
 	
 	@Test
-	void applyErrorTest() {
+	void applyErrorTest() throws DomainException {
 		UserDTO user = new UserDTO();
 		user.setCreatedAt(new Date());
 		user.setPwdhash("test123");

@@ -21,7 +21,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   logout(): Promise<void> {
 	return new Promise<void>((resolve,reject)=>{
-		var token = localStorage.getItem("dagserver_token")
+		var token = localStorage.getItem("dagserver_refresh_token")
 		var string = "mutation logout($token:String) { logout(token:$token) {status,code,value} }"
 		this.query(string,{token:token}).subscribe((result:any)=>{
 			if(result && result.logout && result.logout.status == "ok"){
@@ -644,15 +644,17 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
     })
   }
   login(ureqobject: any): Promise<boolean> {
-
     var token = btoa(JSON.stringify(ureqobject));
     return new Promise<boolean>((resolve, reject) => {
-      const string = "query login($token: String!) { login(token:$token) }";
+      const string = "query login($token: String!) { login(token:$token) {token,refreshToken} }";
       this.query(string,{token:token}).subscribe((result:any)=>{
         try {
           if(result){
             if (result.login ) {
-              localStorage.setItem("dagserver_token", result.login);
+              let token = result.login.token
+              let refresh_token = result.login.refreshToken
+              localStorage.setItem("dagserver_token", token);
+              localStorage.setItem("dagserver_refresh_token", refresh_token);
               resolve(true);
             } else {
               resolve(false);

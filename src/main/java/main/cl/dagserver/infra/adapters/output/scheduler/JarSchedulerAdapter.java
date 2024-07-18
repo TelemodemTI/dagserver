@@ -75,7 +75,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				quartz.validate(listOfFiles[i].getName().replace(".jar", ""), this.analizeJarProperties(listOfFiles[i]));
 			}
 		}
-		
 		return this;
 	}	
 	

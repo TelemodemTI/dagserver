@@ -31,6 +31,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.LogEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Node;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Property;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Scheduled;
+import main.cl.dagserver.infra.adapters.input.graphql.types.Session;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Uncompiled;
 
 
@@ -48,8 +49,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 		this.mapper = mapper;
 	}
 	
-	public String login(String token) {
-		return login.apply(token);
+	public Session login(String token) {
+		return mapper.toSession(login.apply(token));
 	}
 	
 	public String operatorsMetadata() throws DomainException {
@@ -241,7 +242,12 @@ public class QueryResolver implements GraphQLQueryResolver {
 		return handler.exportUncompiled(token,uncompiled);
 	}
 	public List<Exceptions> exceptions(String token) {
-		return handler.getExceptions(token);
+		try {
+			return handler.getExceptions(token);	
+		} catch (Exception e) {
+			return new ArrayList<Exceptions>();
+		}
+		
 	}
 	
 	

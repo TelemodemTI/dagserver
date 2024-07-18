@@ -53,7 +53,7 @@ class AuthenticationAdapterTest {
         userDTO.setTypeAccount(AccountType.ADMIN);
         userDTO.setId(1);
         when(repository.findUser("testUser")).thenReturn(List.of(userDTO));
-        String token = adapter.login(reqObject);
+        var token = adapter.login(reqObject);
         assertNotNull(token);
     }
     @Test
@@ -68,7 +68,7 @@ class AuthenticationAdapterTest {
         userDTO.setTypeAccount(AccountType.ADMIN);
         userDTO.setId(1);
         when(repository.findUser("testUser")).thenReturn(List.of(userDTO));
-        String token = adapter.login(reqObject);
+        var token = adapter.login(reqObject);
         assertNotNull(token);
     }
     @Test
@@ -80,7 +80,7 @@ class AuthenticationAdapterTest {
         reqObject.put("blind_signature", "123");
         
         when(repository.findUser(anyString())).thenReturn(new ArrayList<>());
-        String token = adapter.login(reqObject);
+        var token = adapter.login(reqObject);
         assertNotNull(token);
     }
     @Test
@@ -100,8 +100,8 @@ class AuthenticationAdapterTest {
         userDTO.setTypeAccount(AccountType.ADMIN);
         userDTO.setId(1);
         when(repository.findUser("testUser")).thenReturn(List.of(userDTO));
-        String token = adapter.login(reqObject);
-    	adapter.untokenize(token);
+        var token = adapter.login(reqObject);
+    	adapter.untokenize(token.getToken());
     	assertTrue(true);
     }
 }
