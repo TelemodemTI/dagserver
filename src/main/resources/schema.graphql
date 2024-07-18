@@ -103,9 +103,13 @@ type Exceptions {
 	stack: String
 }
 
+type Session {
+	token: String,
+	refreshToken: String
+}
 
 type Query { 
-	login(token: String) : String,
+	login(token: String) : Session,
 	getIcons(type:String) : String,
 	scheduledJobs : [Scheduled] , 
 	availableJobs: [Available], 

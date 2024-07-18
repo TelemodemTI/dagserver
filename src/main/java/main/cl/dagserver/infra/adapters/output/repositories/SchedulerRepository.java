@@ -2,6 +2,7 @@ package main.cl.dagserver.infra.adapters.output.repositories;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,11 +10,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.annotation.PostConstruct;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
@@ -50,6 +55,9 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private StorageOutputPort storage;
 
 	@Autowired
+	private Environment environment;
+	
+	@Autowired
 	private DAO dao;
 	@Autowired
 	private SchedulerMapper mapper;
@@ -57,7 +65,19 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	@Value("${param.folderpath}")
 	private String pathfolder;
 	
-	
+	@PostConstruct
+    private void loadPropertiesToRepo() {
+    	var listp = Arrays.asList(this.environment.getActiveProfiles());
+    	for (Iterator<String> iterator = listp.iterator(); iterator.hasNext();) {
+			String string =  iterator.next();
+			PropertyParameter param = new PropertyParameter();
+			param.setDescription("active profile");
+	    	param.setName(string);
+	    	param.setValue(Boolean.TRUE.toString());
+	    	param.setGroup("active_profiles");
+	    	dao.save(param);
+		}
+    }	
 	
 	
 	public void addEventListener(String name,String onstart,String onend,String groupname) {

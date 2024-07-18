@@ -234,13 +234,36 @@ export class FrontEndDomainService implements
     return this.jwtadapter.getDecodedAccessToken();
   }
   logout(): void {
-	this.adapter.logout()
+	  this.adapter.logout()
     this.jwtadapter.removeAccessToken();
   }
   login(user: any, pwd: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.adapter.properties().then((props: Property[]) => {
+        let loginType = "interno";
+        for (let index = 0; index < props.length; index++) {
+          const element = props[index];
+          if (element.name == "auth-keycloak") {
+            loginType = "keycloak";
+            break;
+          }
+        }
+        if (loginType == "interno") {
+          this.loginIncluded(user, pwd).then(resolve).catch(reject); // Devuelve la promesa de loginIncluded
+        } else {
+          this.loginKeyCloak(user, pwd).then(resolve).catch(reject); // Devuelve la promesa de loginKeyCloak
+        }
+      }).catch(reject); // En caso de error en la obtención de propiedades
+    });
+  }
+  loginKeyCloak(user: any, pwd: any){
+    let requestObj = { username: user , challenge:pwd, mode: "keycloak" }
+    return this.adapter.login(requestObj);
+  }
+  loginIncluded(user: any, pwd: any){
     let desafiostr = this.encryptor.get_desafio();
     let blindFirm = this.encryptor.generate_blind(pwd,desafiostr)
-    let requestObj = { username: user , challenge:desafiostr }
+    let requestObj = { username: user , challenge:desafiostr, mode: "included" }
     Object.assign(requestObj,blindFirm)
     return this.adapter.login(requestObj);
   }

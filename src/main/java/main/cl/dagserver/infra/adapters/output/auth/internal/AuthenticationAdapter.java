@@ -28,6 +28,7 @@ import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AuthDTO;
+import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 
 @Component
@@ -66,29 +67,35 @@ public class AuthenticationAdapter implements AuthenticationOutputPort {
 		return builder.sign(algorithm);
 	}
 	@Override
-	public AuthDTO untokenize(String token) {
-		AuthDTO result = new AuthDTO();
-		Map<String,String> claims = new HashMap<>();
+	public AuthDTO untokenize(String token) throws DomainException {
+		try {
+			AuthDTO result = new AuthDTO();
+			Map<String,String> claims = new HashMap<>();
 
-		Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
-		JWTVerifier verifier = JWT.require(algorithm).withIssuer(jwtSigner).build();
-		DecodedJWT jwt = verifier.verify(token);
-		Date expires = jwt.getExpiresAt();
-		Date issuedAt = jwt.getIssuedAt();
-		for (Map.Entry<String, Claim> entry : jwt.getClaims().entrySet()) {
-			claims.put(entry.getKey(), entry.getValue().asString());
+			Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
+			JWTVerifier verifier = JWT.require(algorithm).withIssuer(jwtSigner).build();
+			DecodedJWT jwt = verifier.verify(token);
+			Date expires = jwt.getExpiresAt();
+			Date issuedAt = jwt.getIssuedAt();
+			for (Map.Entry<String, Claim> entry : jwt.getClaims().entrySet()) {
+				claims.put(entry.getKey(), entry.getValue().asString());
+			}
+			result.setExpires(expires);
+			result.setIssueAt(issuedAt);
+			result.setSubject(jwt.getSubject());
+			result.setAccountType(AccountType.valueOf(claims.get("typeAccount")));
+			return result;
+	
+		} catch (Exception e) {
+			throw new DomainException(e);
 		}
-		result.setExpires(expires);
-		result.setIssueAt(issuedAt);
-		result.setSubject(jwt.getSubject());
-		result.setAccountType(AccountType.valueOf(claims.get("typeAccount")));
-		return result;
 	}
 	@Override
-	public String login(JSONObject reqobject) throws DomainException {
+	public SessionDTO login(JSONObject reqobject) throws DomainException {
 		try {
 			String username = reqobject.getString("username");
 			List<UserDTO> list = repository.findUser(username);
+			SessionDTO dto = new SessionDTO();
 			if(!list.isEmpty() ) {
 				UserDTO user = list.get(0);
 				String pkstr = user.getPwdhash() + reqobject.getString("private_key");
@@ -101,12 +108,19 @@ public class AuthenticationAdapter implements AuthenticationOutputPort {
 					claims.put("typeAccount", user.getTypeAccount().toString());
 					claims.put("username", username);
 					claims.put("userid", user.getId().toString());
-					return this.tokenize(jwtSecret, jwtSigner, jwtSubject, jwtTtl, claims);
+					String token = this.tokenize(jwtSecret, jwtSigner, jwtSubject, jwtTtl, claims);
+					dto.setToken(token);
+					dto.setRefreshToken(token);
+					return dto;
 	            } else {
-	            	return "";
+	            	dto.setToken("");
+					dto.setRefreshToken("");
+					return dto;
 	            }
 			} else {
-				return "";
+				dto.setToken("");
+				dto.setRefreshToken("");
+				return dto;
 			}	
 		} catch (Exception e) {
 			throw new DomainException(e);

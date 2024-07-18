@@ -245,7 +245,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Exceptions> getExceptions(String token) {
+	public List<Exceptions> getExceptions(String token) throws DomainException {
 		auth.untokenize(token);
 		List<Exceptions> newrv = new ArrayList<>();
 		var exceptions = this.storage.listException();
