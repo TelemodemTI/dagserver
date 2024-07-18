@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -19,7 +17,7 @@ import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoginServiceTest {
 
@@ -35,8 +33,7 @@ class LoginServiceTest {
     public void init() {
 		repo = mock(SchedulerRepositoryOutputPort.class);
 		tokenEngine = mock(AuthenticationOutputPort.class);
-		login = new LoginService();
-		ReflectionTestUtils.setField(login, "auth", tokenEngine);
+		login = new LoginService(tokenEngine);
 	}
 	
 	@Test

@@ -1,7 +1,6 @@
 package main.cl.dagserver.infra.adapters.output.storage;
 
-import static org.testng.Assert.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -11,11 +10,6 @@ class ExceptionStorageTest {
 
 	private MapDBStorage storage = new MapDBStorage("c:\\tmp\\dagrags\\testdag","C:\\tmp\\dagrags\\exceptions.db"); 
 	
-	@BeforeEach
-    public void init() {
-		
-		
-	}
 
 	@Test
 	void addTest() {

@@ -1,7 +1,6 @@
 package main.cl.dagserver.infra.adapters.output.compiler;
 
-import static org.testng.Assert.assertNotNull;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;

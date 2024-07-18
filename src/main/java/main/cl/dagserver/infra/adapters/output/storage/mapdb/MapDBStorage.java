@@ -1,8 +1,6 @@
 package main.cl.dagserver.infra.adapters.output.storage.mapdb;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,7 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
-import org.json.JSONObject;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
@@ -18,17 +15,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import com.nhl.dflib.DataFrame;
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.StorageOutputPort;
-import main.cl.dagserver.domain.core.DataFrameUtils;
-import main.cl.dagserver.domain.core.ExceptionEventLog;
+import main.cl.dagserver.infra.adapters.output.storage.hashmap.HashMapStorage;
 
 @Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
 @Profile("storage-map-db")
-public class MapDBStorage implements StorageOutputPort {
+public class MapDBStorage extends HashMapStorage implements StorageOutputPort {
 
 	private static final String EXCEPTIONS =  "exceptions";
 	
@@ -51,31 +46,7 @@ public class MapDBStorage implements StorageOutputPort {
 		DB db = DBMaker.fileDB(xcomfolder).fileDeleteAfterClose().make();
 		map = db.hashMap("xcom").createOrOpen();
 	}
-	@SuppressWarnings( "unchecked" )
-	public void putEntry(String locatedb,Map<String,DataFrame> xcom) {
-		JSONObject wrapper = new JSONObject();
-		var keys = xcom.keySet();
-		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-			String string = iterator.next();
-			wrapper.put(string, DataFrameUtils.dataFrameToJson(xcom.get(string)));
-		}
-		map.put(locatedb, wrapper.toString());
-	}
-	public Map<String,DataFrame> getEntry(String xcomkey) {
-		Map<String,DataFrame> mapa = new HashMap<>();
-		try {
-			JSONObject wrapper = new JSONObject( (String) map.get(xcomkey));
-			var keys = wrapper.keySet();
-			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-				String stepname = iterator.next();
-				DataFrame df = DataFrameUtils.jsonToDataFrame(wrapper.getJSONArray(stepname));
-				mapa.put(stepname, df);
-			}	
-		} catch (Exception e) {
-			log.debug("no se ha encontrado key: {}",xcomkey);
-		}
-		return mapa;
-	}
+	
 	private void deleteExistingFile(String xcomfolder) {
         try {
         	File file = new File(xcomfolder);
@@ -88,6 +59,7 @@ public class MapDBStorage implements StorageOutputPort {
 		
     }
 	@SuppressWarnings("unchecked")
+	@Override
 	public void deleteXCOM(Date time) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 		var keys = map.entrySet();
@@ -104,6 +76,7 @@ public class MapDBStorage implements StorageOutputPort {
 		}
 	}
 	@SuppressWarnings("rawtypes")
+	@Override
 	public void removeException(String eventDt) {
 	    DB db = null;
 	    HTreeMap map1 = null;
@@ -119,27 +92,6 @@ public class MapDBStorage implements StorageOutputPort {
 	            db.close();
 	        }
 	    }
-	}
-
-	
-	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void addException(ExceptionEventLog event) {
-		try(DB db = DBMaker.fileDB(exceptionstoragefile).make();
-			HTreeMap map1 = db.hashMap(EXCEPTIONS).createOrOpen();){
-			String classname = event.getSource().getClass().getCanonicalName();
-			String method = event.getMessage();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
-			StringWriter stringWriter = new StringWriter();
-	        PrintWriter printWriter = new PrintWriter(stringWriter);
-	        event.getException().printStackTrace(printWriter);
-	        String stacktrace = stringWriter.toString();      
-			Map<String,String> excpd = new HashMap<>();
-			excpd.put("classname", classname);
-			excpd.put("method",method);
-			excpd.put("stacktrace",stacktrace);
-			map1.put(sdf.format(new Date()), excpd);	
-		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

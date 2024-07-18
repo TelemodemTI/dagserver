@@ -13,6 +13,7 @@
 	<version>0.7.0-SNAPSHOT</version>
 	<name>dagserver</name>
 	<description>dagserver</description>
+	<packaging>jar</packaging>
 	<properties>
 		<java.version>17</java.version>
 		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
@@ -167,6 +168,12 @@
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-engine</artifactId>
 		</dependency>
+		
+		<dependency>
+           <groupId>org.junit.platform</groupId>
+           <artifactId>junit-platform-surefire-provider</artifactId>
+           <version>1.0.3</version>
+        </dependency>
 	  	<dependency>
 				  <groupId>com.sun.mail</groupId>
 				  <artifactId>javax.mail</artifactId>
@@ -205,11 +212,6 @@
 		    <groupId>com.linkedin.cytodynamics</groupId>
 		    <artifactId>cytodynamics-nucleus</artifactId>
 		    <version>0.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>7.3.0</version>
 		</dependency>
 		<dependency>
 		  <groupId>com.rabbitmq</groupId>
@@ -314,23 +316,13 @@
 		     </resource>	
 		</resources>
 		<sourceDirectory>src/main/java</sourceDirectory>
-		
 		<plugins>
 	
 	<plugin>
-      <artifactId>maven-surefire-plugin</artifactId>
-      <dependencies>
-        <dependency>
-          <groupId>org.junit.platform</groupId>
-          <artifactId>junit-platform-surefire-provider</artifactId>
-          <version>1.0.3</version>
-        </dependency>
-        <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter-engine</artifactId>
-          <version>5.0.3</version>
-        </dependency>
-      </dependencies>
+         <artifactId>maven-surefire-plugin</artifactId>
+         <configuration>
+             <testSourceDirectory>src/main/test</testSourceDirectory>
+         </configuration>            
     </plugin>
 			
 			<plugin>

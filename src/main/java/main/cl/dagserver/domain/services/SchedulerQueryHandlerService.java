@@ -18,7 +18,6 @@ import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
-import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DagDTO;
@@ -263,5 +262,4 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		}
 		return newrv;
 	}
-	
 }

@@ -1,7 +1,7 @@
 package main.cl.dagserver.infra.adapters.input.graphql.mappers;
 
-import static org.testng.Assert.assertNotNull;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 

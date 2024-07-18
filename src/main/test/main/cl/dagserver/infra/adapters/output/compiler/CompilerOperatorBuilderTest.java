@@ -1,7 +1,6 @@
 package main.cl.dagserver.infra.adapters.output.compiler;
 
-import static org.testng.Assert.assertNotNull;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

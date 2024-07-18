@@ -1,8 +1,8 @@
 package main.cl.dagserver.infra.adapters.output.repositories;
 
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import java.util.Date;
@@ -23,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.nhl.dflib.DataFrame;
 
+import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.DAO;
@@ -307,6 +308,8 @@ class SchedulerRepositoryTest {
 	 void getUsersTest() {
 		 User pp = new User();
 			pp.setId(1);
+			pp.setUsername("test");
+			pp.setTypeAccount(AccountType.USER.toString());
 			List<Object> props = new ArrayList<>();
 			props.add(pp);
 			when(dao.read(any(), anyString())).thenReturn(props);

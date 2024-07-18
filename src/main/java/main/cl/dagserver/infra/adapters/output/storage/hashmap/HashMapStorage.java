@@ -23,6 +23,7 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 @Profile("storage-hashmap")
 public class HashMapStorage implements StorageOutputPort {
 
+	
 	private Map<String,Object> map = new HashMap<>();
 	private Map<String,Object> mapExceptions = new HashMap<>();
 	
