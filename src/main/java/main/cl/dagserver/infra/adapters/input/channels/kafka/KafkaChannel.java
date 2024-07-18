@@ -87,30 +87,33 @@ public class KafkaChannel extends InputChannel {
 		         properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 		         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-		         try (Consumer<String, String> consumer = createConsumer(properties)) {
-		        	Map<String,String> item = new HashMap<>();
-		 			item.put("topic", topic);
-		 			item.put("groupId", groupId);
-		 			runningConsumers.add(item);
-		        	consumer.subscribe(Collections.singletonList(topic));
-		        	while (longRunning.equals(Boolean.TRUE)) {
-		        		if (someCondition.equals(Boolean.TRUE)) {
-		     				longRunning = false;
-		                }
-		        		ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(poll));
-		   	            for (ConsumerRecord<String, String> recorda : records) {
-		   	            	 handler.raiseEvent(topic,recorda.value());	
-		   	            }
-		        	}
-		         } catch (Exception e) {
-		        	eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "kafkaInputChannel.raiseEvent"));
-					log.error("error in kafka connection");
-		         }	 
+		         this.publishEventKafka(topic,groupId,longRunning,properties,poll);
 	        }	
 		} catch (Exception e) {
 			throw new DomainException(e);		
 		}
 		
+	}
+	private void publishEventKafka(String topic,String groupId, Boolean longRunning,Properties properties,Integer poll) {
+		try (Consumer<String, String> consumer = createConsumer(properties)) {
+        	Map<String,String> item = new HashMap<>();
+ 			item.put("topic", topic);
+ 			item.put("groupId", groupId);
+ 			runningConsumers.add(item);
+        	consumer.subscribe(Collections.singletonList(topic));
+        	while (longRunning.equals(Boolean.TRUE)) {
+        		if (someCondition.equals(Boolean.TRUE)) {
+     				longRunning = false;
+                }
+        		ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(poll));
+   	            for (ConsumerRecord<String, String> recorda : records) {
+   	            	 handler.raiseEvent(topic,recorda.value());	
+   	            }
+        	}
+         } catch (Exception e) {
+        	eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "kafkaInputChannel.raiseEvent"));
+			log.error("error in kafka connection");
+         }
 	}
 	protected Consumer<String, String> createConsumer(Properties properties) {
         return new KafkaConsumer<>(properties);

@@ -20,16 +20,10 @@ public class KafkaChannelService extends BaseServiceComponent implements KafkaCh
 	@Value( "${param.kafka.propkey}" )
 	private String kafkaPropkey;
 	
-	
-	
-
 	@Override
 	public void raiseEvent(String topic, String message) throws DomainException {
 		this.trigggerEvent(topic, "KAFKA_EVENT",message);
 	}
-
-	
-
 	@Override
 	public Properties getKafkaChannelProperties() throws DomainException {
 		var propertyList = repository.getProperties(kafkaPropkey);

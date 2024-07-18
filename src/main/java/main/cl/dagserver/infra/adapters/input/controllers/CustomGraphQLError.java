@@ -4,6 +4,7 @@ import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,17 +25,17 @@ public class CustomGraphQLError implements GraphQLError {
 
     @Override
     public List<SourceLocation> getLocations() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public Map<String, Object> getExtensions() {
-        return null;
+        return Collections.emptyMap();
     }
 
     @Override
     public List<Object> getPath() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

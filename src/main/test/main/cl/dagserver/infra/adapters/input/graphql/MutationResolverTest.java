@@ -38,7 +38,7 @@ class MutationResolverTest {
 		resp.getCode();
 		resp.setCode(1);
 		resp.getValue();
-		resp.setValue("value");;
+		resp.setValue("value");
 		assertTrue(true);
 	}
 	@Test

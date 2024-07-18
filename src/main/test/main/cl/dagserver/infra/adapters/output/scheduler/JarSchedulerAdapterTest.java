@@ -1,14 +1,17 @@
 package main.cl.dagserver.infra.adapters.output.scheduler;
-
-import static org.mockito.Mockito.mock;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import java.io.File;
+import java.util.Date;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock; 
+import org.mockito.Mock;
+import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 
@@ -18,6 +21,8 @@ class JarSchedulerAdapterTest {
     private ApplicationEventPublisher eventPublisher;
 	@Mock
 	private QuartzConfig quartz;
+	@Mock
+	private StorageOutputPort storage;
 	
 	private JarSchedulerAdapter adapter = new JarSchedulerAdapter();
 	
@@ -25,17 +30,18 @@ class JarSchedulerAdapterTest {
     void init() {
 		quartz = mock(QuartzConfig.class);
 		eventPublisher = mock(ApplicationEventPublisher.class);
+		storage = mock(StorageOutputPort.class);
 		ReflectionTestUtils.setField(adapter, "quartz", quartz);
 		ReflectionTestUtils.setField(adapter, "eventPublisher", eventPublisher);
 		ReflectionTestUtils.setField(adapter, "pathfolder", "C:\\tmp\\dagrags\\");
+		ReflectionTestUtils.setField(adapter, "storage", storage);
 	}
 	
 	@Test
 	void initTest() throws DomainException {
-		try {
-			var dadap = adapter.init();
-			assertNotNull(dadap);
-		} catch (Exception e) {}
+		
+		var dadap = adapter.init();
+		assertNotNull(dadap);
 		assertTrue(true);
 	}
 	
@@ -52,12 +58,11 @@ class JarSchedulerAdapterTest {
 	}
 	@Test
 	void schedulerTest() throws DomainException {
-		try {
-			adapter.init();
-			adapter.scheduler("DAG_UzAjxX", "dagJar1.jar");
-			assertTrue(true);	
-		} catch (Exception e) {}
-		assertTrue(true);
+		
+		adapter.init();
+		adapter.scheduler("DAG_UzAjxX", "dagJar1.jar");
+		assertTrue(true);	
+		
 	}
 	@Test
 	void unscheduleTest() throws DomainException {
@@ -85,6 +90,11 @@ class JarSchedulerAdapterTest {
 		assertNotNull(rv);
 	}
 	@Test
+	void listScheduled_ExceptionThrown_DomainException() throws SchedulerException {
+	    when(quartz.listScheduled()).thenThrow(new RuntimeException("Test Exception"));
+	    assertThrows(DomainException.class, () -> adapter.listScheduled());
+	}
+	@Test
 	void getIconsErrorTest() throws DomainException {
 		try {
 			adapter.getIcons("otro");	
@@ -101,6 +111,12 @@ class JarSchedulerAdapterTest {
 	@Test
 	void privateTest() {
 		ReflectionTestUtils.invokeMethod(adapter, "activateDeactivate", "dagname", this.getClass());
+		assertTrue(true);
+	}
+	@Test
+	void deleteXCOMTest() throws DomainException {
+		var date = new Date();
+		adapter.deleteXCOM(date);
 		assertTrue(true);
 	}
 }
