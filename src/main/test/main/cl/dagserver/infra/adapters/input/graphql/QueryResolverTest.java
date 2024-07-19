@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import main.cl.dagserver.infra.adapters.input.graphql.mappers.QueryResolverMapper;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Scheduled;
+import main.cl.dagserver.infra.adapters.input.graphql.types.Session;
 
 class QueryResolverTest {
 
@@ -64,9 +66,15 @@ class QueryResolverTest {
 		SessionDTO rv = new SessionDTO();
 		rv.setToken("test");
 		rv.setRefreshToken("refresh");
+		
+		Session session = new Session();
+		session.setRefreshToken("refresh");
+		session.setToken("token");
+		
+		when(mapper.toSession(any())).thenReturn(session);
 		when(login.apply(anyString())).thenReturn(rv);
 		var test = resolver.login("test");
-		assertEquals("test", test);
+		assertNotNull(test);
 	}
 	@Test
 	void operatorsMetadata() throws DomainException, JSONException {
