@@ -1089,6 +1089,22 @@
                                         </div>
                                     </div>
 
+                                    <div id="feature-keycloak" class="section-block">
+                                        <h2 class="section-title">Keycloak Single Sign On</h2>
+                                        <p>It is possible to configure the dagserver to work together with Keycloak (Single Sign On)</p>
+                                        <div class="code-block">
+                                            <h6>How to configure this feature:</h6>
+                                            <p>You must replace the "auth-internal" profile, with the "auth-keycloak" profile, in the spring.profiles.active variable within the application.properties file.</p>
+                                            <p>In addition, the following variables must be configured in the same file:</p>
+                                            <ul class="list">
+                                                <li><b>param.keycloak.host</b>: connection host</li>
+                                                <li><b>param.keycloak.realm</b>: realm for authorization</li>
+                                                <li><b>param.keycloak.client_id</b>: client_id </li>
+                                                <li><b>param.keycloak.client_secret</b>: client_secret </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
                                 </section>
                                 
                                 
