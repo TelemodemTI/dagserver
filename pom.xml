@@ -168,7 +168,6 @@
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-engine</artifactId>
 		</dependency>
-		
 		<dependency>
            <groupId>org.junit.platform</groupId>
            <artifactId>junit-platform-surefire-provider</artifactId>
@@ -301,12 +300,31 @@
 		    <artifactId>zookeeper</artifactId>
 		    <version>3.4.11</version>
 		</dependency>	
-		
 		<dependency>
 		  <groupId>com.github.lookfirst</groupId>
 		  <artifactId>sardine</artifactId>
 		  <version>5.10</version>
 		</dependency>
+
+		<dependency>
+		    <groupId>org.apache.calcite</groupId>
+		    <artifactId>calcite-core</artifactId>
+		    <version>1.37.0</version>
+		</dependency>
+		
+
+		<dependency>
+		    <groupId>org.apache.calcite.avatica</groupId>
+		    <artifactId>avatica-core</artifactId>
+		    <version>1.25.0</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.apache.calcite.avatica</groupId>
+		    <artifactId>avatica-server</artifactId>
+		    <version>1.25.0</version>
+		</dependency>
+
 	</dependencies>          
     <build>
 		<testSourceDirectory>src/main/test</testSourceDirectory>
