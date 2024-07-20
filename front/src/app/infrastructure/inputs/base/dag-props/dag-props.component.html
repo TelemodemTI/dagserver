@@ -16,21 +16,21 @@
             <label>Cron Expression</label>
         </ng-container>
         <ng-template #nocron>
-            <a id="cron-type-link" (click)="changeTrigger('cron')">Cron</a>    
+            <a id="cron-type-link" class="pointer" (click)="changeTrigger('cron')">Cron Expression</a>    
         </ng-template>
         &nbsp;|&nbsp;
         <ng-container *ngIf="typeTrigger == 'listener';else nolistener">
             <label>Listener</label>
         </ng-container>
         <ng-template #nolistener>
-            <a id="listener-type-link" (click)="changeTrigger('listener')">Listener</a>    
+            <a id="listener-type-link" class="pointer" (click)="changeTrigger('listener')">Listener</a>    
         </ng-template>
         &nbsp;|&nbsp;
         <ng-container *ngIf="typeTrigger == 'none';else nonone">
             <label>None</label>
         </ng-container>
         <ng-template #nonone>
-            <a id="listener-type-link" (click)="changeTrigger('none')">None</a>    
+            <a id="none-type-link" class="pointer" (click)="changeTrigger('none')">None</a>    
         </ng-template>
 
         <ng-container *ngIf="typeTrigger == 'cron'">

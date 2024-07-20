@@ -24,6 +24,7 @@ public class CalciteAvaticaServer {
 	@SuppressWarnings("rawtypes")
 	@PostConstruct
 	public void startJdbc() throws SQLException, InterruptedException {
+		/*
 		JdbcMeta meta = new JdbcMeta("jdbc:calcite:model=./src/main/resources/model.json");
         Service service = new LocalService(meta);
         AvaticaJsonHandler jsonHandler = new AvaticaJsonHandler(service);
@@ -32,6 +33,6 @@ public class CalciteAvaticaServer {
                 .withPort(port)
                 .build();
         server.start();
-        server.join();
+        server.join();*/
 	}
 }

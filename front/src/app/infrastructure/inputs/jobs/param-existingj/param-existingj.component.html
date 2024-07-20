@@ -12,7 +12,7 @@
                     from another stage in DAG <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                      <li *ngFor="let anot of another"><a class="pointer" (click)="loadFrom(anot.id)">{{anot.id}}</a></li>
+                      <li *ngFor="let anot of another"><a class="pointer" id="another-{{anot.id}}" (click)="loadFrom(anot.id)">{{anot.id}}</a></li>
                     </ul>
                     &nbsp;
                     &nbsp;
