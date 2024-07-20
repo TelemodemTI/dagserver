@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "defaultSchema": "MYSCHEMA",
+  "schemas": [
+    {
+      "name": "MYSCHEMA",
+      "type": "custom",
+      "factory": "main.cl.dagserver.infra.adapters.input.calcite.internal.MySchemaFactory"
+    }
+  ]
+}
