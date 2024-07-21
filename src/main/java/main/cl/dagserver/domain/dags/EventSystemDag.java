@@ -6,7 +6,7 @@ import main.cl.dagserver.infra.adapters.operators.DummyOperator;
 import main.cl.dagserver.domain.annotations.Dag;
 
 
-@Dag(name = "event_system_dag", group="system_dags", onEnd="background_system_dag")
+@Dag(name = "event_system_dag", group="system_dags", onEnd="background_system_dag", target = "DAG")
 public class EventSystemDag extends DagExecutable {
 
 	public EventSystemDag() throws DomainException {

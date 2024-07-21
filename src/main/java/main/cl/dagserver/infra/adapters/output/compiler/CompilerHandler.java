@@ -97,12 +97,20 @@ public class CompilerHandler implements CompilerOutputPort {
 				String onstartdef = "";
 				String onenddef = "";
 				if(loc.equals("onStart")) {
-					onstartdef = dag.getString("targetDag");  		
+					if(dag.has("targetDag")) {
+						onstartdef = dag.getString("targetDag");	
+					} else {
+						onstartdef = dag.getString("targetGroup");
+					}	
 				} else if(loc.equals("onEnd")) {
-					onenddef = dag.getString("targetDag");
+					if(dag.has("targetDag")) {
+						onenddef = dag.getString("targetDag");	
+					} else {
+						onenddef = dag.getString("targetGroup");
+					}
 				}
 				String triggerv = dag.getString("trigger");
-				String classname = dag.getString("class");
+				String classname = dag.getString("className");
 				String group = dag.getString(GROUP);
 				validateParams(dag.getJSONArray("boxes"));
 				Map<String,String> dtomap = new HashMap<>();
@@ -110,6 +118,7 @@ public class CompilerHandler implements CompilerOutputPort {
 				dtomap.put("classname", classname);
 				dtomap.put(NAME, classname);
 				dtomap.put("type", triggerv);
+				dtomap.put("target", dag.getString("target"));
 				dtomap.put(VALUE, crondef);
 				dtomap.put(GROUP, group);
 				dtomap.put(ONSTART, onstartdef);
@@ -205,15 +214,17 @@ public class CompilerHandler implements CompilerOutputPort {
 			.make(pool);	
 		} else if(dtomap.get("type").equals("listener")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
-	                .define(NAME, dtomap.get(NAME))
-	                .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase()))
-	                .define(GROUP, dtomap.get(GROUP))
-	                .build())
+		            .define(NAME, dtomap.get(NAME))
+		            .define("target", dtomap.get("target"))
+		            .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase()))
+		            .define(GROUP, dtomap.get(GROUP))
+		            .build())
 			.make(pool);	
 		} else {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
 	                .define(GROUP, dtomap.get(GROUP))
+	                .define("target", dtomap.get("target"))
 	                .build())
 			.make(pool);
 		}

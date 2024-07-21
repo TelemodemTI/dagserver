@@ -77,7 +77,7 @@
                     </select>
                 </ng-container>
                 <ng-template #groupele>
-                    <select class="form-control" id="dagtargetinput-{{dagName}}">
+                    <select class="form-control" id="dagtargetgroupinput-{{dagName}}">
                         <option *ngFor="let item of groups" value="{{item}}" [selected]="triggerval == item ? 'selected':''">{{item}}</option>
                     </select>
                 </ng-template>
@@ -90,14 +90,7 @@
             <i class="fa fa-floppy-o">&nbsp;</i>
             Save
         </button>&nbsp;
-        <button type="button" class="btn btn-danger">
-            <i class="fa fa-trash">&nbsp;</i>
-            Remove
-        </button>
-        <br><br>
-        <div #dagsavedstatus class="alert alert-success hidden">
-            Dag saved.
-        </div>
+        
     </div>
 
 
