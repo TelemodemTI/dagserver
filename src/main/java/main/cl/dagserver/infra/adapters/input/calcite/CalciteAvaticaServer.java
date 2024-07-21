@@ -4,11 +4,7 @@ import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.calcite.avatica.jdbc.JdbcMeta;
-import org.apache.calcite.avatica.remote.LocalService;
-import org.apache.calcite.avatica.remote.Service;
-import org.apache.calcite.avatica.server.AvaticaJsonHandler;
-import org.apache.calcite.avatica.server.HttpServer;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
