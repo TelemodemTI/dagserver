@@ -52,28 +52,31 @@ export class JardetailComponent {
       dagobj.node.map((stepobj:any)=>{
         let stepname = stepobj.operations[0]
         let opname = stepobj.operations[1]
-        let propsobj = JSON.parse(stepobj.operations[2])
-        let optsobj = JSON.parse(stepobj.operations[3])
-        let stepconfig = JSON.parse(stepobj.operations[4]);
-        stepconfig.opt.map((stepcfg:any)=>{ 
-          if(optsobj[stepcfg.name]){
-            stepcfg.stepid = stepname
-            stepcfg.key = this.jarname+"."+stepname+"."+opname+".opts."+stepcfg.name
-            stepcfg.value = optsobj[stepcfg.name]
-            stepcfg.source = "opts"
-            this.params.push(stepcfg)
+        
+        let propsobj = (stepobj.operations.length > 2)?JSON.parse(stepobj.operations[2]):{};
+        let optsobj = (stepobj.operations.length > 3)?JSON.parse(stepobj.operations[3]):{};
+        if(stepobj.operations > 3){
+          let stepconfig = JSON.parse(stepobj.operations[4]);
+          stepconfig.opt.map((stepcfg:any)=>{ 
+            if(optsobj[stepcfg.name]){
+              stepcfg.stepid = stepname
+              stepcfg.key = this.jarname+"."+stepname+"."+opname+".opts."+stepcfg.name
+              stepcfg.value = optsobj[stepcfg.name]
+              stepcfg.source = "opts"
+              this.params.push(stepcfg)
+            }
           }
+          );
+          stepconfig.params.map((stepcfg:any)=>{ 
+            if(propsobj[stepcfg.name]){
+              stepcfg.stepid = stepname
+              stepcfg.key = this.jarname+"."+stepname+"."+opname+".props."+stepcfg.name
+              stepcfg.value = propsobj[stepcfg.name]
+              stepcfg.source = "props"
+              this.params.push(stepcfg)}
+            }
+          );
         }
-        );
-        stepconfig.params.map((stepcfg:any)=>{ 
-          if(propsobj[stepcfg.name]){
-            stepcfg.stepid = stepname
-            stepcfg.key = this.jarname+"."+stepname+"."+opname+".props."+stepcfg.name
-            stepcfg.value = propsobj[stepcfg.name]
-            stepcfg.source = "props"
-            this.params.push(stepcfg)}
-          }
-        );
       })
     })
     try {
