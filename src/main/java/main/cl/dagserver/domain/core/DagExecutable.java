@@ -98,7 +98,7 @@ public class DagExecutable implements Job,JobListener  {
 	protected String executionSource = "";
 	protected Graph<DagNode, DefaultEdge> g;
 	protected JobDetail jobDetail;
-	protected String channelData;
+	protected String channelData = "";
 	
 	public DagExecutable() {
 		this.g = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -112,6 +112,8 @@ public class DagExecutable implements Job,JobListener  {
 	@SuppressWarnings("unused")
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		this.executionSource = context.getMergedJobDataMap().getString("channel");
+		this.channelData = context.getMergedJobDataMap().getString("channelData");
+		
 		if(this.executionSource == null || this.executionSource.isEmpty()) {
 			this.executionSource = "JOB_SCHEDULER";	
 		}
@@ -136,7 +138,7 @@ public class DagExecutable implements Job,JobListener  {
 		List<String> timestamps = new ArrayList<>();
 		var fa = this.createDagMemoryAppender(evalstring);
 		Map<String,Object> data = new HashMap<>();
-		data.put("data", this.channelData);
+		data.put("channelData", this.channelData);
 		DataFrame dfdata = DataFrameUtils.buildDataFrameFromMap(Arrays.asList(data));
 		Map<String,DataFrame> xcom = new HashMap<>();
 		xcom.put("args", dfdata);

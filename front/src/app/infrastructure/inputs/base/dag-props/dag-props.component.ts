@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { DagPropsInputPort } from 'src/app/application/inputs/dagprops.input.port';
 import { AvailableJobs } from 'src/app/domain/models/availableJobs.model';
 declare var $:any
@@ -13,6 +13,7 @@ export class DagPropsComponent {
     @Input('data') data!: any
     @Output() saveDagEvent = new EventEmitter<any>();
     @Output() changeDagNameEvent = new EventEmitter<any>();
+
     typeTrigger:string="cron"
     availables: AvailableJobs[] = []
     groups:any[] = []
@@ -38,15 +39,27 @@ export class DagPropsComponent {
 
     saveDag(dagname:string){
       let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]
-      obj.class = $("#dagclassinput-"+dagname).val() 
-      obj.class = "generated_dag.main."+dagname
-      obj.cron = $("#dagcroninput-"+dagname).val()
+      obj.className = "generated_dag.main."+dagname
       obj.group = $("#daggroupinput-"+dagname).val()
-      obj.targetDag = $("#dagtargetinput-"+dagname).val()
-      obj.loc = this.loc
-      obj.target = this.targetType
       obj.trigger = this.typeTrigger
-      this.saveDagEvent.emit(obj)      
+      obj.target = this.targetType
+      if(this.typeTrigger == 'cron'){
+        obj.cron = $("#dagcroninput-"+dagname).val()
+        obj.loc = "";
+        obj.targetDag = "";
+        obj.targetGroup = "";
+      } else if(this.typeTrigger == 'listener'){
+        obj.cron = ""
+        obj.loc = this.loc
+        obj.targetDag = $("#dagtargetinput-"+dagname).val()
+        obj.targetGroup = $("#dagtargetgroupinput-"+dagname).val()
+      } else {
+        obj.cron = ""
+        obj.loc = ""
+        obj.targetDag = "";
+        obj.targetGroup = ""
+      }
+      this.saveDagEvent.emit(obj)
     }
     locCheck(loc:string){
       this.loc = loc

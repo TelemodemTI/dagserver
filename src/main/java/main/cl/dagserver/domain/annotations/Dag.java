@@ -11,6 +11,8 @@ public @interface Dag {
 	String name();
 	String cronExpr() default "";
 	String group();
+	String target();
 	String onEnd() default "";
 	String onStart() default "";
+	
 }

@@ -120,9 +120,14 @@ export class NewjComponent {
     let newname = "DAG_"+ dintmp
     let dag = {
       name : newname,
-      class: "",
+      className: "",
       group: "",
       cron: "",
+      loc: "",
+      target:"",
+      targetDag: "",
+      targetGroup: "",
+      trigger:"",
       boxes: []
     };
     this.data.dags = this.data.dags.filter(( obj:any )=> {return obj.name !== newname});
@@ -138,7 +143,6 @@ export class NewjComponent {
   
   async saveJar(){
     this.changeJarName()
-    console.log(this.data)
     var base64 = Buffer.from(JSON.stringify(this.data)).toString('base64')
     try {
       await this.service.createUncompiled(base64)  

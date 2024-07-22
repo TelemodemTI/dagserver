@@ -15,7 +15,6 @@ export class ExceptionsListComponent implements OnInit {
     setTimeout(()=> {
       var table = $('#dataTables-exceptions').DataTable({responsive: true});
       table.on('search.dt',  (e:any, settings:any)=> {
-        alert("Test")
       })
     },100)
     

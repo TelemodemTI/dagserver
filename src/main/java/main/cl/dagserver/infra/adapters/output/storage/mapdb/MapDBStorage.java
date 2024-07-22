@@ -16,14 +16,13 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import lombok.extern.log4j.Log4j2;
-import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.infra.adapters.output.storage.hashmap.HashMapStorage;
 
 @Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
 @Profile("storage-map-db")
-public class MapDBStorage extends HashMapStorage implements StorageOutputPort {
+public class MapDBStorage extends HashMapStorage {
 
 	private static final String EXCEPTIONS =  "exceptions";
 	

@@ -113,6 +113,7 @@ public class QuartzConfig {
 	    	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
 		    JobDetail jobDetail = JobBuilder.newJob(jobType.getClass()).withIdentity(jobType.getClass().getName()).build();
 		    jobDetail.getJobDataMap().put("channel", dag.getExecutionSource());
+		    jobDetail.getJobDataMap().put("channelData", dag.getChannelData());
 		    this.scheduler.scheduleJob(jobDetail,trigger);	
 		} catch (Exception e) {
 			throw new DomainException(e);
@@ -204,11 +205,15 @@ public class QuartzConfig {
 		executable.setEventname(eventname);
 		executable.setName(annotation.name());
 		JobListener listener = executable;
-		String jobkey = annotation.onEnd().equals("") ? annotation.onStart() : annotation.onEnd();
-		JobKey jobKey1 = new JobKey(jobkey, annotation.group());
+		String target = annotation.target();
+		String matcherkey = annotation.onEnd().equals("") ? annotation.onStart() : annotation.onEnd();
 		var list = new ArrayList<Matcher<JobKey>>();
-		list.add(KeyMatcher.keyEquals(jobKey1));
-		list.add(GroupMatcher.jobGroupEquals(jobkey));	
+		if(target.equals("DAG")) {
+			JobKey key1 = new JobKey(matcherkey, annotation.group());
+			list.add(KeyMatcher.keyEquals(key1));	
+		} else {
+			list.add(GroupMatcher.jobGroupEquals(matcherkey));	
+		}	
 		this.scheduler.getListenerManager().addJobListener(listener,list);
 		this.repo.addEventListener(listener.getName(), annotation.onStart(), annotation.onEnd(), annotation.group());
 	}

@@ -165,9 +165,10 @@ export class ExistingjComponent {
     this.redraw(obj,this.diagram)
   }
 
-  saveDag(dagname:any){
-    let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname})[0]
-    obj.boxes = this.boxes
+  saveDag(dag:any){
+    let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dag.name})[0]
+    dag.boxes = this.boxes
+    obj = dag
     this.changeTab(obj.name)
   }
   changeDagName(newname:any){
