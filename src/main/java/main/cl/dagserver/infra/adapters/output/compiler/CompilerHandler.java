@@ -208,6 +208,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		if(dtomap.get("type").equals("cron")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
+	                .define("target", dtomap.get("target"))
 	                .define("cronExpr", dtomap.get(VALUE))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
