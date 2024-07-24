@@ -42,13 +42,13 @@ export class JardetailpComponent {
     this.form?.nativeElement.classList.remove("invisible")
     this.xcoms = this.selectedDag ? this.selectedDag.node : [];
     this.generatedIdParams = []
-    if(this.selectedStepParams){
-      console.log(this.selectedStepParams)
+    console.log(this.selectedStepParams)
+    if(this.selectedStepParams && this.selectedStepOpts){
       this.selectedStepMetadata.params.forEach((el:any)=>{
         this.generatedIdParams.push({key:el.name,type:el.type,value:this.selectedStepParams[el.name],source:"PAR",domid:this.generateRandomString(5),opt:[]})
       })
       this.selectedStepMetadata.opt.forEach((el:any)=>{
-        this.generatedIdParams.push({key:el.name,type:el.type,value:this.selectedStepParams[el.name],source:"OPT",domid:this.generateRandomString(5),opt:[]})
+        this.generatedIdParams.push({key:el.name,type:el.type,value:this.selectedStepOpts[el.name],source:"OPT",domid:this.generateRandomString(5),opt:[]})
       })  
     }
   }
