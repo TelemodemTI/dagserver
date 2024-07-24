@@ -42,7 +42,6 @@ export class JardetailpComponent {
     this.form?.nativeElement.classList.remove("invisible")
     this.xcoms = this.selectedDag ? this.selectedDag.node : [];
     this.generatedIdParams = []
-    console.log(this.selectedStepParams)
     if(this.selectedStepParams && this.selectedStepOpts){
       this.selectedStepMetadata.params.forEach((el:any)=>{
         this.generatedIdParams.push({key:el.name,type:el.type,value:this.selectedStepParams[el.name],source:"PAR",domid:this.generateRandomString(5),opt:[]})

@@ -363,11 +363,13 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 				String typeope = box.getString("type");
 				String idope = box.getString("id");
 				String group = jarname+"."+idope+"."+typeope+".props";
+				String optns = jarname+"."+idope+"."+typeope+".opts";
 				Class<?> clazz = Class.forName(typeope);
 				Operator annotation = clazz.getAnnotation(Operator.class);
 				this.delGroupProperty(group);
 				this.boxHasParams(box, annotation, group, jarname);
 				arr.add(group);
+				arr.add(optns);
 			}
 		}
 		return arr;
