@@ -37,7 +37,6 @@ export class JardetailpComponent {
   
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(this.selectedStepMetadata)
     this.loader?.nativeElement.classList.add("invisible");
     this.form?.nativeElement.classList.remove("invisible")
     this.xcoms = this.selectedDag ? this.selectedDag.node : [];
