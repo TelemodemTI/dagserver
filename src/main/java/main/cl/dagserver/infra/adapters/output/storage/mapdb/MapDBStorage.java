@@ -57,23 +57,7 @@ public class MapDBStorage extends HashMapStorage {
 		}
 		
     }
-	@SuppressWarnings("unchecked")
-	@Override
-	public void deleteXCOM(Date time) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-		var keys = map.entrySet();
-		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-			String key = iterator.next();
-			try {
-				Date dk = sdf.parse(key);
-				if(dk.before(time)) {
-					map.remove(key);
-				}	
-			} catch (Exception e) {
-				log.debug("key {} not removed from xcom",key);
-			}
-		}
-	}
+	
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void removeException(String eventDt) {

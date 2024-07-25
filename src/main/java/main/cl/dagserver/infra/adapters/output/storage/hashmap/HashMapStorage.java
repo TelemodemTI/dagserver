@@ -57,20 +57,19 @@ public class HashMapStorage implements StorageOutputPort {
 
 	@Override
 	public void deleteXCOM(Date time) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-		var keys = map.keySet();
-		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-			String key = iterator.next();
-			try {
-				Date dk = sdf.parse(key);
-				if(dk.before(time)) {
-					map.remove(key);
-				}	
-			} catch (Exception e) {
-				log.debug("key {} not removed from xcom",key);
-			}
-		}
-		
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+	    Iterator<String> iterator = map.keySet().iterator();
+	    while (iterator.hasNext()) {
+	        String key = iterator.next();
+	        try {
+	            Date dk = sdf.parse(key);
+	            if (dk.before(time)) {
+	                iterator.remove();
+	            }
+	        } catch (Exception e) {
+	            log.debug("key {} not removed from xcom", key);
+	        }
+	    }
 	}
 
 	@Override
