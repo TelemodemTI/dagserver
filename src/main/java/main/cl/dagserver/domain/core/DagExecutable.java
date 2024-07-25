@@ -232,6 +232,7 @@ public class DagExecutable implements Job,JobListener  {
 	            this.instanciateEvaluate(args, parmdata, timestamps);
 	        } catch (JobExecutionException e) {
 	            logdag.error(e);
+	            eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "scheduler"));
 	        }
 	    });
 	}
