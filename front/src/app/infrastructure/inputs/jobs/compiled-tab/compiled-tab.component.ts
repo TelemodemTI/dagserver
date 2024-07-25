@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
 import { AvailableJobs } from 'src/app/domain/models/availableJobs.model';
@@ -134,6 +134,9 @@ export class CompiledTabComponent {
   async importJarDesign(jarname:any){
     let result = await this.service.reimport(jarname)  
     if(result.code == 200){
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['auth',"jobs"]);
+      });   
       alert("dag imported successfully")
     } else {
       alert(result.value)

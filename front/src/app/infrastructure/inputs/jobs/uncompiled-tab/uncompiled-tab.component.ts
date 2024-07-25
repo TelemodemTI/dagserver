@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {Buffer} from 'buffer';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
@@ -10,22 +10,27 @@ declare var $:any;
   templateUrl: './uncompiled-tab.component.html',
   styleUrls: ['./uncompiled-tab.component.css']
 })
-export class UncompiledTabComponent {
+export class UncompiledTabComponent implements OnInit, OnChanges {
 
   @ViewChild("propImporter") propImporter!: ElementRef;
   uncompileds:Uncompileds[] = []
   title_msje:any = "Error"
   error_msje:any = ""
   uploadedBin:any = ""
-
+  table!:any
   constructor(private router: Router, 
     private newjservice: NewJInputPort,
-    private service: JobsInputPort){
+    private service: JobsInputPort,
+    private cd: ChangeDetectorRef){
   }
-
+  async ngOnChanges(changes: SimpleChanges) {
+    this.cd.detectChanges();
+    this.uncompileds = await this.service.getUncompileds();
+  }
+  
   async ngOnInit(): Promise<void> {
     setTimeout(()=>{
-      $('#dataTables-uncompiledjobs').DataTable({ responsive: true });
+      this.table = $('#dataTables-uncompiledjobs').DataTable({ responsive: true });
     },500)
     this.uncompileds = await this.service.getUncompileds();
   }
