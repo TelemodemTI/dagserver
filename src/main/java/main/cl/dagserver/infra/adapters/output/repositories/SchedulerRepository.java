@@ -541,8 +541,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	}
 
 	@Override
-	public String getUncompiledBinByName(String dagname) {
-		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.uncompiled_name = '"+dagname+"'");
+	public String getUncompiledBinByName(String jarname) {
+		var list = dao.read(ScheUncompiledDags.class, "select uncom from ScheUncompiledDags uncom where uncom.name = '"+jarname+"'");
 		return list.get(0).getBin();
 	}
 

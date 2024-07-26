@@ -17,7 +17,8 @@ export class SourceTypeParamComponent {
     if(this.generatedIdParams){
       this.initCodemirror().then((flag)=>{
         $("#canvas-codemirror-new-det").on("change", function() {
-          var fromSelenium = $("#canvas-codemirror-new-det").val();
+          var b64 = $("#canvas-codemirror-new-det").val();
+          var fromSelenium = atob(b64)
           root.editor.setValue(fromSelenium);
         })
       })
