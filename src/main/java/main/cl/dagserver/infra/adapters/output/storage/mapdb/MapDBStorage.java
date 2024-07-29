@@ -62,32 +62,24 @@ public class MapDBStorage implements StorageOutputPort {
 		}
 		
     }
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	@Override
 	public void removeException(String eventDt) {
-	    DB db = null;
-	    HTreeMap map1 = null;
-	    try {
-	        db = DBMaker.fileDB(exceptionstoragefile).make();
-	        map1 = db.hashMap(EXCEPTIONS).createOrOpen();
+		try( 
+	    		DB db = DBMaker.fileDB(exceptionstoragefile).make();
+	    		HTreeMap<String,Object> map1 = (HTreeMap<String, Object>) db.hashMap(EXCEPTIONS).createOrOpen();
+	    		) {
 	        map1.remove(eventDt);
-	    } finally {
-	        if (map1 != null) {
-	            map1.close();
-	        }
-	        if (db != null) {
-	            db.close();
-	        }
-	    }
+	    } 
 	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void addException(ExceptionEventLog evento) {
-		DB db = null;
-	    HTreeMap<String,Object> map1 = null;
-	    try {
-	        db = DBMaker.fileDB(exceptionstoragefile).make();
-	        map1 = (HTreeMap<String, Object>) db.hashMap(EXCEPTIONS).createOrOpen();
+	    try( 
+	    		DB db = DBMaker.fileDB(exceptionstoragefile).make();
+	    		HTreeMap<String,Object> map1 = (HTreeMap<String, Object>) db.hashMap(EXCEPTIONS).createOrOpen();
+	    		) {
+	        
 	        String classname = evento.getSource().getClass().getCanonicalName();
 			String method = evento.getMessage();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
@@ -100,20 +92,15 @@ public class MapDBStorage implements StorageOutputPort {
 			excpd.put("method",method);
 			excpd.put("stacktrace",stacktrace);
 			map1.put(sdf.format(new Date()), excpd);
-	    } finally {
-	        if (map1 != null) {
-	            map1.close();
-	        }
-	        if (db != null) {
-	            db.close();
-	        }
 	    }
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> listException() {
-		try(DB db = DBMaker.fileDB(exceptionstoragefile).make();
-			HTreeMap map1 = db.hashMap(EXCEPTIONS).createOrOpen();){
+		try( 
+	    		DB db = DBMaker.fileDB(exceptionstoragefile).make();
+	    		HTreeMap<String,Object> map1 = (HTreeMap<String, Object>) db.hashMap(EXCEPTIONS).createOrOpen();
+	    		) {
 			return new HashMap<>(map1);
         } 
 	}
@@ -121,11 +108,10 @@ public class MapDBStorage implements StorageOutputPort {
 	
 	@SuppressWarnings("unchecked")
 	public void putEntry(String locatedb,Map<String,DataFrame> xcom) {
-		DB db = null;
-	    HTreeMap<String,Object> map1 = null;
-	    try {
-	        db = DBMaker.fileDB(xcomfolder).make();
-	        map1 = (HTreeMap<String, Object>) db.hashMap(XCOM).createOrOpen();
+		try( 
+	    		DB db = DBMaker.fileDB(xcomfolder).make();
+	    		HTreeMap<String,Object> map1 = (HTreeMap<String, Object>) db.hashMap(XCOM).createOrOpen();
+	    		) {
 	        JSONObject wrapper = new JSONObject();
 			var keys = xcom.keySet();
 			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
@@ -135,26 +121,17 @@ public class MapDBStorage implements StorageOutputPort {
 				wrapper.put(string, jsonarray);
 			}
 			map1.put(locatedb, wrapper.toString());
-	    } finally {
-	        if (map1 != null) {
-	            map1.close();
-	        }
-	        if (db != null) {
-	            db.close();
-	        }
 	    }
 	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, DataFrame> getEntry(String xcomkey) {
-		DB db = null;
-	    HTreeMap<String,Object> map1 = null;
 	    Map<String,DataFrame> mapa = new HashMap<>();
-	    try {
-	        db = DBMaker.fileDB(xcomfolder).make();
-	        map1 = (HTreeMap<String, Object>) db.hashMap(XCOM).createOrOpen();
-	        
-			try {
+	    try( 
+	    		DB db = DBMaker.fileDB(xcomfolder).make();
+	    		HTreeMap<String,Object> map1 = (HTreeMap<String, Object>) db.hashMap(XCOM).createOrOpen();
+	    		) {
+	   
 				JSONObject wrapper = new JSONObject( (String) map1.get(xcomkey));
 				var keys = wrapper.keys();
 				for (Iterator<String> iterator = keys; iterator.hasNext();) {
@@ -162,27 +139,16 @@ public class MapDBStorage implements StorageOutputPort {
 					DataFrame df = DataFrameUtils.jsonToDataFrame(wrapper.getJSONArray(stepname));
 					mapa.put(stepname, df);
 				}	
-			} catch (Exception e) {
-				log.debug("no se ha encontrado key: {}",xcomkey);
-			}
-	    } finally {
-	        if (map1 != null) {
-	            map1.close();
-	        }
-	        if (db != null) {
-	            db.close();
-	        }
-	    }
+	    } 
 	    return mapa;	
 	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void deleteXCOM(Date time) {
-		DB db = null;
-	    HTreeMap<String,Object> map1 = null;
-	    try {
-	        db = DBMaker.fileDB(xcomfolder).make();
-	        map1 = (HTreeMap<String, Object>) db.hashMap(XCOM).createOrOpen();
+		try( 
+	    		DB db = DBMaker.fileDB(xcomfolder).make();
+	    		HTreeMap<String,Object> map1 = (HTreeMap<String, Object>) db.hashMap(XCOM).createOrOpen();
+	    		) {
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 		    Iterator<String> iterator = map1.keySet().iterator();
 		    while (iterator.hasNext()) {
@@ -196,14 +162,7 @@ public class MapDBStorage implements StorageOutputPort {
 		            log.debug("key {} not removed from xcom", key);
 		        }
 		    }
-	    } finally {
-	        if (map1 != null) {
-	            map1.close();
-	        }
-	        if (db != null) {
-	            db.close();
-	        }
-	    }
+	    } 
 	}
 	
 }
