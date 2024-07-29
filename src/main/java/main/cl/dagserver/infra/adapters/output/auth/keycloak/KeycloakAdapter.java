@@ -39,6 +39,44 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	protected String clientSecret;
 	
 	
+	private JSONObject makeJSONPost(String urlStr,String body) throws DomainException {
+		try {
+			URL url = new URL(urlStr);
+	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+	        con.setRequestMethod("POST");
+	        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+	        con.setDoOutput(true);
+	        OutputStream os = con.getOutputStream();
+	        os.write(body.getBytes("UTF-8"));
+	        os.flush();
+	        os.close();
+	        JSONObject responsejson = null;
+	        int responseCode = con.getResponseCode();
+	        if (responseCode == HttpURLConnection.HTTP_OK) {
+	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	            String inputLine;
+	            StringBuilder response = new StringBuilder();
+	            while ((inputLine = in.readLine()) != null) {
+	                response.append(inputLine);
+	            }
+	            in.close();
+	            responsejson = new JSONObject(response.toString());
+	            return responsejson;
+	        } else {
+	        	BufferedReader in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+	            String inputLine;
+	            StringBuilder response = new StringBuilder();
+	            while ((inputLine = in.readLine()) != null) {
+	                response.append(inputLine);
+	            }
+	            in.close();
+	            throw new DomainException(new Exception("Error in response: " + response.toString()));
+	        }	
+		} catch (Exception e) {
+			throw new DomainException(e);
+		}
+	}
+	
 	@Override
 	public SessionDTO login(JSONObject reqobject) throws DomainException {
 	    try {
@@ -50,46 +88,19 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	                      "&grant_type=" + URLEncoder.encode("password", "UTF-8") +
 	                      "&username=" + URLEncoder.encode(username, "UTF-8") +
 	                      "&password=" + URLEncoder.encode(pwd, "UTF-8");
-	        URL url = new URL(urlStr);
-	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	        con.setRequestMethod("POST");
-	        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-	        con.setDoOutput(true);
-	        OutputStream os = con.getOutputStream();
-	        os.write(body.getBytes("UTF-8"));
-	        os.flush();
-	        os.close();
-	        int responseCode = con.getResponseCode();
-	        if (responseCode == HttpURLConnection.HTTP_OK) {
-	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	            String inputLine;
-	            StringBuilder response = new StringBuilder();
-	            while ((inputLine = in.readLine()) != null) {
-	                response.append(inputLine);
-	            }
-	            in.close();
-	            JSONObject responsejson = new JSONObject(response.toString());
-	            String token = responsejson.getString("access_token");
-	            String refreshToken = responsejson.getString("refresh_token");
-	            SessionDTO dto = new SessionDTO();
-	            dto.setRefreshToken(refreshToken);
-	            dto.setToken(token);
-	            return dto;
-	        } else {
-	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-	            String inputLine;
-	            StringBuilder response = new StringBuilder();
-	            while ((inputLine = in.readLine()) != null) {
-	                response.append(inputLine);
-	            }
-	            in.close();
-	            throw new DomainException(new Exception("Error in response: " + response.toString()));
-	        }
+	        JSONObject responsejson = makeJSONPost(urlStr, body);
+	        String token = responsejson.getString("access_token");
+	        String refreshToken = responsejson.getString("refresh_token");
+	        SessionDTO dto = new SessionDTO();
+	        dto.setRefreshToken(refreshToken);
+	        dto.setToken(token);
+	        return dto;
 	    } catch (Exception e) {
 	    	log.error(e);
 	        throw new DomainException(e);
 	    }
 	}
+	
 	@Override
 	public AuthDTO untokenize(String token) throws DomainException {
 		try {
@@ -97,34 +108,13 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	        String body = "client_id=" + URLEncoder.encode(clientId, "UTF-8") +
 	                      "&client_secret=" + URLEncoder.encode(clientSecret, "UTF-8") +
 	                      "&token=" + URLEncoder.encode(token, "UTF-8");
-	        URL url = new URL(urlStr);
-	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	        con.setRequestMethod("POST");
-	        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-	        con.setDoOutput(true);
-	        OutputStream os = con.getOutputStream();
-	        os.write(body.getBytes("UTF-8"));
-	        os.flush();
-	        os.close();
-	        int responseCode = con.getResponseCode();
-	        if (responseCode == HttpURLConnection.HTTP_OK) {
-	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	            String inputLine;
-	            StringBuilder response = new StringBuilder();
-	            while ((inputLine = in.readLine()) != null) {
-	                response.append(inputLine);
-	            }
-	            in.close();
-	            JSONObject responsejson = new JSONObject(response.toString());
+	            JSONObject responsejson = this.makeJSONPost(urlStr, body);
 	            AuthDTO auth = new AuthDTO();
 	            auth.setAccountType(AccountType.USER);
 	            auth.setExpires(new Date(responsejson.getLong("exp")));
 	    		auth.setIssueAt(new Date(responsejson.getLong("iat")));
 	    		auth.setSubject("access_token");
 	    		return auth;
-	        } else {
-	        	throw new DomainException(new Exception("error in keycloak introspection"));
-	        }
 		} catch (Exception e) {
 			log.error(e);
 			throw new DomainException(e);
