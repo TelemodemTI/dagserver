@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 
 import com.nhl.dflib.DataFrame;
@@ -20,7 +21,6 @@ import com.nhl.dflib.row.RowProxy;
 
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
-import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -85,7 +85,7 @@ public class JdbcOperator extends OperatorStage {
 			throw new DomainException(e); 
 		}
 	}
-	private KeyValue<String, Object[]> namedParameter(String sql,RowProxy map) {
+	private Pair<String,Object[]> namedParameter(String sql,RowProxy map) {
 		Pattern pattern = Pattern.compile(":\\w+");
 	    Matcher matcher = pattern.matcher(sql);
 	    
@@ -101,7 +101,7 @@ public class JdbcOperator extends OperatorStage {
 	        String paramName = paramNames.get(i);
 	        objList[i] = map.get(paramName);
 	    }
-	    return new KeyValue<>(sqlWithPlaceholders, objList);
+	    return Pair.of(sqlWithPlaceholders, objList);
 	}
 	@Override
 	public JSONObject getMetadataOperator() {
