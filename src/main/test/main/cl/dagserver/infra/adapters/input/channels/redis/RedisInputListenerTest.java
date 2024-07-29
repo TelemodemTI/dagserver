@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import main.cl.dagserver.application.ports.input.RedisChannelUseCase;
-import main.cl.dagserver.domain.core.KeyValue;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import redis.clients.jedis.JedisPubSub;
 
@@ -65,7 +64,7 @@ class RedisInputListenerTest {
 		bindings.put("xtra", newthread);
 		listener.setBindings(bindings);
 		ReflectionTestUtils.invokeMethod(listener, "listenerCluster",lconf ,rabbitprops,mock(JedisPubSub.class));
-		KeyValue<String, Integer> kv = new KeyValue<String, Integer>("key",1);
+		Pair<String, Integer> kv = Pair.of("key",1);
 		ReflectionTestUtils.invokeMethod(listener, "getThreadAlt",mock(JedisPubSub.class),"key",kv);
 		assertTrue(true);
 	}
