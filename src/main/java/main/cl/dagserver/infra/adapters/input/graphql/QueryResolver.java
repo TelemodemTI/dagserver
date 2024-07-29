@@ -201,6 +201,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 					node.setOperations(ops);
 					node.setIndex(i);
 					nodes.add(node);
+					i++;
 				}
 				det.setNode(nodes);
 				rv.add(det);

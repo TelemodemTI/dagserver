@@ -35,14 +35,14 @@ public class DagGraphApi {
 			if(compiled) {
 				this.executeCompiledDag(jarname,dagname,data);
 			} else {
-				this.executeUncompiledDag(dagname);
+				this.executeUncompiledDag(jarname,dagname);
 			}	
 		} else {
 			throw new DomainException(new Exception("invalid dag to execute"));
 		}
 	}
-	private void executeUncompiledDag(String dagname) throws DomainException {
-		String json = repository.getUncompiledBinByName(dagname);
+	private void executeUncompiledDag(String jarname,String dagname) throws DomainException {
+		String json = repository.getUncompiledBinByName(jarname);
 		JSONObject daguncompiled = new JSONObject(json);
 		JSONArray dags = daguncompiled.getJSONArray("dags");
 		TemporalDagExecutable dagtmp = new TemporalDagExecutable();

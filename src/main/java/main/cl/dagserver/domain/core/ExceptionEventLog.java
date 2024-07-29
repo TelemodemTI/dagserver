@@ -8,9 +8,11 @@ public class ExceptionEventLog extends ApplicationEvent {
 	private static final long serialVersionUID = 1L;
 	private DomainException exception;
 	private String message;
+	private Object source;
 	
 	public ExceptionEventLog(Object source, DomainException exception, String message) {
 		super(source);
+		this.source = source;
 		this.exception = exception;
 		this.message = message;
 	}
@@ -29,6 +31,14 @@ public class ExceptionEventLog extends ApplicationEvent {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public Object getSource() {
+		return source;
+	}
+
+	public void setSource(Object source) {
+		this.source = source;
 	}
 
 	

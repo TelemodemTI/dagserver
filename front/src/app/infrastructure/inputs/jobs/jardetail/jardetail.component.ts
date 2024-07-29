@@ -55,7 +55,7 @@ export class JardetailComponent {
         
         let propsobj = (stepobj.operations.length > 2)?JSON.parse(stepobj.operations[2]):{};
         let optsobj = (stepobj.operations.length > 3)?JSON.parse(stepobj.operations[3]):{};
-        if(stepobj.operations > 3){
+        if(stepobj.operations.length > 3){
           let stepconfig = JSON.parse(stepobj.operations[4]);
           stepconfig.opt.map((stepcfg:any)=>{ 
             if(optsobj[stepcfg.name]){

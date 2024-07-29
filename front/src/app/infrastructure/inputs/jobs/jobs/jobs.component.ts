@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
 declare var $:any;
@@ -10,12 +10,12 @@ declare var $:any;
 export class JobsComponent {
 
   constructor(private router: Router, 
-    private service: JobsInputPort){
+    private service: JobsInputPort,
+    private cd: ChangeDetectorRef
+  ){
   }
   
-  
-  
-  
+
   title_msje:any = "Error"
   error_msje:any = ""  
   
@@ -27,7 +27,6 @@ export class JobsComponent {
   createNew(){
     this.router.navigateByUrl(`auth/njob`);
   }
-  
   
   
   

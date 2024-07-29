@@ -128,7 +128,7 @@
 		<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
-		    <version>20220924</version>
+		    <version>20240303</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.junit.jupiter</groupId>
@@ -304,25 +304,6 @@
 		  <groupId>com.github.lookfirst</groupId>
 		  <artifactId>sardine</artifactId>
 		  <version>5.10</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.apache.calcite</groupId>
-		    <artifactId>calcite-core</artifactId>
-		    <version>1.37.0</version>
-		</dependency>
-		
-
-		<dependency>
-		    <groupId>org.apache.calcite.avatica</groupId>
-		    <artifactId>avatica-core</artifactId>
-		    <version>1.25.0</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.apache.calcite.avatica</groupId>
-		    <artifactId>avatica-server</artifactId>
-		    <version>1.25.0</version>
 		</dependency>
 
 	</dependencies>          
