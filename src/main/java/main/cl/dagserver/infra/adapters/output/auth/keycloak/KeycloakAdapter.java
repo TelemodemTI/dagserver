@@ -27,7 +27,9 @@ import main.cl.dagserver.domain.model.SessionDTO;
 @Profile("auth-keycloak")
 public class KeycloakAdapter implements AuthenticationOutputPort {
 	
-	
+	private static final String REALMS = "realms/";
+	private static final String CLIENTID = "client_id=";
+	private static final String CLIENTSECRET = "&client_secret=";
 	
 	@Value( "${param.keycloak.host}" )
 	protected String keycloakHost;
@@ -85,9 +87,9 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	    try {
 	        String username = reqobject.getString("username");
 	        String pwd = reqobject.getString("challenge");
-	        String urlStr = keycloakHost + "realms/" + keycloakRealm + "/protocol/openid-connect/token";
-	        String body = "client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
-	                      "&client_secret=" + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8) +
+	        String urlStr = keycloakHost + REALMS + keycloakRealm + "/protocol/openid-connect/token";
+	        String body = CLIENTID + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
+	                      CLIENTSECRET + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8) +
 	                      "&grant_type=" + URLEncoder.encode("password", StandardCharsets.UTF_8) +
 	                      "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8) +
 	                      "&password=" + URLEncoder.encode(pwd, StandardCharsets.UTF_8);
@@ -107,9 +109,9 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	@Override
 	public AuthDTO untokenize(String token) throws DomainException {
 		try {
-			String urlStr = keycloakHost + "realms/" + keycloakRealm + "/protocol/openid-connect/token/introspect";
-	        String body = "client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
-	                      "&client_secret=" + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8) +
+			String urlStr = keycloakHost + REALMS + keycloakRealm + "/protocol/openid-connect/token/introspect";
+	        String body = CLIENTID + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
+	                      CLIENTSECRET + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8) +
 	                      "&token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
 	            JSONObject responsejson = this.makeJSONPost(urlStr, body);
 	            AuthDTO auth = new AuthDTO();
@@ -127,9 +129,9 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	@Override
 	public void logout(String token) throws DomainException {
 		try {
-			String urlStr = keycloakHost + "realms/" + keycloakRealm + "/protocol/openid-connect/logout";
-	        String body = "client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
-	                      "&client_secret=" + URLEncoder.encode(clientSecret,StandardCharsets.UTF_8) +
+			String urlStr = keycloakHost + REALMS + keycloakRealm + "/protocol/openid-connect/logout";
+	        String body = CLIENTID + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
+	                      CLIENTSECRET + URLEncoder.encode(clientSecret,StandardCharsets.UTF_8) +
 	                      "&refresh_token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
 	        URL url = new URL(urlStr);
 	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
