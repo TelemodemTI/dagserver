@@ -49,6 +49,8 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private static final String QUERYPROPS =  "select props from PropertyParameter as props where props.group = '";
 	private static final String VALUE = "value";
 	private static final String VALUEP = "value.";
+	private static final String OPTEXT = ".opts";
+	
 	private static final String UNCOMPILEDQUERY = "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = ";
 	
 	@Autowired
@@ -363,7 +365,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 				String typeope = box.getString("type");
 				String idope = box.getString("id");
 				String group = jarname+"."+idope+"."+typeope+".props";
-				String optns = jarname+"."+idope+"."+typeope+".opts";
+				String optns = jarname+"."+idope+"."+typeope+OPTEXT;
 				Class<?> clazz = Class.forName(typeope);
 				Operator annotation = clazz.getAnnotation(Operator.class);
 				this.delGroupProperty(group);
@@ -388,7 +390,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 					this.setProperty(parm.getString(key), "generated parameter from editor", parm.getString(value), group);	
 				}
 			}
-			String groupo = jarname+"."+idope+"."+typeope+".opts";
+			String groupo = jarname+"."+idope+"."+typeope+OPTEXT;
 			this.delGroupProperty(groupo);
 			for (int l = 0; l < box.getJSONArray(params).length(); l++) {
 				JSONObject parm = box.getJSONArray(params).getJSONObject(l);
@@ -480,7 +482,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
         String cadenaDecodificada = new String(bytesDecodificados);
         JSONArray bindata = new JSONArray(cadenaDecodificada);
 		this.updateItems(jarname+"."+idope+"."+typeope+".props", bindata);
-		this.updateItems(jarname+"."+idope+"."+typeope+".opts", bindata);
+		this.updateItems(jarname+"."+idope+"."+typeope+OPTEXT, bindata);
 	}
 	private void updateItems(String groupname,JSONArray bindata) {
 		var founded = dao.read(PropertyParameter.class,QUERYPROPS+groupname+"'");

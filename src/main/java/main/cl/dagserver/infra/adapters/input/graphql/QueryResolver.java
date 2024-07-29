@@ -246,7 +246,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		try {
 			return handler.getExceptions(token);	
 		} catch (Exception e) {
-			return new ArrayList<Exceptions>();
+			return new ArrayList<>();
 		}
 		
 	}

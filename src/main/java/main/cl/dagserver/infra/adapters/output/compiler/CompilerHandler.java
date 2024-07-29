@@ -67,6 +67,8 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String ONEND = "onend";
 	private static final String BASEOPPKG = "main.cl.dagserver";
 	private static final String LISTENERLABEL = "listenerLabel";
+	private static final String TARGET = "target";
+	private static final String TARGETDAG = "targetDag";
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
@@ -97,14 +99,14 @@ public class CompilerHandler implements CompilerOutputPort {
 				String onstartdef = "";
 				String onenddef = "";
 				if(loc.equals("onStart")) {
-					if(dag.has("targetDag")) {
-						onstartdef = dag.getString("targetDag");	
+					if(dag.has(TARGETDAG)) {
+						onstartdef = dag.getString(TARGETDAG);	
 					} else {
 						onstartdef = dag.getString("targetGroup");
 					}	
 				} else if(loc.equals("onEnd")) {
-					if(dag.has("targetDag")) {
-						onenddef = dag.getString("targetDag");	
+					if(dag.has(TARGETDAG)) {
+						onenddef = dag.getString(TARGETDAG);	
 					} else {
 						onenddef = dag.getString("targetGroup");
 					}
@@ -118,7 +120,7 @@ public class CompilerHandler implements CompilerOutputPort {
 				dtomap.put("classname", classname);
 				dtomap.put(NAME, classname);
 				dtomap.put("type", triggerv);
-				dtomap.put("target", dag.getString("target"));
+				dtomap.put(TARGET, dag.getString(TARGET));
 				dtomap.put(VALUE, crondef);
 				dtomap.put(GROUP, group);
 				dtomap.put(ONSTART, onstartdef);
@@ -208,7 +210,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		if(dtomap.get("type").equals("cron")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
-	                .define("target", dtomap.get("target"))
+	                .define(TARGET, dtomap.get(TARGET))
 	                .define("cronExpr", dtomap.get(VALUE))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
@@ -216,7 +218,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		} else if(dtomap.get("type").equals("listener")) {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 		            .define(NAME, dtomap.get(NAME))
-		            .define("target", dtomap.get("target"))
+		            .define(TARGET, dtomap.get(TARGET))
 		            .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase()))
 		            .define(GROUP, dtomap.get(GROUP))
 		            .build())
@@ -225,7 +227,7 @@ public class CompilerHandler implements CompilerOutputPort {
 			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
 	                .define(GROUP, dtomap.get(GROUP))
-	                .define("target", dtomap.get("target"))
+	                .define(TARGET, dtomap.get(TARGET))
 	                .build())
 			.make(pool);
 		}

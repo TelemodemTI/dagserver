@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,10 @@ import main.cl.dagserver.domain.model.SessionDTO;
 @Profile("auth-keycloak")
 public class KeycloakAdapter implements AuthenticationOutputPort {
 	
+	private static final String REALMS = "realms/";
+	private static final String CLIENTID = "client_id=";
+	private static final String CLIENTSECRET = "&client_secret=";
+	
 	@Value( "${param.keycloak.host}" )
 	protected String keycloakHost;
 
@@ -39,26 +44,18 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	protected String clientSecret;
 	
 	
-	@Override
-	public SessionDTO login(JSONObject reqobject) throws DomainException {
-	    try {
-	        String username = reqobject.getString("username");
-	        String pwd = reqobject.getString("challenge");
-	        String urlStr = keycloakHost + "realms/" + keycloakRealm + "/protocol/openid-connect/token";
-	        String body = "client_id=" + URLEncoder.encode(clientId, "UTF-8") +
-	                      "&client_secret=" + URLEncoder.encode(clientSecret, "UTF-8") +
-	                      "&grant_type=" + URLEncoder.encode("password", "UTF-8") +
-	                      "&username=" + URLEncoder.encode(username, "UTF-8") +
-	                      "&password=" + URLEncoder.encode(pwd, "UTF-8");
-	        URL url = new URL(urlStr);
+	private JSONObject makeJSONPost(String urlStr,String body) throws DomainException {
+		try {
+			URL url = new URL(urlStr);
 	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
 	        con.setRequestMethod("POST");
 	        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 	        con.setDoOutput(true);
 	        OutputStream os = con.getOutputStream();
-	        os.write(body.getBytes("UTF-8"));
+	        os.write(body.getBytes(StandardCharsets.UTF_8));
 	        os.flush();
 	        os.close();
+	        JSONObject responsejson = null;
 	        int responseCode = con.getResponseCode();
 	        if (responseCode == HttpURLConnection.HTTP_OK) {
 	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -68,15 +65,10 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	                response.append(inputLine);
 	            }
 	            in.close();
-	            JSONObject responsejson = new JSONObject(response.toString());
-	            String token = responsejson.getString("access_token");
-	            String refreshToken = responsejson.getString("refresh_token");
-	            SessionDTO dto = new SessionDTO();
-	            dto.setRefreshToken(refreshToken);
-	            dto.setToken(token);
-	            return dto;
+	            responsejson = new JSONObject(response.toString());
+	            return responsejson;
 	        } else {
-	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+	        	BufferedReader in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
 	            String inputLine;
 	            StringBuilder response = new StringBuilder();
 	            while ((inputLine = in.readLine()) != null) {
@@ -84,47 +76,50 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	            }
 	            in.close();
 	            throw new DomainException(new Exception("Error in response: " + response.toString()));
-	        }
+	        }	
+		} catch (Exception e) {
+			throw new DomainException(e);
+		}
+	}
+	
+	@Override
+	public SessionDTO login(JSONObject reqobject) throws DomainException {
+	    try {
+	        String username = reqobject.getString("username");
+	        String pwd = reqobject.getString("challenge");
+	        String urlStr = keycloakHost + REALMS + keycloakRealm + "/protocol/openid-connect/token";
+	        String body = CLIENTID + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
+	                      CLIENTSECRET + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8) +
+	                      "&grant_type=" + URLEncoder.encode("password", StandardCharsets.UTF_8) +
+	                      "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8) +
+	                      "&password=" + URLEncoder.encode(pwd, StandardCharsets.UTF_8);
+	        JSONObject responsejson = makeJSONPost(urlStr, body);
+	        String token = responsejson.getString("access_token");
+	        String refreshToken = responsejson.getString("refresh_token");
+	        SessionDTO dto = new SessionDTO();
+	        dto.setRefreshToken(refreshToken);
+	        dto.setToken(token);
+	        return dto;
 	    } catch (Exception e) {
 	    	log.error(e);
 	        throw new DomainException(e);
 	    }
 	}
+	
 	@Override
 	public AuthDTO untokenize(String token) throws DomainException {
 		try {
-			String urlStr = keycloakHost + "realms/" + keycloakRealm + "/protocol/openid-connect/token/introspect";
-	        String body = "client_id=" + URLEncoder.encode(clientId, "UTF-8") +
-	                      "&client_secret=" + URLEncoder.encode(clientSecret, "UTF-8") +
-	                      "&token=" + URLEncoder.encode(token, "UTF-8");
-	        URL url = new URL(urlStr);
-	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	        con.setRequestMethod("POST");
-	        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-	        con.setDoOutput(true);
-	        OutputStream os = con.getOutputStream();
-	        os.write(body.getBytes("UTF-8"));
-	        os.flush();
-	        os.close();
-	        int responseCode = con.getResponseCode();
-	        if (responseCode == HttpURLConnection.HTTP_OK) {
-	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	            String inputLine;
-	            StringBuilder response = new StringBuilder();
-	            while ((inputLine = in.readLine()) != null) {
-	                response.append(inputLine);
-	            }
-	            in.close();
-	            JSONObject responsejson = new JSONObject(response.toString());
+			String urlStr = keycloakHost + REALMS + keycloakRealm + "/protocol/openid-connect/token/introspect";
+	        String body = CLIENTID + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
+	                      CLIENTSECRET + URLEncoder.encode(clientSecret, StandardCharsets.UTF_8) +
+	                      "&token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
+	            JSONObject responsejson = this.makeJSONPost(urlStr, body);
 	            AuthDTO auth = new AuthDTO();
 	            auth.setAccountType(AccountType.USER);
 	            auth.setExpires(new Date(responsejson.getLong("exp")));
 	    		auth.setIssueAt(new Date(responsejson.getLong("iat")));
 	    		auth.setSubject("access_token");
 	    		return auth;
-	        } else {
-	        	throw new DomainException(new Exception("error in keycloak introspection"));
-	        }
 		} catch (Exception e) {
 			log.error(e);
 			throw new DomainException(e);
@@ -134,17 +129,17 @@ public class KeycloakAdapter implements AuthenticationOutputPort {
 	@Override
 	public void logout(String token) throws DomainException {
 		try {
-			String urlStr = keycloakHost + "realms/" + keycloakRealm + "/protocol/openid-connect/logout";
-	        String body = "client_id=" + URLEncoder.encode(clientId, "UTF-8") +
-	                      "&client_secret=" + URLEncoder.encode(clientSecret, "UTF-8") +
-	                      "&refresh_token=" + URLEncoder.encode(token, "UTF-8");
+			String urlStr = keycloakHost + REALMS + keycloakRealm + "/protocol/openid-connect/logout";
+	        String body = CLIENTID + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
+	                      CLIENTSECRET + URLEncoder.encode(clientSecret,StandardCharsets.UTF_8) +
+	                      "&refresh_token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
 	        URL url = new URL(urlStr);
 	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
 	        con.setRequestMethod("POST");
 	        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 	        con.setDoOutput(true);
 	        OutputStream os = con.getOutputStream();
-	        os.write(body.getBytes("UTF-8"));
+	        os.write(body.getBytes(StandardCharsets.UTF_8));
 	        os.flush();
 	        os.close();
 	        int responseCode = con.getResponseCode();
