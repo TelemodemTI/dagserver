@@ -61,19 +61,18 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public JarSchedulerAdapter init () throws DomainException {
 		this.classMap = new HashMap<>();
 		File folder = new File(pathfolder);
-		File[] listOfFiles = new File[0];
+		List<File> listOfFiles = new ArrayList<>();
 		try {
-			listOfFiles = folder.listFiles();	
+			listOfFiles = Arrays.asList(folder.listFiles());	
 		} catch (Exception e) {
-			listOfFiles = new File[0];
 			log.error(e);
 		}
 			
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if(listOfFiles[i].getName().endsWith(".jar")) {
-				jars.add(listOfFiles[i]);
-				classMap.put(listOfFiles[i].getName(), this.analizeJar(listOfFiles[i]));
-				quartz.validate(listOfFiles[i].getName().replace(".jar", ""), this.analizeJarProperties(listOfFiles[i]));
+		for (int i = 0; i < listOfFiles.size(); i++) {
+			if(listOfFiles.get(i).getName().endsWith(".jar")) {
+				jars.add(listOfFiles.get(i));
+				classMap.put(listOfFiles.get(i).getName(), this.analizeJar(listOfFiles.get(i)));
+				quartz.validate(listOfFiles.get(i).getName().replace(".jar", ""), this.analizeJarProperties(listOfFiles.get(i)));
 			}
 		}
 		return this;
