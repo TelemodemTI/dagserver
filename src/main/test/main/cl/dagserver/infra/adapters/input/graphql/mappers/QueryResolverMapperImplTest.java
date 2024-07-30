@@ -10,6 +10,7 @@ import main.cl.dagserver.domain.model.AgentDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
+import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 
@@ -57,6 +58,14 @@ class QueryResolverMapperImplTest {
 		list.add(pdto);
 		dto.setProps(list);
 		var rv = mapper.toChannel(dto);
+		assertNotNull(rv);
+	}
+	@Test
+	void toSessionTest() {
+		SessionDTO dto = new SessionDTO();
+		dto.setRefreshToken("refresh");
+		dto.setToken("token");
+		var rv = mapper.toSession(dto);
 		assertNotNull(rv);
 	}
 }
