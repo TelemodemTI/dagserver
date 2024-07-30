@@ -49,21 +49,20 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private static final String QUERYPROPS =  "select props from PropertyParameter as props where props.group = '";
 	private static final String VALUE = "value";
 	private static final String VALUEP = "value.";
-	private static final String OPTEXT = ".opts";	
+	private static final String OPTEXT = ".opts";
+	
 	private static final String UNCOMPILEDQUERY = "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = ";
 	
+	@Autowired
 	private StorageOutputPort storage;
+
+	@Autowired
 	private Environment environment;
-	private DAO dao;
-	private SchedulerMapper mapper;
 	
 	@Autowired
-	public SchedulerRepository(StorageOutputPort storage,Environment environment,DAO dao,SchedulerMapper mapper){
-		this.storage = storage;
-		this.environment = environment;
-		this.dao = dao;
-		this.mapper = mapper;
-	}
+	private DAO dao;
+	@Autowired
+	private SchedulerMapper mapper;
 	
 	@Value("${param.folderpath}")
 	private String pathfolder;
