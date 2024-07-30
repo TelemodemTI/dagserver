@@ -65,6 +65,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		try {
 			listOfFiles = folder.listFiles();	
 		} catch (Exception e) {
+			listOfFiles = new File[0];
 			log.error(e);
 		}
 			
