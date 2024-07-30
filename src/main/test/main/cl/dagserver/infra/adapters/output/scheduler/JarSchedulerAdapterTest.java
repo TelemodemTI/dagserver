@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -38,8 +39,7 @@ class JarSchedulerAdapterTest {
 	}
 	
 	@Test
-	void initTest() throws DomainException {
-		
+	void initTest() throws DomainException {	
 		var dadap = adapter.init();
 		assertNotNull(dadap);
 		assertTrue(true);
