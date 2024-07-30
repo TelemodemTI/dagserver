@@ -14,7 +14,7 @@ import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import static org.junit.jupiter.api.Assertions.*;
-public class DagGraphApiTest {
+class DagGraphApiTest {
 
 	@Mock()
 	private SchedulerRepositoryOutputPort repository;
