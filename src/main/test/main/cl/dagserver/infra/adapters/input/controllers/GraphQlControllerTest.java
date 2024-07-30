@@ -66,6 +66,14 @@ class GraphQlControllerTest {
     }
     @Test
     void myGraphqlTest2() {
+    	CustomGraphQLError error = new CustomGraphQLError("mensaje");
+    	error.getMessage();
+    	error.getLocations();
+    	error.getExtensions();
+    	error.getPath();
+    	error.getErrorType();
+    	error.toSpecification();
+    	
     	Map<String, Object> resturnedmap = new HashMap<>();
     	resturnedmap.put("test", "test");
     	ExecutionResult executionResult = mock(ExecutionResult.class);
