@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
-public class MapDBStorageTest {
+class MapDBStorageTest {
 	private MapDBStorage storage = new MapDBStorage("c:\\tmp\\dagrags\\xcom.db","c:\\tmp\\dagrags\\exceptions.db");
 	
 	@Test
