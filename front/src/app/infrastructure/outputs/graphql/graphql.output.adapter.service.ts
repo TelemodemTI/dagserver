@@ -653,9 +653,13 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
             if (result.login ) {
               let token = result.login.token
               let refresh_token = result.login.refreshToken
-              localStorage.setItem("dagserver_token", token);
-              localStorage.setItem("dagserver_refresh_token", refresh_token);
-              resolve(true);
+              if(token && refresh_token){
+                localStorage.setItem("dagserver_token", token);
+                localStorage.setItem("dagserver_refresh_token", refresh_token);
+                resolve(true);
+              } else {
+                resolve(true);
+              }
             } else {
               resolve(false);
             }  
