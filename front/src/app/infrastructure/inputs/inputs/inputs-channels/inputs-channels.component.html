@@ -29,12 +29,12 @@
                             
                             <ng-container *ngIf="item.name != 'SCHEDULER' && item.name != 'GRAPHQL'; else nobutton">
                                 <div class="options">
-                                    <button class="btn btn-primary btn-lg" (click)="options(item)"><i class="glyphicon glyphicon-plus"></i> Options</button>
+                                    <button id="{{item.name}}-opener-dialog" class="btn btn-primary btn-lg" (click)="options(item)"><i class="glyphicon glyphicon-plus"></i> Options</button>
                                 </div>
                             </ng-container>
                             <ng-template #nobutton>
                                 <div class="options">
-                                    <button disabled class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-plus"></i> Options</button>
+                                    <button id="{{item.name}}-opener-dialog" disabled class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-plus"></i> Options</button>
                                 </div>
                             </ng-template>
                             
