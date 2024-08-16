@@ -9,9 +9,9 @@ import java.util.Map;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import com.coxautodev.graphql.tools.GraphQLQueryResolver;
-
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
 import main.cl.dagserver.domain.core.DataFrameUtils;
@@ -35,8 +35,8 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Session;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Uncompiled;
 
 
-@Component
-public class QueryResolver implements GraphQLQueryResolver {
+@Controller
+public class QueryResolver {
 	private static final String JOBLISTENER = "JOB LISTENER";
 	private SchedulerQueryUseCase handler;
 	private LoginUseCase login;
@@ -48,15 +48,15 @@ public class QueryResolver implements GraphQLQueryResolver {
 		this.login = login;
 		this.mapper = mapper;
 	}
-	
-	public Session login(String token) {
+	@QueryMapping
+	public Session login(@Argument String token) {
 		return mapper.toSession(login.apply(token));
 	}
-	
+	@QueryMapping
 	public String operatorsMetadata() throws DomainException {
 		return handler.operators().toString();
 	}
-	
+	@QueryMapping
 	public List<Scheduled> scheduledJobs() throws DomainException {
         var rv = new ArrayList<Scheduled>();
 		var list = handler.listScheduledJobs();
@@ -76,6 +76,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 		}
         return rv;
     }	
+	@QueryMapping
 	public List<Available> availableJobs() throws DomainException {
 	    var operators = handler.availableJobs();
 	    var rv = new ArrayList<Available>();
@@ -142,7 +143,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 		
 		return rv;
 	}
-	public List<LogEntry> logs(String dagname) throws DomainException{
+	@QueryMapping
+	public List<LogEntry> logs(@Argument String dagname) throws DomainException{
 		var rv = new ArrayList<LogEntry>();
 		var arr = handler.getLogs(dagname);
 		this.setListLog(rv, arr);	
@@ -171,6 +173,7 @@ public class QueryResolver implements GraphQLQueryResolver {
 			rv.add(entry);
 		}
 	}
+	@QueryMapping
 	public List<LogEntry> last() throws DomainException{
 		var rv = new ArrayList<LogEntry>();
 		var arr = handler.getLastLogs();
@@ -178,8 +181,8 @@ public class QueryResolver implements GraphQLQueryResolver {
 		return rv;
 	}
 	
-	
-	public DetailStatus detail(String jarname) throws DomainException{
+	@QueryMapping
+	public DetailStatus detail(@Argument String jarname) throws DomainException{
 		
 		DetailStatus status = new DetailStatus();
 		var rv = new ArrayList<Detail>();
@@ -213,36 +216,44 @@ public class QueryResolver implements GraphQLQueryResolver {
 		status.setDetail(rv);
 		return status;
 	}
+	@QueryMapping
 	public List<Property> properties() throws DomainException{
 		return handler.properties().stream().map(elt -> mapper.toProperty(elt)).toList();
 	}
+	@QueryMapping
 	public List<Agent> agents(){
 		return handler.agents().stream().map(elt -> mapper.toAgent(elt)).toList();
 	}
-	
-	public List<Uncompiled> getUncompileds(String token) throws DomainException{
+	@QueryMapping
+	public List<Uncompiled> getUncompileds(@Argument String token) throws DomainException{
 		return handler.getUncompileds(token).stream().map(elt -> mapper.toUncompiled(elt)).toList();
 	}
-	public List<Account> credentials(String token) throws DomainException{
+	@QueryMapping
+	public List<Account> credentials(@Argument String token) throws DomainException{
 		return handler.credentials(token).stream().map(elt -> mapper.toAccount(elt)).toList();
 	}
-	public String getIcons(String type) throws DomainException {
+	@QueryMapping
+	public String getIcons(@Argument String type) throws DomainException {
 		return handler.getIcons(type);
 	}
-	public Deps getDependencies(String jarname,String dagname) throws DomainException {
+	@QueryMapping
+	public Deps getDependencies(@Argument String jarname,@Argument String dagname) throws DomainException {
 		var returned = handler.getDependencies(jarname, dagname);
 		Deps deps = new Deps();
 		deps.setOnStart(returned.get(0));
 		deps.setOnEnd(returned.get(1));
 		return deps; 
 	}
-	public List<Channel> channelStatus(String token) throws DomainException {
+	@QueryMapping
+	public List<Channel> channelStatus(@Argument String token) throws DomainException {
 		return handler.getChannels(token).stream().map(elt -> mapper.toChannel(elt)).toList();
 	}
-	public String exportUncompiled(String token,Integer uncompiled) throws DomainException {
+	@QueryMapping
+	public String exportUncompiled(@Argument String token,@Argument Integer uncompiled) throws DomainException {
 		return handler.exportUncompiled(token,uncompiled);
 	}
-	public List<Exceptions> exceptions(String token) {
+	@QueryMapping
+	public List<Exceptions> exceptions(@Argument String token) {
 		try {
 			return handler.getExceptions(token);	
 		} catch (Exception e) {

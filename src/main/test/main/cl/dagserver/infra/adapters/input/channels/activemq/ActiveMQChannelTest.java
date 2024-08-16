@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
 
-import javax.jms.*;
+import jakarta.jms.*;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.BeforeEach;
