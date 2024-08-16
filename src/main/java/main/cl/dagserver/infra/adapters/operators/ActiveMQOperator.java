@@ -12,7 +12,7 @@ import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import javax.jms.*;
+import jakarta.jms.*;
 import java.util.Iterator;
 import java.util.List;
 

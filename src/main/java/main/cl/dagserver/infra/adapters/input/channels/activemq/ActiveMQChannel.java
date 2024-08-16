@@ -13,7 +13,7 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 
-import javax.jms.*;
+import jakarta.jms.*;
 
 import java.util.Arrays;
 import java.util.Properties;
