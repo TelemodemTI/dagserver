@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.nhl.dflib.DataFrame;
 
-import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -24,10 +24,10 @@ public class RegisterSchedulerOperator extends OperatorStage {
 			var prop = new Properties();
 			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 			if(appCtx != null) {
-				var repo =  appCtx.getBean("schedulerRepository", SchedulerRepositoryOutputPort.class);
+				var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
 				var cls = appCtx.getClassLoader();
 				prop.load(cls.getResourceAsStream("application.properties"));
-				repo.setMetadata(prop.getProperty("param.host"), prop.getProperty("param.name"));
+				handler.setMetadata(prop.getProperty("param.host"), prop.getProperty("param.name"));
 				log.debug(this.getClass()+" end "+this.name);	
 			}	
 			return DataFrameUtils.createStatusFrame("ok");

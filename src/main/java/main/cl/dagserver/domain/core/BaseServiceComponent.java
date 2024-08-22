@@ -3,7 +3,6 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +18,6 @@ import main.cl.dagserver.domain.model.PropertyParameterDTO;
 @ImportResource("classpath:properties-config.xml")
 public class BaseServiceComponent {
 
-	@Value( "${param.folderpath}" )
-	protected String path;
-	
 	@Autowired
 	protected SchedulerRepositoryOutputPort repository;
 	

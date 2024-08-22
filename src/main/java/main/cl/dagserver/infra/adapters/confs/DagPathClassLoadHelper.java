@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -85,22 +87,22 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
     }
 
 	private Class<?> getClassForLoad(String pathfolder, String name) throws DomainException {
-		try {
-			File folder = new File(pathfolder);
-			File[] listOfFiles = folder.listFiles();	
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if(listOfFiles[i].getName().endsWith(".jar")) {
-					Class<?> rv = this.search(listOfFiles[i], name);
-					if(rv != null) {
-						return rv;	
-					} 
-				}
-			}
-			return super.loadClass(name);	
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-		
+	    try {
+	        Path folderPath = Paths.get(pathfolder);
+	        File folder = folderPath.toFile();
+	        File[] listOfFiles = folder.listFiles();	
+	        for (int i = 0; i < listOfFiles.length; i++) {
+	            if (listOfFiles[i].getName().endsWith(".jar")) {
+	                Class<?> rv = this.search(listOfFiles[i], name);
+	                if (rv != null) {
+	                    return rv;	
+	                } 
+	            }
+	        }
+	        return super.loadClass(name);	
+	    } catch (Exception e) {
+	        throw new DomainException(e);
+	    }
 	}
 	private Class<?> search(File jarFile,String searched) throws DomainException {
 		Class<?> rvclazz = null;
@@ -243,22 +245,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 			    .build();
 	}
 	
-	public Class<?> loadFromOperatorJar(String name, List<URI> list) throws DomainException{
-		ClassLoader loader = LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(list)
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.NONE)
-			        .build())
-			    .build();
-		try {
-			return loader.loadClass(name.replace("/", ".").replace(CLASSEXT, ""));
-		} catch (ClassNotFoundException e) {
-			throw new DomainException(e);
-		}
-		
-	}
+	
 	
 	public Class<?> loadFromJar(File jarFile,String name) throws DomainException{
 		URI uri = jarFile.toURI();

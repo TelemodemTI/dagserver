@@ -42,9 +42,9 @@ public class DefaultController {
 		this.api = api;
 	}
 	
-	@GetMapping(path="/version")
+	@GetMapping(path="/version/")
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
-		return new ResponseEntity<>("dagserver is running! v0.7.X", HttpStatus.OK);
+		return new ResponseEntity<>("dagserver is running! v0.8.X", HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/stageApi/",consumes = {"application/json"}, produces= {"application/json"})
