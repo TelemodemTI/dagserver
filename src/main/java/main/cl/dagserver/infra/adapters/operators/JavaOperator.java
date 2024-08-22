@@ -10,50 +10,57 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 
 import com.nhl.dflib.DataFrame;
 
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.infra.adapters.confs.DagPathClassLoadHelper;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 @Operator(args={"classpath","className"})
 public class JavaOperator extends OperatorStage {
 
-	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "static-access" })
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		try {
-			List<String> fJar = new ArrayList<>();
-			String fpath = this.args.getProperty("classpath");
-			this.searchJarFiles(new File(fpath),fJar );
-			List<URI> list = new ArrayList<>();
-			for (Iterator<String> iterator = fJar.iterator(); iterator.hasNext();) {
-				String jarpath = iterator.next();
-				list.add(new File(jarpath).toURI());
+			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+			if(appCtx != null) {
+				var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+				List<String> fJar = new ArrayList<>();
+				String fpath = this.args.getProperty("classpath");
+				this.searchJarFiles(new File(fpath),fJar );
+				List<URI> list = new ArrayList<>();
+				for (Iterator<String> iterator = fJar.iterator(); iterator.hasNext();) {
+					String jarpath = iterator.next();
+					list.add(new File(jarpath).toURI());
+				}
+				Class<?> loadedClass = handler.loadFromOperatorJar(this.args.getProperty("className"),list);
+				Object result = this.runCallableFromJar(loadedClass);
+				log.debug(this.args);
+				log.debug(this.getClass()+" end "+this.name);
+				
+				if (result instanceof List) {
+			        var rvl = (List) result;
+			        return DataFrameUtils.buildDataFrameFromObject(rvl);	        
+			    } else if (result instanceof Map) {
+			    	var rvm = (Map) result;
+			    	return DataFrameUtils.buildDataFrameFromMap(Arrays.asList(rvm));
+			    } else if(result instanceof DataFrame) {
+			    	return (DataFrame) result;
+			    } else {
+			        return DataFrameUtils.createFrame("output", result);
+			    }
+			} else {
+				throw new DomainException(new Exception("jar not loaded"));
 			}
-			Object result = this.runCallableFromJar(this.args.getProperty("className"),list);
-			log.debug(this.args);
-			log.debug(this.getClass()+" end "+this.name);
-			
-			if (result instanceof List) {
-		        var rvl = (List) result;
-		        return DataFrameUtils.buildDataFrameFromObject(rvl);	        
-		    } else if (result instanceof Map) {
-		    	var rvm = (Map) result;
-		    	return DataFrameUtils.buildDataFrameFromMap(Arrays.asList(rvm));
-		    } else if(result instanceof DataFrame) {
-		    	return (DataFrame) result;
-		    } else {
-		        return DataFrameUtils.createFrame("output", result);
-		    }
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -76,9 +83,9 @@ public class JavaOperator extends OperatorStage {
 
 	
 	
-	private <T> T runCallableFromJar(String className, List<URI> list) throws Exception {
+	private <T> T runCallableFromJar(Class<?> loadedClass) throws Exception {
         try {
-        	Class<?> loadedClass = helper.loadFromOperatorJar(className,list);
+        	
         	if (Callable.class.isAssignableFrom(loadedClass)) {
                 @SuppressWarnings("unchecked")
                 Callable<T> callableInstance = (Callable<T>) loadedClass.getDeclaredConstructor().newInstance();

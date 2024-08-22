@@ -87,8 +87,7 @@ export class CompiledTabComponent {
   async changeValueEvent(data:any){
     this.valuer.close();
     try {
-      let jsonval = JSON.parse(data[1]);
-      this.playReal(this.jarname,this.dagname,jsonval)  
+      this.playReal(this.jarname,this.dagname,data[1])  
     } catch (error) {
       this.title_msje = "error"
       this.error_msje = error
@@ -100,7 +99,7 @@ export class CompiledTabComponent {
     this.jarname = jarname
     this.valuer.show()
   }
-  async playReal(jarname:any,dagname:any,data:any){
+  async playReal(jarname:any,dagname:any,data:string){
     let msg = await this.service.executeDag(dagname,jarname,data);
     this.title_msje = msg.title_msje
     this.error_msje = msg.error_msje

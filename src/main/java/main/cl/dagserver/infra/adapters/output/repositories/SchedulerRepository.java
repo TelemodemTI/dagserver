@@ -16,7 +16,6 @@ import jakarta.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -63,9 +62,6 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private DAO dao;
 	@Autowired
 	private SchedulerMapper mapper;
-	
-	@Value("${param.folderpath}")
-	private String pathfolder;
 	
 	@PostConstruct
     private void loadPropertiesToRepo() {

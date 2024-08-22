@@ -4,11 +4,8 @@ import java.util.Calendar;
 import java.util.Properties;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
-
 import com.nhl.dflib.DataFrame;
-
-import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
-import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.OperatorStage;
@@ -26,15 +23,15 @@ public class LogsRollupOperator extends OperatorStage {
 			var prop = new Properties();
 			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 			if(appCtx!=null) {
-				var repo =  appCtx.getBean("schedulerRepository", SchedulerRepositoryOutputPort.class);
-				var scheduler = appCtx.getBean("jarSchedulerAdapter",JarSchedulerOutputPort.class);
+				var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+				//var scheduler = appCtx.getBean("jarSchedulerAdapter",JarSchedulerOutputPort.class);
 				var clsl = appCtx.getClassLoader();
 				prop.load(clsl.getResourceAsStream("application.properties"));
 				Calendar rollup = Calendar.getInstance();
 				rollup.setTimeInMillis(rollup.getTimeInMillis());
 				rollup.add(Calendar.HOUR, Integer.parseInt(prop.getProperty("param.logs.rollup.hours")));
-				repo.deleteLogsBy(rollup.getTime());
-				scheduler.deleteXCOM(rollup.getTime());
+				handler.deleteLogsBy(rollup.getTime());
+				handler.deleteXCOM(rollup.getTime());
 				log.debug(this.getClass()+" end "+this.name);	
 			}
 			return DataFrameUtils.createStatusFrame("ok");
