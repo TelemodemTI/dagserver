@@ -9,14 +9,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -50,41 +52,43 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 				return null;
 			}	
 	}
-	private Class<?> loadClassWithCtx(ClassLoader ctx,Properties prop,String name) throws IOException, ClassNotFoundException, DomainException {
-		if(ctx !=null) {
-			prop.load(ctx.getResourceAsStream("application.properties"));	
-			String pathfolder = prop.getProperty("param.folderpath");
-			try {
-				return this.getClassForLoad(pathfolder, name);	
-			} catch (Exception e) {
-				List<String> archivosJar = new ArrayList<>();
-				this.searchJarFiles(new File(pathfolder),archivosJar);
-				List<URI> list = new ArrayList<>();
-				for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
-					String jarpath = iterator.next();
-					list.add(new File(jarpath).toURI());
-				}
-				ClassLoader cls = this.getClassLoader(list);
-				return cls.loadClass(name);
-			}
-				
-		} else {
-			throw new DomainException(new Exception("no context?"));
-		}
-	}
-	private void searchJarFiles(File directorio, List<String> archivosJar) {
-        File[] archivos = directorio.listFiles();
+	private Class<?> loadClassWithCtx(ClassLoader ctx, Properties prop, String name) throws IOException, ClassNotFoundException, DomainException {
+	    if (ctx != null) {
+	        try (InputStream propStream = ctx.getResourceAsStream("application.properties")) {
+	            if (propStream == null) {
+	                throw new DomainException(new Exception("application.properties not found"));
+	            }
+	            prop.load(propStream);
+	        }
+	        String pathfolder = prop.getProperty("param.folderpath");
+	        try {
+	            return this.getClassForLoad(pathfolder, name);
+	        } catch (Exception e) {
+	            List<String> archivosJar = new ArrayList<>();
+	            this.searchJarFiles(Paths.get(pathfolder), archivosJar); // Usar java.nio
+	            
+	            List<URI> uris = archivosJar.stream()
+	                                        .map(Paths::get)
+	                                        .map(Path::toUri)
+	                                        .collect(Collectors.toList());
 
-        if (archivos != null) {
-            for (File archivo : archivos) {
-                if (archivo.isFile() && archivo.getName().endsWith(".jar")) {
-                    archivosJar.add(archivo.getAbsolutePath());
-                } else if (archivo.isDirectory()) {
-                	searchJarFiles(archivo, archivosJar);
-                }
-            }
-        }
-    }
+	            ClassLoader cls = this.getClassLoader(uris);
+	            return cls.loadClass(name);
+	        }
+	    } else {
+	        throw new DomainException(new Exception("no context?"));
+	    }
+	}
+
+	
+	
+	private void searchJarFiles(Path directorio, List<String> archivosJar) throws IOException {
+	    try (Stream<Path> paths = Files.walk(directorio)) {
+	        paths.filter(Files::isRegularFile)
+	             .filter(path -> path.toString().endsWith(".jar"))
+	             .forEach(path -> archivosJar.add(path.toString()));
+	    }
+	}
 
 	private Class<?> getClassForLoad(String pathfolder, String name) throws DomainException {
 	    try {

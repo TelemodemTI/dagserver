@@ -2,7 +2,11 @@ package main.cl.dagserver.infra.adapters.output.scheduler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -54,25 +60,29 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private List<File> jars = new ArrayList<>();
 	private Map<String,List<Map<String,String>>> classMap = new HashMap<>();
 	
-	public JarSchedulerAdapter init () throws DomainException {
-		this.classMap = new HashMap<>();
-		File folder = new File(pathfolder);
-		List<File> listOfFiles = new ArrayList<>();
-		try {
-			listOfFiles = Arrays.asList(folder.listFiles());	
-		} catch (Exception e) {
-			log.error(e);
-		}
-			
-		for (int i = 0; i < listOfFiles.size(); i++) {
-			if(listOfFiles.get(i).getName().endsWith(".jar")) {
-				jars.add(listOfFiles.get(i));
-				classMap.put(listOfFiles.get(i).getName(), this.analizeJar(listOfFiles.get(i)));
-				quartz.validate(listOfFiles.get(i).getName().replace(".jar", ""), this.analizeJarProperties(listOfFiles.get(i)));
-			}
-		}
-		return this;
-	}	
+	public JarSchedulerAdapter init() throws DomainException {
+	    this.classMap = new HashMap<>();
+	    Path folderPath = Paths.get(pathfolder);
+	    List<Path> jarFiles = new ArrayList<>();
+	    try (Stream<Path> paths = Files.walk(folderPath)) {
+	        jarFiles = paths
+	            .filter(Files::isRegularFile)
+	            .filter(path -> path.toString().endsWith(".jar"))
+	            .collect(Collectors.toList());
+	    } catch (IOException e) {
+	        log.error("Error reading files in folder: " + pathfolder, e);
+	    }
+
+	    for (Path jarFile : jarFiles) {
+	        File file = jarFile.toFile();
+	        jars.add(file);
+	        classMap.put(file.getName(), this.analizeJar(file));
+	        quartz.validate(file.getName().replace(".jar", ""), this.analizeJarProperties(file));
+	    }
+
+	    return this;
+	}
+	
 	
 	private Map<String,Properties> analizeJarProperties(File jarFile){
 		Map<String,Properties> props = new HashMap<>();

@@ -116,7 +116,7 @@ export class FrontEndDomainService implements
     return this.httpd.executeDagUncompiled(uncompiledId,dagname,stepname)
   }
   
-  renameUncompiled(uncompiled: any, arg1: any): Promise<void> {
+  renameUncompiled(uncompiled: number, arg1: any): Promise<void> {
     return this.adapter.renameUncompiled(uncompiled,arg1);
   }
   
