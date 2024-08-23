@@ -1,6 +1,7 @@
 package main.cl.dagserver.application.ports.input;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 
@@ -11,4 +12,6 @@ public interface InternalOperatorUseCase {
 	public void setMetadata(String hostname,String name);
 	public Class<?> loadFromOperatorJar(String name, List<URI> list) throws DomainException;
 	public void deleteXCOM(Date time)  throws DomainException;
+	public ClassLoader getClassLoader(List<URI> list) throws DomainException;
+	public Path getFolderPath();
 }

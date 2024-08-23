@@ -1,6 +1,5 @@
 package main.cl.dagserver.infra.adapters.confs;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,24 +8,26 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.quartz.simpl.CascadingClassLoadHelper;
+import org.springframework.context.ApplicationContext;
+
 import com.linkedin.cytodynamics.nucleus.DelegateRelationshipBuilder;
 import com.linkedin.cytodynamics.nucleus.IsolationLevel;
 import com.linkedin.cytodynamics.nucleus.LoaderBuilder;
 import com.linkedin.cytodynamics.nucleus.OriginRestriction;
+
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
@@ -44,6 +45,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 			return this.loadClassProps(prop,name);
 		}
 	}
+	
 	private Class<?> loadClassProps(Properties prop,String name) {
 			try {
 				var ctx = this.getClass().getClassLoader();
@@ -52,47 +54,47 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 				return null;
 			}	
 	}
-	private Class<?> loadClassWithCtx(ClassLoader ctx, Properties prop, String name) throws IOException, ClassNotFoundException, DomainException {
-	    if (ctx != null) {
-	        try (InputStream propStream = ctx.getResourceAsStream("application.properties")) {
-	            if (propStream == null) {
-	                throw new DomainException(new Exception("application.properties not found"));
-	            }
-	            prop.load(propStream);
-	        }
-	        String pathfolder = prop.getProperty("param.folderpath");
-	        try {
-	            return this.getClassForLoad(pathfolder, name);
-	        } catch (Exception e) {
-	            List<String> archivosJar = new ArrayList<>();
-	            this.searchJarFiles(Paths.get(pathfolder), archivosJar); // Usar java.nio
-	            
-	            List<URI> uris = archivosJar.stream()
-	                                        .map(Paths::get)
-	                                        .map(Path::toUri)
-	                                        .collect(Collectors.toList());
-
-	            ClassLoader cls = this.getClassLoader(uris);
-	            return cls.loadClass(name);
-	        }
-	    } else {
-	        throw new DomainException(new Exception("no context?"));
-	    }
+	@SuppressWarnings("static-access")
+	private Class<?> loadClassWithCtx(ClassLoader ctx,Properties prop,String name) throws IOException, ClassNotFoundException, DomainException {
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		if(ctx !=null && appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			Path folderPath = handler.getFolderPath();
+			try {
+				return this.getClassForLoad(folderPath, name);	
+			} catch (Exception e) {
+				List<String> archivosJar = new ArrayList<>();
+				this.searchJarFiles(folderPath.toFile(),archivosJar);
+				List<URI> list = new ArrayList<>();
+				for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
+					String jarpath = iterator.next();
+					list.add(new File(jarpath).toURI());
+				}
+				
+				ClassLoader cls = handler.getClassLoader(list);
+				return cls.loadClass(name);
+				
+			}
+		} else {
+			throw new DomainException(new Exception("no context?"));
+		}
 	}
+	private void searchJarFiles(File directorio, List<String> archivosJar) {
+        File[] archivos = directorio.listFiles();
 
-	
-	
-	private void searchJarFiles(Path directorio, List<String> archivosJar) throws IOException {
-	    try (Stream<Path> paths = Files.walk(directorio)) {
-	        paths.filter(Files::isRegularFile)
-	             .filter(path -> path.toString().endsWith(".jar"))
-	             .forEach(path -> archivosJar.add(path.toString()));
-	    }
-	}
+        if (archivos != null) {
+            for (File archivo : archivos) {
+                if (archivo.isFile() && archivo.getName().endsWith(".jar")) {
+                    archivosJar.add(archivo.getAbsolutePath());
+                } else if (archivo.isDirectory()) {
+                	searchJarFiles(archivo, archivosJar);
+                }
+            }
+        }
+    }
 
-	private Class<?> getClassForLoad(String pathfolder, String name) throws DomainException {
+	private Class<?> getClassForLoad(Path folderPath, String name) throws DomainException {
 	    try {
-	        Path folderPath = Paths.get(pathfolder);
 	        File folder = folderPath.toFile();
 	        File[] listOfFiles = folder.listFiles();	
 	        for (int i = 0; i < listOfFiles.length; i++) {
@@ -170,7 +172,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			while(entries.hasMoreElements()) {
 			  ZipEntry ze = entries.nextElement();
-			  DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+			  ZipFileVerificator.verificationZipFile(ze, zipFile);
 			  if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
 				  rvclazz = this.loadClassTry(ze,loader,searched);	
 			  }
@@ -192,92 +194,11 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 				throw new DomainException(e);
 			}
 	}
-	public static void verificationZipFile(ZipEntry ze,ZipFile zipFile) throws DomainException {
-		int thresholdEntries = 10000;
-		int thresholdSize = 1000000000; // 1 GB
-		double thresholdRatio = 10;
-		
-		
-		
-		
-		
-		
-		int totalSizeArchive = 0;
-		int totalEntryArchive = 0;
-		try(
-				InputStream in = new BufferedInputStream(zipFile.getInputStream(ze));
-				) {
-				  totalEntryArchive ++;
-
-				  int nBytes = -1;
-				  byte[] buffer = new byte[2048];
-				  double totalSizeEntry = 0;
-
-				  while((nBytes = in.read(buffer)) > 0) { 
-				      totalSizeEntry += nBytes;
-				      totalSizeArchive += nBytes;
-				      Long tmpv = ze.getCompressedSize();
-				      double compressionRatio = totalSizeEntry / tmpv.doubleValue();
-				      if(compressionRatio > thresholdRatio) {
-				        // ratio between compressed and uncompressed data is highly suspicious, looks like a Zip Bomb Attack
-				    	throw new DomainException(new Exception("invalid zip file"));
-				      }
-				  }
-
-				  if(totalSizeArchive > thresholdSize) {
-				      // the uncompressed data size is too much for the application resource capacity
-					  throw new DomainException(new Exception("zip file invalid size"));
-				  }
-
-				  if(totalEntryArchive > thresholdEntries) {
-				      // too much entries in this archive, can lead to inodes exhaustion of the system
-					  throw new DomainException(new Exception("zip file invalid entries"));
-				  }
-			  } catch (Exception e) {
-				  throw new DomainException(e);
-			  }
-	}
-
-	public ClassLoader getClassLoader(List<URI> list) {
-		return LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(list)
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.NONE)
-			        .build())
-			    .build();
-	}
 	
 	
 	
-	public Class<?> loadFromJar(File jarFile,String name) throws DomainException{
-		URI uri = jarFile.toURI();
-		ClassLoader loader = LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(Arrays.asList( uri ))
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.NONE)
-			        .build())
-			    .build();
-		try {
-			return loader.loadClass(name.replace("/", ".").replace(CLASSEXT, ""));
-		} catch (ClassNotFoundException e) {
-			throw new DomainException(e);
-		}
-		
-	}
-	public InputStream loadResourceFromJar(File jarFile, String resource) {
-		URI uri = jarFile.toURI();
-		ClassLoader loader = LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(Arrays.asList(  uri ))
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.FULL)
-			        .build())
-			    .build();
-		return loader.getResourceAsStream(resource);
-	}
+	
+	
+	
+	
 }

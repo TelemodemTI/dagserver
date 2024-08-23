@@ -15,23 +15,24 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 
 import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.infra.adapters.confs.DagPathClassLoadHelper;
-
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 
 @Operator(args={"url","user","pwd","driver","driverPath","query"},optionalv = { "xcom" })
 public class JdbcOperator extends OperatorStage {
 	
-	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
+	
 	private static final String QUERY = "query";
 	
 	private List<URI> getListURI(List<String> archivosJar){
@@ -43,13 +44,22 @@ public class JdbcOperator extends OperatorStage {
 		return list;
 	}
 	
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
 		List<String> archivosJar = new ArrayList<>();
 		this.searchJarFiles(new File(this.args.getProperty("driverPath")),archivosJar);
 		List<URI> list = this.getListURI(archivosJar);
-		DbUtils.loadDriver(helper.getClassLoader(list), this.args.getProperty("driver"));
+		
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		if(appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			DbUtils.loadDriver(handler.getClassLoader(list), this.args.getProperty("driver"));
+		}
+		
+		
+		
 		String xcomname = this.optionals.getProperty("xcom");
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
 			if(xcomname != null && !xcomname.isEmpty()) {
