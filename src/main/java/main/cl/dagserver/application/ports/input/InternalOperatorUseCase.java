@@ -14,4 +14,5 @@ public interface InternalOperatorUseCase {
 	public void deleteXCOM(Date time)  throws DomainException;
 	public ClassLoader getClassLoader(List<URI> list) throws DomainException;
 	public Path getFolderPath();
+	public Path getJDBCDriversPath(String property);
 }

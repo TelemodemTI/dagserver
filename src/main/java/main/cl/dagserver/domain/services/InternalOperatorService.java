@@ -44,4 +44,9 @@ public class InternalOperatorService extends BaseServiceComponent implements Int
 		return this.fileSystem.getFolderPath();
 	}
 
+	@Override
+	public Path getJDBCDriversPath(String inputPath) {
+		return this.fileSystem.getJDBCDriversPath(inputPath);
+	}
+
 }

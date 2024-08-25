@@ -1,7 +1,11 @@
 package main.cl.dagserver.infra.adapters.operators;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -49,16 +53,18 @@ public class JdbcOperator extends OperatorStage {
 	public DataFrame call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
 		List<String> archivosJar = new ArrayList<>();
-		this.searchJarFiles(new File(this.args.getProperty("driverPath")),archivosJar);
-		List<URI> list = this.getListURI(archivosJar);
-		
 		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 		if(appCtx != null) {
 			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			try {
+				Path driversPath = handler.getJDBCDriversPath(this.args.getProperty("driverPath"));
+				this.searchJarFiles(driversPath,archivosJar);	
+			} catch (Exception e) {
+				
+			}
+			List<URI> list = this.getListURI(archivosJar);
 			DbUtils.loadDriver(handler.getClassLoader(list), this.args.getProperty("driver"));
 		}
-		
-		
 		
 		String xcomname = this.optionals.getProperty("xcom");
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
@@ -130,18 +136,18 @@ public class JdbcOperator extends OperatorStage {
 	public String getIconImage() {
 		return "jdbc.png";
 	}
-	private void searchJarFiles(File directorio, List<String> archivosJar) {
-        File[] archivos = directorio.listFiles();
-
-        if (archivos != null) {
-            for (File archivo : archivos) {
-                if (archivo.isFile() && archivo.getName().endsWith(".jar")) {
-                    archivosJar.add(archivo.getAbsolutePath());
-                } else if (archivo.isDirectory()) {
-                	searchJarFiles(archivo, archivosJar);
-                }
-            }
-        }
+	private void searchJarFiles(Path directorio, List<String> archivosJar) throws IOException {
+		if (Files.isDirectory(directorio)) {
+	        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directorio)) {
+	            for (Path entry : stream) {
+	                if (Files.isDirectory(entry)) {
+	                    searchJarFiles(entry, archivosJar);
+	                } else if (Files.isRegularFile(entry) && entry.toString().endsWith(".jar")) {
+	                    archivosJar.add(entry.toAbsolutePath().toString());
+	                }
+	            }
+	        }
+	    }
     }
 	
 }

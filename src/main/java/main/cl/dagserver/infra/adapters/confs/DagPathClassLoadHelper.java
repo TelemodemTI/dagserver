@@ -2,22 +2,20 @@ package main.cl.dagserver.infra.adapters.confs;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.quartz.simpl.CascadingClassLoadHelper;
 import org.springframework.context.ApplicationContext;
@@ -95,25 +93,29 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 
 	private Class<?> getClassForLoad(Path folderPath, String name) throws DomainException {
 	    try {
-	        File folder = folderPath.toFile();
-	        File[] listOfFiles = folder.listFiles();	
-	        for (int i = 0; i < listOfFiles.length; i++) {
-	            if (listOfFiles[i].getName().endsWith(".jar")) {
-	                Class<?> rv = this.search(listOfFiles[i], name);
-	                if (rv != null) {
-	                    return rv;	
-	                } 
+	        // Obtener la lista de archivos en el directorio usando java.nio
+	        try (Stream<Path> paths = Files.list(folderPath)) {
+	            for (Path path : (Iterable<Path>) paths::iterator) {
+	                if (Files.isRegularFile(path) && path.toString().endsWith(".jar")) {
+	                    Class<?> clazz = this.search(path, name);
+	                    if (clazz != null) {
+	                        return clazz;
+	                    }
+	                }
 	            }
 	        }
-	        return super.loadClass(name);	
-	    } catch (Exception e) {
+
+	        // Si no se encuentra la clase en los archivos JAR, delegar la carga a la clase base
+	        return super.loadClass(name);
+	    } catch (IOException | ClassNotFoundException e) {
 	        throw new DomainException(e);
 	    }
 	}
-	private Class<?> search(File jarFile,String searched) throws DomainException {
+	private Class<?> search(Path jarFile,String searched) throws DomainException {
 		Class<?> rvclazz = null;
 		try(
-			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+			InputStream inputStream = Files.newInputStream(jarFile);
+			ZipInputStream zip = new ZipInputStream(inputStream);
 		) {
 			if(this.isGeneratedByDagserver(jarFile)) {
 				rvclazz = this.validate(jarFile,searched);	
@@ -123,56 +125,55 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 			throw new DomainException(e);
 		}
 	}	
-	private boolean isGeneratedByDagserver(File jarFile) throws DomainException {
-		Boolean returnf = false;
-		try(ZipFile zipFile = new ZipFile(jarFile);) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while(entries.hasMoreElements()) {
-			  ZipEntry ze = entries.nextElement();
-			  if(ze.getName().equals(".source")) {
-				  InputStream inputStream = zipFile.getInputStream(ze);
-	                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-	                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-	                StringBuilder stringBuilder = new StringBuilder();
-	                String linea;
-	                while ((linea = bufferedReader.readLine()) != null) {
-	                    stringBuilder.append(linea);
-	                    stringBuilder.append("\n");
+	private boolean isGeneratedByDagserver(Path jarFile) throws DomainException {
+	    boolean returnf = false;
+	    
+	    try (InputStream fis = Files.newInputStream(jarFile);
+	         ZipInputStream zipStream = new ZipInputStream(fis)) {
+	        
+	        ZipEntry ze;
+	        while ((ze = zipStream.getNextEntry()) != null) {
+	            if (ze.getName().equals(".source")) {
+	                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(zipStream, StandardCharsets.UTF_8))) {
+	                    StringBuilder stringBuilder = new StringBuilder();
+	                    String linea;
+	                    while ((linea = bufferedReader.readLine()) != null) {
+	                        stringBuilder.append(linea);
+	                        stringBuilder.append("\n");
+	                    }
+	                    String contenido = stringBuilder.toString().trim();  // Trim to remove trailing newline
+	                    returnf = "dagserver-generated-jar".equals(contenido);
 	                }
-	                String contenido = stringBuilder.toString();
-	                if(contenido.equals("dagserver-generated-jar")) {
-	                	returnf = true;
-	                } else {
-	                	returnf = false;
-	                }
-			  } else {
-				  returnf = false;
-			  }
-			}
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-		return returnf;
+	                // No need to continue checking other entries
+	                break;
+	            }
+	        }
+	    } catch (IOException e) {
+	        throw new DomainException(e);
+	    }
+	    
+	    return returnf;
 	}
-	private Class<?> validate(File f,String searched) throws IOException, DomainException {
+	private Class<?> validate(Path f,String searched) throws IOException, DomainException {
 		Class<?> rvclazz = null;
 		
-		URI uri = f.toURI();
+		URI uri = f.toUri();
 		ClassLoader loader = LoaderBuilder
 			    .anIsolatingLoader()
 			    .withOriginRestriction(OriginRestriction.allowByDefault())
 			    .withClasspath(Arrays.asList( uri ))
 			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.FULL)
+			        .withIsolationLevel(IsolationLevel.NONE)
 			        .build())
 			    .build();
 		
-		try(ZipFile zipFile = new ZipFile(f);) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while(entries.hasMoreElements()) {
-			  ZipEntry ze = entries.nextElement();
-			  ZipFileVerificator.verificationZipFile(ze, zipFile);
+		try(
+				InputStream inputStream = Files.newInputStream(f);
+				ZipInputStream zip = new ZipInputStream(inputStream);
+				) {
+			ZipEntry ze;
+			while ((ze = zip.getNextEntry()) != null) {
+			  
 			  if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
 				  rvclazz = this.loadClassTry(ze,loader,searched);	
 			  }

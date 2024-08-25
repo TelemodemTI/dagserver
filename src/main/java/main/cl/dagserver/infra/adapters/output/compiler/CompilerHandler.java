@@ -12,7 +12,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +26,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
+import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DagExecutable;
@@ -69,11 +68,10 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String TARGET = "target";
 	private static final String TARGETDAG = "targetDag";
 	
-	@Value("${param.folderpath}")
-	private String pathfolder;
-	
     private ApplicationEventPublisher eventPublisher;
 	private CompilerOperatorBuilder builder;
+	@Autowired 
+	FileSystemOutputPort fileSystem;
 	
 	@Autowired
 	public CompilerHandler(CompilerOperatorBuilder builder,ApplicationEventPublisher eventPublisher) {
@@ -172,13 +170,13 @@ public class CompilerHandler implements CompilerOutputPort {
         return false;
     }
 	private void validateOverwrite(String jarName, Boolean force) throws DomainException {
-	    Path filePath = Paths.get(pathfolder, jarName);
+	    Path filePath = fileSystem.getFolderPath(jarName);
 	    if (Files.exists(filePath) && Boolean.FALSE.equals(force)) {
 		    throw new DomainException(new Exception("File exists"));
 		}
 	}
-	public void validateDagOverwrite(String dagname) throws DomainException {
-	    Path folderPath = Paths.get(pathfolder);
+	public void validateDagOverwrite(String dagname) throws DomainException {	    
+	    Path folderPath = fileSystem.getFolderPath();
 	    String className = "generated_dag/main/" + dagname + ".class";
 
 	    try (Stream<Path> paths = Files.walk(folderPath)) {
@@ -203,8 +201,8 @@ public class CompilerHandler implements CompilerOutputPort {
 	}
 
 	private Unloaded<DagExecutable> getClassDefinition(Map<String, String> dtomap, JSONArray boxes) throws DomainException {
-	    Path folderPath = Paths.get(pathfolder);
-	    ClassFileLocator classFileLocator = new DirectoryClassFileLocator(folderPath.toFile().getAbsolutePath());
+		Path folderPath = fileSystem.getFolderPath();
+	    ClassFileLocator classFileLocator = new DirectoryClassFileLocator(folderPath.toString());
 	    TypePool pool = new TypePool.Default(new CacheProvider.Simple(), classFileLocator, TypePool.Default.ReaderMode.FAST);
 	    
 	    ByteBuddy byteBuddy = new ByteBuddy();
@@ -246,8 +244,7 @@ public class CompilerHandler implements CompilerOutputPort {
 
 	private void packageJar(String jarname, Map<String, byte[]> classbytes, Properties props, String bin) {
 	    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-	    Path jarFilePath = Paths.get(pathfolder, jarname);
-
+	    Path jarFilePath = fileSystem.getFolderPath(jarname);
 	    try (
 	        InputStream fis = classloader.getResourceAsStream("basedag.zip");
 	        OutputStream fos = Files.newOutputStream(jarFilePath);
@@ -340,7 +337,7 @@ public class CompilerHandler implements CompilerOutputPort {
     @Override
     public void deleteJarfile(String jarname) throws DomainException {
         try {
-            Path removePath = Paths.get(pathfolder, jarname);
+            Path removePath = fileSystem.getFolderPath(jarname);
             Files.deleteIfExists(removePath);  // Esto elimina el archivo si existe, similar a FileDeleteStrategy.FORCE.delete
             Thread.sleep(2000);
         } catch (IOException e) {
@@ -353,8 +350,7 @@ public class CompilerHandler implements CompilerOutputPort {
 
     @Override
     public JSONObject reimport(String jarname) throws DomainException {
-        Path jarFilePath = Paths.get(pathfolder, jarname);
-
+        Path jarFilePath = fileSystem.getFolderPath(jarname);
         if (!Files.exists(jarFilePath)) {
             throw new DomainException(new Exception("Jar file not found"));
         }
