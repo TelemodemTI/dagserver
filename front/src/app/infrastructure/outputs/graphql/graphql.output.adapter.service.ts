@@ -18,6 +18,18 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+  
+  mounted(): Promise<any> {
+    return new Promise<any>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "query mounted($token: String) {mounted(token:$token) { name ,type, content { name , type, content { name,type  }} }}"
+      this.query(string,{token:token}).subscribe((result:any)=>{
+        if(result && result.mounted){
+          resolve(result.mounted as any[]);
+        }
+      })
+    })
+  }
 
   logout(): Promise<void> {
 	return new Promise<void>((resolve,reject)=>{

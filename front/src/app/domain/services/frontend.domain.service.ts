@@ -28,6 +28,7 @@ import { DependenciesInputPort } from 'src/app/application/inputs/dependencies.i
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
 import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { SharedOutputPort } from 'src/app/application/outputs/shared.output.port';
+import { ExplorerInputPort } from 'src/app/application/inputs/explorer.input.port';
 
 @Injectable({
   providedIn: 'root'
@@ -46,13 +47,18 @@ export class FrontEndDomainService implements
     JardetailpInputPort,
     DependenciesInputPort,
     InputsChannelsInputPort,
-    ExistingJInputPort {
+    ExistingJInputPort,
+    ExplorerInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
     private httpd: DinamicOutputPort,
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+  
+  getMounted(): Promise<any> {
+    return this.adapter.mounted();
+  }
   
   
   reimport(jarname: any): Promise<any> {

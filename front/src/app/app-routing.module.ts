@@ -15,6 +15,7 @@ import { CredentialsComponent } from './infrastructure/inputs/credentials/creden
 import { DependenciesComponent } from './infrastructure/inputs/jobs/dependencies/dependencies.component';
 import { InputsChannelsComponent } from './infrastructure/inputs/inputs/inputs-channels/inputs-channels.component';
 import { ExceptionsListComponent } from './infrastructure/inputs/exceptions/exceptions-list/exceptions-list.component';
+import { ExplorerComponent } from './infrastructure/inputs/browser/explorer/explorer.component';
 
 
 const routes: Routes = [
@@ -25,6 +26,7 @@ const routes: Routes = [
     { path: 'props', component: PropsComponent },
     { path: "njob" , component: NewjComponent },
     { path: 'channels' , component: InputsChannelsComponent },
+    { path: 'browser' , component: ExplorerComponent },
     { path: "exceptions", component: ExceptionsListComponent },
     { path: "admin/credentials", component: CredentialsComponent },
     { path: "njob/:uncompiledId" , component: ExistingjComponent },

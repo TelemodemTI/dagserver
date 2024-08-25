@@ -8,6 +8,7 @@ import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 import { Credential } from 'src/app/domain/models/credential.model';
 
 export abstract class GraphQLOutputPort {
+    public abstract mounted(): Promise<any>;
     public abstract reimport(jarname: any): Promise<any>;
     public abstract removeException(eventDt: string): Promise<void>
     public abstract getExceptions(): Promise<any[]>

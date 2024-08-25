@@ -40,6 +40,7 @@ import { SharedAdapterService } from './infrastructure/outputs/shared/shared.ada
 import { ExceptionsModule } from './infrastructure/inputs/exceptions/exceptions.module';
 import { ExceptionsInputPort } from './application/inputs/exceptions.input.port';
 import { ParamEditorModule } from './infrastructure/inputs/param-editor/param-editor.module';
+import { ExplorerInputPort } from './application/inputs/explorer.input.port';
 
 
 declare var window: any;
@@ -60,7 +61,8 @@ declare var window: any;
     CredentialsModule,
     InputsModule,
     ExceptionsModule,
-    ParamEditorModule
+    ParamEditorModule,
+    BrowserModule
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: window["base-href"]},
@@ -85,7 +87,8 @@ declare var window: any;
     { provide: JardetailpInputPort, useClass: FrontEndDomainService},
     { provide: DependenciesInputPort, useClass: FrontEndDomainService},
     { provide: InputsChannelsInputPort, useClass: FrontEndDomainService },
-    { provide: ExceptionsInputPort, useClass: FrontEndDomainService }
+    { provide: ExceptionsInputPort, useClass: FrontEndDomainService },
+    { provide: ExplorerInputPort, useClass: FrontEndDomainService }
   ],
   bootstrap: [AppComponent]
 })

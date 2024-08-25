@@ -67,6 +67,9 @@ export class AuthenticatedComponent {
   viewJobs() {
     this.router.navigateByUrl("auth/jobs");
   }
+  viewBrowser(){
+    this.router.navigateByUrl("auth/browser");
+  }
   viewProps(){
     this.router.navigateByUrl("auth/props");
   }

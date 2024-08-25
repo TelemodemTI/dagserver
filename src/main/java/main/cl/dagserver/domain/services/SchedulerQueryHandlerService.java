@@ -21,6 +21,7 @@ import main.cl.dagserver.domain.model.AgentDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DagDTO;
+import main.cl.dagserver.domain.model.DirectoryEntryDTO;
 import main.cl.dagserver.domain.model.EventListenerDTO;
 import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
@@ -262,4 +263,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		}
 		return newrv;
 	}
+	@Override
+	public DirectoryEntryDTO mounted(String token) throws DomainException {
+		return this.fileSystem.getContents();
+	}
+	
 }

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import main.cl.dagserver.domain.model.AgentDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
+import main.cl.dagserver.domain.model.DirectoryEntryDTO;
+import main.cl.dagserver.domain.model.FileEntryDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
 import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
@@ -14,6 +16,8 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Account;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Agent;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Channel;
 import main.cl.dagserver.infra.adapters.input.graphql.types.ChannelProps;
+import main.cl.dagserver.infra.adapters.input.graphql.types.DirectoryEntry;
+import main.cl.dagserver.infra.adapters.input.graphql.types.FileEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Property;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Session;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Uncompiled;
@@ -89,6 +93,30 @@ public class QueryResolverMapperImpl implements QueryResolverMapper {
 		session.setRefreshToken(dto.getRefreshToken());
 		session.setToken(dto.getToken());
 		return session;
+	}
+
+	@Override
+	public DirectoryEntry toDirectoryEntry(DirectoryEntryDTO dto) {
+		DirectoryEntry dir = new DirectoryEntry();
+		dir.setName(dto.getPath());
+		dir.setType("folder");
+		dir.setContent(dto.getContent().stream().map(elt -> toFileEntry(elt)).toList());
+		return dir;
+	}
+
+	@Override
+	public FileEntry toFileEntry(FileEntryDTO dto) {
+		FileEntry fe = new FileEntry();
+		fe.setType(dto.getType());
+		fe.setName(dto.getFilename());
+		var content = dto.getContent();
+		if(content!=null) {
+			var list = content.stream().map(elt -> toFileEntry(elt)).toList();
+			fe.setContent(list);	
+		} else {
+			fe.setContent(new ArrayList<>());
+		}
+		return fe;
 	}
 
 }

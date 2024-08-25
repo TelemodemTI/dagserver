@@ -11,9 +11,12 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import main.cl.dagserver.application.ports.input.SchedulerMutationUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 @Controller
+@CrossOrigin(origins = "*",methods={RequestMethod.GET,RequestMethod.POST})
 public class MutationResolver {
 
 	private SchedulerMutationUseCase handler;

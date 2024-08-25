@@ -1,19 +1,22 @@
 package main.cl.dagserver.infra.adapters.output.filesystem;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import com.linkedin.cytodynamics.nucleus.DelegateRelationshipBuilder;
 import com.linkedin.cytodynamics.nucleus.IsolationLevel;
 import com.linkedin.cytodynamics.nucleus.LoaderBuilder;
 import com.linkedin.cytodynamics.nucleus.OriginRestriction;
-
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.FileEntryDTO;
 
-public class DagFileSystem {
+public abstract class DagFileSystem {
 	
 	private static final String CLASSEXT = ".class";
 	
@@ -72,4 +75,26 @@ public class DagFileSystem {
 			}
 		
 		}
+
+	protected List<FileEntryDTO> getFileEntries(Path directory) throws DomainException {
+	    List<FileEntryDTO> fileEntries = new ArrayList<>();
+	    try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+	        for (Path entry : stream) {
+	        	FileEntryDTO fileEntry = new FileEntryDTO();
+	            fileEntry.setFilename(entry.getFileName().toString());       
+	            if (Files.isDirectory(entry)) {
+	                fileEntry.setType("folder");
+	                fileEntry.setContent(getFileEntries(entry));
+	            } else {
+	                fileEntry.setType("file");
+	                fileEntry.setContent(null);
+	            }
+	            
+	            fileEntries.add(fileEntry);
+	        }
+	    } catch (IOException e) {
+	       throw new DomainException(e);
+	    }
+	    return fileEntries;
+	}
 }

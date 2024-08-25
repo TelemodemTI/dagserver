@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.DirectoryEntryDTO;
 
 public interface FileSystemOutputPort {
 	public ClassLoader getClassLoader(List<URI> list);
@@ -15,4 +16,5 @@ public interface FileSystemOutputPort {
 	public Path getFolderPath();
 	public Path getFolderPath(String jarname);
 	public Path getJDBCDriversPath(String inputPath);
+	public DirectoryEntryDTO getContents() throws DomainException;
 }

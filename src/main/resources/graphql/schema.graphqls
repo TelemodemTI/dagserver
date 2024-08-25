@@ -108,6 +108,20 @@ type Session {
 	refreshToken: String
 }
 
+type DirectoryEntry {
+  name: String,
+  type: String,
+  content: [FileEntry]
+}
+
+type FileEntry {
+  name: String,
+  type: String,
+  content: [FileEntry]
+}
+
+
+
 type Query { 
 	login(token: String) : Session,
 	getIcons(type:String) : String,
@@ -124,7 +138,8 @@ type Query {
 	getDependencies(jarname: String, dagname: String) : Deps,
 	channelStatus(token: String) : [Channel],
 	exportUncompiled(token: String,uncompiled:Int): String,
-	exceptions(token:String): [Exceptions]
+	exceptions(token:String): [Exceptions],
+	mounted(token:String): DirectoryEntry
 }
 
 type Mutation { 
