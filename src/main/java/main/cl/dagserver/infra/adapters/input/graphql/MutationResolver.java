@@ -348,6 +348,25 @@ public class MutationResolver {
 			return error(e);
 		}
 	}
+	@MutationMapping
+	public StatusOp createFolder(@Argument String token,@Argument String foldername) {
+		try {
+			handler.createFolder(token, foldername);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp deleteFile(@Argument String token,@Argument String folder,@Argument String file) {
+		try {
+			handler.deleteFile(token, folder,file);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
 		status.setCode(200);

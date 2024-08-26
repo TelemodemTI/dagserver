@@ -17,4 +17,8 @@ public interface FileSystemOutputPort {
 	public Path getFolderPath(String jarname);
 	public Path getJDBCDriversPath(String inputPath);
 	public DirectoryEntryDTO getContents() throws DomainException;
+	public void upload(Path tempFile, String uploadPath, String realname) throws DomainException;
+	public void createFolder(String foldername) throws DomainException;
+	public void delete(String folder, String file) throws DomainException;
+	public Path getFilePath(String folderPath, String filename);
 }

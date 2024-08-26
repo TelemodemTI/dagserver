@@ -8,6 +8,8 @@ import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 import { Credential } from 'src/app/domain/models/credential.model';
 
 export abstract class GraphQLOutputPort {
+    public abstract delete(selected_folder: string, selected_file: string): Promise<any>;
+    public abstract createFolder(folder: any): Promise<any>;
     public abstract mounted(): Promise<any>;
     public abstract reimport(jarname: any): Promise<any>;
     public abstract removeException(eventDt: string): Promise<void>

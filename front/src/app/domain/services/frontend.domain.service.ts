@@ -55,6 +55,23 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  download(selected_folder: string, selected_file: string): Promise<any> {
+    return this.httpd.download(selected_folder,selected_file);
+  }
+
+  delete(selected_folder: string, selected_file: string): Promise<any> {
+    return this.adapter.delete(selected_folder,selected_file);
+  }
+  
+  createFolder(folder: any): Promise<any> {
+    return this.adapter.createFolder(folder);
+  }
+  
+  
+  uploadMounted(file: File,inputPath:string): Promise<any> {
+    return this.httpd.uploadFile(file,inputPath);
+  }
   
   getMounted(): Promise<any> {
     return this.adapter.mounted();

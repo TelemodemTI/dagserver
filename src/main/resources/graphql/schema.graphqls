@@ -178,4 +178,6 @@ type Mutation {
 	delConsumerAM(token:String,queue:String) : StatusOp
 	removeException(token:String,eventDt:String) : StatusOp
 	reimport(token:String,jarname:String): StatusOp
+	createFolder(token:String,foldername:String): StatusOp
+	deleteFile(token:String,folder:String,file:String): StatusOp
 }

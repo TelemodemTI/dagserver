@@ -15,7 +15,7 @@ import { CredentialsComponent } from './infrastructure/inputs/credentials/creden
 import { DependenciesComponent } from './infrastructure/inputs/jobs/dependencies/dependencies.component';
 import { InputsChannelsComponent } from './infrastructure/inputs/inputs/inputs-channels/inputs-channels.component';
 import { ExceptionsListComponent } from './infrastructure/inputs/exceptions/exceptions-list/exceptions-list.component';
-import { ExplorerComponent } from './infrastructure/inputs/browser/explorer/explorer.component';
+import { ExplorerComponent } from './infrastructure/inputs/browser-fs/explorer/explorer.component';
 
 
 const routes: Routes = [

@@ -42,5 +42,7 @@ public interface SchedulerMutationUseCase {
 	void removeException(String token, String eventDt) throws DomainException;
 	void reimport(String token, String jarname) throws DomainException;
 	void logout(String token) throws DomainException;
+	void createFolder(String token, String foldername) throws DomainException;
+	void deleteFile(String token, String folder, String file) throws DomainException;
 	
 }

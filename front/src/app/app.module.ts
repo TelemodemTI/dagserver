@@ -41,6 +41,7 @@ import { ExceptionsModule } from './infrastructure/inputs/exceptions/exceptions.
 import { ExceptionsInputPort } from './application/inputs/exceptions.input.port';
 import { ParamEditorModule } from './infrastructure/inputs/param-editor/param-editor.module';
 import { ExplorerInputPort } from './application/inputs/explorer.input.port';
+import { BrowserFSModule } from './infrastructure/inputs/browser-fs/browser-fs.module';
 
 
 declare var window: any;
@@ -62,7 +63,7 @@ declare var window: any;
     InputsModule,
     ExceptionsModule,
     ParamEditorModule,
-    BrowserModule
+    BrowserFSModule
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: window["base-href"]},

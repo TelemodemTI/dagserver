@@ -1,4 +1,5 @@
 package main.cl.dagserver.domain.services;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,5 +133,17 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			output.put("result", e.getMessage());
 		}
 		return output;
+	}
+
+	@Override
+	public void uploadFile(Path tempFile,String uploadPath, String realname, String token) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.upload(tempFile,uploadPath,realname);
+	}
+
+	@Override
+	public Path getFilePath(String folderPath,String filename, String token) throws DomainException {
+		auth.untokenize(token);
+		return this.fileSystem.getFilePath(folderPath,filename);
 	}
 }

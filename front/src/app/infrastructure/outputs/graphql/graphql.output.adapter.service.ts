@@ -18,6 +18,29 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+  delete(selected_folder: string, selected_file: string): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation deleteFile($token:String,$folder:String,$file:String) { deleteFile(token:$token,folder:$folder,file:$file) {status,code,value} }"
+      this.query(string,{token:token,folder:selected_folder,file:selected_file}).subscribe((result:any)=>{
+        if(result && result.deleteFile && result.deleteFile.status == "ok"){
+              resolve();
+        }
+      })
+    });
+  }
+  
+  createFolder(folder: any): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation createFolder($token:String,$foldername:String) { createFolder(token:$token,foldername:$foldername) {status,code,value} }"
+      this.query(string,{token:token,foldername:folder}).subscribe((result:any)=>{
+        if(result && result.createFolder && result.createFolder.status == "ok"){
+              resolve();
+            }
+      })
+    });
+  }
   
   mounted(): Promise<any> {
     return new Promise<any>((resolve,reject)=>{

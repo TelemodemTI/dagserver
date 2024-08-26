@@ -369,4 +369,14 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		auth.logout(token);
 		
 	}
+	@Override
+	public void createFolder(String token, String foldername) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.createFolder(foldername);
+	}
+	@Override
+	public void deleteFile(String token, String folder, String file) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.delete(folder,file);
+	}
 }
