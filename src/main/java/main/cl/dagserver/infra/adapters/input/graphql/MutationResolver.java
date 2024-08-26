@@ -366,6 +366,25 @@ public class MutationResolver {
 			return error(e);
 		}
 	}
+	@MutationMapping
+	public StatusOp copyFile(@Argument String token,@Argument String filename,@Argument String copyname) {
+		try {
+			handler.copyFile(token, filename,copyname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp moveFile(@Argument String token,@Argument String folder,@Argument String filename,@Argument String newpath) {
+		try {
+			handler.moveFile(token,folder, filename,newpath);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	
 	
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();

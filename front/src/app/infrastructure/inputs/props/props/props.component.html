@@ -125,4 +125,4 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<app-value-modal #valuemodal [param]="newvalue" [actualValue]="oldv" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>
+<app-value-modal #valuemodal [id]="'props-new'" [param]="newvalue" [actualValue]="oldv" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>

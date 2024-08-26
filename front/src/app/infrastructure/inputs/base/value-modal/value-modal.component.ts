@@ -7,6 +7,7 @@ declare var $:any;
 })
 export class ValueModalComponent {
   @ViewChild("inputValueModal") inputValueModal!:ElementRef;
+  @Input("id") id:any;
   @Input("param") param:any;
   @Input("actualValue") actualValue:any;
   @Output() changeValueEvent = new EventEmitter<any>();
@@ -22,9 +23,9 @@ export class ValueModalComponent {
     
   }
   show(){
-    $('#value-inputer').modal('show');    
+    $('#'+this.id+'-value-inputer').modal('show');    
   }
   close(){
-    $('#value-inputer').modal('hide');    
+    $('#'+this.id+'-value-inputer').modal('hide');    
   }
 }

@@ -379,4 +379,14 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		auth.untokenize(token);
 		this.fileSystem.delete(folder,file);
 	}
+	@Override
+	public void copyFile(String token, String filename, String copyname) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.copyFile(filename,copyname);
+	}
+	@Override
+	public void moveFile(String token, String folder,String filename, String newpath) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.moveFile(folder,filename,newpath);
+	}
 }

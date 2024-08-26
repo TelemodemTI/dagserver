@@ -18,6 +18,29 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+  
+  createCopy(filename: string, filename_copy: string): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation copyFile($token:String,$filename:String,$copyname:String) { copyFile(token:$token,filename:$filename,copyname:$copyname) {status,code,value} }"
+      this.query(string,{token:token,filename:filename,copyname:filename_copy}).subscribe((result:any)=>{
+        if(result && result.copyFile && result.copyFile.status == "ok"){
+              resolve();
+        }
+      })
+    });
+  }
+  moveFile(folder:string,filename: string, newpath: string): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation moveFile($token:String,$folder:String,$filename:String,$newpath:String) { moveFile(token:$token,folder:$folder,filename:$filename,newpath:$newpath) {status,code,value} }"
+      this.query(string,{token:token,folder:folder,filename:filename,newpath:newpath}).subscribe((result:any)=>{
+        if(result && result.moveFile && result.moveFile.status == "ok"){
+              resolve();
+        }
+      })
+    });
+  }
   delete(selected_folder: string, selected_file: string): Promise<any> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_refresh_token")

@@ -11,6 +11,9 @@ declare var $:any
 })
 export class ExplorerComponent implements OnInit{
 @ViewChild("valuer") valuer!:ValueModalComponent
+@ViewChild("valuer2") valuer2!:ValueModalComponent
+@ViewChild("valuer3") valuer3!:ValueModalComponent
+
 @ViewChild("uploader") uploader!:UploadFileComponent;
 selected_folder:string = "/";
 selected_file:string = "";
@@ -68,12 +71,34 @@ constructor(private service: ExplorerInputPort, private router: Router){}
   showUpload(){
     this.uploader.show(this.selected_folder);
   }
+  createCopy(){
+    this.valuer2.show();
+  }
+  move(){
+    this.valuer3.show();
+  }
   createFolder(){
     this.valuer.show();
   }
   async changeValueEvent(arr:any){
     let folder = arr[1];
     await this.service.createFolder(folder)
+    this.valuer.close();
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['auth',"browser"]);
+    });   
+  }
+  async changeValueCopyEvent(arr:any){
+    let filename = arr[1];
+    await this.service.createCopy(this.selected_file, filename)
+    this.valuer.close();
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['auth',"browser"]);
+    });   
+  }
+  async changeValueMoveEvent(arr:any){
+    let newpath = arr[1];
+    await this.service.move(this.selected_folder,this.selected_file,newpath)
     this.valuer.close();
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['auth',"browser"]);

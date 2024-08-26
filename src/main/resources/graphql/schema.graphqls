@@ -180,4 +180,6 @@ type Mutation {
 	reimport(token:String,jarname:String): StatusOp
 	createFolder(token:String,foldername:String): StatusOp
 	deleteFile(token:String,folder:String,file:String): StatusOp
+	copyFile(token:String,filename:String,copyname:String): StatusOp
+	moveFile(token:String,folder:String,filename:String,newpath:String): StatusOp
 }

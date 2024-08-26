@@ -24,6 +24,12 @@
                         <a class="btn btn-primary btn-circle" (click)="createFolder()">
                             <i class="fa fa-folder"></i>
                         </a>&nbsp;
+                        <a class="btn btn-primary btn-circle" (click)="createCopy()">
+                            <i class="fa fa-copy"></i>
+                        </a>&nbsp;
+                        <a class="btn btn-primary btn-circle" (click)="move()">
+                            <i class="fa fa-paste"></i>
+                        </a>&nbsp;
                         <a class="btn btn-primary btn-circle" (click)="goHome()">
                             <i class="fa fa-home"></i>
                         </a>&nbsp;
@@ -43,4 +49,6 @@
 
 
 <app-upload-file #uploader></app-upload-file>
-<app-value-modal #valuer [param]="'new folder'" [actualValue]="''" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>
+<app-value-modal #valuer [id]="'new-folder'" [param]="'new folder'" [actualValue]="''" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>
+<app-value-modal #valuer2 [id]="'copy-file'" [param]="'copy filename'" [actualValue]="selected_file + '_copy'" (changeValueEvent)="changeValueCopyEvent($event)"></app-value-modal>
+<app-value-modal #valuer3 [id]="'move-file'" [param]="'new ubication'" [actualValue]="'/'" (changeValueEvent)="changeValueMoveEvent($event)"></app-value-modal>

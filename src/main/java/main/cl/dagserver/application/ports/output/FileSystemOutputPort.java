@@ -21,4 +21,6 @@ public interface FileSystemOutputPort {
 	public void createFolder(String foldername) throws DomainException;
 	public void delete(String folder, String file) throws DomainException;
 	public Path getFilePath(String folderPath, String filename);
+	public void copyFile(String filename, String copyname) throws DomainException;
+	public void moveFile(String folder,String filename, String newpath) throws DomainException;
 }

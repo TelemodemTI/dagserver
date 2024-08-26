@@ -85,4 +85,35 @@ public class FileSystemAdapter extends DagFileSystem implements FileSystemOutput
 		String pathfolder = folderPath + "/" + filename;
 		return Paths.get(pathfolder.replace("//", ""));
 	}
+	@Override
+	public void copyFile(String filename, String copyname) throws DomainException {
+	    try {
+	        Path sourcePath = this.getFilePath("", filename);
+	        Path destinationPath = this.getFilePath("", copyname);
+	        
+	        // Asegúrate de que el directorio de destino exista
+	        if (destinationPath.getParent() != null) {
+	            Files.createDirectories(destinationPath.getParent());
+	        }
+
+	        Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+	    } catch (IOException e) {
+	        throw new DomainException(e);
+	    }
+	}
+
+	@Override
+	public void moveFile(String folder,String filename, String newpath) throws DomainException {
+	    try {
+	        Path sourcePath = this.getFilePath("", filename);
+	        Path destinationPath = this.getFilePath("", (newpath+"/"+filename).replace("//", "/"));
+	        if (destinationPath.getParent() != null) {
+	            Files.createDirectories(destinationPath.getParent());
+	        }
+	        Files.move(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+	    } catch (IOException e) {
+	        throw new DomainException(e);
+	    }
+	}
+	
 }
