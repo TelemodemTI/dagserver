@@ -92,7 +92,7 @@ constructor(private service: ExplorerInputPort, private router: Router){}
   }
   async download(){
     if(this.selected_file) {
-      let content = await this.service.download(this.selected_folder,this.selected_file)
+      await this.service.download(this.selected_folder,this.selected_file)
     }
   }
 }
