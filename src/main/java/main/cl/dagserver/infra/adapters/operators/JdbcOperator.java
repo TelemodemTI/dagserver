@@ -39,11 +39,11 @@ public class JdbcOperator extends OperatorStage {
 	
 	private static final String QUERY = "query";
 	
-	private List<URI> getListURI(List<String> archivosJar){
+	private List<URI> getListURI(List<Path> archivosJar){
 		List<URI> list = new ArrayList<>();
-		for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
-			String jarpath = iterator.next();
-			list.add(new File(jarpath).toURI());
+		for (Iterator<Path> iterator = archivosJar.iterator(); iterator.hasNext();) {
+			Path jarpath = iterator.next();
+			list.add(jarpath.toUri());
 		}
 		return list;
 	}
@@ -52,7 +52,7 @@ public class JdbcOperator extends OperatorStage {
 	@Override
 	public DataFrame call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
-		List<String> archivosJar = new ArrayList<>();
+		List<Path> archivosJar = new ArrayList<>();
 		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 		if(appCtx != null) {
 			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
@@ -136,17 +136,21 @@ public class JdbcOperator extends OperatorStage {
 	public String getIconImage() {
 		return "jdbc.png";
 	}
-	private void searchJarFiles(Path directorio, List<String> archivosJar) throws IOException {
+	private void searchJarFiles(Path directorio, List<Path> archivosJar) throws IOException {
 		if (Files.isDirectory(directorio)) {
 	        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directorio)) {
 	            for (Path entry : stream) {
 	                if (Files.isDirectory(entry)) {
 	                    searchJarFiles(entry, archivosJar);
 	                } else if (Files.isRegularFile(entry) && entry.toString().endsWith(".jar")) {
-	                    archivosJar.add(entry.toAbsolutePath().toString());
+	                    archivosJar.add(entry);
 	                }
 	            }
 	        }
+	    } else {
+	    	if(directorio.toString().endsWith(".jar")) {
+	            archivosJar.add(directorio);
+	    	}
 	    }
     }
 	
