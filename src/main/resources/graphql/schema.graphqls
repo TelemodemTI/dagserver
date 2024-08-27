@@ -182,4 +182,6 @@ type Mutation {
 	deleteFile(token:String,folder:String,file:String): StatusOp
 	copyFile(token:String,filename:String,copyname:String): StatusOp
 	moveFile(token:String,folder:String,filename:String,newpath:String): StatusOp
+	createApiKey(token:String,appname:String): StatusOp
+	deleteApiKey(token:String,appname:String): StatusOp
 }

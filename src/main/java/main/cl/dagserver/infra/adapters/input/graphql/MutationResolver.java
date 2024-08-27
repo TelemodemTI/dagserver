@@ -384,8 +384,24 @@ public class MutationResolver {
 			return error(e);
 		}
 	}
-	
-	
+	@MutationMapping
+	public StatusOp createApiKey(@Argument String token,@Argument String appname) {
+		try {
+			handler.createApiKey(token,appname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp deleteApiKey(@Argument String token,@Argument String appname) {
+		try {
+			handler.deleteApiKey(token,appname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
 		status.setCode(200);

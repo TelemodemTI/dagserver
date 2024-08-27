@@ -7,12 +7,13 @@ import { RabbitModalComponent } from './rabbit-modal/rabbit-modal.component';
 import { RedisModalComponent } from './redis-modal/redis-modal.component';
 import { KafkaModalComponent } from './kafka-modal/kafka-modal.component';
 import { ActivemqModalComponent } from './activemq-modal/activemq-modal.component';
+import { HttpApiModalComponent } from './http-api-modal/http-api-modal.component';
 
 
 
 @NgModule({
   declarations: [  
-    InputsChannelsComponent, GitHubModalComponent, RabbitModalComponent, RedisModalComponent, KafkaModalComponent, ActivemqModalComponent
+    InputsChannelsComponent, GitHubModalComponent, RabbitModalComponent, RedisModalComponent, KafkaModalComponent, ActivemqModalComponent, HttpApiModalComponent
   ],
   imports: [
     CommonModule,

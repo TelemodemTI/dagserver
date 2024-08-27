@@ -38,6 +38,8 @@ export class InputsChannelsComponent {
       $("#redisModal").modal('show');
     } else if(item.name == "KAFKA_CONSUMER")  {
       $("#kafkaModal").modal('show');
+    } else if(item.name == "HTTP_ENDPOINT")  {
+      $("#httpModal").modal('show');
     } else {
 	  $("#activeMQModal").modal('show');
 	}

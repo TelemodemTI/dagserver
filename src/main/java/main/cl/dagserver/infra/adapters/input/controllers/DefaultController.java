@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.view.RedirectView;
 import fr.brouillard.oss.security.xhub.XHub;
@@ -79,12 +81,24 @@ public class DefaultController {
         return redirectView;
     }
 	
+	@PostMapping(value = "/api/execute")
+	public ResponseEntity<String> apiChannel(@RequestBody ExecuteDagRequest executeReq, @RequestHeader("Authorization") String authorizationHeader) throws IOException, DomainException{
+		if(authorizationHeader.length() > 7) {
+			String token = authorizationHeader.substring(7);
+			api.executeDag(token,executeReq.getJarname(),executeReq.getDagname(),executeReq.getArgs());
+			var status = new JSONObject();
+			status.put("status", "OK");
+			return new ResponseEntity<>(status.toString(), HttpStatus.OK);	
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+	
 	@PostMapping(value = "/github-webhook")
 	public ResponseEntity<String> githubEvent(Model model,HttpServletRequest request,HttpServletResponse response) throws IOException, DomainException{
 		StringBuilder builder = new StringBuilder();
 		String requestData = request.getReader().lines().collect(Collectors.joining());
-		JSONObject payload = new JSONObject(requestData);
-		
+		JSONObject payload = new JSONObject(requestData);	
 		String repourl = payload.getJSONObject("repository").getString("html_url");
 		String secret = request.getHeader("X-Hub-Signature");
 		ChannelPropsDTO secretConfigured = handler.getChannelPropsFromRepo(repourl);
@@ -133,7 +147,6 @@ public class DefaultController {
 	    }
 	}
 	
-	//necesito generar aqui un endpoint para bajar el archivo que se uplodeo en el endpoint anterior
 	
 	private String calculeHashSecret(String xhubsignature,String requestData) {
 		return XHub.generateHeaderXHubToken(XHubConverter.HEXA_LOWERCASE, XHubDigest.SHA1, xhubsignature, requestData.getBytes());

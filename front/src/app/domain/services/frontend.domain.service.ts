@@ -55,6 +55,14 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  deleteApiKey(appname: any): Promise<void> {
+    return this.adapter.deleteApiKey(appname)
+  }
+  
+  createApiKey(appname: any): Promise<void> {
+    return this.adapter.createApiKey(appname);
+  }
   
     move(folder:string,filename: string, newpath: any): Promise<any> {
     return this.adapter.moveFile(folder,filename, newpath);

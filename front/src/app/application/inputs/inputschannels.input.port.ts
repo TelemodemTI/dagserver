@@ -1,4 +1,6 @@
 export abstract class InputsChannelsInputPort {
+    public abstract deleteApiKey(key: any):Promise<void>
+    public abstract createApiKey(value: any):Promise<void>
     public abstract delQueueAM(queue: any):Promise<void>
     public abstract addQueueAM(queue: any, jarFile: any, dag: any):Promise<void>
     public abstract delConsumer(channel: any):Promise<void>

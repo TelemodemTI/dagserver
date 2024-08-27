@@ -19,6 +19,32 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
   
+  deleteApiKey(appname: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation deleteApiKey($token:String,$appname:String) { deleteApiKey(token:$token,appname:$appname) {status,code,value} }"
+      this.query(string,{token:token,appname:appname}).subscribe((result:any)=>{
+        if(result && result.deleteApiKey && result.deleteApiKey.status == "ok"){
+              resolve();
+        }
+      })
+
+    })
+  }
+  
+  createApiKey(appname: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation createApiKey($token:String,$appname:String) { createApiKey(token:$token,appname:$appname) {status,code,value} }"
+      this.query(string,{token:token,appname:appname}).subscribe((result:any)=>{
+        if(result && result.createApiKey && result.createApiKey.status == "ok"){
+              resolve();
+        }
+      })
+
+    })
+  }
+  
   createCopy(filename: string, filename_copy: string): Promise<any> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_refresh_token")

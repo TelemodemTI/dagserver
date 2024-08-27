@@ -1,6 +1,5 @@
 package main.cl.dagserver.infra.adapters.operators;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
