@@ -34,6 +34,7 @@ import main.cl.dagserver.application.ports.input.GitHubWebHookUseCase;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.ChannelPropsDTO;
+import main.cl.dagserver.infra.adapters.input.controllers.types.ExecuteDagRequest;
 
 @Controller
 @CrossOrigin(origins = "*",methods={RequestMethod.GET,RequestMethod.POST})

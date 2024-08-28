@@ -80,31 +80,28 @@
             <div class="sidebar-nav navbar-collapse">
                 <ul class="nav" id="side-menu">
                         <li>
-                            <a href="#"><i class="fa fa-cogs fa-fw"></i> Channels<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-cogs fa-fw"></i> Options<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
                                     <a (click)="viewChannels()" class="linker"> Inputs </a>
                                 </li>
+                                <li>
+                                    <a (click)="viewProps()" class="linker"> Properties </a>
+                                </li>
+                                <li>
+                                    <a (click)="viewJobs()" class="linker"> Jobs </a>
+                                </li>
+                                <li>
+                                    <a (click)="viewBrowser()" class="linker"> FileSystem </a>
+                                </li>
+                                <li>
+                                    <a (click)="viewExceptions()" class="linker"> Exceptions </a>
+                                </li>
+                                <li>
+                                    <a class="linker"> Keystore </a>
+                                </li>
                             </ul>    
                         </li>
-                    <li>
-                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Scheduler<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a (click)="viewProps()" class="linker"> Properties </a>
-                            </li>
-                            <li>
-                                <a (click)="viewJobs()" class="linker"> Jobs </a>
-                            </li>
-                            <li>
-                                <a (click)="viewBrowser()" class="linker"> FileSystem </a>
-                            </li>
-                            <li>
-                                <a (click)="viewExceptions()" class="linker"> Exceptions </a>
-                            </li>
-                        </ul>
-                        <!-- /.nav-second-level -->
-                    </li>
                     <ng-container *ngIf="typeAccount == 'ADMIN'">
                         <li>
                             <a href="#"><i class="fa fa-user fa-fw"></i> Admin<span class="fa arrow"></span></a>

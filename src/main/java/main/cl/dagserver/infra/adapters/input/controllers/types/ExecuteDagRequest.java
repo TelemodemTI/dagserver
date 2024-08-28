@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.input.controllers;
+package main.cl.dagserver.infra.adapters.input.controllers.types;
 
 import java.util.Map;
 
