@@ -126,7 +126,7 @@ public class JdbcOperator extends OperatorStage {
 		metadata.setParameter("user", "text");
 		metadata.setParameter("pwd", "password");
 		metadata.setParameter("driver", "text");
-		metadata.setParameter("driverPath", "text");
+		metadata.setParameter("driverPath", "file");
 		metadata.setParameter(QUERY, "sourcecode",Arrays.asList("text/x-sql"));
 		metadata.setOpts("xcom","xcom");
 		return metadata.generate();

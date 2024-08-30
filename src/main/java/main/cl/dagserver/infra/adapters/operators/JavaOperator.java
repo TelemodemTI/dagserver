@@ -124,7 +124,7 @@ public class JavaOperator extends OperatorStage {
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.JavaOperator");
 		metadata.setType("PROCCESS");
-		metadata.setParameter("classpath", "text");
+		metadata.setParameter("classpath", "file");
 		metadata.setParameter("className", "text");
 		return metadata.generate();
 	}

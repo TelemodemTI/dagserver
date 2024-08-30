@@ -9,12 +9,14 @@
                 
                 <ul class="nav nav-tabs">
                     <li><a href="#home"  (click)="changeTab('#home')"  data-toggle="tab">Parameters</a></li>
+                    <li><a id="filer-id" href="#filer"   (click)="changeTab('#filer')"  data-toggle="tab">Files</a></li>
                     <li><a id="trigger-id" href="#profile"   (click)="changeTab('#profile')"  data-toggle="tab">Scripts</a></li>
                     <li><a id="remote_li" href="#remoter"  (click)="changeTab('#remoter')"  data-toggle="tab">Remote</a></li>
                 </ul>
                 <div #loader class="loader"></div>
                 <div #form class="tab-content">
                     <app-default-type-param #inputDefault [generatedIdParams]="generatedIdParams" [xcoms]="xcoms"></app-default-type-param>
+                    <app-file-type-param #inputFile [generatedIdParams]="generatedIdParams"></app-file-type-param>
                     <app-source-type-param #inputSource [generatedIdParams]="generatedIdParams"></app-source-type-param>
                     <app-remote-type-param #inputRemote [generatedIdParams]="generatedIdParams"></app-remote-type-param>
                 </div>
