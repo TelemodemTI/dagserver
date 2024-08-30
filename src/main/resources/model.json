@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "schemas": [
+    {
+      "name": "SCHEMAS",
+      "type": "custom",
+      "factory": "main.cl.dagserver.infra.adapters.input.channels.calcite.core.factories.BaseSchemaFactory"
+    }
+  ]
+}
