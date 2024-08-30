@@ -167,7 +167,7 @@ public class ExcelOperator extends OperatorStage {
     public JSONObject getMetadataOperator() {
         MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.ExcelOperator");
         metadata.setType("PROCCESS");
-        metadata.setParameter("filePath", "text");
+        metadata.setParameter("filePath", "file");
         metadata.setParameter("mode", "list", List.of("read", "write"));
         metadata.setParameter("sheetName", "text");
         metadata.setParameter("startRow", "number");

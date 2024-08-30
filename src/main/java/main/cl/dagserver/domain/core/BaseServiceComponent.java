@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
+import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.application.ports.output.StorageOutputPort;
@@ -18,6 +19,9 @@ import main.cl.dagserver.domain.model.PropertyParameterDTO;
 @ImportResource("classpath:properties-config.xml")
 public class BaseServiceComponent {
 
+	@Autowired
+	protected FileSystemOutputPort fileSystem;
+	
 	@Autowired
 	protected SchedulerRepositoryOutputPort repository;
 	

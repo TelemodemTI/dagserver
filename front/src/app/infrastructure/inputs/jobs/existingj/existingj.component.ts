@@ -197,7 +197,7 @@ export class ExistingjComponent {
     this.vlmod.show();
   }
   async changeValueEvent(event:any){
-    await this.service.renameUncompiled(this.uncompiled,event[1])
+    await this.service.renameUncompiled(parseInt(this.uncompiled),event[1])
     this.router.navigateByUrl("auth/jobs");
   }
   loadFromStepEvent(event:any){

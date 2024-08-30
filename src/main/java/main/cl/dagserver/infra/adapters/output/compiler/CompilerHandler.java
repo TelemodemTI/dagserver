@@ -4,36 +4,34 @@ import java.io.ByteArrayOutputStream;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import lombok.extern.log4j.Log4j2;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import org.apache.commons.io.FileDeleteStrategy;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import main.cl.dagserver.application.ports.output.CompilerOutputPort;
+import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DagExecutable;
@@ -70,11 +68,10 @@ public class CompilerHandler implements CompilerOutputPort {
 	private static final String TARGET = "target";
 	private static final String TARGETDAG = "targetDag";
 	
-	@Value("${param.folderpath}")
-	private String pathfolder;
-	
     private ApplicationEventPublisher eventPublisher;
 	private CompilerOperatorBuilder builder;
+	@Autowired 
+	FileSystemOutputPort fileSystem;
 	
 	@Autowired
 	public CompilerHandler(CompilerOperatorBuilder builder,ApplicationEventPublisher eventPublisher) {
@@ -89,7 +86,7 @@ public class CompilerHandler implements CompilerOutputPort {
 			ClassReloadingStrategy.fromInstalledAgent().reset(DagExecutable.class);
 			JSONObject def = new JSONObject(bin);
 			String jarname = def.getString(JARNAME);
-			validateOverwrtire(jarname,force);
+			validateOverwrite(jarname,force);
 			Map<String,byte[]> classBytes = new HashMap<>();
 			for (int i = 0; i < def.getJSONArray("dags").length(); i++) {
 				JSONObject dag = def.getJSONArray("dags").getJSONObject(i);
@@ -172,110 +169,126 @@ public class CompilerHandler implements CompilerOutputPort {
         }
         return false;
     }
-	private void validateOverwrtire(String jarname,Boolean force) throws DomainException {
-		File file = new File(pathfolder+jarname);
-        if (file.exists() && Boolean.FALSE.equals(force)) {
-            throw new DomainException(new Exception("File exists"));
-        }
+	private void validateOverwrite(String jarName, Boolean force) throws DomainException {
+	    Path filePath = fileSystem.getFolderPath(jarName);
+	    if (Files.exists(filePath) && Boolean.FALSE.equals(force)) {
+		    throw new DomainException(new Exception("File exists"));
+		}
 	}
-	public void validateDagOverwrite(String dagname) throws DomainException {
-		File folder = new File(pathfolder);
-	    File[] files = folder.listFiles((dir, name) -> name.endsWith(".jar"));
+	public void validateDagOverwrite(String dagname) throws DomainException {	    
+	    Path folderPath = fileSystem.getFolderPath();
 	    String className = "generated_dag/main/" + dagname + ".class";
-	    for (File file : files) {
-	        try (JarFile jarFile = new JarFile(file)) {
-	            Enumeration<JarEntry> entries = jarFile.entries();
-	            while (entries.hasMoreElements()) {
-	                JarEntry entry = entries.nextElement();
-	                if (entry.getName().equals(className)) {
+
+	    try (Stream<Path> paths = Files.walk(folderPath)) {
+	        List<Path> jarFiles = paths
+	            .filter(Files::isRegularFile)
+	            .filter(path -> path.toString().endsWith(".jar"))
+	            .collect(Collectors.toList());
+
+	        for (Path jarFilePath : jarFiles) {
+	            try (FileSystem fs = FileSystems.newFileSystem(jarFilePath)) {
+	                Path classPath = fs.getPath(className);
+	                if (Files.exists(classPath)) {
 	                    throw new DomainException(new Exception("dagname already exists"));
-	                } 
+	                }
+	            } catch (IOException e) {
+	                log.debug("Error reading jar file: " + jarFilePath.getFileName(), e);
 	            }
-	        } catch (IOException e) {
-	            log.debug("Error reading jar file: " + file.getName());
 	        }
+	    } catch (IOException e) {
+	        throw new DomainException(e);
 	    }
 	}
-	private Unloaded<DagExecutable> getClassDefinition(Map<String,String> dtomap,JSONArray boxes) throws DomainException {
-		ClassFileLocator classFileLocator = new DirectoryClassFileLocator(pathfolder);
-		var pool = new TypePool.Default(new CacheProvider.Simple(),classFileLocator,TypePool.Default.ReaderMode.FAST);
-		
-		var byteBuddy = new ByteBuddy();
-		
-		Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.NO_CONSTRUCTORS).name(dtomap.get("classname"));
-		Initial<DagExecutable> inicial = builderbb.defineConstructor(Visibility.PUBLIC);
-		
-		ReceiverTypeDefinition<DagExecutable>  receiver = inicial.intercept(builder.build(dtomap.get(JARNAME),boxes));
-		Unloaded<DagExecutable> varu = null;
-		if(dtomap.get("type").equals("cron")) {
-			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
+
+	private Unloaded<DagExecutable> getClassDefinition(Map<String, String> dtomap, JSONArray boxes) throws DomainException {
+		Path folderPath = fileSystem.getFolderPath();
+	    ClassFileLocator classFileLocator = new DirectoryClassFileLocator(folderPath.toString());
+	    TypePool pool = new TypePool.Default(new CacheProvider.Simple(), classFileLocator, TypePool.Default.ReaderMode.FAST);
+	    
+	    ByteBuddy byteBuddy = new ByteBuddy();
+	    
+	    Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.NO_CONSTRUCTORS)
+	                                                .name(dtomap.get("classname"));
+	    Initial<DagExecutable> inicial = builderbb.defineConstructor(Visibility.PUBLIC);
+	    
+	    ReceiverTypeDefinition<DagExecutable> receiver = inicial.intercept(builder.build(dtomap.get(JARNAME), boxes));
+	    Unloaded<DagExecutable> varu = null;
+	    
+	    if ("cron".equals(dtomap.get("type"))) {
+	        varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
 	                .define(TARGET, dtomap.get(TARGET))
 	                .define("cronExpr", dtomap.get(VALUE))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
-			.make(pool);	
-		} else if(dtomap.get("type").equals("listener")) {
-			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
-		            .define(NAME, dtomap.get(NAME))
-		            .define(TARGET, dtomap.get(TARGET))
-		            .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase()))
-		            .define(GROUP, dtomap.get(GROUP))
-		            .build())
-			.make(pool);	
-		} else {
-			varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
+	            .make(pool);
+	    } else if ("listener".equals(dtomap.get("type"))) {
+	        varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
+	                .define(NAME, dtomap.get(NAME))
+	                .define(TARGET, dtomap.get(TARGET))
+	                .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase())))
+	                .define(GROUP, dtomap.get(GROUP))
+	                .build())
+	            .make(pool);
+	    } else {
+	        varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .define(TARGET, dtomap.get(TARGET))
 	                .build())
-			.make(pool);
-		}
-		return varu;
+	            .make(pool);
+	    }
+	    
+	    return varu;
 	}
-	private void packageJar(String jarname,Map<String, byte[]> classbytes,Properties props, String bin) {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        try(
-        		InputStream fis = classloader.getResourceAsStream("basedag.zip");
-        		FileOutputStream fos = new FileOutputStream(pathfolder+jarname);
-        		ZipOutputStream zos = new ZipOutputStream(fos);
-        		ZipInputStream zis = new ZipInputStream(fis);
-        		) {
-            ZipEntry entrada;
-            while ((entrada = zis.getNextEntry()) != null) {
-                String nombreArchivo = entrada.getName();
-                zos.putNextEntry(new ZipEntry(nombreArchivo));
-                byte[] buffer = new byte[1024];
-                int leido;
-                while ((leido = zis.read(buffer)) > 0) {
-                    zos.write(buffer, 0, leido);
-                }
-                zos.closeEntry();
-            }
-            var keys = classbytes.keySet();
-            for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-				String classname = iterator.next();
-				var strcom = classname.replace(".", "/");
+
+	private void packageJar(String jarname, Map<String, byte[]> classbytes, Properties props, String bin) {
+	    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+	    Path jarFilePath = fileSystem.getFolderPath(jarname);
+	    try (
+	        InputStream fis = classloader.getResourceAsStream("basedag.zip");
+	        OutputStream fos = Files.newOutputStream(jarFilePath);
+	        ZipOutputStream zos = new ZipOutputStream(fos);
+	        ZipInputStream zis = new ZipInputStream(fis);
+	    ) {
+	        ZipEntry entry;
+	        // Copy entries from the base ZIP file to the new JAR
+	        while ((entry = zis.getNextEntry()) != null) {
+	            zos.putNextEntry(new ZipEntry(entry.getName()));
+	            byte[] buffer = new byte[1024];
+	            int bytesRead;
+	            while ((bytesRead = zis.read(buffer)) > 0) {
+	                zos.write(buffer, 0, bytesRead);
+	            }
+	            zos.closeEntry();
+	        }
+
+	        // Add class definitions
+	        for (String classname : classbytes.keySet()) {
+	            String classPath = classname.replace(".", "/");
 	            zos.putNextEntry(new ZipEntry(this.getPackageDef(classname)));
 	            zos.closeEntry();
-	            zos.putNextEntry(new ZipEntry(strcom+".class"));
+	            zos.putNextEntry(new ZipEntry(classPath + ".class"));
 	            zos.write(classbytes.get(classname));
 	            zos.closeEntry();
-			}
-            
-            zos.putNextEntry(new ZipEntry("dagdef.json"));
-            zos.write(bin.getBytes());
-            zos.closeEntry();
+	        }
 
-            zos.putNextEntry(new ZipEntry("config.properties"));
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            props.store(baos, null);
-            zos.write(baos.toByteArray());
-            zos.closeEntry();
-            
-		} catch (Exception e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "packageJar"));
-		}
+	        // Add the DAG definition as JSON
+	        zos.putNextEntry(new ZipEntry("dagdef.json"));
+	        zos.write(bin.getBytes());
+	        zos.closeEntry();
+
+	        // Add the properties file
+	        zos.putNextEntry(new ZipEntry("config.properties"));
+	        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+	            props.store(baos, null);
+	            zos.write(baos.toByteArray());
+	        }
+	        zos.closeEntry();
+
+	    } catch (Exception e) {
+	        eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "packageJar"));
+	    }
 	}
     public String getPackageDef(String input) {
         String[] segments = input.split("\\.");
@@ -321,44 +334,45 @@ public class CompilerHandler implements CompilerOutputPort {
             throw new DomainException(e);
         }
     }
-	@Override
-	public void deleteJarfile(String jarname) throws DomainException {
-		try {
-			File remove = new File(pathfolder + jarname);
-			FileDeleteStrategy.FORCE.delete(remove);
-			Thread.sleep(2000);
-		} catch (IOException e) {
-			throw new DomainException(e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-	}
+    @Override
+    public void deleteJarfile(String jarname) throws DomainException {
+        try {
+            Path removePath = fileSystem.getFolderPath(jarname);
+            Files.deleteIfExists(removePath);  // Esto elimina el archivo si existe, similar a FileDeleteStrategy.FORCE.delete
+            Thread.sleep(2000);
+        } catch (IOException e) {
+            throw new DomainException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-	@Override
-	public JSONObject reimport(String jarname) throws DomainException {
-	    File jarFile = new File(pathfolder + jarname);
-	    if (!jarFile.exists()) {
-	        throw new DomainException(new Exception("Jar file not found"));
-	    }
 
-	    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(jarFile))) {
-	        ZipEntry entry;
-	        while ((entry = zis.getNextEntry()) != null) {
-	            if ("dagdef.json".equals(entry.getName())) {
-	                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	                byte[] buffer = new byte[1024];
-	                int len;
-	                while ((len = zis.read(buffer)) > 0) {
-	                    baos.write(buffer, 0, len);
-	                }
-	                String jsonStr = baos.toString(StandardCharsets.UTF_8);
-	                return new JSONObject(jsonStr);
-	            }
-	        }
-	        throw new DomainException(new Exception("dagdef.json not found in jar"));
-	    } catch (IOException | JSONException e) {
-	        throw new DomainException(e);
-	    }
-	}
+    @Override
+    public JSONObject reimport(String jarname) throws DomainException {
+        Path jarFilePath = fileSystem.getFolderPath(jarname);
+        if (!Files.exists(jarFilePath)) {
+            throw new DomainException(new Exception("Jar file not found"));
+        }
+
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(jarFilePath))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if ("dagdef.json".equals(entry.getName())) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        baos.write(buffer, 0, len);
+                    }
+                    String jsonStr = baos.toString(StandardCharsets.UTF_8);
+                    return new JSONObject(jsonStr);
+                }
+            }
+            throw new DomainException(new Exception("dagdef.json not found in jar"));
+        } catch (IOException | JSONException e) {
+            throw new DomainException(e);
+        }
+    }
 
 }

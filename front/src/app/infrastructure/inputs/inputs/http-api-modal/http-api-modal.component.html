@@ -1,0 +1,55 @@
+<div class="modal fade" id="httpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">HTTP Api Management</h4>
+            </div>
+            <div class="modal-body">
+ 
+ 
+             <a data-toggle="collapse" id="props-collapser-son" href="#collapseNewHttp" aria-expanded="false" class="collapsed">Create new apikey</a>
+             <div id="collapseNewHttp" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                 
+                 <div class="form-group">
+                     <label>Application Name</label>
+                     <input #appname class="form-control">
+                 </div>
+                 <div class="alert alert-danger" *ngIf="error_msg">
+                    {{error_msg}}
+                 </div>
+                 <button (click)="createHttpApiKey()" type="button" class="btn btn-primary">Add</button> 
+ 
+             </div>
+ 
+             <div class="table-responsive">
+                 <table class="table" id="github-tbl">
+                     <thead>
+                         <tr>
+                             <th>Application Name</th>
+                             <th>Api-Key</th>
+                             <th>Options</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         <tr *ngFor="let repos of propsSelected">
+                             <td>{{repos.key}}</td>
+                             <td>{{repos.value}}</td>
+                             <td>
+                                 <button (click)="remove(repos)" type="button" class="btn btn-danger btn-circle"><i class="fa fa-close"></i></button>&nbsp;
+ 
+                             </td>
+                         </tr>
+                     </tbody>
+                 </table>
+             </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+ </div>
+ 

@@ -1,7 +1,10 @@
 package main.cl.dagserver.infra.adapters.operators;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -15,41 +18,53 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 
 import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.infra.adapters.confs.DagPathClassLoadHelper;
-
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 
 @Operator(args={"url","user","pwd","driver","driverPath","query"},optionalv = { "xcom" })
 public class JdbcOperator extends OperatorStage {
 	
-	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
+	
 	private static final String QUERY = "query";
 	
-	private List<URI> getListURI(List<String> archivosJar){
+	private List<URI> getListURI(List<Path> archivosJar){
 		List<URI> list = new ArrayList<>();
-		for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
-			String jarpath = iterator.next();
-			list.add(new File(jarpath).toURI());
+		for (Iterator<Path> iterator = archivosJar.iterator(); iterator.hasNext();) {
+			Path jarpath = iterator.next();
+			list.add(jarpath.toUri());
 		}
 		return list;
 	}
 	
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		QueryRunner queryRunner = new QueryRunner();
-		List<String> archivosJar = new ArrayList<>();
-		this.searchJarFiles(new File(this.args.getProperty("driverPath")),archivosJar);
-		List<URI> list = this.getListURI(archivosJar);
-		DbUtils.loadDriver(helper.getClassLoader(list), this.args.getProperty("driver"));
+		List<Path> archivosJar = new ArrayList<>();
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		if(appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			try {
+				Path driversPath = handler.getJDBCDriversPath(this.args.getProperty("driverPath"));
+				this.searchJarFiles(driversPath,archivosJar);	
+			} catch (Exception e) {
+				
+			}
+			List<URI> list = this.getListURI(archivosJar);
+			DbUtils.loadDriver(handler.getClassLoader(list), this.args.getProperty("driver"));
+		}
+		
 		String xcomname = this.optionals.getProperty("xcom");
 		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
 			if(xcomname != null && !xcomname.isEmpty()) {
@@ -111,7 +126,7 @@ public class JdbcOperator extends OperatorStage {
 		metadata.setParameter("user", "text");
 		metadata.setParameter("pwd", "password");
 		metadata.setParameter("driver", "text");
-		metadata.setParameter("driverPath", "text");
+		metadata.setParameter("driverPath", "file");
 		metadata.setParameter(QUERY, "sourcecode",Arrays.asList("text/x-sql"));
 		metadata.setOpts("xcom","xcom");
 		return metadata.generate();
@@ -120,18 +135,22 @@ public class JdbcOperator extends OperatorStage {
 	public String getIconImage() {
 		return "jdbc.png";
 	}
-	private void searchJarFiles(File directorio, List<String> archivosJar) {
-        File[] archivos = directorio.listFiles();
-
-        if (archivos != null) {
-            for (File archivo : archivos) {
-                if (archivo.isFile() && archivo.getName().endsWith(".jar")) {
-                    archivosJar.add(archivo.getAbsolutePath());
-                } else if (archivo.isDirectory()) {
-                	searchJarFiles(archivo, archivosJar);
-                }
-            }
-        }
+	private void searchJarFiles(Path directorio, List<Path> archivosJar) throws IOException {
+		if (Files.isDirectory(directorio)) {
+	        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directorio)) {
+	            for (Path entry : stream) {
+	                if (Files.isDirectory(entry)) {
+	                    searchJarFiles(entry, archivosJar);
+	                } else if (Files.isRegularFile(entry) && entry.toString().endsWith(".jar")) {
+	                    archivosJar.add(entry);
+	                }
+	            }
+	        }
+	    } else {
+	    	if(directorio.toString().endsWith(".jar")) {
+	            archivosJar.add(directorio);
+	    	}
+	    }
     }
 	
 }

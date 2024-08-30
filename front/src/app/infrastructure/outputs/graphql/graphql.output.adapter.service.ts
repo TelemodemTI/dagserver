@@ -18,6 +18,90 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+  
+  deleteApiKey(appname: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation deleteApiKey($token:String,$appname:String) { deleteApiKey(token:$token,appname:$appname) {status,code,value} }"
+      this.query(string,{token:token,appname:appname}).subscribe((result:any)=>{
+        if(result && result.deleteApiKey && result.deleteApiKey.status == "ok"){
+              resolve();
+        }
+      })
+
+    })
+  }
+  
+  createApiKey(appname: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation createApiKey($token:String,$appname:String) { createApiKey(token:$token,appname:$appname) {status,code,value} }"
+      this.query(string,{token:token,appname:appname}).subscribe((result:any)=>{
+        if(result && result.createApiKey && result.createApiKey.status == "ok"){
+              resolve();
+        }
+      })
+
+    })
+  }
+  
+  createCopy(filename: string, filename_copy: string): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation copyFile($token:String,$filename:String,$copyname:String) { copyFile(token:$token,filename:$filename,copyname:$copyname) {status,code,value} }"
+      this.query(string,{token:token,filename:filename,copyname:filename_copy}).subscribe((result:any)=>{
+        if(result && result.copyFile && result.copyFile.status == "ok"){
+              resolve();
+        }
+      })
+    });
+  }
+  moveFile(folder:string,filename: string, newpath: string): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation moveFile($token:String,$folder:String,$filename:String,$newpath:String) { moveFile(token:$token,folder:$folder,filename:$filename,newpath:$newpath) {status,code,value} }"
+      this.query(string,{token:token,folder:folder,filename:filename,newpath:newpath}).subscribe((result:any)=>{
+        if(result && result.moveFile && result.moveFile.status == "ok"){
+              resolve();
+        }
+      })
+    });
+  }
+  delete(selected_folder: string, selected_file: string): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation deleteFile($token:String,$folder:String,$file:String) { deleteFile(token:$token,folder:$folder,file:$file) {status,code,value} }"
+      this.query(string,{token:token,folder:selected_folder,file:selected_file}).subscribe((result:any)=>{
+        if(result && result.deleteFile && result.deleteFile.status == "ok"){
+              resolve();
+        }
+      })
+    });
+  }
+  
+  createFolder(folder: any): Promise<any> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation createFolder($token:String,$foldername:String) { createFolder(token:$token,foldername:$foldername) {status,code,value} }"
+      this.query(string,{token:token,foldername:folder}).subscribe((result:any)=>{
+        if(result && result.createFolder && result.createFolder.status == "ok"){
+              resolve();
+            }
+      })
+    });
+  }
+  
+  mounted(): Promise<any> {
+    return new Promise<any>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "query mounted($token: String) {mounted(token:$token) { name ,type, content { name , type, content { name,type  }} }}"
+      this.query(string,{token:token}).subscribe((result:any)=>{
+        if(result && result.mounted){
+          resolve(result.mounted as any[]);
+        }
+      })
+    })
+  }
 
   logout(): Promise<void> {
 	return new Promise<void>((resolve,reject)=>{

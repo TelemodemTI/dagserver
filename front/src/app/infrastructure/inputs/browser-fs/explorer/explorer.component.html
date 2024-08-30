@@ -1,0 +1,54 @@
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">File System Explorer</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Mounted FileSystem
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <a class="btn btn-primary btn-circle" (click)="showUpload()">
+                            <i class="fa fa-upload"></i>
+                        </a>&nbsp;
+                        <a class="btn btn-primary btn-circle" (click)="download()">
+                            <i class="fa fa-download"></i>
+                        </a>&nbsp;
+                        <a class="btn btn-primary btn-circle" (click)="createFolder()">
+                            <i class="fa fa-folder"></i>
+                        </a>&nbsp;
+                        <a class="btn btn-primary btn-circle" (click)="createCopy()">
+                            <i class="fa fa-copy"></i>
+                        </a>&nbsp;
+                        <a class="btn btn-primary btn-circle" (click)="move()">
+                            <i class="fa fa-paste"></i>
+                        </a>&nbsp;
+                        <a class="btn btn-primary btn-circle" (click)="goHome()">
+                            <i class="fa fa-home"></i>
+                        </a>&nbsp;
+                        <a class="btn btn-danger btn-circle" (click)="delete()">
+                            <i class="fa fa-trash"></i>
+                        </a>&nbsp;
+                        <br><br>
+                        <label>Selected file:{{selected_folder}}/{{selected_file}}</label>
+                        <div id="files"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<app-upload-file #uploader></app-upload-file>
+<app-value-modal #valuer [id]="'new-folder'" [param]="'new folder'" [actualValue]="''" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>
+<app-value-modal #valuer2 [id]="'copy-file'" [param]="'copy filename'" [actualValue]="selected_file + '_copy'" (changeValueEvent)="changeValueCopyEvent($event)"></app-value-modal>
+<app-value-modal #valuer3 [id]="'move-file'" [param]="'new ubication'" [actualValue]="'/'" (changeValueEvent)="changeValueMoveEvent($event)"></app-value-modal>

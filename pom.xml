@@ -109,11 +109,7 @@
 		    <artifactId>commons-dbutils</artifactId>
 		    <version>1.7</version>
 		</dependency>
-		<dependency>
-		    <groupId>mysql</groupId>
-		    <artifactId>mysql-connector-java</artifactId>
-		    <version>8.0.33</version>
-		</dependency>
+		
 	  	<dependency>
 		    <groupId>org.flywaydb</groupId>
 		    <artifactId>flyway-core</artifactId>
@@ -310,6 +306,11 @@
 		  <artifactId>jimfs</artifactId>
 		  <version>1.3.0</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.calcite</groupId>
+		    <artifactId>calcite-core</artifactId>
+		    <version>1.37.0</version>
+		</dependency>
 	</dependencies>          
     <build>
 		<testSourceDirectory>src/main/test</testSourceDirectory>
@@ -323,8 +324,8 @@
 	
 	<plugin>
             <artifactId>maven-surefire-plugin</artifactId>
-            <!-- latest version does not work well with JUnit5 -->
-            <version>2.19.1</version>
+            <!-- latest version does not work well with JUnit5 
+            <version>2.19.1</version>-->
             <dependencies>
                 <dependency>
                     <groupId>org.junit.platform</groupId>

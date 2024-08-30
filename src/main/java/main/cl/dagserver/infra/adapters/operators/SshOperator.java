@@ -121,8 +121,8 @@ public class SshOperator extends OperatorStage {
 		metadata.setParameter("user", "text");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("cmd", "sourcecode",Arrays.asList("application/x-sh"));
-		metadata.setOpts(KNOWHOSTFILE, "text");
-		metadata.setOpts(PRIVATEKEYFILE, "text");
+		metadata.setOpts(KNOWHOSTFILE, "file");
+		metadata.setOpts(PRIVATEKEYFILE, "file");
 		metadata.setOpts("pwd", "password");
 		return metadata.generate();
 	}

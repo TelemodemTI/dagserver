@@ -1,15 +1,12 @@
 package main.cl.dagserver.domain.services;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.linkedin.cytodynamics.nucleus.DelegateRelationshipBuilder;
-import com.linkedin.cytodynamics.nucleus.IsolationLevel;
-import com.linkedin.cytodynamics.nucleus.LoaderBuilder;
-import com.linkedin.cytodynamics.nucleus.OriginRestriction;
 import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.exceptions.DomainException;
@@ -17,8 +14,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 @Service
 public class InternalOperatorService extends BaseServiceComponent implements InternalOperatorUseCase{
 
-	private static final String CLASSEXT = ".class";
-	
 	@Override
 	public void deleteLogsBy(Date rolldate) {
 		this.repository.deleteLogsBy(rolldate);
@@ -31,25 +26,27 @@ public class InternalOperatorService extends BaseServiceComponent implements Int
 
 	@Override
 	public Class<?> loadFromOperatorJar(String name, List<URI> list) throws DomainException {
-		ClassLoader loader = LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(list)
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.NONE)
-			        .build())
-			    .build();
-		try {
-			return loader.loadClass(name.replace("/", ".").replace(CLASSEXT, ""));
-		} catch (ClassNotFoundException e) {
-			throw new DomainException(e);
-		}
-	
+		return this.fileSystem.loadFromOperatorJar(name, list);	
 	}
 
 	@Override
 	public void deleteXCOM(Date time) throws DomainException {
 		this.scanner.deleteXCOM(time);
+	}
+
+	@Override
+	public ClassLoader getClassLoader(List<URI> list) throws DomainException {
+		return this.fileSystem.getClassLoader(list);
+	}
+
+	@Override
+	public Path getFolderPath() {
+		return this.fileSystem.getFolderPath();
+	}
+
+	@Override
+	public Path getJDBCDriversPath(String inputPath) {
+		return this.fileSystem.getJDBCDriversPath(inputPath);
 	}
 
 }

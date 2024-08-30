@@ -3,10 +3,16 @@ package main.cl.dagserver.domain.services;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+
+import fr.brouillard.oss.security.xhub.XHub;
+import fr.brouillard.oss.security.xhub.XHub.XHubConverter;
+import fr.brouillard.oss.security.xhub.XHub.XHubDigest;
 import main.cl.dagserver.application.ports.input.SchedulerMutationUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.enums.AccountType;
@@ -18,6 +24,7 @@ import main.cl.dagserver.domain.model.UncompiledDTO;
 @ImportResource("classpath:properties-config.xml")
 public class SchedulerMutationHandlerService extends BaseServiceComponent implements SchedulerMutationUseCase {
 
+	private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private static final String JARNAME = "jarname";
 	private static final String DAGNAME = "dagname";
 	private static final String GENERATED = "GENERATED";
@@ -368,5 +375,46 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	public void logout(String token) throws DomainException {
 		auth.logout(token);
 		
+	}
+	@Override
+	public void createFolder(String token, String foldername) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.createFolder(foldername);
+	}
+	@Override
+	public void deleteFile(String token, String folder, String file) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.delete(folder,file);
+	}
+	@Override
+	public void copyFile(String token, String filename, String copyname) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.copyFile(filename,copyname);
+	}
+	@Override
+	public void moveFile(String token, String folder,String filename, String newpath) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.moveFile(folder,filename,newpath);
+	}
+	@Override
+	public void createApiKey(String token, String appname) throws DomainException {
+		auth.untokenize(token);
+		String newApikey = XHub.generateXHubToken(XHubConverter.HEXA_LOWERCASE, XHubDigest.SHA1, appname, this.generateRandomString(10).getBytes());
+		this.repository.setProperty(appname, "API KEY for "+appname, newApikey, "HTTP_CHANNEL_API_KEY");
+		
+	}
+	private String generateRandomString(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(ALPHABET.length());
+            sb.append(ALPHABET.charAt(index));
+        }
+        return sb.toString();
+    }
+	@Override
+	public void deleteApiKey(String token, String appname) throws DomainException {
+		auth.untokenize(token);
+		this.repository.delProperty(appname, "HTTP_CHANNEL_API_KEY");
 	}
 }

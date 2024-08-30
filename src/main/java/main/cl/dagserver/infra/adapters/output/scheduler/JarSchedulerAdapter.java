@@ -1,28 +1,30 @@
 package main.cl.dagserver.infra.adapters.output.scheduler;
 
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
-
 import lombok.extern.log4j.Log4j2;
+import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
@@ -31,7 +33,6 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
-import main.cl.dagserver.infra.adapters.confs.DagPathClassLoadHelper;
 import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 import main.cl.dagserver.infra.adapters.operators.DummyOperator;
 import main.cl.dagserver.infra.adapters.operators.LogsRollupOperator;
@@ -42,50 +43,51 @@ import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
 public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Autowired
 	private StorageOutputPort storage;
-	@Value("${param.folderpath}")
-	private String pathfolder;
 	@Autowired
     private ApplicationEventPublisher eventPublisher;
 	@Autowired
 	private QuartzConfig quartz;
+	@Autowired
+	private FileSystemOutputPort fileSystem;
+	
 	private static final String CLASSNAME = "classname";
 	private static final String CLASSEXT = ".class";
-	private DagPathClassLoadHelper helper = new DagPathClassLoadHelper();
-	private List<File> jars = new ArrayList<>();
+	
+	private List<Path> jars = new ArrayList<>();
 	private Map<String,List<Map<String,String>>> classMap = new HashMap<>();
 	
-	public JarSchedulerAdapter init () throws DomainException {
-		this.classMap = new HashMap<>();
-		File folder = new File(pathfolder);
-		List<File> listOfFiles = new ArrayList<>();
-		try {
-			listOfFiles = Arrays.asList(folder.listFiles());	
-		} catch (Exception e) {
-			log.error(e);
-		}
-			
-		for (int i = 0; i < listOfFiles.size(); i++) {
-			if(listOfFiles.get(i).getName().endsWith(".jar")) {
-				jars.add(listOfFiles.get(i));
-				classMap.put(listOfFiles.get(i).getName(), this.analizeJar(listOfFiles.get(i)));
-				quartz.validate(listOfFiles.get(i).getName().replace(".jar", ""), this.analizeJarProperties(listOfFiles.get(i)));
-			}
-		}
-		return this;
-	}	
+	public JarSchedulerAdapter init() throws DomainException {
+	    this.classMap = new HashMap<>();
+	    Path folderPath = fileSystem.getFolderPath();
+	    List<Path> jarFiles = new ArrayList<>();
+	    try (Stream<Path> paths = Files.walk(folderPath)) {
+	        jarFiles = paths
+	            .filter(path -> path.toString().endsWith(".jar"))
+	            .collect(Collectors.toList());
+	    } catch (IOException e) {
+	        log.error("JarSchedulerAdapter init:", e);
+	    }
+
+	    for (Path jarFile : jarFiles) {
+	        jars.add(jarFile);
+	        classMap.put(jarFile.getFileName().toString(), this.analizeJar(jarFile));
+	        quartz.validate(jarFile.getFileName().toString().replace(".jar", ""), this.analizeJarProperties(jarFile));
+	    }
+
+	    return this;
+	}
 	
-	private Map<String,Properties> analizeJarProperties(File jarFile){
+	
+	private Map<String,Properties> analizeJarProperties(Path jarFile){
 		Map<String,Properties> props = new HashMap<>();
 		try(
-				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
-				ZipFile zipFile = new ZipFile(jarFile);) {
-				Enumeration<? extends ZipEntry> entries = zipFile.entries();
-				while(entries.hasMoreElements()) {
-					 ZipEntry ze = entries.nextElement();
-					 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+				InputStream inputStream = Files.newInputStream(jarFile);
+				ZipInputStream zip = new ZipInputStream(inputStream);) {
+				ZipEntry ze;
+				while ((ze = zip.getNextEntry()) != null) {
 					 if (!ze.isDirectory() && ze.getName().endsWith(".properties")) {
 					    	var prop = new Properties();
-					    	prop.load(helper.loadResourceFromJar(jarFile, ze.getName()));
+					    	prop.load(fileSystem.loadResourceFromJar(jarFile, ze.getName()));
 					    	String[] name = ze.getName().replace(".properties", "").split("/");
 					    	props.put(name[name.length-1], prop);
 					  }	 
@@ -96,18 +98,16 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		return props;
 	}
 	
-	public Properties getProperties(File jarFile) {
+	public Properties getProperties(Path jarFile) {
 		Properties prop = new Properties();
 		try(
-				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
-				ZipFile zipFile = new ZipFile(jarFile);
+				InputStream inputStream = Files.newInputStream(jarFile);
+				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.toString()));
+				
 				) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while(entries.hasMoreElements()) {
-				 ZipEntry ze = entries.nextElement();
-				 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+			ZipEntry ze;
+	        while ((ze = zip.getNextEntry()) != null) {
 				 if (!ze.isDirectory() && ze.getName().endsWith("properties")) {
-					 InputStream inputStream = zipFile.getInputStream(ze);
 		             prop.load(inputStream);
 		             inputStream.close();
 				 }
@@ -117,40 +117,39 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		}
 		return prop;
 	}
-	private List<Map<String,String>> analizeJar(File jarFile) {
-		List<Map<String,String>> classNames = new ArrayList<>();
-		try(
-				ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
-				ZipFile zipFile = new ZipFile(jarFile);
-				) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while(entries.hasMoreElements()) {
-				 ZipEntry ze = entries.nextElement();
-				 DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
-				 if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
-					 	Class<?> clazz = helper.loadFromJar(jarFile, ze.getName()); 
-				    	Dag dag = clazz.getAnnotation(Dag.class);
-				        if(dag!=null) {
-				        	var map = new HashMap<String,String>();
-					        map.put("dagname", dag.name());
-					        map.put("groupname", dag.group());
-					        map.put("cronExpr", dag.cronExpr());
-					        map.put("onStart", dag.onStart());
-					        map.put("onEnd", dag.onEnd());
-					        String className = ze.getName().replace('/', '.'); 
-					        String finalname = className.substring(0, className.length() - CLASSEXT.length());
-					        if(finalname != null && !finalname.startsWith("bin")) {
-					        	map.put(CLASSNAME, finalname);	
-					        }
-					        classNames.add(map);	
-				        }
-				    }
-			}
-		} catch (Exception e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJar"));
-		}
-		return classNames;
+	private List<Map<String,String>> analizeJar(Path jarFile) {
+	    List<Map<String,String>> classNames = new ArrayList<>();
+	    
+	    try (BufferedInputStream buffered = new BufferedInputStream(Files.newInputStream(jarFile))) {
+	        try (ZipInputStream zip = new ZipInputStream(buffered)) {
+	            ZipEntry ze;
+	            while ((ze = zip.getNextEntry()) != null) {
+	                if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
+	                    Class<?> clazz = fileSystem.loadFromJar(jarFile, ze.getName());
+	                    Dag dag = clazz.getAnnotation(Dag.class);
+	                    if (dag != null) {
+	                        var map = new HashMap<String,String>();
+	                        map.put("dagname", dag.name());
+	                        map.put("groupname", dag.group());
+	                        map.put("cronExpr", dag.cronExpr());
+	                        map.put("onStart", dag.onStart());
+	                        map.put("onEnd", dag.onEnd());
+	                        String className = ze.getName().replace('/', '.');
+	                        String finalname = className.substring(0, className.length() - CLASSEXT.length());
+	                        if (finalname != null && !finalname.startsWith("bin")) {
+	                            map.put(CLASSNAME, finalname);
+	                        }
+	                        classNames.add(map);
+	                    }
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJar"));
+	    }
+	    return classNames;
 	}
+
 	@Override
 	public Map<String,List<Map<String,String>>> getOperators(){
 		return classMap;
@@ -158,13 +157,13 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Override
 	public void scheduler(String dagname,String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
-		File jarfileO = this.findJarFile(jarname);
+		Path jarfileO = this.findJarFile(jarname);
 		Properties prop = this.getProperties(jarfileO);
 		if(jarfileO!= null) {
 			try {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);
-						Class<?> clazz = helper.loadFromJar(jarfileO, classname);
+						Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname);
 						Dag toschedule = clazz.getAnnotation(Dag.class);
 						if(toschedule.name().equals(dagname)) {
 							quartz.propertiesToRepo(prop);
@@ -182,26 +181,25 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			}	
 		}
 	}	
-	private File findJarFile(String jarFilename) {
-		File jar = null;
-		for (Iterator<File> iterator = jars.iterator(); iterator.hasNext();) {
-			File file = iterator.next();
-			if(file.getName().equals(jarFilename)) {
-				jar = file;
-				break;
-			}
-		}
-		return jar;
+	private Path findJarFile(String jarFilename) {
+	    Path jar = null;
+	    for (Path path : jars) { 
+	        if (path.getFileName().toString().equals(jarFilename)) {
+	            jar = path;
+	            break;
+	        }
+	    }
+	    return jar;
 	}
 	@Override
 	public void unschedule(String dagname, String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
-		File jarfileO = this.findJarFile(jarname);
+		Path jarfileO = this.findJarFile(jarname);
 		if(jarfileO!=null) {
 			try {		
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);
-					Class<?> clazz = helper.loadFromJar(jarfileO, classname);
+					Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname);
 					activateDeactivate(dagname, clazz);
 				}		
 			} catch (Exception e) {
@@ -260,12 +258,12 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private List<DagDTO> getDagDetailJAR(String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		var result = new ArrayList<DagDTO>();
-		File jarfileO = this.findJarFile(jarname);
+		Path jarfileO = this.findJarFile(jarname);
 		if(jarfileO != null) {
 			try {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);	
-					Class<?> clazz = helper.loadFromJar(jarfileO, classname);
+					Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname);
 					Dag scheduled = clazz.getAnnotation(Dag.class);
 					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
 					DagDTO dto = new DagDTO();
@@ -288,12 +286,12 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public void execute(String jarname, String dagname, String type, String data) throws DomainException {
 		try {
 			List<Map<String,String>> classNames = classMap.get(jarname);
-			File jarfileO = this.findJarFile(jarname);
+			Path jarfileO = this.findJarFile(jarname);
 			if(jarfileO!= null) {
 				Boolean founded = false;
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
 					String classname = iterator.next().get(CLASSNAME);
-					Class<?> clazz = this.helper.loadFromJar(jarfileO, classname);
+					Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname);
 					Dag toschedule = clazz.getAnnotation(Dag.class);
 					if(toschedule.name().equals(dagname)) {
 						founded = true;

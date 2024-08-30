@@ -2,7 +2,6 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
-import { PropsInputPort } from 'src/app/application/inputs/props.input.port';
 import { AvailableJobs } from 'src/app/domain/models/availableJobs.model';
 declare var $:any;
 @Component({
@@ -18,16 +17,6 @@ export class InputsChannelsComponent {
   jars:any[] = []
   dags:any[] = []
   
-
-  
-
-  
-
- 
-
-  
-  
-
   constructor(private router: Router, 
     private service: InputsChannelsInputPort,
     private service2: JobsInputPort){
@@ -49,6 +38,8 @@ export class InputsChannelsComponent {
       $("#redisModal").modal('show');
     } else if(item.name == "KAFKA_CONSUMER")  {
       $("#kafkaModal").modal('show');
+    } else if(item.name == "HTTP_ENDPOINT")  {
+      $("#httpModal").modal('show');
     } else {
 	  $("#activeMQModal").modal('show');
 	}

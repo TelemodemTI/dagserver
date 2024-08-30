@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, View
 import { DefaultTypeParamComponent } from '../../param-editor/default-type-param/default-type-param.component';
 import { SourceTypeParamComponent } from '../../param-editor/source-type-param/source-type-param.component';
 import { RemoteTypeParamComponent } from '../../param-editor/remote-type-param/remote-type-param.component';
+import { FileTypeParamComponent } from '../../param-editor/file-type-param/file-type-param.component';
 declare var $:any
 declare var CodeMirror:any
 @Component({
@@ -21,7 +22,7 @@ export class ParamExistingjComponent {
   @ViewChild("inputDefault") inputDefault!:DefaultTypeParamComponent;
   @ViewChild("inputSource") inputSource!:SourceTypeParamComponent;
   @ViewChild("inputRemote") inputRemote!:RemoteTypeParamComponent;
-  
+  @ViewChild("inputFile") inputFile!:FileTypeParamComponent;
   
   
 
@@ -140,6 +141,7 @@ export class ParamExistingjComponent {
           paramarr.push({key:key.name,value:this.inputRemote.getValue(),type:key.type,source:"props"})
         } else {
           let vlue = $("#param-"+key.name+"-value").val()
+          console.log(vlue)
           paramarr.push({key:key.name,value:vlue,type:key.type,source:"props"})
         }
       }
@@ -259,6 +261,8 @@ export class ParamExistingjComponent {
       return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "sourcecode").length > 0:false
     } else if(jid=="#remoter"){
       return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "remote").length > 0:false
+    } else if(jid=="#file"){
+      return this.generatedIdParams?this.generatedIdParams.filter((elem:any)=> elem.type == "file").length > 0:false
     } else {
       return $(jid).text().trim()?true:false;
     }

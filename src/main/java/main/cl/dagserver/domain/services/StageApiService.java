@@ -1,4 +1,5 @@
 package main.cl.dagserver.domain.services;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.TemporalDagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.PropertyParameterDTO;
 
 @Service
 public class StageApiService extends BaseServiceComponent implements StageApiUsecase {
@@ -132,5 +134,35 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			output.put("result", e.getMessage());
 		}
 		return output;
+	}
+
+	@Override
+	public void uploadFile(Path tempFile,String uploadPath, String realname, String token) throws DomainException {
+		auth.untokenize(token);
+		this.fileSystem.upload(tempFile,uploadPath,realname);
+	}
+
+	@Override
+	public Path getFilePath(String folderPath,String filename, String token) throws DomainException {
+		auth.untokenize(token);
+		return this.fileSystem.getFilePath(folderPath,filename);
+	}
+
+	@Override
+	public void executeDag(String token, String jarname, String dagname, Map<String, String> args) throws DomainException {
+		var list = this.repository.getProperties("HTTP_CHANNEL_API_KEY");
+		Boolean rv = Boolean.FALSE;
+		for (Iterator<PropertyParameterDTO> iterator = list.iterator(); iterator.hasNext();) {
+			PropertyParameterDTO propertyParameterDTO = iterator.next();
+			if(propertyParameterDTO.getValue().equals(token)) {
+				rv = true;
+				break;
+			}
+		}
+		if(rv) {
+			scanner.init().execute(jarname, dagname,"",new JSONObject(args).toString());	
+		} else {
+			throw new DomainException(new Exception("Unauthorized"));
+		}
 	}
 }

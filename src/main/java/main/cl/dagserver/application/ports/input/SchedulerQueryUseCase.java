@@ -8,6 +8,7 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
 import main.cl.dagserver.domain.model.ChannelDTO;
 import main.cl.dagserver.domain.model.DagDTO;
+import main.cl.dagserver.domain.model.DirectoryEntryDTO;
 import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
@@ -33,4 +34,5 @@ public interface SchedulerQueryUseCase {
 	String exportUncompiled(String token, Integer uncompiled) throws DomainException;
 	List<LogDTO> getLastLogs() throws DomainException;
 	List<Exceptions> getExceptions(String token) throws DomainException;
+	DirectoryEntryDTO mounted(String token) throws DomainException;
 }

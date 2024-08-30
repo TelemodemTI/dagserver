@@ -1,30 +1,31 @@
 package main.cl.dagserver.infra.adapters.confs;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.quartz.simpl.CascadingClassLoadHelper;
+import org.springframework.context.ApplicationContext;
+
 import com.linkedin.cytodynamics.nucleus.DelegateRelationshipBuilder;
 import com.linkedin.cytodynamics.nucleus.IsolationLevel;
 import com.linkedin.cytodynamics.nucleus.LoaderBuilder;
 import com.linkedin.cytodynamics.nucleus.OriginRestriction;
+
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
@@ -42,6 +43,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 			return this.loadClassProps(prop,name);
 		}
 	}
+	
 	private Class<?> loadClassProps(Properties prop,String name) {
 			try {
 				var ctx = this.getClass().getClassLoader();
@@ -50,24 +52,27 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 				return null;
 			}	
 	}
+	@SuppressWarnings("static-access")
 	private Class<?> loadClassWithCtx(ClassLoader ctx,Properties prop,String name) throws IOException, ClassNotFoundException, DomainException {
-		if(ctx !=null) {
-			prop.load(ctx.getResourceAsStream("application.properties"));	
-			String pathfolder = prop.getProperty("param.folderpath");
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		if(ctx !=null && appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			Path folderPath = handler.getFolderPath();
 			try {
-				return this.getClassForLoad(pathfolder, name);	
+				return this.getClassForLoad(folderPath, name);	
 			} catch (Exception e) {
 				List<String> archivosJar = new ArrayList<>();
-				this.searchJarFiles(new File(pathfolder),archivosJar);
+				this.searchJarFiles(folderPath.toFile(),archivosJar);
 				List<URI> list = new ArrayList<>();
 				for (Iterator<String> iterator = archivosJar.iterator(); iterator.hasNext();) {
 					String jarpath = iterator.next();
 					list.add(new File(jarpath).toURI());
 				}
-				ClassLoader cls = this.getClassLoader(list);
-				return cls.loadClass(name);
-			}
 				
+				ClassLoader cls = handler.getClassLoader(list);
+				return cls.loadClass(name);
+				
+			}
 		} else {
 			throw new DomainException(new Exception("no context?"));
 		}
@@ -86,28 +91,31 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
         }
     }
 
-	private Class<?> getClassForLoad(String pathfolder, String name) throws DomainException {
+	private Class<?> getClassForLoad(Path folderPath, String name) throws DomainException {
 	    try {
-	        Path folderPath = Paths.get(pathfolder);
-	        File folder = folderPath.toFile();
-	        File[] listOfFiles = folder.listFiles();	
-	        for (int i = 0; i < listOfFiles.length; i++) {
-	            if (listOfFiles[i].getName().endsWith(".jar")) {
-	                Class<?> rv = this.search(listOfFiles[i], name);
-	                if (rv != null) {
-	                    return rv;	
-	                } 
+	        // Obtener la lista de archivos en el directorio usando java.nio
+	        try (Stream<Path> paths = Files.list(folderPath)) {
+	            for (Path path : (Iterable<Path>) paths::iterator) {
+	                if (Files.isRegularFile(path) && path.toString().endsWith(".jar")) {
+	                    Class<?> clazz = this.search(path, name);
+	                    if (clazz != null) {
+	                        return clazz;
+	                    }
+	                }
 	            }
 	        }
-	        return super.loadClass(name);	
-	    } catch (Exception e) {
+
+	        // Si no se encuentra la clase en los archivos JAR, delegar la carga a la clase base
+	        return super.loadClass(name);
+	    } catch (IOException | ClassNotFoundException e) {
 	        throw new DomainException(e);
 	    }
 	}
-	private Class<?> search(File jarFile,String searched) throws DomainException {
+	private Class<?> search(Path jarFile,String searched) throws DomainException {
 		Class<?> rvclazz = null;
 		try(
-			ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile.getAbsoluteFile()));
+			InputStream inputStream = Files.newInputStream(jarFile);
+			ZipInputStream zip = new ZipInputStream(inputStream);
 		) {
 			if(this.isGeneratedByDagserver(jarFile)) {
 				rvclazz = this.validate(jarFile,searched);	
@@ -117,56 +125,55 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 			throw new DomainException(e);
 		}
 	}	
-	private boolean isGeneratedByDagserver(File jarFile) throws DomainException {
-		Boolean returnf = false;
-		try(ZipFile zipFile = new ZipFile(jarFile);) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while(entries.hasMoreElements()) {
-			  ZipEntry ze = entries.nextElement();
-			  if(ze.getName().equals(".source")) {
-				  InputStream inputStream = zipFile.getInputStream(ze);
-	                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-	                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-	                StringBuilder stringBuilder = new StringBuilder();
-	                String linea;
-	                while ((linea = bufferedReader.readLine()) != null) {
-	                    stringBuilder.append(linea);
-	                    stringBuilder.append("\n");
+	private boolean isGeneratedByDagserver(Path jarFile) throws DomainException {
+	    boolean returnf = false;
+	    
+	    try (InputStream fis = Files.newInputStream(jarFile);
+	         ZipInputStream zipStream = new ZipInputStream(fis)) {
+	        
+	        ZipEntry ze;
+	        while ((ze = zipStream.getNextEntry()) != null) {
+	            if (ze.getName().equals(".source")) {
+	                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(zipStream, StandardCharsets.UTF_8))) {
+	                    StringBuilder stringBuilder = new StringBuilder();
+	                    String linea;
+	                    while ((linea = bufferedReader.readLine()) != null) {
+	                        stringBuilder.append(linea);
+	                        stringBuilder.append("\n");
+	                    }
+	                    String contenido = stringBuilder.toString().trim();  // Trim to remove trailing newline
+	                    returnf = "dagserver-generated-jar".equals(contenido);
 	                }
-	                String contenido = stringBuilder.toString();
-	                if(contenido.equals("dagserver-generated-jar")) {
-	                	returnf = true;
-	                } else {
-	                	returnf = false;
-	                }
-			  } else {
-				  returnf = false;
-			  }
-			}
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-		return returnf;
+	                // No need to continue checking other entries
+	                break;
+	            }
+	        }
+	    } catch (IOException e) {
+	        throw new DomainException(e);
+	    }
+	    
+	    return returnf;
 	}
-	private Class<?> validate(File f,String searched) throws IOException, DomainException {
+	private Class<?> validate(Path f,String searched) throws IOException, DomainException {
 		Class<?> rvclazz = null;
 		
-		URI uri = f.toURI();
+		URI uri = f.toUri();
 		ClassLoader loader = LoaderBuilder
 			    .anIsolatingLoader()
 			    .withOriginRestriction(OriginRestriction.allowByDefault())
 			    .withClasspath(Arrays.asList( uri ))
 			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.FULL)
+			        .withIsolationLevel(IsolationLevel.NONE)
 			        .build())
 			    .build();
 		
-		try(ZipFile zipFile = new ZipFile(f);) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while(entries.hasMoreElements()) {
-			  ZipEntry ze = entries.nextElement();
-			  DagPathClassLoadHelper.verificationZipFile(ze, zipFile);
+		try(
+				InputStream inputStream = Files.newInputStream(f);
+				ZipInputStream zip = new ZipInputStream(inputStream);
+				) {
+			ZipEntry ze;
+			while ((ze = zip.getNextEntry()) != null) {
+			  
 			  if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
 				  rvclazz = this.loadClassTry(ze,loader,searched);	
 			  }
@@ -188,92 +195,11 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 				throw new DomainException(e);
 			}
 	}
-	public static void verificationZipFile(ZipEntry ze,ZipFile zipFile) throws DomainException {
-		int thresholdEntries = 10000;
-		int thresholdSize = 1000000000; // 1 GB
-		double thresholdRatio = 10;
-		
-		
-		
-		
-		
-		
-		int totalSizeArchive = 0;
-		int totalEntryArchive = 0;
-		try(
-				InputStream in = new BufferedInputStream(zipFile.getInputStream(ze));
-				) {
-				  totalEntryArchive ++;
-
-				  int nBytes = -1;
-				  byte[] buffer = new byte[2048];
-				  double totalSizeEntry = 0;
-
-				  while((nBytes = in.read(buffer)) > 0) { 
-				      totalSizeEntry += nBytes;
-				      totalSizeArchive += nBytes;
-				      Long tmpv = ze.getCompressedSize();
-				      double compressionRatio = totalSizeEntry / tmpv.doubleValue();
-				      if(compressionRatio > thresholdRatio) {
-				        // ratio between compressed and uncompressed data is highly suspicious, looks like a Zip Bomb Attack
-				    	throw new DomainException(new Exception("invalid zip file"));
-				      }
-				  }
-
-				  if(totalSizeArchive > thresholdSize) {
-				      // the uncompressed data size is too much for the application resource capacity
-					  throw new DomainException(new Exception("zip file invalid size"));
-				  }
-
-				  if(totalEntryArchive > thresholdEntries) {
-				      // too much entries in this archive, can lead to inodes exhaustion of the system
-					  throw new DomainException(new Exception("zip file invalid entries"));
-				  }
-			  } catch (Exception e) {
-				  throw new DomainException(e);
-			  }
-	}
-
-	public ClassLoader getClassLoader(List<URI> list) {
-		return LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(list)
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.NONE)
-			        .build())
-			    .build();
-	}
 	
 	
 	
-	public Class<?> loadFromJar(File jarFile,String name) throws DomainException{
-		URI uri = jarFile.toURI();
-		ClassLoader loader = LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(Arrays.asList( uri ))
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.NONE)
-			        .build())
-			    .build();
-		try {
-			return loader.loadClass(name.replace("/", ".").replace(CLASSEXT, ""));
-		} catch (ClassNotFoundException e) {
-			throw new DomainException(e);
-		}
-		
-	}
-	public InputStream loadResourceFromJar(File jarFile, String resource) {
-		URI uri = jarFile.toURI();
-		ClassLoader loader = LoaderBuilder
-			    .anIsolatingLoader()
-			    .withOriginRestriction(OriginRestriction.allowByDefault())
-			    .withClasspath(Arrays.asList(  uri ))
-			    .withParentRelationship(DelegateRelationshipBuilder.builder()
-			        .withIsolationLevel(IsolationLevel.FULL)
-			        .build())
-			    .build();
-		return loader.getResourceAsStream(resource);
-	}
+	
+	
+	
+	
 }

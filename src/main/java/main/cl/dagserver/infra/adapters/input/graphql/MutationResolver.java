@@ -11,9 +11,12 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import main.cl.dagserver.application.ports.input.SchedulerMutationUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 @Controller
+@CrossOrigin(origins = "*",methods={RequestMethod.GET,RequestMethod.POST})
 public class MutationResolver {
 
 	private SchedulerMutationUseCase handler;
@@ -340,6 +343,60 @@ public class MutationResolver {
 	public StatusOp reimport(@Argument String token,@Argument String jarname) {
 		try {
 			handler.reimport(token, jarname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp createFolder(@Argument String token,@Argument String foldername) {
+		try {
+			handler.createFolder(token, foldername);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp deleteFile(@Argument String token,@Argument String folder,@Argument String file) {
+		try {
+			handler.deleteFile(token, folder,file);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp copyFile(@Argument String token,@Argument String filename,@Argument String copyname) {
+		try {
+			handler.copyFile(token, filename,copyname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp moveFile(@Argument String token,@Argument String folder,@Argument String filename,@Argument String newpath) {
+		try {
+			handler.moveFile(token,folder, filename,newpath);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp createApiKey(@Argument String token,@Argument String appname) {
+		try {
+			handler.createApiKey(token,appname);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp deleteApiKey(@Argument String token,@Argument String appname) {
+		try {
+			handler.deleteApiKey(token,appname);
 			return ok();
 		} catch (Exception e) {
 			return error(e);

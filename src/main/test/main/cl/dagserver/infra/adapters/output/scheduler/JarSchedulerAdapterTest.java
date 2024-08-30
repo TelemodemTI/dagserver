@@ -1,7 +1,6 @@
 package main.cl.dagserver.infra.adapters.output.scheduler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import java.io.File;
 import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
+import java.nio.file.Path;
 
 class JarSchedulerAdapterTest {
 
@@ -46,7 +46,7 @@ class JarSchedulerAdapterTest {
 	
 	@Test
 	void getPropertiesTest() {
-		File jarfile = new File("C:\\tmp\\dagrags\\dagJar1.jar");
+		Path jarfile = Path.of("C:\\tmp\\dagrags\\dagJar1.jar"); 
 		var rv = adapter.getProperties(jarfile);
 		assertNotNull(rv);
 	}
@@ -57,7 +57,6 @@ class JarSchedulerAdapterTest {
 	}
 	@Test
 	void schedulerTest() throws DomainException {
-		
 		adapter.init();
 		adapter.scheduler("DAG_UzAjxX", "dagJar1.jar");
 		assertTrue(true);	

@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
 import main.cl.dagserver.domain.core.DataFrameUtils;
@@ -26,6 +29,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Channel;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Deps;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Detail;
 import main.cl.dagserver.infra.adapters.input.graphql.types.DetailStatus;
+import main.cl.dagserver.infra.adapters.input.graphql.types.DirectoryEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
 import main.cl.dagserver.infra.adapters.input.graphql.types.LogEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Node;
@@ -36,6 +40,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Uncompiled;
 
 
 @Controller
+@CrossOrigin(origins = "*",methods={RequestMethod.GET,RequestMethod.POST})
 public class QueryResolver {
 	private static final String JOBLISTENER = "JOB LISTENER";
 	private SchedulerQueryUseCase handler;
@@ -259,8 +264,9 @@ public class QueryResolver {
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
-		
 	}
-	
-	
+	@QueryMapping
+	public DirectoryEntry mounted(@Argument String token) throws DomainException {
+		return mapper.toDirectoryEntry(handler.mounted(token));
+	}
 }

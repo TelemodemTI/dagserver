@@ -171,7 +171,7 @@ public class FileOperator extends OperatorStage {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.FileOperator");
 		metadata.setType("PROCCESS");
 		metadata.setParameter("mode", "list", Arrays.asList("read","write"));
-		metadata.setParameter("filepath", "text");
+		metadata.setParameter("filepath", "file");
 		metadata.setParameter("firstRowTitles", "boolean");
 		metadata.setOpts("xcom", "xcom");
 		metadata.setOpts("rowDelimiter", "text");

@@ -108,6 +108,20 @@ type Session {
 	refreshToken: String
 }
 
+type DirectoryEntry {
+  name: String,
+  type: String,
+  content: [FileEntry]
+}
+
+type FileEntry {
+  name: String,
+  type: String,
+  content: [FileEntry]
+}
+
+
+
 type Query { 
 	login(token: String) : Session,
 	getIcons(type:String) : String,
@@ -124,7 +138,8 @@ type Query {
 	getDependencies(jarname: String, dagname: String) : Deps,
 	channelStatus(token: String) : [Channel],
 	exportUncompiled(token: String,uncompiled:Int): String,
-	exceptions(token:String): [Exceptions]
+	exceptions(token:String): [Exceptions],
+	mounted(token:String): DirectoryEntry
 }
 
 type Mutation { 
@@ -163,4 +178,10 @@ type Mutation {
 	delConsumerAM(token:String,queue:String) : StatusOp
 	removeException(token:String,eventDt:String) : StatusOp
 	reimport(token:String,jarname:String): StatusOp
+	createFolder(token:String,foldername:String): StatusOp
+	deleteFile(token:String,folder:String,file:String): StatusOp
+	copyFile(token:String,filename:String,copyname:String): StatusOp
+	moveFile(token:String,folder:String,filename:String,newpath:String): StatusOp
+	createApiKey(token:String,appname:String): StatusOp
+	deleteApiKey(token:String,appname:String): StatusOp
 }

@@ -28,6 +28,7 @@ import { DependenciesInputPort } from 'src/app/application/inputs/dependencies.i
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
 import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { SharedOutputPort } from 'src/app/application/outputs/shared.output.port';
+import { ExplorerInputPort } from 'src/app/application/inputs/explorer.input.port';
 
 @Injectable({
   providedIn: 'root'
@@ -46,13 +47,51 @@ export class FrontEndDomainService implements
     JardetailpInputPort,
     DependenciesInputPort,
     InputsChannelsInputPort,
-    ExistingJInputPort {
+    ExistingJInputPort,
+    ExplorerInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
     private httpd: DinamicOutputPort,
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  deleteApiKey(appname: any): Promise<void> {
+    return this.adapter.deleteApiKey(appname)
+  }
+  
+  createApiKey(appname: any): Promise<void> {
+    return this.adapter.createApiKey(appname);
+  }
+  
+    move(folder:string,filename: string, newpath: any): Promise<any> {
+    return this.adapter.moveFile(folder,filename, newpath);
+  }
+  
+    createCopy(filename: string,filename_copy:string) {
+      return this.adapter.createCopy(filename,filename_copy)
+    }
+
+  download(selected_folder: string, selected_file: string): Promise<any> {
+    return this.httpd.download(selected_folder,selected_file);
+  }
+
+  delete(selected_folder: string, selected_file: string): Promise<any> {
+    return this.adapter.delete(selected_folder,selected_file);
+  }
+  
+  createFolder(folder: any): Promise<any> {
+    return this.adapter.createFolder(folder);
+  }
+  
+  
+  uploadMounted(file: File,inputPath:string): Promise<any> {
+    return this.httpd.uploadFile(file,inputPath);
+  }
+  
+  getMounted(): Promise<any> {
+    return this.adapter.mounted();
+  }
   
   
   reimport(jarname: any): Promise<any> {
@@ -116,7 +155,7 @@ export class FrontEndDomainService implements
     return this.httpd.executeDagUncompiled(uncompiledId,dagname,stepname)
   }
   
-  renameUncompiled(uncompiled: any, arg1: any): Promise<void> {
+  renameUncompiled(uncompiled: number, arg1: any): Promise<void> {
     return this.adapter.renameUncompiled(uncompiled,arg1);
   }
   
