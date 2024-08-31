@@ -16,7 +16,6 @@ import { DependenciesComponent } from './infrastructure/inputs/jobs/dependencies
 import { InputsChannelsComponent } from './infrastructure/inputs/inputs/inputs-channels/inputs-channels.component';
 import { ExceptionsListComponent } from './infrastructure/inputs/exceptions/exceptions-list/exceptions-list.component';
 import { ExplorerComponent } from './infrastructure/inputs/browser-fs/explorer/explorer.component';
-import { KeystoresComponent } from './infrastructure/inputs/keystores/keystores/keystores.component';
 
 
 const routes: Routes = [
@@ -28,7 +27,6 @@ const routes: Routes = [
     { path: "njob" , component: NewjComponent },
     { path: 'channels' , component: InputsChannelsComponent },
     { path: 'browser' , component: ExplorerComponent },
-    { path: 'keystore' , component: KeystoresComponent },
     { path: "exceptions", component: ExceptionsListComponent },
     { path: "admin/credentials", component: CredentialsComponent },
     { path: "njob/:uncompiledId" , component: ExistingjComponent },

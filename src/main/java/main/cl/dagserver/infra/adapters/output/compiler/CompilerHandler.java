@@ -78,7 +78,7 @@ public class CompilerHandler implements CompilerOutputPort {
 		this.eventPublisher = eventPublisher;
 		this.builder = builder;
 		this.fileSystem = fileSystem;
-	}
+	} 
 	
 	@Override
 	public void createJar(String bin,Boolean force,Properties props) throws DomainException {
@@ -185,6 +185,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	            .filter(Files::isRegularFile)
 	            .filter(path -> path.toString().endsWith(".jar"))
 	            .collect(Collectors.toList());
+	        
 
 	        for (Path jarFilePath : jarFiles) {
 	            this.testValidation(className, jarFilePath);
