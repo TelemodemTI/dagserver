@@ -27,7 +27,15 @@ public class CalciteController {
             var body = sanitizeBody(bodyStr);
             log.info(body);
             String[] sqlStatements = new JSONObject(body).getString("sql").split(";");
-            try (Connection connection = createConnection();
+            return executeStatements(sqlStatements);
+        } catch (Exception e) {
+            log.error("Error parsing request body: ", e);
+            return buildErrorResponse(e);
+        }
+    }
+    
+    private String executeStatements(String[] sqlStatements) {
+    	try (Connection connection = createConnection();
             	CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
                 Statement statement = connection.createStatement()) {
             	boolean hasResultSet = false;
@@ -40,10 +48,6 @@ public class CalciteController {
             } catch (SQLException | ClassNotFoundException e) {
                 return buildErrorResponse(e);
             }
-        } catch (Exception e) {
-            log.error("Error parsing request body: ", e);
-            return buildErrorResponse(e);
-        }
     }
 
     private String sanitizeBody(String bodyStr) {

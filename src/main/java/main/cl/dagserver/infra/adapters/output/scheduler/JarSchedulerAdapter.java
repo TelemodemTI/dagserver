@@ -109,7 +109,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	        while ((ze = zip.getNextEntry()) != null) {
 				 if (!ze.isDirectory() && ze.getName().endsWith("properties")) {
 		             prop.load(inputStream);
-		             inputStream.close();
 				 }
 			}
 		} catch (Exception e) {

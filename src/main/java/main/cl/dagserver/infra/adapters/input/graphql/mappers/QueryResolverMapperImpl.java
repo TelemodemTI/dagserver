@@ -100,7 +100,7 @@ public class QueryResolverMapperImpl implements QueryResolverMapper {
 		DirectoryEntry dir = new DirectoryEntry();
 		dir.setName(dto.getPath());
 		dir.setType("folder");
-		dir.setContent(dto.getContent().stream().map(elt -> toFileEntry(elt)).toList());
+		dir.setContent(dto.getContent().stream().map(this::toFileEntry).toList());
 		return dir;
 	}
 
@@ -111,7 +111,7 @@ public class QueryResolverMapperImpl implements QueryResolverMapper {
 		fe.setName(dto.getFilename());
 		var content = dto.getContent();
 		if(content!=null) {
-			var list = content.stream().map(elt -> toFileEntry(elt)).toList();
+			var list = content.stream().map(this::toFileEntry).toList();
 			fe.setContent(list);	
 		} else {
 			fe.setContent(new ArrayList<>());

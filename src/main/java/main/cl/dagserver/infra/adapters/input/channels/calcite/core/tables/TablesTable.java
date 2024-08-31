@@ -16,6 +16,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class TablesTable extends AbstractTable implements ScannableTable {
 	
+	private static final String SCHEMAS = "SCHEMAS";
+	private static final String TABLE = "TABLE";
+	
 	@Override
 	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
 		RelDataTypeFactory.Builder builder = typeFactory.builder();
@@ -29,10 +32,10 @@ public class TablesTable extends AbstractTable implements ScannableTable {
 	@Override
 	public Enumerable<@Nullable Object[]> scan(DataContext root) {
 		List<Object[]> list = new ArrayList<>();
-		list.add(new Object[] {"SCHEMAS","CATALOG","TABLE",""});
-		list.add(new Object[] {"SCHEMAS","SCHEMAS","TABLE",""});
-		list.add(new Object[] {"SCHEMAS","TABLES","TABLE",""});
-		list.add(new Object[] {"SCHEMAS","COLUMNS","TABLE",""});
+		list.add(new Object[] {SCHEMAS,"CATALOG",TABLE,""});
+		list.add(new Object[] {SCHEMAS,SCHEMAS,TABLE,""});
+		list.add(new Object[] {SCHEMAS,"TABLES",TABLE,""});
+		list.add(new Object[] {SCHEMAS,"COLUMNS",TABLE,""});
 		return Linq4j.asEnumerable(list);
 	}
 

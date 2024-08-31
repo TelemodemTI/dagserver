@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,13 +71,13 @@ public class CompilerHandler implements CompilerOutputPort {
 	
     private ApplicationEventPublisher eventPublisher;
 	private CompilerOperatorBuilder builder;
-	@Autowired 
-	FileSystemOutputPort fileSystem;
+	private FileSystemOutputPort fileSystem;
 	
 	@Autowired
-	public CompilerHandler(CompilerOperatorBuilder builder,ApplicationEventPublisher eventPublisher) {
+	public CompilerHandler(CompilerOperatorBuilder builder,ApplicationEventPublisher eventPublisher,FileSystemOutputPort fileSystem) {
 		this.eventPublisher = eventPublisher;
 		this.builder = builder;
+		this.fileSystem = fileSystem;
 	}
 	
 	@Override
@@ -186,20 +187,22 @@ public class CompilerHandler implements CompilerOutputPort {
 	            .collect(Collectors.toList());
 
 	        for (Path jarFilePath : jarFiles) {
-	            try (FileSystem fs = FileSystems.newFileSystem(jarFilePath)) {
-	                Path classPath = fs.getPath(className);
-	                if (Files.exists(classPath)) {
-	                    throw new DomainException(new Exception("dagname already exists"));
-	                }
-	            } catch (IOException e) {
-	                log.debug("Error reading jar file: " + jarFilePath.getFileName(), e);
-	            }
+	            this.testValidation(className, jarFilePath);
 	        }
 	    } catch (IOException e) {
 	        throw new DomainException(e);
 	    }
 	}
-
+	private void testValidation(String className,Path jarFilePath) throws DomainException {
+		try (FileSystem fs = FileSystems.newFileSystem(jarFilePath)) {
+            Path classPath = fs.getPath(className);
+            if (Files.exists(classPath)) {
+                throw new DomainException(new Exception("dagname already exists"));
+            }
+        } catch (IOException e) {
+            log.debug("Error reading jar file: " + jarFilePath.getFileName(), e);
+        }
+	}
 	private Unloaded<DagExecutable> getClassDefinition(Map<String, String> dtomap, JSONArray boxes) throws DomainException {
 		Path folderPath = fileSystem.getFolderPath();
 	    ClassFileLocator classFileLocator = new DirectoryClassFileLocator(folderPath.toString());
@@ -262,18 +265,15 @@ public class CompilerHandler implements CompilerOutputPort {
 	            }
 	            zos.closeEntry();
 	        }
-
-	        // Add class definitions
-	        for (String classname : classbytes.keySet()) {
-	            String classPath = classname.replace(".", "/");
+	        for (Entry<String, byte[]> entryClass : classbytes.entrySet()) {
+	        	String classname = entryClass.getKey();
+	        	String classPath = classname.replace(".", "/");
 	            zos.putNextEntry(new ZipEntry(this.getPackageDef(classname)));
 	            zos.closeEntry();
 	            zos.putNextEntry(new ZipEntry(classPath + ".class"));
 	            zos.write(classbytes.get(classname));
 	            zos.closeEntry();
 	        }
-
-	        // Add the DAG definition as JSON
 	        zos.putNextEntry(new ZipEntry("dagdef.json"));
 	        zos.write(bin.getBytes());
 	        zos.closeEntry();

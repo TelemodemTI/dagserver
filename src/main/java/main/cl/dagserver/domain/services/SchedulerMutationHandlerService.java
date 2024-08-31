@@ -1,10 +1,9 @@
 package main.cl.dagserver.domain.services;
 
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
@@ -30,7 +29,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	private static final String GENERATED = "GENERATED";
 	private static final String STATUS = "STATUS";
 	private static final String ACTIVE = "ACTIVE";
-	
+	private static final SecureRandom random = new SecureRandom();
 	@Value( "${param.git_hub.propkey}" )
 	private String gitHubPropkey;
 	
@@ -404,7 +403,6 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		
 	}
 	private String generateRandomString(int length) {
-        Random random = new Random();
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             int index = random.nextInt(ALPHABET.length());
