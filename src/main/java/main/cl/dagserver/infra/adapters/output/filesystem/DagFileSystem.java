@@ -21,7 +21,6 @@ import main.cl.dagserver.domain.model.FileEntryDTO;
 
 public abstract class DagFileSystem implements FileSystemOutputPort {
 	
-	public abstract Path getFolderPath(String jarname);
 	
 	private static final String CLASSEXT = ".class";
 	private static final String SEP = "/";
