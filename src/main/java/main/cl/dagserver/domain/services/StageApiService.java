@@ -159,7 +159,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 				break;
 			}
 		}
-		if(rv) {
+		if(Boolean.TRUE.equals(rv)) {
 			scanner.init().execute(jarname, dagname,"",new JSONObject(args).toString());	
 		} else {
 			throw new DomainException(new Exception("Unauthorized"));

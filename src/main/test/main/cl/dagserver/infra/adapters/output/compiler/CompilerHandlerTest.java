@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 class CompilerHandlerTest {
@@ -19,6 +21,8 @@ class CompilerHandlerTest {
 	CompilerOperatorBuilder builder;
 	@Mock
 	ApplicationEventPublisher eventPublisher;
+	@Mock
+	FileSystemOutputPort fs;
 	
 	CompilerHandler handler;
 	
@@ -26,7 +30,8 @@ class CompilerHandlerTest {
     void init() {
 		eventPublisher = mock(ApplicationEventPublisher.class);
 		builder = mock(CompilerOperatorBuilder.class);
-		handler = new CompilerHandler(builder,eventPublisher);
+		fs = mock(FileSystemOutputPort.class);
+		handler = new CompilerHandler(builder,eventPublisher,fs);
 		ReflectionTestUtils.setField(handler, "pathfolder", "test");	
 	}
 	

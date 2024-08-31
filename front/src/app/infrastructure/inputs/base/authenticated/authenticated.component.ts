@@ -79,9 +79,6 @@ export class AuthenticatedComponent {
   viewExceptions(){
     this.router.navigateByUrl("auth/exceptions")
   }
-  viewKeystore(){
-    this.router.navigateByUrl("auth/keystore")
-  }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
   }

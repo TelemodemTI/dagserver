@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +43,9 @@ import main.cl.dagserver.infra.adapters.input.controllers.types.ExecuteDagReques
 @Controller
 @CrossOrigin(origins = "*",methods={RequestMethod.GET,RequestMethod.POST})
 public class DefaultController {
+	
+	@Value("${spring.allowed.file.extensions}")
+	private String allowedExtensions;
 	
 	private GitHubWebHookUseCase handler;
 	private StageApiUsecase api;
@@ -117,7 +124,8 @@ public class DefaultController {
 	@PostMapping(value = "/explorer/upload-file", consumes = {"multipart/form-data"})
 	public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("upload-path") String uploadPath,@RequestParam("token") String token) throws DomainException {
 	    try {
-	        Path tempFile = Files.createTempFile("uploaded-", file.getOriginalFilename());
+	    	String realFilename = file.getOriginalFilename();
+	        Path tempFile = Files.createTempFile("uploaded-", this.sanitizeFilename(realFilename));
 	        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);	        
 	        api.uploadFile(tempFile,uploadPath,file.getOriginalFilename(),token);
 	        JSONObject response = new JSONObject();
@@ -128,15 +136,32 @@ public class DefaultController {
 	        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
-	
+	private String sanitizeFilename(String filename) throws DomainException {
+	    String[] exts = this.allowedExtensions.split(","); 
+	    String fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
+	    
+		if(
+	    		filename != null && 
+	    		!filename.contains("..") && 
+	    		!filename.startsWith(".") &&
+	    		Arrays.asList(exts).contains(fileExtension)
+	    		) {
+			return filename;
+		} else {
+			throw new DomainException(new Exception("invalid file"));
+		}
+	}
 	
 	@GetMapping(value = "/explorer/download-file")
 	public ResponseEntity<byte[]> downloadFile(@RequestParam("folder") String folderPath,@RequestParam("file") String filePath, @RequestParam("token") String token) throws DomainException {
 	    try {
-	        Path file = api.getFilePath(folderPath,filePath, token);
+	    	
+	    	
+	        Path file = api.getFilePath(folderPath,this.sanitizeFilename(filePath), token);
 	        if (!Files.exists(file) || !Files.isReadable(file)) {
 	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	        }
+	        
 	        byte[] fileContent = Files.readAllBytes(file);
 	        String contentType = Files.probeContentType(file);
 	        return ResponseEntity.ok()

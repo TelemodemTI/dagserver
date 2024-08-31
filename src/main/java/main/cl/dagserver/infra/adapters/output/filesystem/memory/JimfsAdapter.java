@@ -13,10 +13,16 @@ import main.cl.dagserver.infra.adapters.output.filesystem.DagFileSystem;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Component
 @Profile("filesystem-memory")
 public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort {
 
+	private static final String WORK = "/work/";
+	private static final String SEP = "/";
+	private static final String DSEP = "//";
 	private FileSystem fs;
 	
 	public JimfsAdapter(){
@@ -25,23 +31,23 @@ public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort 
 	
 	@Override
 	public Path getFolderPath() {
-		return this.fs.getPath("/work/");
+		return this.fs.getPath(WORK);
 	}
 
 	@Override
 	public Path getFolderPath(String jarname) {
-		return this.fs.getPath("/work/" + jarname);
+		return this.fs.getPath(WORK + jarname);
 	}
 
 	@Override
 	public Path getJDBCDriversPath(String inputPath) {
-		String realpath = ("/work/"+inputPath).replace("//", "/");
+		String realpath = (WORK+inputPath).replace(DSEP, SEP);
 		return this.fs.getPath(realpath);
 	}
 	@Override
 	public DirectoryEntryDTO getContents() throws DomainException {
 		DirectoryEntryDTO directoryEntry = new DirectoryEntryDTO();
-	    directoryEntry.setPath("/");	    
+	    directoryEntry.setPath(SEP);	    
 	    directoryEntry.setContent(getFileEntries(this.getFolderPath()));
 	    return directoryEntry;
 	}
@@ -49,48 +55,28 @@ public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort 
 	@Override
 	public void upload(Path tempFile, String uploadPath,String realname) throws DomainException {
 	    try {
-	    	String realnamec = (uploadPath+"/"+realname).replace("//", "/");
+	    	String realnamec = (uploadPath+SEP+realname).replace(DSEP, SEP);
 	        Path destinationPath = this.getFolderPath(realnamec);
-	        try {
-	        	if (destinationPath.getParent() != null) {
-		            Files.createDirectories(destinationPath.getParent());
-		        }
-			} catch (Exception e) {}
+	        this.createIfNull(destinationPath);
 	        Files.copy(tempFile, destinationPath);
 	    } catch (IOException e) {
 	        throw new DomainException(e);
 	    }
 	}
-
-	@Override
-	public void createFolder(String foldername) throws DomainException {
-	    try {
-	        Path folderPath = this.getFolderPath(foldername);
-	        Files.createDirectories(folderPath);
-	    } catch (IOException e) {
-	        throw new DomainException(e);
-	    }
-	}
-
-	@Override
-	public void delete(String folder, String file) throws DomainException {
-	    try {
-	        Path targetPath;
-	        if (file == null || file.isEmpty()) {
-	            targetPath = this.getFolderPath(folder);
-	        } else {
-	            String realpath = (folder + "/" + file).replace("//", "/");
-	            targetPath = this.getFolderPath(realpath);
+	private void createIfNull(Path destinationPath) {
+		try {
+        	if (destinationPath.getParent() != null) {
+	            Files.createDirectories(destinationPath.getParent().normalize());
 	        }
-	        Files.delete(targetPath);
-	    } catch (IOException e) {
-	        throw new DomainException(e);
-	    }
+		} catch (Exception e) {
+			log.error(e);
+		}
 	}
+	
 
 	@Override
 	public Path getFilePath(String folderPath, String filename) {
-		String rurl = ("/work/" + folderPath + "/" + filename).replace("//", "/");
+		String rurl = (WORK + folderPath + SEP + filename).replace(DSEP, SEP);
 		return this.fs.getPath(rurl);
 	}
 
@@ -102,8 +88,11 @@ public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort 
 	        if (destinationPath.getParent() != null) {
 	            Files.createDirectories(destinationPath.getParent());
 	        }
+	        if(filename.equals(copyname)) {
+	        	throw new DomainException(new Exception("file is the same"));
+	        }
 	        Files.copy(sourcePath, destinationPath);
-	    } catch (IOException e) {
+	    } catch (Exception e) {
 	        throw new DomainException(e);
 	    }
 	}
@@ -113,9 +102,12 @@ public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort 
 	public void moveFile(String folder,String filename, String newpath) throws DomainException {
 	    try {
 	        Path sourcePath = this.getFilePath("", filename);
-	        Path destinationPath = this.getFilePath("", (newpath+"/"+filename).replace("//", "/"));
+	        Path destinationPath = this.getFilePath("", (newpath+SEP+filename).replace(DSEP, SEP));
 	        if (destinationPath.getParent() != null) {
 	            Files.createDirectories(destinationPath.getParent());
+	        }
+	        if(sourcePath.equals(destinationPath)) {
+	        	throw new DomainException(new Exception("file is the same"));
 	        }
 	        Files.move(sourcePath, destinationPath);
 	    } catch (IOException e) {
