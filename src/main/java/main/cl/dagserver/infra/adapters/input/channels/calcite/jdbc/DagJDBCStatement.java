@@ -215,67 +215,67 @@ public class DagJDBCStatement implements Statement {
 
 	@Override
 	public int getUpdateCount() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public boolean getMoreResults() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public void setFetchDirection(int direction) throws SQLException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public int getFetchDirection() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public void setFetchSize(int rows) throws SQLException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public int getFetchSize() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public int getResultSetConcurrency() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public int getResultSetType() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public void addBatch(String sql) throws SQLException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void clearBatch() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public int[] executeBatch() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -286,13 +286,13 @@ public class DagJDBCStatement implements Statement {
 
 	@Override
 	public boolean getMoreResults(int current) throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public DagJDBCResultSet getGeneratedKeys() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -346,37 +346,37 @@ public class DagJDBCStatement implements Statement {
 
 	@Override
 	public int getResultSetHoldability() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public boolean isClosed() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public void setPoolable(boolean poolable) throws SQLException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public boolean isPoolable() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public void closeOnCompletion() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public boolean isCloseOnCompletion() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
