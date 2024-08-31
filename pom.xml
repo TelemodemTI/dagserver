@@ -28,7 +28,7 @@
 			**/domain/exceptions/**,
 			**/domain/model/**,
 			**/infra/adapters/confs/**,
-			**/infra/adapters/input/channels/calcite/jdbc/**
+			**/infra/adapters/input/channels/calcite/jdbc/**,
 			**/application/pojos/**,
 			**DagserverApplication.java
 		</sonar.exclusions>
