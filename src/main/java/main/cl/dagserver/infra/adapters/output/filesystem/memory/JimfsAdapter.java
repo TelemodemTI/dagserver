@@ -106,7 +106,7 @@ public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort 
 	        if (destinationPath.getParent() != null) {
 	            Files.createDirectories(destinationPath.getParent());
 	        }
-	        if(sourcePath.equals(destinationPath)) {
+	        if(folder.equals(newpath)) {
 	        	throw new DomainException(new Exception("file is the same"));
 	        }
 	        Files.move(sourcePath, destinationPath);

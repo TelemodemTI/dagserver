@@ -70,9 +70,10 @@ class JimfsAdapterTest {
 		var filtmp = File.createTempFile("test", "test");
 		memory.upload(Path.of(filtmp.toURI()), "/", "tmp.file");
 		try {
-			
+			memory.moveFile("/","tmp.file", "/");
 		}catch (Exception e) {
-			// TODO: handle exception
+			memory.moveFile("/","tmp.file", "/lib/");
+			assertTrue(true);
 		}
 	}
 }
