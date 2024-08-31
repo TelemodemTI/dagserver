@@ -18,6 +18,8 @@ import main.cl.dagserver.domain.model.FileEntryDTO;
 
 public abstract class DagFileSystem {
 	
+	abstract public Path getFolderPath(String jarname);
+	
 	private static final String CLASSEXT = ".class";
 	
 	public ClassLoader getClassLoader(List<URI> list) {
@@ -96,5 +98,29 @@ public abstract class DagFileSystem {
 	       throw new DomainException(e);
 	    }
 	    return fileEntries;
+	}
+	
+	public void createFolder(String foldername) throws DomainException {
+	    try {
+	        Path folderPath = this.getFolderPath(foldername);
+	        Files.createDirectories(folderPath);
+	    } catch (IOException e) {
+	        throw new DomainException(e);
+	    }
+	}
+
+	public void delete(String folder, String file) throws DomainException {
+	    try {
+	        Path targetPath;
+	        if (file == null || file.isEmpty()) {
+	            targetPath = this.getFolderPath(folder);
+	        } else {
+	            String realpath = (folder + "/" + file).replace("//", "/");
+	            targetPath = this.getFolderPath(realpath);
+	        }
+	        Files.delete(targetPath);
+	    } catch (IOException e) {
+	        throw new DomainException(e);
+	    }
 	}
 }

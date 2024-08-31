@@ -62,31 +62,7 @@ public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort 
 	    }
 	}
 
-	@Override
-	public void createFolder(String foldername) throws DomainException {
-	    try {
-	        Path folderPath = this.getFolderPath(foldername);
-	        Files.createDirectories(folderPath);
-	    } catch (IOException e) {
-	        throw new DomainException(e);
-	    }
-	}
-
-	@Override
-	public void delete(String folder, String file) throws DomainException {
-	    try {
-	        Path targetPath;
-	        if (file == null || file.isEmpty()) {
-	            targetPath = this.getFolderPath(folder);
-	        } else {
-	            String realpath = (folder + "/" + file).replace("//", "/");
-	            targetPath = this.getFolderPath(realpath);
-	        }
-	        Files.delete(targetPath);
-	    } catch (IOException e) {
-	        throw new DomainException(e);
-	    }
-	}
+	
 
 	@Override
 	public Path getFilePath(String folderPath, String filename) {
