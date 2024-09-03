@@ -1,6 +1,7 @@
 package main.cl.dagserver.infra.adapters.input.channels.calcite.core.tables;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.ApplicationContext;
 import lombok.extern.log4j.Log4j2;
+import main.cl.dagserver.application.ports.input.CalciteUseCase;
 import main.cl.dagserver.domain.services.SchedulerQueryHandlerService;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
@@ -22,9 +24,9 @@ import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 public class SchemasTable extends AbstractTable implements ScannableTable {
 
 	private SchedulerQueryHandlerService provider;
+	private CalciteUseCase calcite;
 	
 	@Override
-	@SuppressWarnings("static-access")
 	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
 		RelDataTypeFactory.Builder builder = typeFactory.builder();
 		builder.add("TABLE_SCHEM", SqlTypeName.VARCHAR);
@@ -38,19 +40,24 @@ public class SchemasTable extends AbstractTable implements ScannableTable {
 		List<Object[]> list = new ArrayList<>();
 		if(this.provider == null) {
 			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
-			this.provider =  appCtx.getBean("schedulerQueryHandlerService", SchedulerQueryHandlerService.class);	
+			this.calcite =  appCtx.getBean("calciteService", CalciteUseCase.class);
+			this.provider =  appCtx.getBean("schedulerQueryHandlerService", SchedulerQueryHandlerService.class);
 		}
 		try {
 			var availables = this.provider.availableJobs();
 			for (Map.Entry<String, List<Map<String, String>>> entry : availables.entrySet()) {
-		        for (Map<String, String> operatormap : entry.getValue()) {
-		        	Object[] row = new Object[2];
-		        	String rdagname = operatormap.get("dagname");
-		        	var splitted = rdagname.split("\\.");
-		        	row[0] = splitted[splitted.length-1];
-					row[1] = "DEFAULT";
-					list.add(row);
-		        }
+				for (Map<String, String> operatormap : entry.getValue()) {
+					String rdagname = operatormap.get("dagname");
+					List<String> arr = this.calcite.getSchemas(rdagname);
+					for (Iterator<String> iterator = arr.iterator(); iterator.hasNext();) {
+						String name = iterator.next();
+						Object[] row = new Object[2];
+						row[0] = "SCH"+name;
+						var splitted = rdagname.split("\\.");
+			        	row[1] = splitted[splitted.length-1];
+						list.add(row);
+					}
+				}
 			}
 			Object[] row = new Object[2];
 			row[0] = "SCHEMAS";

@@ -2,6 +2,7 @@ package main.cl.dagserver.infra.adapters.input.channels.calcite.core.schemas;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import main.cl.dagserver.infra.adapters.input.channels.calcite.core.tables.CatalogTable;

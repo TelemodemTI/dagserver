@@ -358,11 +358,9 @@ public class DagExecutable implements Job,JobListener  {
 				throw new DomainException(new Exception(string + " not found"));
 			}
 		}
-		
 		if(this.extrArgs != null) {
 			args = this.mergePropertiesByIteratingKeySet(this.extrArgs,args);
 		}
-		
 		var node = new DagNode(name,operator,args,optionals);
 		this.nodeList.put(name, node);
 		this.g.addVertex(node);

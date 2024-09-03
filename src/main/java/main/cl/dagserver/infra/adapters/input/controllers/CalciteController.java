@@ -2,25 +2,35 @@ package main.cl.dagserver.infra.adapters.input.controllers;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.calcite.schema.SchemaPlus;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.log4j.Log4j2;
+import main.cl.dagserver.application.ports.input.CalciteUseCase;
+import main.cl.dagserver.infra.adapters.input.channels.calcite.core.schemas.DagserverSchema;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 @RestController
 @Log4j2
 @RequestMapping("/calcite")
 public class CalciteController {
 
+	@Autowired
+	CalciteUseCase calcite;
+	
     @PostMapping("/execute")
     public String execute(@RequestBody String bodyStr) {
         try {
@@ -37,8 +47,15 @@ public class CalciteController {
     private String executeStatements(String[] sqlStatements) {
     	try (Connection connection = createConnection();
             	CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-                Statement statement = connection.createStatement()) {
-            	boolean hasResultSet = false;
+    			Statement statement = connection.createStatement()) {
+    			SchemaPlus rootSchema = calciteConnection.getRootSchema();
+    			List<String> schemas = this.calcite.getAllSchemas();
+    			for (Iterator<String> iterator = schemas.iterator(); iterator.hasNext();) {
+    				String string = iterator.next();
+    				DagserverSchema dynamicSchema = new DagserverSchema(string);
+        			rootSchema.add("SCH"+string, dynamicSchema);	
+				}
+    			boolean hasResultSet = false;
                 for (String sql : sqlStatements) {
                     if (!sql.trim().isEmpty()) {
                         hasResultSet = statement.execute(sql.trim());

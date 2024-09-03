@@ -537,6 +537,12 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		List<Log> list = dao.read(Log.class,"select log from Log as log order by log.execDt desc",new HashMap<>(),0,5);
 		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
 	}
+	
+	@Override
+	public List<LogDTO> getAllLogs() {
+		List<Log> list = dao.read(Log.class,"select log from Log as log order by log.execDt desc",new HashMap<>());
+		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
+	}
 
 	@Override
 	public String getUncompiledBinByName(String jarname) {
