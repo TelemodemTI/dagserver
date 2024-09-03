@@ -29,7 +29,6 @@ public class HashMapStorage implements StorageOutputPort {
 	
 	@Override
 	public void putEntry(String locatedb, Map<String, DataFrame> xcom) {
-		log.info("located putEntry: {}",locatedb);;
 		JSONObject wrapper = new JSONObject();
 		var keys = xcom.keySet();
 		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
@@ -41,7 +40,6 @@ public class HashMapStorage implements StorageOutputPort {
 
 	@Override
 	public Map<String, DataFrame> getEntry(String xcomkey) {
-		log.info("located getEntry: {}",xcomkey);
 		Map<String,DataFrame> mapa = new HashMap<>();
 		try {
 			if(map.containsKey(xcomkey)) {

@@ -20,6 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.CalciteUseCase;
 import main.cl.dagserver.domain.services.SchedulerQueryHandlerService;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
+import main.cl.dagserver.infra.adapters.input.channels.calcite.core.DagTypeMapper;
 
 @Log4j2
 public class ColumnsTable extends AbstractTable implements ScannableTable {
@@ -31,6 +32,7 @@ public class ColumnsTable extends AbstractTable implements ScannableTable {
 	
 	private SchedulerQueryHandlerService provider;
 	private CalciteUseCase calcite;
+	private DagTypeMapper mapper = new DagTypeMapper();
 	 
 	@Override
 	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
@@ -67,7 +69,8 @@ public class ColumnsTable extends AbstractTable implements ScannableTable {
 							List<Map<String,Object>> columns = this.calcite.getColumns(schema1,table);
 							for (Iterator<Map<String,Object>> iterator3 = columns.iterator(); iterator3.hasNext();) {
 								Map<String, Object> objects = iterator3.next();
-								list.add(new Object[] {table,objects.get("name"),SqlTypeName.VARCHAR,255,false});
+								String typep = objects.get("type").toString().replace("class ", "");
+								list.add(new Object[] {table,objects.get("name"),this.mapper.evaluate(typep),255,false});
 							}
 						}
 					}

@@ -12,18 +12,21 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.ScannableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.context.ApplicationContext;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.CalciteUseCase;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
+import main.cl.dagserver.infra.adapters.input.channels.calcite.core.DagTypeMapper;
 
+@Log4j2
 public class DagTable extends AbstractTable implements ScannableTable {
 
 	private String schema;
 	private String tableName;
 	private CalciteUseCase calcite;
+	private DagTypeMapper mapper = new DagTypeMapper();
 	@SuppressWarnings("static-access")
 	public DagTable(String schema,String tableName) {
 		this.schema = schema;
@@ -37,8 +40,13 @@ public class DagTable extends AbstractTable implements ScannableTable {
 		List<Map<String,Object>> columns = this.calcite.getColumns(schema,tableName);
 		RelDataTypeFactory.Builder builder = typeFactory.builder();
 		for (Iterator<Map<String, Object>> iterator = columns.iterator(); iterator.hasNext();) {
-			Map<String, Object> map = iterator.next();
-			builder.add(map.get("name").toString(), SqlTypeName.VARCHAR);	
+			try {
+				Map<String, Object> map = iterator.next();
+				String typep = map.get("type").toString().replace("class ", "");
+				builder.add(map.get("name").toString(), this.mapper.evaluate(typep));	
+			} catch (Exception e) {
+				log.error(e);
+			}
 		}
 		return builder.build();
 	}

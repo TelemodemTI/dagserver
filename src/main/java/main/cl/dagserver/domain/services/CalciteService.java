@@ -51,7 +51,6 @@ public class CalciteService extends BaseServiceComponent  implements CalciteUseC
 	        Map<String, Object> columnInfo = new HashMap<>();
 	        columnInfo.put("name", columnName);    
 	        columnInfo.put("type", columnSeries.getInferredType().toString());
-	        
 	        columns.add(columnInfo);
 	    }
 	    return columns;
