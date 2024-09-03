@@ -97,10 +97,11 @@ public class DagJDBCPreparedStatement implements PreparedStatement {
 	public DagJDBCResultSet executeQuery(String sql) throws SQLException {
 	    try {
 	        this.sql = sql;
-	        URL endpoint = new URL(this.connection.getUrl());
+	        URL endpoint = new URL(this.connection.getHandler().getNurl());
             HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
             conn.setRequestMethod("POST");
 	        conn.setRequestProperty("Content-Type", "application/json");
+	        this.connection.getHandler().secure(conn);
 	        String jsonBody = "{\"sql\":\"" + sql + "\"}";
 	        conn.getOutputStream().write(jsonBody.getBytes());
 	        int responseCode = conn.getResponseCode();
@@ -132,12 +133,12 @@ public class DagJDBCPreparedStatement implements PreparedStatement {
 	public int executeUpdate(String sql) throws SQLException {
 	    try {
 	        this.sql = sql;
-	        URL endpoint = new URL(this.connection.getUrl());
+	        URL endpoint = new URL(this.connection.getHandler().getNurl());
             HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
             conn.setRequestMethod("POST");
 	        conn.setDoOutput(true);
 	        conn.setRequestProperty("Content-Type", "application/json");
-
+	        this.connection.getHandler().secure(conn);
 	        String jsonBody = "{\"sql\":\"" + sql + "\"}";
 	        conn.getOutputStream().write(jsonBody.getBytes());
 

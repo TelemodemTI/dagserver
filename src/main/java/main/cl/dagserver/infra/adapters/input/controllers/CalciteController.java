@@ -8,10 +8,13 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.CalciteUseCase;
+import main.cl.dagserver.application.ports.input.LoginUseCase;
+import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.infra.adapters.input.channels.calcite.core.schemas.DagserverSchema;
 
 import java.sql.Connection;
@@ -31,20 +34,31 @@ public class CalciteController {
 	@Autowired
 	CalciteUseCase calcite;
 	
+	@Autowired
+	LoginUseCase login;
+	
     @PostMapping("/execute")
-    public String execute(@RequestBody String bodyStr) {
+    public String execute(@RequestBody String bodyStr,@RequestHeader("Authorization") String authorizationHeader) {
         try {
+        	String authCode = authorizationHeader.substring(7);
+        	log.info(authorizationHeader);
             var body = sanitizeBody(bodyStr);
             log.info(body);
             String[] sqlStatements = new JSONObject(body).getString("sql").split(";");
-            return executeStatements(sqlStatements);
+            var dto = login.apply(authCode);
+            log.info(dto);
+            if(!dto.getToken().isEmpty() && !dto.getRefreshToken().isEmpty()) {
+            	return executeStatements(sqlStatements,dto);	
+            } else {
+            	return buildErrorResponse(new Exception("unauthorized"));
+            }
         } catch (Exception e) {
             log.error("Error parsing request body: ", e);
             return buildErrorResponse(e);
         }
     }
     
-    private String executeStatements(String[] sqlStatements) {
+    private String executeStatements(String[] sqlStatements, SessionDTO dto) {
     	try (Connection connection = createConnection();
             	CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
     			Statement statement = connection.createStatement()) {
@@ -61,7 +75,7 @@ public class CalciteController {
                         hasResultSet = statement.execute(sql.trim());
                     }
                 }
-                return buildResponse(statement, hasResultSet);
+                return buildResponse(statement, hasResultSet,dto);
             } catch (SQLException | ClassNotFoundException e) {
                 return buildErrorResponse(e);
             }
@@ -81,12 +95,13 @@ public class CalciteController {
         return DriverManager.getConnection("jdbc:calcite:", info);
     }
 
-    private String buildResponse(Statement statement, boolean hasResultSet) throws SQLException {
+    private String buildResponse(Statement statement, boolean hasResultSet, SessionDTO dto) throws SQLException {
         JSONObject returnObj = new JSONObject();
         if (hasResultSet) {
             ResultSet resultSet = statement.getResultSet();
             returnObj.put("result", buildResultArray(resultSet));
             returnObj.put("metadata", buildMetadataArray(resultSet.getMetaData()));
+            returnObj.put("session",dto);
         } else {
             int updateCount = statement.getUpdateCount();
             returnObj.put("updateCount", updateCount);

@@ -20,10 +20,10 @@ import java.util.concurrent.Executor;
 
 public class DagJDBCConnection implements Connection {
 
-	private String url;
+	private DagJDBCAuth handler;
 	
-	public DagJDBCConnection(String url) {
-		this.url = url;
+	public DagJDBCConnection(DagJDBCAuth handler) {
+		this.handler = handler;
 	}
 
 	@Override
@@ -291,14 +291,12 @@ public class DagJDBCConnection implements Connection {
 		return 0;
 	}
 
-	public String getUrl() {
-		return url;
+	public DagJDBCAuth getHandler() {
+		return handler;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	
+	public void setHandler(DagJDBCAuth auth) {
+		this.handler = auth;
+	}	
 
 }

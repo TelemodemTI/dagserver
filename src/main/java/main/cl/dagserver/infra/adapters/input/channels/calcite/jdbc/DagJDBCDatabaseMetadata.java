@@ -40,7 +40,7 @@ public class DagJDBCDatabaseMetadata implements DatabaseMetaData {
 
 	@Override
 	public String getURL() throws SQLException {
-		return this.connection.getUrl();
+		return this.connection.getHandler().getNurl();
 	}
 
 	@Override
