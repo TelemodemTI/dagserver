@@ -1,5 +1,4 @@
 package main.cl.dagserver.infra.adapters.input.controllers;
-
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
@@ -16,7 +15,6 @@ import main.cl.dagserver.application.ports.input.CalciteUseCase;
 import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.infra.adapters.input.channels.calcite.core.schemas.DagserverSchema;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -37,16 +35,15 @@ public class CalciteController {
 	@Autowired
 	LoginUseCase login;
 	
+	
     @PostMapping("/execute")
     public String execute(@RequestBody String bodyStr,@RequestHeader("Authorization") String authorizationHeader) {
         try {
         	String authCode = authorizationHeader.substring(7);
-        	log.info(authorizationHeader);
             var body = sanitizeBody(bodyStr);
             log.info(body);
             String[] sqlStatements = new JSONObject(body).getString("sql").split(";");
             var dto = login.apply(authCode);
-            log.info(dto);
             if(!dto.getToken().isEmpty() && !dto.getRefreshToken().isEmpty()) {
             	return executeStatements(sqlStatements,dto);	
             } else {
@@ -70,11 +67,20 @@ public class CalciteController {
         			rootSchema.add("SCH"+string, dynamicSchema);	
 				}
     			boolean hasResultSet = false;
-                for (String sql : sqlStatements) {
-                    if (!sql.trim().isEmpty()) {
-                        hasResultSet = statement.execute(sql.trim());
+                for (String sql1 : sqlStatements) {
+                	if (!sql1.trim().isEmpty()) {                		
+                		if(sql1.toUpperCase().startsWith("CALL ")) {
+                			String sqlr = "SELECT "+sql1.substring(5);
+                			hasResultSet = statement.execute(sqlr.trim());
+                		} else if(sql1.toUpperCase().startsWith("EXEC ")) {
+                			String sqlr = "SELECT "+sql1.substring(5);
+                			hasResultSet = statement.execute(sqlr.trim());
+                		} else {
+                			hasResultSet = statement.execute(sql1.trim());
+                		}
+
                     }
-                }
+                }                
                 return buildResponse(statement, hasResultSet,dto);
             } catch (SQLException | ClassNotFoundException e) {
                 return buildErrorResponse(e);
@@ -84,7 +90,7 @@ public class CalciteController {
     private String sanitizeBody(String bodyStr) {
         return bodyStr.replace("\n", " ").replace("\r", " ").trim();
     }
-
+    
     private Connection createConnection() throws SQLException, ClassNotFoundException {
         Class.forName("org.apache.calcite.jdbc.Driver");
         Properties info = new Properties();

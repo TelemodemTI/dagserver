@@ -68,6 +68,7 @@ public class TablesTable extends AbstractTable implements ScannableTable {
 			list.add(new Object[] {SCHEMAS,SCHEMAS,TABLE});
 			list.add(new Object[] {SCHEMAS,"TABLES",TABLE});
 			list.add(new Object[] {SCHEMAS,"COLUMNS",TABLE});
+			list.add(new Object[] {SCHEMAS,"PROCEDURES",TABLE});
 			
 		} catch (Exception e) {
 			log.error(e);

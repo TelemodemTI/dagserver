@@ -160,9 +160,14 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			}
 		}
 		if(Boolean.TRUE.equals(rv)) {
-			scanner.init().execute(jarname, dagname,"",new JSONObject(args).toString());	
+			scanner.init().execute(jarname, dagname,"HTTP API Endpoint",new JSONObject(args).toString());	
 		} else {
 			throw new DomainException(new Exception("Unauthorized"));
 		}
+	}
+
+	@Override
+	public void executeDag(String jarname, String dagname, JSONObject args) throws DomainException {
+		scanner.init().execute(jarname, dagname,"Calcite Driver",args.toString());	
 	}
 }

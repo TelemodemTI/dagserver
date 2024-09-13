@@ -1,8 +1,5 @@
 package main.cl.dagserver.infra.adapters.input.channels.calcite.jdbc;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
@@ -10,7 +7,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.json.JSONObject;
 public class DagJDBCDriver implements Driver {
 
 	@Override
@@ -18,23 +14,12 @@ public class DagJDBCDriver implements Driver {
 		if (!acceptsURL(url)) {
             return null; // Returning null if the URL is not accepted
         }
-        try {
-        	//jdbc:dag:http://localhost:8081/calcite/execute
-        	//jdbc:dag:localhost:8081
-        	String username = info.getProperty("user");
-            String password = info.getProperty("password");
-            System.out.println("el usuario es:"+new JSONObject(info).toString());
-        	var handler = new DagJDBCAuth(url,username,password);
-            URL endpoint = new URL(handler.getNurl());
-            HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
-            connection.setRequestMethod("POST");
-            handler.secure(connection);
-            connection.setDoOutput(true);
-            return new DagJDBCConnection(handler);
-
-        } catch (IOException e) {
-            throw new SQLException(url, e);
-        }
+        //jdbc:dag:http://localhost:8081/calcite/execute
+		//jdbc:dag:localhost:8081
+		String username = info.getProperty("user");
+		String password = info.getProperty("password");
+		var handler = new DagJDBCAuth(url,username,password);
+		return new DagJDBCConnection(handler);
 	}
 
 	@Override

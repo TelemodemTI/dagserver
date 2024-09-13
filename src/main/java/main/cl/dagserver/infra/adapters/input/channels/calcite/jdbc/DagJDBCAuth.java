@@ -28,9 +28,7 @@ public class DagJDBCAuth {
 		blindFirm.put("username", username);
 		blindFirm.put("mode", "included");
 		JSONObject json = new JSONObject(blindFirm);
-        System.out.println(json.toString());
 		String encodedAuthorization = Base64.getEncoder().encodeToString(json.toString().getBytes(StandardCharsets.UTF_8));
-		System.out.println(encodedAuthorization);
 		connection.setRequestProperty("Authorization", "Bearer " + encodedAuthorization);
 	}
 	

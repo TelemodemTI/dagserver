@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.input.channels.calcite.core;
+package main.cl.dagserver.infra.adapters.input.channels.calcite.core.tables.mapper;
 
 import java.util.HashMap;
 import java.util.Map;

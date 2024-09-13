@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.CalciteUseCase;
 import main.cl.dagserver.domain.services.SchedulerQueryHandlerService;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
-import main.cl.dagserver.infra.adapters.input.channels.calcite.core.DagTypeMapper;
+import main.cl.dagserver.infra.adapters.input.channels.calcite.core.tables.mapper.DagTypeMapper;
 
 @Log4j2
 public class ColumnsTable extends AbstractTable implements ScannableTable {
@@ -38,6 +38,7 @@ public class ColumnsTable extends AbstractTable implements ScannableTable {
 	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
 		RelDataTypeFactory.Builder builder = typeFactory.builder();
 		builder.add(TABLE_NAME, SqlTypeName.VARCHAR);
+		builder.add("COLUMN_TYPE", SqlTypeName.VARCHAR);
 		builder.add("COLUMN_NAME", SqlTypeName.VARCHAR);
 		builder.add("TYPE_NAME", SqlTypeName.VARCHAR);
 		builder.add("SIZE", SqlTypeName.INTEGER);
@@ -70,22 +71,30 @@ public class ColumnsTable extends AbstractTable implements ScannableTable {
 							for (Iterator<Map<String,Object>> iterator3 = columns.iterator(); iterator3.hasNext();) {
 								Map<String, Object> objects = iterator3.next();
 								String typep = objects.get("type").toString().replace("class ", "");
-								list.add(new Object[] {table,objects.get("name"),this.mapper.evaluate(typep),255,false});
+								list.add(new Object[] {table,"TABLE",objects.get("name"),this.mapper.evaluate(typep),255,false});
 							}
 						}
 					}
 				}
 			}
-			list.add(new Object[] {"CATALOG","TABLE_CATALOG",SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {SCHEMAS,"TABLE_SCHEM",SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {SCHEMAS,"TABLE_CATALOG",SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {TABLES,"TABLE_SCHEM",SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {TABLES,TABLE_NAME,SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {COLUMNS,TABLE_NAME,SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {COLUMNS,"COLUMN_NAME",SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {COLUMNS,"TYPE_NAME",SqlTypeName.VARCHAR,255,false});
-			list.add(new Object[] {COLUMNS,"SIZE",SqlTypeName.INTEGER,11,false});
-			list.add(new Object[] {COLUMNS,"IS_NULLABLE",SqlTypeName.BOOLEAN,2,false});
+			list.add(new Object[] {"CATALOG","TABLE","TABLE_CATALOG",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {SCHEMAS,"TABLE","TABLE_SCHEM",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {SCHEMAS,"TABLE","TABLE_CATALOG",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {TABLES,"TABLE","TABLE_SCHEM",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {TABLES,"TABLE",TABLE_NAME,SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {COLUMNS,"TABLE",TABLE_NAME,SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {COLUMNS,"TABLE","COLUMN_NAME",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {COLUMNS,"TABLE","COLUMN_TYPE",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {COLUMNS,"TABLE","TYPE_NAME",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {COLUMNS,"TABLE","SIZE",SqlTypeName.INTEGER,11,false});
+			list.add(new Object[] {COLUMNS,"TABLE","IS_NULLABLE",SqlTypeName.BOOLEAN,2,false});
+			list.add(new Object[] {"PROCEDURES","TABLE","PROCEDURE_NAME",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {"PROCEDURES","TABLE","PROCEDURE_TYPE",SqlTypeName.VARCHAR,255,false});
+			
+			list.add(new Object[] {"DAG_EXECUTOR","PROCEDURE","JARNAME",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {"DAG_EXECUTOR","PROCEDURE","DAGNAME",SqlTypeName.VARCHAR,255,false});
+			list.add(new Object[] {"DAG_EXECUTOR","PROCEDURE","ARGS",SqlTypeName.VARCHAR,255,false});
+			
 		} catch (Exception e) {
 			log.error(e);
 		}

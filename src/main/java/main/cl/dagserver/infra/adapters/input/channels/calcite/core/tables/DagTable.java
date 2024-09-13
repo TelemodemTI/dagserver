@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.CalciteUseCase;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
-import main.cl.dagserver.infra.adapters.input.channels.calcite.core.DagTypeMapper;
+import main.cl.dagserver.infra.adapters.input.channels.calcite.core.tables.mapper.DagTypeMapper;
 
 @Log4j2
 public class DagTable extends AbstractTable implements ScannableTable {

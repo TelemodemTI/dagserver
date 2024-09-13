@@ -11,4 +11,5 @@ public interface StageApiUsecase {
 	void uploadFile(Path tempFile, String uploadPath, String string, String token) throws DomainException;
 	Path getFilePath(String folderPath,String filename, String token) throws DomainException;
 	void executeDag(String token,String jarname, String dagname, Map<String, String> args) throws DomainException;
+	void executeDag(String jarname, String dagname, JSONObject args) throws DomainException;
 }
