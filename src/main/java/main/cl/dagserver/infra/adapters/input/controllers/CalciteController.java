@@ -107,7 +107,8 @@ public class CalciteController {
             ResultSet resultSet = statement.getResultSet();
             returnObj.put("result", buildResultArray(resultSet));
             returnObj.put("metadata", buildMetadataArray(resultSet.getMetaData()));
-            returnObj.put("session",dto);
+            returnObj.put("token",dto.getToken());
+            returnObj.put("refreshToken",dto.getRefreshToken());
         } else {
             int updateCount = statement.getUpdateCount();
             returnObj.put("updateCount", updateCount);
