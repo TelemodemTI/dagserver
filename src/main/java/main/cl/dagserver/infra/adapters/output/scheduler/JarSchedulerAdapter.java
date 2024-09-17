@@ -342,15 +342,21 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		var list = channels.availableChannels();
 		for (Iterator<Class<? extends InputChannel>> iterator = list.iterator(); iterator.hasNext();) {
 			Class<? extends InputChannel> class1 = iterator.next();
-			if(propKey.equals("ACTIVEMQ_PROPS") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.input.channels.activemq.ActiveMQChannel")) {
+			if(	propKey.equals("ACTIVEMQ_PROPS") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.ActiveMQChannel")) {
+				return true;
+			}
+			if(propKey.equals("KAFKA_CONSUMER") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.KafkaChannel")) {
+				return true;
+			}
+			if(propKey.equals("REDIS_PROPS") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.RedisChannel")) {
+				return true;
+			}
+			if(propKey.equals("RABBIT_PROPS") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.RabbitChannel")) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-
-	
 
 
 }

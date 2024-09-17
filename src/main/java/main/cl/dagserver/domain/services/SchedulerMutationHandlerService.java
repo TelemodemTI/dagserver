@@ -207,30 +207,6 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	}
 
 	@Override
-	public void addGitHubWebhook(String token, String name, String repositoryUrl, String secret, String dagname,String jarname) throws DomainException {
-		try {
-			auth.untokenize(token);
-			repository.setProperty(name,repositoryUrl,secret,this.gitHubPropkey);
-			repository.setProperty(DAGNAME, GENERATED, dagname, name);
-			repository.setProperty(JARNAME, GENERATED, jarname, name);
-			repository.setProperty(STATUS, "github channel status", ACTIVE, "GITHUB_WEBHOOK_PROPS");
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-		
-	}
-	@Override
-	public void removeGithubWebhook(String token, String name) throws DomainException {
-		try {
-			auth.untokenize(token);
-			repository.delProperty(name, this.gitHubPropkey);
-			repository.delProperty(DAGNAME, name);
-			repository.delProperty(JARNAME, name);
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-	}
-	@Override
 	public void deleteLog(String token, Integer logid) throws DomainException {
 		auth.untokenize(token);
 		repository.deleteLog(logid);

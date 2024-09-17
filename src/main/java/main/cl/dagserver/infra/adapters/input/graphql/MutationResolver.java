@@ -178,24 +178,6 @@ public class MutationResolver {
 		}
 	}
 	@MutationMapping
-	public StatusOp addGitHubWebhook(@Argument String token,@Argument String name,@Argument String repository,@Argument String secret,@Argument String dagname,@Argument String jarname) {
-		try {
-			handler.addGitHubWebhook(token,name,repository,secret,dagname,jarname);
-			return ok();
-		} catch (Exception e) {
-			return error(e);
-		}
-	}
-	@MutationMapping
-	public StatusOp removeGithubWebhook(@Argument String token,@Argument  String name) {
-		try {
-			handler.removeGithubWebhook(token,name);
-			return ok();
-		} catch (Exception e) {
-			return error(e);
-		}
-	}
-	@MutationMapping
 	public StatusOp deleteLog(@Argument String token,@Argument Integer logid) {
 		try {
 			handler.deleteLog(token,logid);

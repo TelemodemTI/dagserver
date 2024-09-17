@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.input.channels.rabbit;
+package main.cl.dagserver.infra.adapters.channels;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,29 +28,25 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
-import main.cl.dagserver.infra.adapters.input.channels.InputChannel2;
 
 
-//@Component
+@Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
-public class RabbitChannel extends InputChannel2 {
+public class RabbitChannel extends InputChannel {
 
 	@Value( "${param.rabbit.refresh.timeout}" )
 	private Integer rabbitRefresh;
 	
 	private static final String QUEUE = "queue";
-	private RabbitChannelUseCase handler;
-
-	private List<Map<String,String>> runningConsumers;
-	private Channel channel1;
 	
 	@Autowired
-	public RabbitChannel(RabbitChannelUseCase handler,ApplicationEventPublisher eventPublisher){
-		super(eventPublisher);
-		this.handler = handler;
-	}
-	
+	private RabbitChannelUseCase handler;
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+	private List<Map<String,String>> runningConsumers;
+	private Channel channel1;
+
 	public void runForever() throws ChannelException {
 		try {
 			Boolean longRunning = true;

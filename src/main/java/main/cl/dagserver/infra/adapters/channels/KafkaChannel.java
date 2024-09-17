@@ -1,7 +1,6 @@
-package main.cl.dagserver.infra.adapters.input.channels.kafka;
+package main.cl.dagserver.infra.adapters.channels;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,26 +25,20 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
-import main.cl.dagserver.infra.adapters.input.channels.InputChannel2;
 
 
-//@Component
+@Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
-public class KafkaChannel extends InputChannel2 {
+public class KafkaChannel extends InputChannel {
 
 	@Value( "${param.kafka.refresh.timeout}" )
 	private Integer kafkaRefresh;	
-	private KafkaChannelUseCase handler;
     private List<Map<String,String>> runningConsumers;
-	
-	@Autowired
-	public KafkaChannel(KafkaChannelUseCase handler,ApplicationEventPublisher eventPublisher){
-		super(eventPublisher);
-		this.handler = handler;
-		this.runningConsumers = new ArrayList<>();
-	}
-	
+    @Autowired
+    private KafkaChannelUseCase handler;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
 	public void runForever() throws ChannelException {
 		try {

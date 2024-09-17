@@ -184,10 +184,15 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    channels.add(createChannel("SCHEDULER", ACTIVE, "scheduler.png", Collections.emptyList()));
 	    channels.add(createChannel("GRAPHQL", ACTIVE, "graphql.png", Collections.emptyList()));
 	    channels.add(createChannel("HTTP_ENDPOINT", ACTIVE, "http.png", getChannelProps("HTTP_CHANNEL_API_KEY")));
-	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB_WEBHOOK_PROPS"), "github.png", getChannelProps("GITHUB_WEBHOOK_PROPS")));
-	    channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
-	    channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));
-	    channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));
+	    if(this.scanner.isEnabled(RABBITMQ)) {
+	    	channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
+	    }
+	    if(this.scanner.isEnabled(REDIS_LISTENER)) {
+	    	channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));	
+	    }
+	    if(this.scanner.isEnabled(KAFKA_CONSUMER)) {
+	    	channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));	
+	    }
 	    if(this.scanner.isEnabled(ACTIVEMQ_LISTENER)) {
 	    	channels.add(createChannel(ACTIVEMQ_LISTENER, getChannelStatus(ACTIVEMQ_LISTENER), "activemq.png", getChannelProps(ACTIVEMQ_LISTENER)));	
 	    }

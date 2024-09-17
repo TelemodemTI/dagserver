@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.input.channels.redis;
+package main.cl.dagserver.infra.adapters.channels;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,32 +20,26 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
-import main.cl.dagserver.infra.adapters.input.channels.InputChannel2;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
 
-//@Component
+@Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
-public class RedisInputListener extends InputChannel2 {
+public class RedisChannel extends InputChannel {
 	
-	
+	@Autowired
 	private RedisChannelUseCase handler;
 
 	@Value( "${param.redis.refresh.timeout}" )
 	private Integer redisRefresh;
 	private static final String LISTENER = "listener";
-	
-	
 	@Autowired
-	public RedisInputListener(RedisChannelUseCase handler,ApplicationEventPublisher eventPublisher) {
-		super(eventPublisher);
-		this.handler = handler;
-	}
-	
+	private ApplicationEventPublisher eventPublisher;
+
 	public void runForever() throws ChannelException {
 		try {
 			boolean keepRunning = true;
