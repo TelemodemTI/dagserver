@@ -43,7 +43,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	private static final String RABBITMQ = "RABBIT_PROPS";
 	private static final String REDIS_LISTENER = "REDIS_PROPS";
 	private static final String KAFKA_CONSUMER = "KAFKA_CONSUMER";
-	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_LISTENER";
+	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_PROPS";
 	
 	
 	@Value( "${param.git_hub.propkey}" )
@@ -188,7 +188,9 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
 	    channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));
 	    channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));
-	    channels.add(createChannel(ACTIVEMQ_LISTENER, getChannelStatus(ACTIVEMQ_LISTENER), "activemq.png", getChannelProps(ACTIVEMQ_LISTENER)));
+	    if(this.scanner.isEnabled(ACTIVEMQ_LISTENER)) {
+	    	channels.add(createChannel(ACTIVEMQ_LISTENER, getChannelStatus(ACTIVEMQ_LISTENER), "activemq.png", getChannelProps(ACTIVEMQ_LISTENER)));	
+	    }
 	    return channels;
 	}
 

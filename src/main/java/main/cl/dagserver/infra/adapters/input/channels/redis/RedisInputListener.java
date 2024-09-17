@@ -20,16 +20,17 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
+import main.cl.dagserver.infra.adapters.input.channels.InputChannel2;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
 
-@Component
+//@Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
-public class RedisInputListener extends InputChannel {
+public class RedisInputListener extends InputChannel2 {
 	
 	
 	private RedisChannelUseCase handler;

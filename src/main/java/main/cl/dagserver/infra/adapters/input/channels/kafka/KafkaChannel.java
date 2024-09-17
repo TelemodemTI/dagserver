@@ -26,12 +26,13 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
+import main.cl.dagserver.infra.adapters.input.channels.InputChannel2;
 
 
-@Component
+//@Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
-public class KafkaChannel extends InputChannel {
+public class KafkaChannel extends InputChannel2 {
 
 	@Value( "${param.kafka.refresh.timeout}" )
 	private Integer kafkaRefresh;	

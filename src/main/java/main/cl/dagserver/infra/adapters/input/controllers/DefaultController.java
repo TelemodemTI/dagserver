@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,9 @@ public class DefaultController {
 	
 	private GitHubWebHookUseCase handler;
 	private StageApiUsecase api;
+	
+	 @Autowired
+	  private ApplicationContext applicationContext;
 	
 	@Autowired
 	public DefaultController(GitHubWebHookUseCase handler,StageApiUsecase api) {
@@ -172,6 +176,13 @@ public class DefaultController {
 	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+	
+	 @GetMapping(path = "/beans")
+	 public String[] getAllBeans() {
+		 String[] beanNames = applicationContext.getBeanDefinitionNames();
+	     Arrays.sort(beanNames);
+	     return beanNames;
+	 }
 	
 	
 	private String calculeHashSecret(String xhubsignature,String requestData) {
