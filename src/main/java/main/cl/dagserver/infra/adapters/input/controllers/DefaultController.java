@@ -1,5 +1,6 @@
 package main.cl.dagserver.infra.adapters.input.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,8 +43,8 @@ public class DefaultController {
 	
 	private StageApiUsecase api;
 	
-	 @Autowired
-	  private ApplicationContext applicationContext;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	@Autowired
 	public DefaultController(StageApiUsecase api) {
@@ -132,8 +133,6 @@ public class DefaultController {
 	@GetMapping(value = "/explorer/download-file")
 	public ResponseEntity<byte[]> downloadFile(@RequestParam("folder") String folderPath,@RequestParam("file") String filePath, @RequestParam("token") String token) throws DomainException {
 	    try {
-	    	
-	    	
 	        Path file = api.getFilePath(folderPath,this.sanitizeFilename(filePath), token);
 	        if (!Files.exists(file) || !Files.isReadable(file)) {
 	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -150,12 +149,43 @@ public class DefaultController {
 	    }
 	}
 	
-	 @GetMapping(path = "/beans")
-	 public String[] getAllBeans() {
-		 String[] beanNames = applicationContext.getBeanDefinitionNames();
-	     Arrays.sort(beanNames);
-	     return beanNames;
+	@GetMapping(path = "/beans")
+	public ResponseEntity<String> getAllBeans() {
+		String[] beanNames = applicationContext.getBeanDefinitionNames();
+	    JSONArray arr = new JSONArray();
+	    for (int i = 0; i < beanNames.length; i++) {
+	    	arr.put(beanNames[i]);
+		}
+	    return new ResponseEntity<String>(arr.toString(),HttpStatus.OK);
+	}
+	
+	 @GetMapping("/download-keystore")
+	 public ResponseEntity<byte[]> downloadKeystore(@RequestParam("password") String password,@RequestParam("token") String token) throws DomainException {
+		 try {
+			 File keystore = this.api.exportKeystore(token, password);
+			 byte[] fileContent = Files.readAllBytes(keystore.toPath());
+		        String contentType = Files.probeContentType(keystore.toPath());
+		        return ResponseEntity.ok()
+		                .header("Content-Disposition", "attachment; filename=\"" + keystore.toPath().getFileName().toString() + "\"")
+		                .contentType(org.springframework.http.MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
+		                .body(fileContent);	 
+		 } catch (IOException e) {
+		        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		 }
 	 }
-	
-	
+	 
+	@PostMapping(value = "/upload-keystore", consumes = {"multipart/form-data"})
+	public ResponseEntity<String> uploadKeystore(@RequestParam("file") MultipartFile file, @RequestParam("token") String token) throws DomainException {
+		    try {
+		    	String realFilename = file.getOriginalFilename();
+		        Path tempFile = Files.createTempFile("uploaded-", this.sanitizeFilename(realFilename));
+		        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);	        
+		        api.uploadKeystore(tempFile,file.getOriginalFilename(),token);
+		        JSONObject response = new JSONObject();
+		        response.put("status", "ok");
+		        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+		    } catch (IOException e) {
+		        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+		    }
+	}
 }

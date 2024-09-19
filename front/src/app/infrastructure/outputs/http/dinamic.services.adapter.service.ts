@@ -95,4 +95,33 @@ export class DinamicAdapterService implements DinamicOutputPort {
             })
         })
     }
+
+
+    downloadKeystore(password: string): Promise<any> {
+        return new Promise<any>((resolve,reject)=>{
+            let url = uri + "download-keystore";
+            var token = localStorage.getItem("dagserver_token")!
+            const params = new HttpParams()
+                .set('token', token)
+                .set('password', password);
+                
+        
+            this.http.get(url, { params: params, responseType: 'blob' }).subscribe((response: any) => {
+                // Crea un enlace temporal para descargar el archivo
+                const blob = new Blob([response], { type: response.type });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "keystore.jks";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                resolve(true);
+            }, (error: any) => {
+                reject(error);
+            });
+        })
+    }
+    
 }

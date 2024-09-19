@@ -1,7 +1,12 @@
 package main.cl.dagserver.infra.adapters.output.keystore;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Path;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -71,6 +76,39 @@ public class KeystoreAdapter implements KeystoreOutputPort {
 	    }
 	}
 
-	
+	@Override
+	public File generateKeystoreFile(String filename, String password) throws DomainException {
+	    try {
+	        File jksFile = File.createTempFile(filename, ".jks");
+	        try (FileOutputStream fos = new FileOutputStream(jksFile)) {
+	            local.store(fos, password.toCharArray());
+	        }
+	        return jksFile;
+	    } catch (Exception e) {
+	        throw new DomainException(e);
+	    }
+	}
 
+	@Override
+	public void importKeystore(Path tempFile, String originalFilename) throws DomainException {
+	    try (FileInputStream fis = new FileInputStream(tempFile.toFile())) {
+	        KeyStore importedKeystore = KeyStore.getInstance("JKS");
+	        char[] password = null; // Si es necesario, obtén la contraseña de alguna fuente o como parámetro.
+	        importedKeystore.load(fis, password);
+	        Enumeration<String> aliases = importedKeystore.aliases();
+	        while (aliases.hasMoreElements()) {
+	            String alias = aliases.nextElement();
+	            if (importedKeystore.isKeyEntry(alias)) {
+	                KeyStore.Entry entry = importedKeystore.getEntry(alias, new KeyStore.PasswordProtection(password));
+	                local.setEntry(alias, entry, new KeyStore.PasswordProtection(password));
+	            } else if (importedKeystore.isCertificateEntry(alias)) {
+	                KeyStore.Entry entry = importedKeystore.getEntry(alias, null);
+	                local.setEntry(alias, entry, null);
+	            }
+	        }
+	    } catch (Exception e) {
+	        throw new DomainException(e);
+	    }
+	}
+	
 }

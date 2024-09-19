@@ -1,5 +1,7 @@
 package main.cl.dagserver.domain.services;
+import java.io.File;
 import java.nio.file.Path;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -169,5 +171,18 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 	@Override
 	public void executeDag(String jarname, String dagname, JSONObject args) throws DomainException {
 		scanner.init().execute(jarname, dagname,"Calcite Driver",args.toString());	
+	}
+
+	@Override
+	public File exportKeystore(String token, String password) throws DomainException {
+		auth.untokenize(token);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+		return keystore.generateKeystoreFile("LOCAL_KEYSTORE_"+sdf.format(new Date()), password);
+	}
+
+	@Override
+	public void uploadKeystore(Path tempFile, String originalFilename, String token) throws DomainException {
+		auth.untokenize(token);
+		this.keystore.importKeystore(tempFile,originalFilename);
 	}
 }

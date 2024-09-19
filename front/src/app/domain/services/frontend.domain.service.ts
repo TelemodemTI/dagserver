@@ -55,7 +55,11 @@ export class FrontEndDomainService implements
     private httpd: DinamicOutputPort,
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
+    private dinamic:DinamicOutputPort,
     private encryptor: EncryptionOutputPort) { }
+  downloadKeystore(password: any): Promise<any> {
+    return this.dinamic.downloadKeystore(password);
+  }
   
   createEntry(alias: String, user: string, pwd: string): Promise<void> {
     return this.adapter.createKeyEntry(alias,user,pwd);
