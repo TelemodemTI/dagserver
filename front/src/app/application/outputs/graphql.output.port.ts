@@ -8,6 +8,7 @@ import { Uncompileds } from "src/app/domain/models/uncompiled.model";
 import { Credential } from 'src/app/domain/models/credential.model';
 
 export abstract class GraphQLOutputPort {
+    public abstract getEntries(): Promise<any[]>;
     public abstract deleteApiKey(appname: any): Promise<void>;
     public abstract createApiKey(appname: any): Promise<void>;
     public abstract moveFile(folder:string,filename: string, newpath: any): Promise<any>;

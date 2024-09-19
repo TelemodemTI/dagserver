@@ -18,6 +18,18 @@ import { Property } from 'src/app/domain/models/property.model';
 export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   constructor(private apollo : Apollo) { }
+
+  getEntries(): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      var token = localStorage.getItem("dagserver_token")
+      var string = "query keystoreEntries($token: String) {keystoreEntries(token:$token) {name,type}}"
+      this.query(string,{token:token}).subscribe((result:any)=>{
+        if(result && result.keystoreEntries){
+          resolve(result.keystoreEntries as any[]);
+        }
+      })
+    })
+  }
   
   deleteApiKey(appname: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{

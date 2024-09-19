@@ -28,8 +28,8 @@ import main.cl.dagserver.domain.model.PropertyDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
-import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
-
+import main.cl.dagserver.domain.model.ExceptionsDTO;
+import main.cl.dagserver.domain.model.KeystoreEntryDTO;
 
 
 
@@ -44,10 +44,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	private static final String REDIS_LISTENER = "REDIS_PROPS";
 	private static final String KAFKA_CONSUMER = "KAFKA_CONSUMER";
 	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_PROPS";
-	
-	
-	@Value( "${param.git_hub.propkey}" )
-	private String gitHubPropkey;
+
 	
 	@Value( "${param.rabbit.propkey}" )
 	private String rabbitPropkey;
@@ -255,15 +252,15 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Exceptions> getExceptions(String token) throws DomainException {
+	public List<ExceptionsDTO> getExceptions(String token) throws DomainException {
 		auth.untokenize(token);
-		List<Exceptions> newrv = new ArrayList<>();
+		List<ExceptionsDTO> newrv = new ArrayList<>();
 		var exceptions = this.storage.listException();
 		var keys = exceptions.keySet();
 		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
 			String dt = iterator.next();
 			Map<String,String> map = (Map<String,String>) exceptions.get(dt);
-			Exceptions ex = new Exceptions();
+			ExceptionsDTO ex = new ExceptionsDTO();
 			ex.setEventDt(dt);
 			ex.setClassname(map.get("classname"));
 			ex.setMethod(map.get("method"));
@@ -274,7 +271,13 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	@Override
 	public DirectoryEntryDTO mounted(String token) throws DomainException {
+		auth.untokenize(token);
 		return this.fileSystem.getContents();
+	}
+	@Override
+	public List<KeystoreEntryDTO> getKeystoreEntries(String token) throws DomainException {
+		auth.untokenize(token);
+		return this.keystore.getEntries();
 	}
 	
 }

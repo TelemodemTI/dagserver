@@ -30,8 +30,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	private static final String STATUS = "STATUS";
 	private static final String ACTIVE = "ACTIVE";
 	private static final SecureRandom random = new SecureRandom();
-	@Value( "${param.git_hub.propkey}" )
-	private String gitHubPropkey;
+	
 	
 	@Value( "${param.rabbit.propkey}" )
 	private String rabbitPropkey;

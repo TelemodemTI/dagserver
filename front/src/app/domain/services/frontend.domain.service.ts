@@ -29,6 +29,7 @@ import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschanne
 import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { SharedOutputPort } from 'src/app/application/outputs/shared.output.port';
 import { ExplorerInputPort } from 'src/app/application/inputs/explorer.input.port';
+import { KeystoreInputPort } from 'src/app/application/inputs/keystore.input.port';
 
 @Injectable({
   providedIn: 'root'
@@ -42,12 +43,12 @@ export class FrontEndDomainService implements
     LogsInputPort,
     LogDetailInputPort,
     PropsInputPort,
+    KeystoreInputPort,
     ExistingJInputPort,
     CredentialsInputPort,
     JardetailpInputPort,
     DependenciesInputPort,
     InputsChannelsInputPort,
-    ExistingJInputPort,
     ExplorerInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
@@ -55,6 +56,10 @@ export class FrontEndDomainService implements
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
     private encryptor: EncryptionOutputPort) { }
+  
+  getEntries(): Promise<any[]> {
+    return this.adapter.getEntries();
+  }
 
   deleteApiKey(appname: any): Promise<void> {
     return this.adapter.deleteApiKey(appname)

@@ -31,6 +31,7 @@ import main.cl.dagserver.infra.adapters.input.graphql.types.Detail;
 import main.cl.dagserver.infra.adapters.input.graphql.types.DetailStatus;
 import main.cl.dagserver.infra.adapters.input.graphql.types.DirectoryEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
+import main.cl.dagserver.infra.adapters.input.graphql.types.KeystoreEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.LogEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Node;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Property;
@@ -260,7 +261,7 @@ public class QueryResolver {
 	@QueryMapping
 	public List<Exceptions> exceptions(@Argument String token) {
 		try {
-			return handler.getExceptions(token);	
+			return handler.getExceptions(token).stream().map(elt -> mapper.toExceptions(elt)).toList();	
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
@@ -268,5 +269,13 @@ public class QueryResolver {
 	@QueryMapping
 	public DirectoryEntry mounted(@Argument String token) throws DomainException {
 		return mapper.toDirectoryEntry(handler.mounted(token));
+	}
+	@QueryMapping
+	public List<KeystoreEntry> keystoreEntries(@Argument String token){
+		try {
+			return handler.getKeystoreEntries(token).stream().map(elt -> mapper.toKeystoreEntry(elt)).toList();	
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 	}
 }

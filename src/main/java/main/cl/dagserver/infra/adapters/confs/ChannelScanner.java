@@ -46,7 +46,7 @@ public class ChannelScanner {
                 	listenerT.start();
                 	this.bindings.put(class1.getCanonicalName(), listenerT);
                 }
-            }
+            } 
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}

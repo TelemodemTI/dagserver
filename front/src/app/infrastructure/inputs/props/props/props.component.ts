@@ -41,7 +41,7 @@ export class PropsComponent {
           root.intervaledSearch = setTimeout(()=>{
             var data = table.rows({  'search' : 'applied'  }).data();
             root.search(data)
-          },1500)
+          },1000)
       });
     },100)
     this.properties = await this.service.properties();
@@ -109,7 +109,9 @@ export class PropsComponent {
     for (let index = 0; index < data.length; index++) {
       const element = data[index];
       let nprop = this.properties.filter((ele:any)=> {return ele.group == element[0] && ele.name == element[1]})[0]
-      newprops.push(nprop)
+      if(nprop){
+        newprops.push(nprop)
+      }
     }
     this.propertiesOriginal = this.properties
     this.properties = newprops
