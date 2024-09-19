@@ -189,4 +189,6 @@ type Mutation {
 	moveFile(token:String,folder:String,filename:String,newpath:String): StatusOp
 	createApiKey(token:String,appname:String): StatusOp
 	deleteApiKey(token:String,appname:String): StatusOp
+	createKeyEntry(token:String,alias:String,key:String,pwd:String):StatusOp
+	removeEntry(token:String,alias:String):StatusOp
 }

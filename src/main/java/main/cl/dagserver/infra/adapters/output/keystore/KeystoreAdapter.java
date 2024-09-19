@@ -3,6 +3,8 @@ package main.cl.dagserver.infra.adapters.output.keystore;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -43,5 +45,32 @@ public class KeystoreAdapter implements KeystoreOutputPort {
 	    }
 	}
 
+	@Override
+	public void createKey(String alias, String key, String pwd) throws DomainException {
+		try {
+			byte[] keyBytes = key.getBytes(); 
+	        SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
+			KeyStore.SecretKeyEntry secret = new KeyStore.SecretKeyEntry(secretKey);
+			KeyStore.ProtectionParameter password = new KeyStore.PasswordProtection(pwd.toCharArray());
+			local.setEntry(alias, secret, password);	
+		} catch (Exception e) {
+			throw new DomainException(e);
+		}
+	}
+
+	@Override
+	public void removeKey(String alias) throws DomainException {
+	    try {
+	        if (local.containsAlias(alias)) {
+	            local.deleteEntry(alias);
+	        } else {
+	            throw new DomainException(new Exception("Alias not found in the KeyStore: " + alias));
+	        }
+	    } catch (Exception e) {
+	        throw new DomainException(e);
+	    }
+	}
+
+	
 
 }

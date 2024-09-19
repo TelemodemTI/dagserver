@@ -384,6 +384,24 @@ public class MutationResolver {
 			return error(e);
 		}
 	}
+	@MutationMapping
+	public StatusOp createKeyEntry(@Argument String token,@Argument String alias,@Argument String key,@Argument String pwd){
+		try {
+			handler.createKeyEntry(token,alias,key,pwd);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp removeEntry(@Argument String token,@Argument String alias){
+		try {
+			handler.removeEntry(token,alias);
+			return ok();		
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
 	private StatusOp ok() {
 		StatusOp status = new StatusOp();
 		status.setCode(200);

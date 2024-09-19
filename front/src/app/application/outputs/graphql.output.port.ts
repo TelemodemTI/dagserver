@@ -67,4 +67,6 @@ export abstract class GraphQLOutputPort {
     public abstract saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void>;
     public abstract addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void>
     public abstract delConsumerAM(queue: any): Promise<void>
+    public abstract createKeyEntry(alias: any,key:any,pwd:any): Promise<void>
+    public abstract removeEntry(alias: any): Promise<void>
   }

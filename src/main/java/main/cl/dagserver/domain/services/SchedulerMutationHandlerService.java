@@ -390,4 +390,14 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		auth.untokenize(token);
 		this.repository.delProperty(appname, "HTTP_CHANNEL_API_KEY");
 	}
+	@Override
+	public void createKeyEntry(String token, String alias, String key, String pwd) throws DomainException {
+		auth.untokenize(token);
+		this.keystore.createKey(alias,key,pwd);
+	}
+	@Override
+	public void removeEntry(String token, String alias) throws DomainException {
+		auth.untokenize(token);
+		this.keystore.removeKey(alias);
+	}
 }

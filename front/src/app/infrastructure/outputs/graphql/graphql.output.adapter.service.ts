@@ -30,7 +30,31 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
       })
     })
   }
-  
+  createKeyEntry(alias: any,key:any,pwd:any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation createKeyEntry($token:String,$alias:String,$key:String,$pwd:String) { createKeyEntry(token:$token,alias:$alias,key:$key,pwd:$pwd) {status,code,value} }"
+      this.query(string,{token:token,alias:alias,key:key,pwd:pwd}).subscribe((result:any)=>{
+        if(result && result.createKeyEntry && result.createKeyEntry.status == "ok"){
+              resolve();
+        }
+      })
+    })
+  }
+  removeEntry(alias: any): Promise<void> {
+    return new Promise<void>((resolve,reject)=>{
+      var token = localStorage.getItem("dagserver_refresh_token")
+      var string = "mutation removeEntry($token:String,$alias:String) { removeEntry(token:$token,alias:$alias) {status,code,value} }"
+      this.query(string,{token:token,alias:alias}).subscribe((result:any)=>{
+        if(result && result.removeEntry && result.removeEntry.status == "ok"){
+              resolve();
+        }
+      })
+
+    })
+  }
+
+
   deleteApiKey(appname: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_refresh_token")

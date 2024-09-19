@@ -43,6 +43,7 @@ import { ParamEditorModule } from './infrastructure/inputs/param-editor/param-ed
 import { ExplorerInputPort } from './application/inputs/explorer.input.port';
 import { BrowserFSModule } from './infrastructure/inputs/browser-fs/browser-fs.module';
 import { KeystoreInputPort } from './application/inputs/keystore.input.port';
+import { KeystoreModule } from './infrastructure/inputs/keystore/keystore.module';
 
 
 
@@ -61,6 +62,7 @@ declare var window: any;
     JobsModule,
     LogsModule,
     PropsModule,
+    KeystoreModule,
     CredentialsModule,
     InputsModule,
     ExceptionsModule,

@@ -46,5 +46,7 @@ public interface SchedulerMutationUseCase {
 	void moveFile(String token, String folder,String filename, String newpath) throws DomainException;
 	void createApiKey(String token, String appname) throws DomainException;
 	void deleteApiKey(String token, String appname) throws DomainException;
+	void createKeyEntry(String token, String alias, String key, String pwd) throws DomainException;
+	void removeEntry(String token, String alias) throws DomainException;
 	
 }
