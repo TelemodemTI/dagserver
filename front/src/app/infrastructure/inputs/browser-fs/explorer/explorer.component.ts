@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ExplorerInputPort } from 'src/app/application/inputs/explorer.input.port';
-import { UploadFileComponent } from '../upload-file/upload-file.component';
 import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
 import { Router } from '@angular/router';
+import { UploadModalComponent } from '../../base/upload-modal/upload-modal.component';
 declare var $:any
 @Component({
   selector: 'app-explorer',
@@ -14,7 +14,7 @@ export class ExplorerComponent implements OnInit{
 @ViewChild("valuer2") valuer2!:ValueModalComponent
 @ViewChild("valuer3") valuer3!:ValueModalComponent
 
-@ViewChild("uploader") uploader!:UploadFileComponent;
+@ViewChild("uploader") uploader!:UploadModalComponent;
 selected_folder:string = "/";
 selected_file:string = "";
 constructor(private service: ExplorerInputPort, private router: Router){}
@@ -69,7 +69,7 @@ constructor(private service: ExplorerInputPort, private router: Router){}
     return result;
   }
   showUpload(){
-    this.uploader.show(this.selected_folder);
+    this.uploader.show();
   }
   createCopy(){
     this.valuer2.show();
@@ -79,6 +79,13 @@ constructor(private service: ExplorerInputPort, private router: Router){}
   }
   createFolder(){
     this.valuer.show();
+  }
+  async uploadEvent(file:any){
+    await this.service.uploadMounted(file,this.selected_folder)
+    this.uploader.close();
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['auth',"browser"]);
+    });   
   }
   async changeValueEvent(arr:any){
     let folder = arr[1];

@@ -69,12 +69,9 @@ public class FileSystemAdapter extends DagFileSystem implements FileSystemOutput
 	    try {
 	        Path sourcePath = this.getFilePath("", filename);
 	        Path destinationPath = this.getFilePath("", copyname);
-	        
-	        // Asegúrate de que el directorio de destino exista
 	        if (destinationPath.getParent() != null) {
 	            Files.createDirectories(destinationPath.getParent());
 	        }
-
 	        Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
 	    } catch (IOException e) {
 	        throw new DomainException(e);

@@ -53,4 +53,5 @@ public interface SchedulerRepositoryOutputPort {
 	public void renameUncompiled(Integer uncompiled, String newname);
 	public List<LogDTO> getLastLogs();
 	public String getUncompiledBinByName(String dagname);
+	public List<LogDTO> getAllLogs();
 }

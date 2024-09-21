@@ -1,23 +1,22 @@
 package main.cl.dagserver.infra.adapters.input.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +30,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.view.RedirectView;
-import fr.brouillard.oss.security.xhub.XHub;
-import fr.brouillard.oss.security.xhub.XHub.XHubConverter;
-import fr.brouillard.oss.security.xhub.XHub.XHubDigest;
-import main.cl.dagserver.application.ports.input.GitHubWebHookUseCase;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.infra.adapters.input.controllers.types.ExecuteDagRequest;
 
 @Controller
@@ -47,12 +41,15 @@ public class DefaultController {
 	@Value("${spring.allowed.file.extensions}")
 	private String allowedExtensions;
 	
-	private GitHubWebHookUseCase handler;
+	
+	
 	private StageApiUsecase api;
 	
 	@Autowired
-	public DefaultController(GitHubWebHookUseCase handler,StageApiUsecase api) {
-		this.handler = handler;
+	private ApplicationContext applicationContext;
+	
+	@Autowired
+	public DefaultController(StageApiUsecase api) {
 		this.api = api;
 	}
 	
@@ -102,24 +99,7 @@ public class DefaultController {
 		}
 	}
 	
-	@PostMapping(value = "/github-webhook")
-	public ResponseEntity<String> githubEvent(Model model,HttpServletRequest request,HttpServletResponse response) throws IOException, DomainException{
-		StringBuilder builder = new StringBuilder();
-		String requestData = request.getReader().lines().collect(Collectors.joining());
-		JSONObject payload = new JSONObject(requestData);	
-		String repourl = payload.getJSONObject("repository").getString("html_url");
-		String secret = request.getHeader("X-Hub-Signature");
-		ChannelPropsDTO secretConfigured = handler.getChannelPropsFromRepo(repourl);
-		builder.append("repo url::"+repourl+"\n");
-		String hashedcomp = this.calculeHashSecret(secretConfigured.getValue(),requestData);
-		var ndate = new Date();
-		var sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		if(secret.equals(hashedcomp)) {
-			handler.raiseEvent(repourl);
-			builder.append("event raised at "+sdf.format(ndate)+ " for repo "+repourl);
-		}
-		return new ResponseEntity<>(builder.toString(), HttpStatus.OK);
-	}
+	
 	
 	@PostMapping(value = "/explorer/upload-file", consumes = {"multipart/form-data"})
 	public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("upload-path") String uploadPath,@RequestParam("token") String token) throws DomainException {
@@ -155,8 +135,6 @@ public class DefaultController {
 	@GetMapping(value = "/explorer/download-file")
 	public ResponseEntity<byte[]> downloadFile(@RequestParam("folder") String folderPath,@RequestParam("file") String filePath, @RequestParam("token") String token) throws DomainException {
 	    try {
-	    	
-	    	
 	        Path file = api.getFilePath(folderPath,this.sanitizeFilename(filePath), token);
 	        if (!Files.exists(file) || !Files.isReadable(file)) {
 	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -173,9 +151,43 @@ public class DefaultController {
 	    }
 	}
 	
-	
-	private String calculeHashSecret(String xhubsignature,String requestData) {
-		return XHub.generateHeaderXHubToken(XHubConverter.HEXA_LOWERCASE, XHubDigest.SHA1, xhubsignature, requestData.getBytes());
+	@GetMapping(path = "/beans")
+	public ResponseEntity<String> getAllBeans() {
+		String[] beanNames = applicationContext.getBeanDefinitionNames();
+	    JSONArray arr = new JSONArray();
+	    for (int i = 0; i < beanNames.length; i++) {
+	    	arr.put(beanNames[i]);
+		}
+	    return new ResponseEntity<String>(arr.toString(),HttpStatus.OK);
 	}
 	
+	 @GetMapping("/download-keystore")
+	 public ResponseEntity<byte[]> downloadKeystore(@RequestParam("token") String token) throws DomainException {
+		 try {
+			 File keystore = this.api.exportKeystore(token);
+			 byte[] fileContent = Files.readAllBytes(keystore.toPath());
+		        String contentType = Files.probeContentType(keystore.toPath());
+		        return ResponseEntity.ok()
+		                .header("Content-Disposition", "attachment; filename=\"" + keystore.toPath().getFileName().toString() + "\"")
+		                .contentType(org.springframework.http.MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
+		                .body(fileContent);	 
+		 } catch (IOException e) {
+		        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		 }
+	 }
+	 
+	@PostMapping(value = "/upload-keystore", consumes = {"multipart/form-data"})
+	public ResponseEntity<String> uploadKeystore(@RequestParam("file") MultipartFile file, @RequestParam("token") String token) throws DomainException {
+		    try {
+		    	String realFilename = file.getOriginalFilename();
+		        Path tempFile = Files.createTempFile("uploaded-", this.sanitizeFilename(realFilename));
+		        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);	        
+		        api.uploadKeystore(tempFile,file.getOriginalFilename(),token);
+		        JSONObject response = new JSONObject();
+		        response.put("status", "ok");
+		        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+		    } catch (IOException e) {
+		        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+		    }
+	}
 }

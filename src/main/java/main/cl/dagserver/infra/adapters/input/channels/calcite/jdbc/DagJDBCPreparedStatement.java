@@ -97,10 +97,11 @@ public class DagJDBCPreparedStatement implements PreparedStatement {
 	public DagJDBCResultSet executeQuery(String sql) throws SQLException {
 	    try {
 	        this.sql = sql;
-	        URL endpoint = new URL(this.connection.getUrl());
+	        URL endpoint = new URL(this.connection.getHandler().getNurl());
             HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
             conn.setRequestMethod("POST");
 	        conn.setRequestProperty("Content-Type", "application/json");
+	        this.connection.getHandler().secure(conn);
 	        String jsonBody = "{\"sql\":\"" + sql + "\"}";
 	        conn.getOutputStream().write(jsonBody.getBytes());
 	        int responseCode = conn.getResponseCode();
@@ -132,12 +133,12 @@ public class DagJDBCPreparedStatement implements PreparedStatement {
 	public int executeUpdate(String sql) throws SQLException {
 	    try {
 	        this.sql = sql;
-	        URL endpoint = new URL(this.connection.getUrl());
+	        URL endpoint = new URL(this.connection.getHandler().getNurl());
             HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
             conn.setRequestMethod("POST");
 	        conn.setDoOutput(true);
 	        conn.setRequestProperty("Content-Type", "application/json");
-
+	        this.connection.getHandler().secure(conn);
 	        String jsonBody = "{\"sql\":\"" + sql + "\"}";
 	        conn.getOutputStream().write(jsonBody.getBytes());
 
@@ -157,15 +158,12 @@ public class DagJDBCPreparedStatement implements PreparedStatement {
 
 	private int readUpdateCount(InputStream inputStream) throws SQLException {
 	    try {
-	        // Leer el InputStream y convertirlo en un String
 	        String jsonResponse = new BufferedReader(new InputStreamReader(inputStream))
 	                .lines().collect(Collectors.joining("\n"));
-
-	        // Convertir la respuesta JSON en un JSONArray
-	        JSONArray jsonArray = new JSONArray(jsonResponse);
-
-	        // El número de objetos JSON en el JSONArray representa el número de filas afectadas
-	        return jsonArray.length();
+	        System.out.println(jsonResponse);
+	        JSONObject jsonObj = new JSONObject(jsonResponse);
+	        var jsonArr = jsonObj.getJSONArray("result");
+	        return jsonArr.length();
 	    } catch (Exception e) {
 	        throw new SQLException("Error reading update count from JSON response", e);
 	    }
@@ -604,9 +602,8 @@ public class DagJDBCPreparedStatement implements PreparedStatement {
 	}
 
 	@Override
-	public ResultSetMetaData getMetaData() throws SQLException {
-		
-		return null;
+	public DagJDBCResultSetMetaData getMetaData() throws SQLException {
+		return this.result.getMetaData();
 	}
 
 	@Override

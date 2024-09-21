@@ -30,9 +30,7 @@ export class InputsChannelsComponent {
     this.jars = [...new Set(jarsf)];
   }
   options(item:any){
-    if(item.name == "GITHUB_CHANNEL"){
-      $("#githubModal").modal('show');
-    } else if(item.name == "RABBIT_PROPS") {
+    if(item.name == "RABBIT_PROPS") {
       $("#rabbitModal").modal('show');
     } else if(item.name == "REDIS_PROPS") {
       $("#redisModal").modal('show');

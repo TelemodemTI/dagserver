@@ -29,6 +29,7 @@ import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschanne
 import { DinamicOutputPort } from 'src/app/application/outputs/dinamic.output.port';
 import { SharedOutputPort } from 'src/app/application/outputs/shared.output.port';
 import { ExplorerInputPort } from 'src/app/application/inputs/explorer.input.port';
+import { KeystoreInputPort } from 'src/app/application/inputs/keystore.input.port';
 
 @Injectable({
   providedIn: 'root'
@@ -42,19 +43,38 @@ export class FrontEndDomainService implements
     LogsInputPort,
     LogDetailInputPort,
     PropsInputPort,
+    KeystoreInputPort,
     ExistingJInputPort,
     CredentialsInputPort,
     JardetailpInputPort,
     DependenciesInputPort,
     InputsChannelsInputPort,
-    ExistingJInputPort,
     ExplorerInputPort {
 
   constructor(private adapter: GraphQLOutputPort,
     private httpd: DinamicOutputPort,
     private jwtadapter:JWTOutputPort,
     private shared:SharedOutputPort,
+    private dinamic:DinamicOutputPort,
     private encryptor: EncryptionOutputPort) { }
+
+  uploadKeystore(file: any): Promise<any> {
+    return this.httpd.uploadFile(file,"","upload-keystore");
+  }
+  downloadKeystore(): Promise<any> {
+    return this.dinamic.downloadKeystore();
+  }
+  
+  createEntry(alias: String, user: string, pwd: string): Promise<void> {
+    return this.adapter.createKeyEntry(alias,user,pwd);
+  }
+  removeEntry(alias: String): Promise<void> {
+    return this.adapter.removeEntry(alias)
+  }
+  
+  getEntries(): Promise<any[]> {
+    return this.adapter.getEntries();
+  }
 
   deleteApiKey(appname: any): Promise<void> {
     return this.adapter.deleteApiKey(appname)
@@ -86,7 +106,7 @@ export class FrontEndDomainService implements
   
   
   uploadMounted(file: File,inputPath:string): Promise<any> {
-    return this.httpd.uploadFile(file,inputPath);
+    return this.httpd.uploadFile(file,inputPath,"explorer/upload-file");
   }
   
   getMounted(): Promise<any> {
@@ -139,11 +159,11 @@ export class FrontEndDomainService implements
     return this.adapter.saveRedisChannel(mode,hostname,ports)
   }
 
-  saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void> {
-    return this.adapter.saveRabbitChannel(host, user, pwd, port)
+  saveRabbitChannel(host: string, cred: string, port: number): Promise<void> {
+    return this.adapter.saveRabbitChannel(host, cred, port)
   }
-  saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void> {
-    return this.adapter.saveActiveMQChannel(host, user, pwd)
+  saveActiveMQChannel(host: string, cred: string): Promise<void> {
+    return this.adapter.saveActiveMQChannel(host, cred)
   }
   addQueue(queue: string, jarfile: string, dagname: string): Promise<void> {
     return this.adapter.addQueue(queue,jarfile,dagname);

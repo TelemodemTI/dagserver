@@ -1,5 +1,6 @@
 package main.cl.dagserver.infra.adapters.operators;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,8 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import org.bson.Document;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
@@ -20,16 +24,20 @@ import com.mongodb.client.MongoDatabase;
 import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
 
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 
-@Operator(args={"hostname","port","mode","database","collection","timeout"},optionalv = {"username","password","filter","xcom"})
+@Operator(args={"hostname","port","mode","database","collection","timeout"},optionalv = {"credentials","filter","xcom"})
 public class MongoDBOperator extends OperatorStage {
-
+	private CredentialsDTO credentials = null;
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -37,10 +45,16 @@ public class MongoDBOperator extends OperatorStage {
 		log.debug(this.args);
 		List<Map<String,Object>> list = new ArrayList<>();
 		String conUrl = "";
-		if(this.optionals.containsKey("username")) {
-			conUrl = "mongodb://"+this.optionals.getProperty("username")+":"+this.optionals.getProperty("password")+"@"+this.args.getProperty("hostname")+":"+this.args.getProperty("port")+"/?connectTimeoutMS="+this.args.getProperty("timeout");	
-		} else {
+		
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		if(appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			this.credentials = handler.getCredentials(this.args.getProperty("credentials"));	
+		}
+		if(this.credentials == null) {
 			conUrl = "mongodb://"+this.args.getProperty("hostname")+":"+this.args.getProperty("port")+"/?connectTimeoutMS="+this.args.getProperty("timeout");
+		} else {
+			conUrl = "mongodb://"+this.credentials.getUsername()+":"+this.credentials.getPassword()+"@"+this.args.getProperty("hostname")+":"+this.args.getProperty("port")+"/?connectTimeoutMS="+this.args.getProperty("timeout");
 		}
 		MongoClient mongoClient = MongoClients.create(
 				MongoClientSettings.builder().applyConnectionString(new ConnectionString(conUrl))
@@ -164,8 +178,7 @@ public class MongoDBOperator extends OperatorStage {
 		metadata.setParameter("collection", "text");
 		metadata.setParameter("timeout", "number");
 		metadata.setOpts("xcom", "xcom");
-		metadata.setOpts("username", "text");
-		metadata.setOpts("password", "password");
+		metadata.setOpts("credentials", "credentials");
 		metadata.setOpts("filter", "sourcecode",Arrays.asList("application/json"));
 		return metadata.generate();
 	}

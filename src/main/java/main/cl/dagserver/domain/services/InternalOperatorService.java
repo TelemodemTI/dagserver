@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
 
 @Service
 public class InternalOperatorService extends BaseServiceComponent implements InternalOperatorUseCase{
@@ -47,6 +48,11 @@ public class InternalOperatorService extends BaseServiceComponent implements Int
 	@Override
 	public Path getJDBCDriversPath(String inputPath) {
 		return this.fileSystem.getJDBCDriversPath(inputPath);
+	}
+
+	@Override
+	public CredentialsDTO getCredentials(String alias) throws DomainException {
+		return this.keystore.getCredentials(alias);
 	}
 
 }

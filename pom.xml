@@ -21,6 +21,7 @@
 		<sonar.exclusions>
 			**/repositories/entities/**,
 			**/infra/adapters/operators/**,
+			**/infra/adapters/channels/**,
 			**/graphql/types/**,
 			**/domain/core/**,
 			**/domain/annotations/**,
@@ -71,9 +72,8 @@
 		    <artifactId>spring-boot-starter-quartz</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.bull.javamelody</groupId>
-			<artifactId>javamelody-spring-boot-starter</artifactId>
-			<version>1.95.0</version>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
 				<groupId>org.slf4j</groupId>
@@ -100,11 +100,7 @@
 		    <artifactId>jgrapht-core</artifactId>
 		    <version>1.0.1</version>
 		</dependency>    
-		<dependency>
-		    <groupId>commons-dbcp</groupId>
-		    <artifactId>commons-dbcp</artifactId>
-		    <version>1.2.2</version>
-		</dependency>
+		
 		<dependency>
 		    <groupId>commons-dbutils</groupId>
 		    <artifactId>commons-dbutils</artifactId>
@@ -273,10 +269,7 @@
 		    <groupId>org.apache.kafka</groupId>
 		    <artifactId>kafka-clients</artifactId>
 		</dependency>
-		<dependency>
-		    <groupId>org.apache.activemq</groupId>
-		    <artifactId>activemq-broker</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>io.github.classgraph</groupId>
 			<artifactId>classgraph</artifactId>
@@ -312,6 +305,12 @@
 		    <artifactId>calcite-core</artifactId>
 		    <version>1.37.0</version>
 		</dependency>
+
+		<dependency>
+		    <groupId>org.apache.activemq</groupId>
+		    <artifactId>activemq-broker</artifactId>
+      	</dependency>
+      
 	</dependencies>          
     <build>
 		<testSourceDirectory>src/main/test</testSourceDirectory>
@@ -323,10 +322,9 @@
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
 	
+	<!--
 	<plugin>
             <artifactId>maven-surefire-plugin</artifactId>
-            <!-- latest version does not work well with JUnit5 
-            <version>2.19.1</version>-->
             <dependencies>
                 <dependency>
                     <groupId>org.junit.platform</groupId>
@@ -340,7 +338,7 @@
                 </dependency>
             </dependencies>
         </plugin>
-	
+	-->
 			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

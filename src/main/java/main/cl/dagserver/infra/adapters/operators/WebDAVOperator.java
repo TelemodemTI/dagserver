@@ -10,31 +10,46 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 import com.nhl.dflib.DataFrame;
 
-@Operator(args={"host","port","username","password","commands"})
+@Operator(args={"host","port","credentials","commands"})
 public class WebDAVOperator extends OperatorStage {
 
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		DataFrame df = null;
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
-		String username = this.args.getProperty("username");
-		String pwd = this.args.getProperty("password");
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		CredentialsDTO credentials = null;
+		if(appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			credentials = handler.getCredentials(this.args.getProperty("credentials"));	
+		}
+		if(credentials == null) {
+			throw new DomainException(new Exception("invalid credentials entry in keystore"));
+		}
+		String username = credentials.getUsername();
+		String pwd = credentials.getPassword();
 		Sardine sardine = null;
 		if(username.isEmpty() && pwd.isEmpty()) {
 			sardine = SardineFactory.begin();
@@ -110,8 +125,7 @@ public class WebDAVOperator extends OperatorStage {
 		metadata.setType("REMOTE");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("port", "number");
-		metadata.setParameter("username", "text");
-		metadata.setParameter("password", "password");
+		metadata.setParameter("credentials", "credentials");
 		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}

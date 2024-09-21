@@ -24,7 +24,6 @@ public class LogsRollupOperator extends OperatorStage {
 			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 			if(appCtx!=null) {
 				var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
-				//var scheduler = appCtx.getBean("jarSchedulerAdapter",JarSchedulerOutputPort.class);
 				var clsl = appCtx.getClassLoader();
 				prop.load(clsl.getResourceAsStream("application.properties"));
 				Calendar rollup = Calendar.getInstance();

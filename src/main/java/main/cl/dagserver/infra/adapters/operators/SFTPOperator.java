@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -23,17 +25,21 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.nhl.dflib.DataFrame;
 
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 
 
-@Operator(args={"host","port","sftpUser","sftpPass","commands"})
+@Operator(args={"host","port","credentials","commands"})
 public class SFTPOperator extends OperatorStage  {
 
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -42,8 +48,17 @@ public class SFTPOperator extends OperatorStage  {
 
 		try {
 			JSch ssh = new JSch();
-			Session session = ssh.getSession(this.args.getProperty("sftpUser"), this.args.getProperty("host"),Integer.parseInt(this.args.getProperty("port")));
-			session.setPassword(this.args.getProperty("sftpPass"));
+			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+			CredentialsDTO credentials = null;
+			if(appCtx != null) {
+				var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+				credentials = handler.getCredentials(this.args.getProperty("credentials"));	
+			}
+			if(credentials == null) {
+				throw new DomainException(new Exception("invalid credentials entry in keystore"));
+			}
+			Session session = ssh.getSession(credentials.getUsername(), this.args.getProperty("host"),Integer.parseInt(this.args.getProperty("port")));
+			session.setPassword(credentials.getPassword());
 			Properties config = new Properties(); 
 			config.put("StrictHostKeyChecking", "no");
 			session.setConfig(config);
@@ -140,8 +155,7 @@ public class SFTPOperator extends OperatorStage  {
 		metadata.setType("REMOTE");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("port", "number");
-		metadata.setParameter("sftpUser", "text");
-		metadata.setParameter("sftpPass", "password");
+		metadata.setParameter("credentials", "credentials");
 		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}

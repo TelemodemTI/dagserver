@@ -17,11 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
+
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
@@ -37,20 +43,29 @@ import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 import com.nhl.dflib.DataFrame;
 
-@Operator(args={"host","smbUser","smbPass","smbDomain","smbSharename","commands"})
+@Operator(args={"host","credentials","smbDomain","smbSharename","commands"})
 public class Samba2Operator extends OperatorStage {
 
 	private static final String SMBSHARENAME = "smbSharename";
 	
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
 		try(var client = new SMBClient();) {
-			
+			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+			CredentialsDTO credentials = null;
+			if(appCtx != null) {
+				var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+				credentials = handler.getCredentials(this.args.getProperty("credentials"));	
+			}
+			if(credentials == null) {
+				throw new DomainException(new Exception("invalid credentials entry in keystore"));
+			}
 			Connection connection = client.connect(this.args.getProperty("host"));
-		    AuthenticationContext ac = new AuthenticationContext(this.args.getProperty("smbUser"), this.args.getProperty("smbPass").toCharArray(), this.args.getProperty("smbDomain"));
+		    AuthenticationContext ac = new AuthenticationContext(credentials.getUsername(), credentials.getPassword().toCharArray(), this.args.getProperty("smbDomain"));
 		    var smb2session = connection.authenticate(ac);
 		    
 		    List<Map<String,Object>> results = new ArrayList<>();
@@ -184,8 +199,7 @@ public class Samba2Operator extends OperatorStage {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.Samba2Operator");
 		metadata.setType("REMOTE");
 		metadata.setParameter("host", "text");
-		metadata.setParameter("smbUser", "text");
-		metadata.setParameter("smbPass", "password");
+		metadata.setParameter("credentials", "credentials");
 		metadata.setParameter("smbDomain", "text");
 		metadata.setParameter(SMBSHARENAME, "text");
 		metadata.setParameter("commands", "remote");

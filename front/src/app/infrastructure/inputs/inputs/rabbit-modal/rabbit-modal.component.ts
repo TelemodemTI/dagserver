@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
+import { KeystoreInputPort } from 'src/app/application/inputs/keystore.input.port';
 import { PropsInputPort } from 'src/app/application/inputs/props.input.port';
 
 @Component({
@@ -16,14 +17,13 @@ export class RabbitModalComponent {
 
   @ViewChild("rabbithost") rabbithost!:ElementRef;
   @ViewChild("rabbitport") rabbitport!:ElementRef;
-  @ViewChild("rabbituser") rabbituser!:ElementRef;
-  @ViewChild("rabbitpwd") rabbitpwd!:ElementRef;
+  @ViewChild("rabbitcred") rabbitcred!:ElementRef;
   @ViewChild("rabbitqueue") rabbitqueue!:ElementRef;
   @ViewChild("jarfiler") jarfiler!:ElementRef;
   @ViewChild("dagnamer") dagnamer!:ElementRef;
 
-  rbuser!:any
-  rbpwd!:any
+  entries:any[] = []
+  rbcred!:any
   rbhost!:any
   rbport!:any
   queues:any[] = []
@@ -32,16 +32,17 @@ export class RabbitModalComponent {
 
   constructor(private router: Router, 
     private service: InputsChannelsInputPort,
-    private service3: PropsInputPort){
+    private service3: PropsInputPort,
+    private keystore: KeystoreInputPort){
   }
 
   async ngOnInit() {
+    this.entries = await this.keystore.getEntries();
     let props = await this.service3.properties()
     let propsrabbit = props.filter((ele:any)=>{ return ele.group == 'RABBIT_PROPS' })
     for (let index = 0; index < propsrabbit.length; index++) {
       const element = propsrabbit[index];
-      this.rbuser = (element.name == "username")?element.value:this.rbuser
-      this.rbpwd = (element.name == "password")?"******":this.rbpwd
+      this.rbcred = (element.name == "cred")?element.value:this.rbcred
       this.rbhost = (element.name == "host")?element.value:this.rbhost
       this.rbport = (element.name == "port")?element.value:this.rbport
       if(element.value == "rabbit_consumer_queue"){
@@ -55,11 +56,11 @@ export class RabbitModalComponent {
     try {
       let host = this.rabbithost.nativeElement.value.trim()
       let port = parseInt(this.rabbitport.nativeElement.value.trim())
-      let user = this.rabbituser.nativeElement.value.trim()
-      let pwd = this.rabbitpwd.nativeElement.value.trim()
-      if(host && port && user && pwd ){
+      let cred = this.rabbitcred.nativeElement.value.trim()
+      
+      if(host && port && cred ){
         this.error_msg = ""
-        await this.service.saveRabbitChannel(host,user,pwd,port)
+        await this.service.saveRabbitChannel(host,cred,port)
         this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
           this.router.navigateByUrl(`auth/channels`);
         });

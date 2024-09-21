@@ -16,6 +16,7 @@ import main.cl.dagserver.application.ports.input.SchedulerMutationUseCase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 
@@ -30,8 +31,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	private static final String STATUS = "STATUS";
 	private static final String ACTIVE = "ACTIVE";
 	private static final SecureRandom random = new SecureRandom();
-	@Value( "${param.git_hub.propkey}" )
-	private String gitHubPropkey;
+	
 	
 	@Value( "${param.rabbit.propkey}" )
 	private String rabbitPropkey;
@@ -207,30 +207,6 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	}
 
 	@Override
-	public void addGitHubWebhook(String token, String name, String repositoryUrl, String secret, String dagname,String jarname) throws DomainException {
-		try {
-			auth.untokenize(token);
-			repository.setProperty(name,repositoryUrl,secret,this.gitHubPropkey);
-			repository.setProperty(DAGNAME, GENERATED, dagname, name);
-			repository.setProperty(JARNAME, GENERATED, jarname, name);
-			repository.setProperty(STATUS, "github channel status", ACTIVE, "GITHUB_WEBHOOK_PROPS");
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-		
-	}
-	@Override
-	public void removeGithubWebhook(String token, String name) throws DomainException {
-		try {
-			auth.untokenize(token);
-			repository.delProperty(name, this.gitHubPropkey);
-			repository.delProperty(DAGNAME, name);
-			repository.delProperty(JARNAME, name);
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
-	}
-	@Override
 	public void deleteLog(String token, Integer logid) throws DomainException {
 		auth.untokenize(token);
 		repository.deleteLog(logid);
@@ -247,14 +223,11 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.renameUncompiled(uncompiled,newname);
 	}
 	@Override
-	public void saveRabbitChannel(String token, String host, String user, String pwd, Integer port)
+	public void saveRabbitChannel(String token, String host, String cred, Integer port)
 			throws DomainException {
 		auth.untokenize(token);
 		repository.setProperty("host", GENERATED, host, rabbitPropkey );
-		repository.setProperty("username", GENERATED, user, rabbitPropkey );
-		if(!pwd.equals("******")) {
-			repository.setProperty("password", GENERATED, pwd, rabbitPropkey );	
-		}
+		repository.setProperty("cred", GENERATED, cred, rabbitPropkey );
 		repository.setProperty("port", GENERATED, port.toString(), rabbitPropkey );
 		repository.setProperty(STATUS, "rabbit channel status", ACTIVE, rabbitPropkey );
 	}
@@ -330,11 +303,10 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		repository.delGroupProperty(topic);
 	}
 	@Override
-	public void saveActiveMQChannel(String token, String host, String user, String pwd) throws DomainException {
+	public void saveActiveMQChannel(String token, String host, String cred) throws DomainException {
 		auth.untokenize(token);
 		repository.setProperty("host", GENERATED, host, activeMQPropkey );
-		repository.setProperty("user", GENERATED, user, activeMQPropkey );
-		repository.setProperty("pwd", GENERATED, pwd, activeMQPropkey );
+		repository.setProperty("cred", GENERATED, cred, activeMQPropkey );
 		repository.setProperty(STATUS, "activeMQ channel status", ACTIVE, activeMQPropkey );
 	}
 	
@@ -414,5 +386,18 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	public void deleteApiKey(String token, String appname) throws DomainException {
 		auth.untokenize(token);
 		this.repository.delProperty(appname, "HTTP_CHANNEL_API_KEY");
+	}
+	@Override
+	public void createKeyEntry(String token, String alias, String key, String pwd) throws DomainException {
+		auth.untokenize(token);
+		CredentialsDTO dto = new CredentialsDTO();
+		dto.setPassword(pwd);
+		dto.setUsername(key);
+		this.keystore.createKey(alias,dto);
+	}
+	@Override
+	public void removeEntry(String token, String alias) throws DomainException {
+		auth.untokenize(token);
+		this.keystore.removeKey(alias);
 	}
 }

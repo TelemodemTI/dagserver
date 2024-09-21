@@ -42,6 +42,8 @@ import { ExceptionsInputPort } from './application/inputs/exceptions.input.port'
 import { ParamEditorModule } from './infrastructure/inputs/param-editor/param-editor.module';
 import { ExplorerInputPort } from './application/inputs/explorer.input.port';
 import { BrowserFSModule } from './infrastructure/inputs/browser-fs/browser-fs.module';
+import { KeystoreInputPort } from './application/inputs/keystore.input.port';
+import { KeystoreModule } from './infrastructure/inputs/keystore/keystore.module';
 
 
 
@@ -60,6 +62,7 @@ declare var window: any;
     JobsModule,
     LogsModule,
     PropsModule,
+    KeystoreModule,
     CredentialsModule,
     InputsModule,
     ExceptionsModule,
@@ -90,7 +93,8 @@ declare var window: any;
     { provide: DependenciesInputPort, useClass: FrontEndDomainService},
     { provide: InputsChannelsInputPort, useClass: FrontEndDomainService },
     { provide: ExceptionsInputPort, useClass: FrontEndDomainService },
-    { provide: ExplorerInputPort, useClass: FrontEndDomainService }
+    { provide: KeystoreInputPort, useClass: FrontEndDomainService },
+    { provide: ExplorerInputPort, useClass: FrontEndDomainService },
   ],
   bootstrap: [AppComponent]
 })

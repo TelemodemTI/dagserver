@@ -120,6 +120,10 @@ type FileEntry {
   content: [FileEntry]
 }
 
+type KeystoreEntry {
+	name: String,
+	type: String
+}
 
 
 type Query { 
@@ -139,7 +143,8 @@ type Query {
 	channelStatus(token: String) : [Channel],
 	exportUncompiled(token: String,uncompiled:Int): String,
 	exceptions(token:String): [Exceptions],
-	mounted(token:String): DirectoryEntry
+	mounted(token:String): DirectoryEntry,
+	keystoreEntries(token:String):[KeystoreEntry]
 }
 
 type Mutation { 
@@ -164,7 +169,7 @@ type Mutation {
 	deleteLog(token:String,logid: Int) : StatusOp
 	deleteAllLogs(token:String,dagname:String) : StatusOp
 	renameUncompiled(token:String,uncompiled:Int,newname:String) : StatusOp
-	saveRabbitChannel(token:String, host:String, user:String, pwd:String, port:Int) : StatusOp
+	saveRabbitChannel(token:String, host:String, cred:String, port:Int) : StatusOp
 	addQueue(token:String, queue:String,jarfile:String,dagname:String) : StatusOp
 	delQueue(token:String, queue:String) : StatusOp
 	saveRedisChannel(token:String,mode:String,hostnames:String portnumbers:String) : StatusOp
@@ -173,7 +178,7 @@ type Mutation {
 	saveKafkaChannel(token:String,bootstrapServers:String,groupId:String,poll:Int) : StatusOp
 	addConsumer(token:String,topic:String,jarfile:String,dagname:String) : StatusOp
 	delConsumer(token:String,topic:String) : StatusOp
-	saveActiveMQChannel(token:String,host:String, user:String, pwd:String) : StatusOp
+	saveActiveMQChannel(token:String,host:String, cred:String) : StatusOp
 	addConsumerAM(token:String,queue:String,jarfile:String,dagname:String) : StatusOp
 	delConsumerAM(token:String,queue:String) : StatusOp
 	removeException(token:String,eventDt:String) : StatusOp
@@ -184,4 +189,6 @@ type Mutation {
 	moveFile(token:String,folder:String,filename:String,newpath:String): StatusOp
 	createApiKey(token:String,appname:String): StatusOp
 	deleteApiKey(token:String,appname:String): StatusOp
+	createKeyEntry(token:String,alias:String,key:String,pwd:String):StatusOp
+	removeEntry(token:String,alias:String):StatusOp
 }

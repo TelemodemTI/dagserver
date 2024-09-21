@@ -42,13 +42,15 @@ public class HashMapStorage implements StorageOutputPort {
 	public Map<String, DataFrame> getEntry(String xcomkey) {
 		Map<String,DataFrame> mapa = new HashMap<>();
 		try {
-			JSONObject wrapper = new JSONObject( (String) map.get(xcomkey));
-			var keys = wrapper.keys();
-			for (Iterator<String> iterator = keys; iterator.hasNext();) {
-				String stepname = iterator.next();
-				DataFrame df = DataFrameUtils.jsonToDataFrame(wrapper.getJSONArray(stepname));
-				mapa.put(stepname, df);
-			}	
+			if(map.containsKey(xcomkey)) {
+				JSONObject wrapper = new JSONObject( (String) map.get(xcomkey));
+				var keys = wrapper.keys();
+				for (Iterator<String> iterator = keys; iterator.hasNext();) {
+					String stepname = iterator.next();
+					DataFrame df = DataFrameUtils.jsonToDataFrame(wrapper.getJSONArray(stepname));
+					mapa.put(stepname, df);
+				}	
+			}
 		} catch (Exception e) {
 			log.debug("no se ha encontrado key: {}",xcomkey);
 		}

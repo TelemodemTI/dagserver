@@ -1,11 +1,10 @@
 package main.cl.dagserver.application.ports.output;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
-
 
 public interface JarSchedulerOutputPort {
 
@@ -18,4 +17,5 @@ public interface JarSchedulerOutputPort {
 	public List<Map<String,Object>> listScheduled() throws DomainException;
 	public String getIcons(String type) throws DomainException;
 	public void deleteXCOM(Date time)  throws DomainException;
+	public boolean isEnabled(String activemqListener) throws DomainException;
 }

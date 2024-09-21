@@ -47,6 +47,7 @@ export class FileTypeParamComponent implements OnChanges {
         let jstreeNode:any = {
             text: node.name,
             type: node.type,
+            icon: this.getIconForType(node.type)
         };
         if (node.type === 'folder') {
             jstreeNode.children = node.content.map((child:any) => this.traverse(child));
@@ -54,6 +55,14 @@ export class FileTypeParamComponent implements OnChanges {
 
         return jstreeNode;
   }
-
+  getIconForType(type: string): string {
+    // Aquí defines los iconos para los tipos específicos
+    if (type === 'folder') {
+        return 'fa fa-folder'; // Icono para carpetas
+    } else if (type === 'file') {
+        return 'fa fa-file'; // Icono para archivos
+    }
+    return 'jstree-default'; // Icono por defecto
+  }
 }  
 

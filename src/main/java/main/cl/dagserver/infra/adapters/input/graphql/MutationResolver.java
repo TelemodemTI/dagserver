@@ -178,24 +178,6 @@ public class MutationResolver {
 		}
 	}
 	@MutationMapping
-	public StatusOp addGitHubWebhook(@Argument String token,@Argument String name,@Argument String repository,@Argument String secret,@Argument String dagname,@Argument String jarname) {
-		try {
-			handler.addGitHubWebhook(token,name,repository,secret,dagname,jarname);
-			return ok();
-		} catch (Exception e) {
-			return error(e);
-		}
-	}
-	@MutationMapping
-	public StatusOp removeGithubWebhook(@Argument String token,@Argument  String name) {
-		try {
-			handler.removeGithubWebhook(token,name);
-			return ok();
-		} catch (Exception e) {
-			return error(e);
-		}
-	}
-	@MutationMapping
 	public StatusOp deleteLog(@Argument String token,@Argument Integer logid) {
 		try {
 			handler.deleteLog(token,logid);
@@ -223,9 +205,9 @@ public class MutationResolver {
 		}
 	}
 	@MutationMapping
-	public StatusOp saveRabbitChannel(@Argument String token,@Argument  String host,@Argument  String user,@Argument  String pwd,@Argument  Integer port) {
+	public StatusOp saveRabbitChannel(@Argument String token,@Argument  String host,@Argument  String cred,@Argument  Integer port) {
 		try {
-			handler.saveRabbitChannel(token, host, user, pwd, port);
+			handler.saveRabbitChannel(token, host, cred, port);
 			return ok();
 		} catch (Exception e) {
 			return error(e);
@@ -304,9 +286,9 @@ public class MutationResolver {
 		}
 	}
 	@MutationMapping
-	public StatusOp saveActiveMQChannel(@Argument String token,@Argument String host,@Argument String user,@Argument String pwd) {
+	public StatusOp saveActiveMQChannel(@Argument String token,@Argument String host,@Argument String cred) {
 		try {
-			handler.saveActiveMQChannel(token, host,user,pwd);
+			handler.saveActiveMQChannel(token, host,cred);
 			return ok();
 		} catch (Exception e) {
 			return error(e);
@@ -398,6 +380,24 @@ public class MutationResolver {
 		try {
 			handler.deleteApiKey(token,appname);
 			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp createKeyEntry(@Argument String token,@Argument String alias,@Argument String key,@Argument String pwd){
+		try {
+			handler.createKeyEntry(token,alias,key,pwd);
+			return ok();
+		} catch (Exception e) {
+			return error(e);
+		}
+	}
+	@MutationMapping
+	public StatusOp removeEntry(@Argument String token,@Argument String alias){
+		try {
+			handler.removeEntry(token,alias);
+			return ok();		
 		} catch (Exception e) {
 			return error(e);
 		}

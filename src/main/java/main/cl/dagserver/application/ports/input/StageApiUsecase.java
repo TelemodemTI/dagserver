@@ -1,6 +1,8 @@
 package main.cl.dagserver.application.ports.input;
 
 import org.json.JSONObject;
+
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -11,4 +13,7 @@ public interface StageApiUsecase {
 	void uploadFile(Path tempFile, String uploadPath, String string, String token) throws DomainException;
 	Path getFilePath(String folderPath,String filename, String token) throws DomainException;
 	void executeDag(String token,String jarname, String dagname, Map<String, String> args) throws DomainException;
+	void executeDag(String jarname, String dagname, JSONObject args) throws DomainException;
+	File exportKeystore(String token) throws DomainException;
+	void uploadKeystore(Path tempFile, String originalFilename, String token) throws DomainException;
 }

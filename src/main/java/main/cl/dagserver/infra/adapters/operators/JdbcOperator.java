@@ -29,14 +29,16 @@ import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 
-@Operator(args={"url","user","pwd","driver","driverPath","query"},optionalv = { "xcom" })
+@Operator(args={"url","credentials","driver","driverPath","query"},optionalv = { "xcom" })
 public class JdbcOperator extends OperatorStage {
 	
 	
 	private static final String QUERY = "query";
+	private CredentialsDTO credentials = null;
 	
 	private List<URI> getListURI(List<Path> archivosJar){
 		List<URI> list = new ArrayList<>();
@@ -57,6 +59,7 @@ public class JdbcOperator extends OperatorStage {
 			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
 			try {
 				Path driversPath = handler.getJDBCDriversPath(this.args.getProperty("driverPath"));
+				this.credentials = handler.getCredentials(this.args.getProperty("credentials"));
 				this.searchJarFiles(driversPath,archivosJar);	
 			} catch (Exception e) {
 				
@@ -64,9 +67,11 @@ public class JdbcOperator extends OperatorStage {
 			List<URI> list = this.getListURI(archivosJar);
 			DbUtils.loadDriver(handler.getClassLoader(list), this.args.getProperty("driver"));
 		}
-		
+		if(this.credentials == null) {
+			throw new DomainException(new Exception("invalid credentials entry in keystore"));
+		}
 		String xcomname = this.optionals.getProperty("xcom");
-		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.args.getProperty("user"), this.args.getProperty("pwd"));) {
+		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.credentials.getUsername(), this.credentials.getPassword());) {
 			if(xcomname != null && !xcomname.isEmpty()) {
 				if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
@@ -123,8 +128,7 @@ public class JdbcOperator extends OperatorStage {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.JdbcOperator");
 		metadata.setType("EXTERNAL");
 		metadata.setParameter("url", "text");
-		metadata.setParameter("user", "text");
-		metadata.setParameter("pwd", "password");
+		metadata.setParameter("credentials", "credentials");
 		metadata.setParameter("driver", "text");
 		metadata.setParameter("driverPath", "file");
 		metadata.setParameter(QUERY, "sourcecode",Arrays.asList("text/x-sql"));

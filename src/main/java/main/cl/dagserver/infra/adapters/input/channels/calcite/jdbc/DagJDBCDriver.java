@@ -1,8 +1,5 @@
 package main.cl.dagserver.infra.adapters.input.channels.calcite.jdbc;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
@@ -17,18 +14,12 @@ public class DagJDBCDriver implements Driver {
 		if (!acceptsURL(url)) {
             return null; // Returning null if the URL is not accepted
         }
-        try {
-        	String nurl = url.replace("jdbc:dag:", "");
-            // Open a connection to the specified URL
-            URL endpoint = new URL(nurl);
-            HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            return new DagJDBCConnection(nurl);
-
-        } catch (IOException e) {
-            throw new SQLException(url, e);
-        }
+        //jdbc:dag:http://localhost:8081/calcite/execute
+		//jdbc:dag:localhost:8081
+		String username = info.getProperty("user");
+		String password = info.getProperty("password");
+		var handler = new DagJDBCAuth(url,username,password);
+		return new DagJDBCConnection(handler);
 	}
 
 	@Override
@@ -39,7 +30,8 @@ public class DagJDBCDriver implements Driver {
 	@Override
 	public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
 		var arr = new DriverPropertyInfo[1];
-		arr[0]=new DriverPropertyInfo("test", "value");
+		arr[0]=new DriverPropertyInfo("username", "");
+		arr[1]=new DriverPropertyInfo("password", "");
 		return arr;
 	}
 
@@ -62,5 +54,7 @@ public class DagJDBCDriver implements Driver {
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}
-
+	
+	
+	
 }

@@ -55,11 +55,11 @@ CREATE TABLE `sche_properties` (
   PRIMARY KEY (`prop_id`)
 ) ENGINE=InnoDB;
 
-INSERT INTO `sche_properties` VALUES ('1','STATUS','GITHUB_WEBHOOK_PROPS','INACTIVE','github channel status');
-INSERT INTO `sche_properties` VALUES ('2','STATUS','RABBIT_PROPS','INACTIVE','rabbit channel status');
-INSERT INTO `sche_properties` VALUES ('3','STATUS','REDIS_PROPS','INACTIVE','redis channel status');
-INSERT INTO `sche_properties` VALUES ('4','STATUS','KAFKA_PROPS','INACTIVE','kafka channel status');
-INSERT INTO `sche_properties` VALUES ('5','STATUS','ACTIVEMQ_PROPS','INACTIVE','activemq channel status');
+INSERT INTO `sche_properties` VALUES ('1','STATUS','RABBIT_PROPS','INACTIVE','rabbit channel status');
+INSERT INTO `sche_properties` VALUES ('2','STATUS','REDIS_PROPS','INACTIVE','redis channel status');
+INSERT INTO `sche_properties` VALUES ('3','STATUS','KAFKA_PROPS','INACTIVE','kafka channel status');
+INSERT INTO `sche_properties` VALUES ('4','STATUS','ACTIVEMQ_PROPS','INACTIVE','activemq channel status');
+
 
 DROP TABLE IF EXISTS `sche_metadata`;
 CREATE TABLE `sche_metadata` (

@@ -28,8 +28,8 @@ import main.cl.dagserver.domain.model.PropertyDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
-import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
-
+import main.cl.dagserver.domain.model.ExceptionsDTO;
+import main.cl.dagserver.domain.model.KeystoreEntryDTO;
 
 
 
@@ -43,11 +43,8 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	private static final String RABBITMQ = "RABBIT_PROPS";
 	private static final String REDIS_LISTENER = "REDIS_PROPS";
 	private static final String KAFKA_CONSUMER = "KAFKA_CONSUMER";
-	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_LISTENER";
-	
-	
-	@Value( "${param.git_hub.propkey}" )
-	private String gitHubPropkey;
+	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_PROPS";
+
 	
 	@Value( "${param.rabbit.propkey}" )
 	private String rabbitPropkey;
@@ -184,11 +181,18 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	    channels.add(createChannel("SCHEDULER", ACTIVE, "scheduler.png", Collections.emptyList()));
 	    channels.add(createChannel("GRAPHQL", ACTIVE, "graphql.png", Collections.emptyList()));
 	    channels.add(createChannel("HTTP_ENDPOINT", ACTIVE, "http.png", getChannelProps("HTTP_CHANNEL_API_KEY")));
-	    channels.add(createChannel("GITHUB_CHANNEL", getChannelStatus("GITHUB_WEBHOOK_PROPS"), "github.png", getChannelProps("GITHUB_WEBHOOK_PROPS")));
-	    channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
-	    channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));
-	    channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));
-	    channels.add(createChannel(ACTIVEMQ_LISTENER, getChannelStatus(ACTIVEMQ_LISTENER), "activemq.png", getChannelProps(ACTIVEMQ_LISTENER)));
+	    if(this.scanner.isEnabled(RABBITMQ)) {
+	    	channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
+	    }
+	    if(this.scanner.isEnabled(REDIS_LISTENER)) {
+	    	channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));	
+	    }
+	    if(this.scanner.isEnabled(KAFKA_CONSUMER)) {
+	    	channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));	
+	    }
+	    if(this.scanner.isEnabled(ACTIVEMQ_LISTENER)) {
+	    	channels.add(createChannel(ACTIVEMQ_LISTENER, getChannelStatus(ACTIVEMQ_LISTENER), "activemq.png", getChannelProps(ACTIVEMQ_LISTENER)));	
+	    }
 	    return channels;
 	}
 
@@ -248,15 +252,15 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Exceptions> getExceptions(String token) throws DomainException {
+	public List<ExceptionsDTO> getExceptions(String token) throws DomainException {
 		auth.untokenize(token);
-		List<Exceptions> newrv = new ArrayList<>();
+		List<ExceptionsDTO> newrv = new ArrayList<>();
 		var exceptions = this.storage.listException();
 		var keys = exceptions.keySet();
 		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
 			String dt = iterator.next();
 			Map<String,String> map = (Map<String,String>) exceptions.get(dt);
-			Exceptions ex = new Exceptions();
+			ExceptionsDTO ex = new ExceptionsDTO();
 			ex.setEventDt(dt);
 			ex.setClassname(map.get("classname"));
 			ex.setMethod(map.get("method"));
@@ -267,7 +271,13 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 	}
 	@Override
 	public DirectoryEntryDTO mounted(String token) throws DomainException {
+		auth.untokenize(token);
 		return this.fileSystem.getContents();
+	}
+	@Override
+	public List<KeystoreEntryDTO> getKeystoreEntries(String token) throws DomainException {
+		auth.untokenize(token);
+		return this.keystore.getEntries();
 	}
 	
 }

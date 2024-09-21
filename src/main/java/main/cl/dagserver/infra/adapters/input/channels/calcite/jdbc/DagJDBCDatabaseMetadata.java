@@ -1,6 +1,5 @@
 package main.cl.dagserver.infra.adapters.input.channels.calcite.jdbc;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
@@ -40,7 +39,7 @@ public class DagJDBCDatabaseMetadata implements DatabaseMetaData {
 
 	@Override
 	public String getURL() throws SQLException {
-		return this.connection.getUrl();
+		return this.connection.getHandler().getNurl();
 	}
 
 	@Override
@@ -725,17 +724,21 @@ public class DagJDBCDatabaseMetadata implements DatabaseMetaData {
 	}
 
 	@Override
-	public ResultSet getProcedures(String catalog, String schemaPattern, String procedureNamePattern)
+	public DagJDBCResultSet getProcedures(String catalog, String schemaPattern, String procedureNamePattern)
 			throws SQLException {
-		
-		return null;
+		var stmt = new DagJDBCStatement(connection);
+		var rs = stmt.executeQuery("SELECT * FROM SCHEMAS.PROCEDURES WHERE TABLE_CAT = '"+catalog+"' AND TABLE_SCHEM = '"+schemaPattern+"'");
+		stmt.close();
+		return rs;
 	}
 
 	@Override
-	public ResultSet getProcedureColumns(String catalog, String schemaPattern, String procedureNamePattern,
+	public DagJDBCResultSet getProcedureColumns(String catalog, String schemaPattern, String procedureNamePattern,
 			String columnNamePattern) throws SQLException {
-		
-		return null;
+		var stmt = new DagJDBCStatement(connection);
+		var rs = stmt.executeQuery("SELECT * FROM SCHEMAS.COLUMNS WHERE TABLE_NAME = '"+procedureNamePattern+"' and COLUMN_TYPE = 'PROCEDURE'");
+		stmt.close();
+		return rs;
 	}
 
 	@Override
@@ -787,7 +790,7 @@ public class DagJDBCDatabaseMetadata implements DatabaseMetaData {
 	public DagJDBCResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern)
 			throws SQLException {
 		var stmt = new DagJDBCStatement(connection);
-		var rs = stmt.executeQuery("SELECT * FROM SCHEMAS.COLUMNS WHERE TABLE_NAME = '"+tableNamePattern+"'");
+		var rs = stmt.executeQuery("SELECT * FROM SCHEMAS.COLUMNS WHERE TABLE_NAME = '"+tableNamePattern+"' and COLUMN_TYPE = 'TABLE'");
 		stmt.close();
 		return rs;		
 	}
@@ -937,9 +940,8 @@ public class DagJDBCDatabaseMetadata implements DatabaseMetaData {
 	}
 
 	@Override
-	public Connection getConnection() throws SQLException {
-		
-		return null;
+	public DagJDBCConnection getConnection() throws SQLException {
+		return this.connection;
 	}
 
 	@Override

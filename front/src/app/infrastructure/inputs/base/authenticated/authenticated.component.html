@@ -14,7 +14,9 @@
         </button>
 
         <ul class="nav navbar-nav navbar-left navbar-top-links">
-            <li><a (click)="goToMonitor()" class="linker"><i class="fa fa-bar-chart fa-fw"></i>Monitor</a></li>
+            <li><a (click)="viewProps()" class="linker"><i class="fa fa-briefcase fa-fw"></i> Properties </a></li>
+            <li><a (click)="viewExceptions()" class="linker"><i class="fa fa-exclamation fa-fw"></i> Exceptions </a></li>
+            <li><a (click)="viewKeystore()" class="linker"><i class="fa fa-key fa-fw"></i> Keystore </a></li>
         </ul>
   
         <ul class="nav navbar-right navbar-top-links">
@@ -83,19 +85,13 @@
                             <a href="#"><i class="fa fa-cogs fa-fw"></i> Options<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a (click)="viewChannels()" class="linker"> Inputs </a>
-                                </li>
-                                <li>
-                                    <a (click)="viewProps()" class="linker"> Properties </a>
+                                    <a (click)="viewChannels()" class="linker"> Channels </a>
                                 </li>
                                 <li>
                                     <a (click)="viewJobs()" class="linker"> Jobs </a>
                                 </li>
                                 <li>
                                     <a (click)="viewBrowser()" class="linker"> FileSystem </a>
-                                </li>
-                                <li>
-                                    <a (click)="viewExceptions()" class="linker"> Exceptions </a>
                                 </li>
                             </ul>    
                         </li>

@@ -10,6 +10,8 @@ export class DinamicAdapterService implements DinamicOutputPort {
     
     constructor(private http: HttpClient) {}
 
+   
+
     download(selected_folder: string, selected_file: string): Promise<any> {
         return new Promise<any>((resolve,reject)=>{
             let url = uri + "explorer/download-file";
@@ -54,14 +56,14 @@ export class DinamicAdapterService implements DinamicOutputPort {
         })
     }
 
-    uploadFile(file:any,uploadPath:string): Promise<any> {
+    uploadFile(file:any,uploadPath:string,endpoint:string): Promise<any> {
         return new Promise<any>((resolve,reject)=>{
             var token = localStorage.getItem("dagserver_token")!
             const formData = new FormData();
             formData.append('file', file);
             formData.append("upload-path",uploadPath);
             formData.append("token",token);
-            let url = uri + "explorer/upload-file";
+            let url = uri + endpoint;
             this.http.post(url, formData).subscribe((result:any)=>{
                 resolve(result)
             })
@@ -95,4 +97,31 @@ export class DinamicAdapterService implements DinamicOutputPort {
             })
         })
     }
+
+
+    downloadKeystore(): Promise<any> {
+        return new Promise<any>((resolve,reject)=>{
+            let url = uri + "download-keystore";
+            var token = localStorage.getItem("dagserver_token")!
+            const params = new HttpParams()
+                .set('token', token);
+
+            this.http.get(url, { params: params, responseType: 'blob' }).subscribe((response: any) => {
+                // Crea un enlace temporal para descargar el archivo
+                const blob = new Blob([response], { type: response.type });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "keystore.jks";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                resolve(true);
+            }, (error: any) => {
+                reject(error);
+            });
+        })
+    }
+    
 }
