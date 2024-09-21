@@ -13,29 +13,43 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 
 import com.nhl.dflib.DataFrame;
 
-@Operator(args={"host","port","ftpUser","ftpPass","commands"})
+@Operator(args={"host","port","credentials","commands"})
 public class FTPOperator extends OperatorStage {
-
+	private CredentialsDTO credentials = null;
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		DataFrame df = null;
 		log.debug(this.getClass()+" init "+this.name);
 		log.debug("args");
 		log.debug(this.args);
-		
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		if(appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			this.credentials = handler.getCredentials(this.args.getProperty("credentials"));
+		}
+		if(this.credentials == null) {
+			throw new DomainException(new Exception("invalid credentials entry in keystore"));
+		}
 		try {
 			var ftp = new FTPClient();
 			ftp.connect(this.args.getProperty("host"),Integer.parseInt(this.args.getProperty("port")));
@@ -44,7 +58,9 @@ public class FTPOperator extends OperatorStage {
 				ftp.disconnect();
 				throw new DomainException(new Exception("host not resolved"));
 			}
-			ftp.login(this.args.getProperty("ftpUser"), this.args.getProperty("ftpPass"));
+			
+			
+			ftp.login(this.credentials.getUsername(), this.credentials.getPassword());
 			ftp.setFileType(FTP.BINARY_FILE_TYPE);
 			ftp.enterLocalPassiveMode();
 			log.debug(this.getClass()+" end "+this.name);
@@ -119,8 +135,9 @@ public class FTPOperator extends OperatorStage {
 		metadata.setType("REMOTE");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("port", "number");
-		metadata.setParameter("ftpUser", "text");
-		metadata.setParameter("ftpPass", "password");
+		metadata.setParameter("credentials", "credentials");
+		//metadata.setParameter("ftpUser", "text");
+		//metadata.setParameter("ftpPass", "password");
 		metadata.setParameter("commands", "remote");
 		return metadata.generate();
 	}

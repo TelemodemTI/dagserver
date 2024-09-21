@@ -48,7 +48,8 @@
 </div>
 
 
-<app-upload-file #uploader></app-upload-file>
+
+<app-upload-modal #uploader [id]="'explorerUploadModal'" (uploadEvent)="uploadEvent($event)"></app-upload-modal>
 <app-value-modal #valuer [id]="'new-folder'" [param]="'new folder'" [actualValue]="''" (changeValueEvent)="changeValueEvent($event)"></app-value-modal>
 <app-value-modal #valuer2 [id]="'copy-file'" [param]="'copy filename'" [actualValue]="selected_file + '_copy'" (changeValueEvent)="changeValueCopyEvent($event)"></app-value-modal>
 <app-value-modal #valuer3 [id]="'move-file'" [param]="'new ubication'" [actualValue]="'/'" (changeValueEvent)="changeValueMoveEvent($event)"></app-value-modal>

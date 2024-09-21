@@ -205,9 +205,9 @@ public class MutationResolver {
 		}
 	}
 	@MutationMapping
-	public StatusOp saveRabbitChannel(@Argument String token,@Argument  String host,@Argument  String user,@Argument  String pwd,@Argument  Integer port) {
+	public StatusOp saveRabbitChannel(@Argument String token,@Argument  String host,@Argument  String cred,@Argument  Integer port) {
 		try {
-			handler.saveRabbitChannel(token, host, user, pwd, port);
+			handler.saveRabbitChannel(token, host, cred, port);
 			return ok();
 		} catch (Exception e) {
 			return error(e);
@@ -286,9 +286,9 @@ public class MutationResolver {
 		}
 	}
 	@MutationMapping
-	public StatusOp saveActiveMQChannel(@Argument String token,@Argument String host,@Argument String user,@Argument String pwd) {
+	public StatusOp saveActiveMQChannel(@Argument String token,@Argument String host,@Argument String cred) {
 		try {
-			handler.saveActiveMQChannel(token, host,user,pwd);
+			handler.saveActiveMQChannel(token, host,cred);
 			return ok();
 		} catch (Exception e) {
 			return error(e);

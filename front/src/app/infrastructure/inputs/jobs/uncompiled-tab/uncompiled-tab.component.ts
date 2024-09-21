@@ -4,6 +4,7 @@ import {Buffer} from 'buffer';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
 import { NewJInputPort } from 'src/app/application/inputs/mewj.input.port';
 import { Uncompileds } from 'src/app/domain/models/uncompiled.model';
+import { UploadModalComponent } from '../../base/upload-modal/upload-modal.component';
 declare var $:any;
 @Component({
   selector: 'app-uncompiled-tab',
@@ -13,6 +14,7 @@ declare var $:any;
 export class UncompiledTabComponent implements OnInit, OnChanges {
 
   @ViewChild("propImporter") propImporter!: ElementRef;
+  @ViewChild("uploader") uploader!: UploadModalComponent;
   uncompileds:Uncompileds[] = []
   title_msje:any = "Error"
   error_msje:any = ""
@@ -34,6 +36,8 @@ export class UncompiledTabComponent implements OnInit, OnChanges {
     },500)
     this.uncompileds = await this.service.getUncompileds();
   }
+
+  
   editUncompiled(item:any){
     this.router.navigateByUrl(`auth/njob/${item}`);
   }
@@ -72,15 +76,8 @@ export class UncompiledTabComponent implements OnInit, OnChanges {
     // Liberar el objeto URL después de la descarga
     window.URL.revokeObjectURL(url);
   }
-  async importUncompiled(){
-    var base64 = Buffer.from(JSON.stringify(this.uploadedBin)).toString('base64')
-    await this.newjservice.createUncompiled(base64) 
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['auth',"jobs"]);
-    });   
-  }
-  upload(event: any) {
-    const file = event.target.files[0];
+  selectEvent(event_req:any){
+    const file = event_req.target.files[0]
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
@@ -89,8 +86,15 @@ export class UncompiledTabComponent implements OnInit, OnChanges {
         this.uploadedBin = JSON.parse( atob(contentbase64) )
     };
   }
+  async uploadEvent(file: any) {
+    var base64 = Buffer.from(JSON.stringify(this.uploadedBin)).toString('base64')
+    await this.newjservice.createUncompiled(base64) 
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['auth',"jobs"]);
+    });  
+  }
   import(){
-    $("#importUncompiledModal").modal("show");
+    this.uploader.show();
   }
   async refresh(){
 	  this.uncompileds = await this.service.getUncompileds();

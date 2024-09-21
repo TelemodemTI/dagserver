@@ -29,7 +29,7 @@ export abstract class GraphQLOutputPort {
     public abstract saveRedisChannel(mode: any, hostnames: string, ports: any): Promise<void>;
     public abstract delQueue(queue: string): Promise<void>;
     public abstract addQueue(queue: string, jarfile: string, dagname: string): Promise<void>;
-    public abstract saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void>;
+    public abstract saveRabbitChannel(host: string, cred: string, port: number): Promise<void>;
     public abstract renameUncompiled(uncompiled: number, arg1: any): Promise<void>;
     public abstract removeLog(id: any): Promise<void>;
     public abstract removeAllLog(dagname: any): Promise<void>;
@@ -64,7 +64,7 @@ export abstract class GraphQLOutputPort {
     public abstract getCredentials(): Promise<Credential[]>;
     public abstract updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void>;
     public abstract getDependencies(jarname: string,dagname:string):Promise<any>;
-    public abstract saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void>;
+    public abstract saveActiveMQChannel(host: string, cred: string): Promise<void>;
     public abstract addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void>
     public abstract delConsumerAM(queue: any): Promise<void>
     public abstract createKeyEntry(alias: any,key:any,pwd:any): Promise<void>

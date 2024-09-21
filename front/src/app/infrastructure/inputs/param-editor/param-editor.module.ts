@@ -12,7 +12,7 @@ import { FileTypeParamComponent } from './file-type-param/file-type-param.compon
     DefaultTypeParamComponent,
     SourceTypeParamComponent,
     RemoteTypeParamComponent,
-    FileTypeParamComponent
+    FileTypeParamComponent,
   ],
   imports: [
     CommonModule

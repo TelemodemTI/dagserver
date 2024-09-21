@@ -29,24 +29,5 @@
                                 </div>
 
                                 <app-error-mondal [titleMsje]="title_msje" [errorMsje]="error_msje" [idModal]="'errorUncompiled'"></app-error-mondal>
-
-                                <div class="modal fade" id="importUncompiledModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                <h4 class="modal-title" id="myModalLabel">Import JSON Uncompiled file</h4>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="form-group">
-                                                    <label>File input</label>
-                                                    <input #propImporter type="file" (change)="upload($event)">
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                                <button (click)="importUncompiled()" type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <app-upload-modal #uploader [id]="'importUncompiledModal'" (selectEvent)="selectEvent($event)" (uploadEvent)="uploadEvent($event)"></app-upload-modal>
+                                

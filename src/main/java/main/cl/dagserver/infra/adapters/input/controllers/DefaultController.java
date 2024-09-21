@@ -41,6 +41,8 @@ public class DefaultController {
 	@Value("${spring.allowed.file.extensions}")
 	private String allowedExtensions;
 	
+	
+	
 	private StageApiUsecase api;
 	
 	@Autowired
@@ -160,9 +162,9 @@ public class DefaultController {
 	}
 	
 	 @GetMapping("/download-keystore")
-	 public ResponseEntity<byte[]> downloadKeystore(@RequestParam("password") String password,@RequestParam("token") String token) throws DomainException {
+	 public ResponseEntity<byte[]> downloadKeystore(@RequestParam("token") String token) throws DomainException {
 		 try {
-			 File keystore = this.api.exportKeystore(token, password);
+			 File keystore = this.api.exportKeystore(token);
 			 byte[] fileContent = Files.readAllBytes(keystore.toPath());
 		        String contentType = Files.probeContentType(keystore.toPath());
 		        return ResponseEntity.ok()

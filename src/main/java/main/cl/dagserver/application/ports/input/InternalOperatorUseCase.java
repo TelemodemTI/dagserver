@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
 
 public interface InternalOperatorUseCase {
 	public void deleteLogsBy(Date rolldate);
@@ -15,4 +16,5 @@ public interface InternalOperatorUseCase {
 	public ClassLoader getClassLoader(List<URI> list) throws DomainException;
 	public Path getFolderPath();
 	public Path getJDBCDriversPath(String property);
+	public CredentialsDTO getCredentials(String alias)  throws DomainException;
 }

@@ -15,12 +15,12 @@
                     <input #rabbitport class="form-control" value="{{rbport}}">
                 </div>
                 <div class="form-group">
-                    <label>Username</label>
-                    <input #rabbituser class="form-control" value="{{rbuser}}">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input #rabbitpwd type="password" class="form-control" value="{{rbpwd}}">
+                    <label>Credentials</label><br>
+                    <select #rabbitcred class="form-control">
+                        <option disabled selected>Select Keystore Entry</option>
+                        <option *ngFor="let item of entries" value="{{item.name}}">{{item.name}}</option>
+                    </select>
+                    
                 </div>
                 <div class="alert alert-danger" *ngIf="error_msg">
                     {{error_msg}}

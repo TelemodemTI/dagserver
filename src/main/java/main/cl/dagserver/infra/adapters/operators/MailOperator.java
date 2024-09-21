@@ -5,13 +5,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
+
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -25,11 +30,12 @@ import javax.mail.BodyPart;
 import javax.mail.Multipart;
 
 
-@Operator(args={"host","port","userSmtp","pwdSmtp","fromMail","toEmail","subject","protocol"},optionalv = {"body","xcom","attachedFilename","stepAttachedFilename","ccList"})
+@Operator(args={"host","port","credentials","fromMail","toEmail","subject","protocol"},optionalv = {"body","xcom","attachedFilename","stepAttachedFilename","ccList"})
 public class MailOperator extends OperatorStage {
 
 	private static final String FROMMAIL = "fromMail";
-
+	private CredentialsDTO credentials = null;
+	@SuppressWarnings("static-access")
 	@Override
 	public DataFrame call() throws DomainException {		
 		log.debug(this.getClass()+" init "+this.name);
@@ -47,9 +53,16 @@ public class MailOperator extends OperatorStage {
 		}
 		props.put("mail.smtp.port", this.args.getProperty("port")); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
-		//create Authenticator object to pass in Session.getInstance argument
-		String userSmtp = this.args.getProperty("userSmtp");
-		String pwdSmtp = this.args.getProperty("pwdSmtp");
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		if(appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			this.credentials = handler.getCredentials(this.args.getProperty("credentials"));	
+		}
+		if(this.credentials == null) {
+			throw new DomainException(new Exception("invalid credentials entry in keystore"));
+		}
+		String userSmtp = this.credentials.getUsername();
+		String pwdSmtp = this.credentials.getPassword();
 		Authenticator auth = new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -139,8 +152,10 @@ public class MailOperator extends OperatorStage {
 		metadata.setType("EXTERNAL");
 		metadata.setParameter("host", "text");
 		metadata.setParameter("port", "number");
-		metadata.setParameter("userSmtp", "text");
-		metadata.setParameter("pwdSmtp", "password");
+		metadata.setParameter("credentials", "credentials");
+		
+		//metadata.setParameter("userSmtp", "text");
+		//metadata.setParameter("pwdSmtp", "password");
 		metadata.setParameter(FROMMAIL, "text");
 		metadata.setParameter("toEmail", "text");
 		metadata.setParameter("subject", "text");

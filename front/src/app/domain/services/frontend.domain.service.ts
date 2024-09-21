@@ -57,8 +57,12 @@ export class FrontEndDomainService implements
     private shared:SharedOutputPort,
     private dinamic:DinamicOutputPort,
     private encryptor: EncryptionOutputPort) { }
-  downloadKeystore(password: any): Promise<any> {
-    return this.dinamic.downloadKeystore(password);
+
+  uploadKeystore(file: any): Promise<any> {
+    return this.httpd.uploadFile(file,"","upload-keystore");
+  }
+  downloadKeystore(): Promise<any> {
+    return this.dinamic.downloadKeystore();
   }
   
   createEntry(alias: String, user: string, pwd: string): Promise<void> {
@@ -102,7 +106,7 @@ export class FrontEndDomainService implements
   
   
   uploadMounted(file: File,inputPath:string): Promise<any> {
-    return this.httpd.uploadFile(file,inputPath);
+    return this.httpd.uploadFile(file,inputPath,"explorer/upload-file");
   }
   
   getMounted(): Promise<any> {
@@ -155,11 +159,11 @@ export class FrontEndDomainService implements
     return this.adapter.saveRedisChannel(mode,hostname,ports)
   }
 
-  saveRabbitChannel(host: string, user: string, pwd: string, port: number): Promise<void> {
-    return this.adapter.saveRabbitChannel(host, user, pwd, port)
+  saveRabbitChannel(host: string, cred: string, port: number): Promise<void> {
+    return this.adapter.saveRabbitChannel(host, cred, port)
   }
-  saveActiveMQChannel(host: string, user: string, pwd: string): Promise<void> {
-    return this.adapter.saveActiveMQChannel(host, user, pwd)
+  saveActiveMQChannel(host: string, cred: string): Promise<void> {
+    return this.adapter.saveActiveMQChannel(host, cred)
   }
   addQueue(queue: string, jarfile: string, dagname: string): Promise<void> {
     return this.adapter.addQueue(queue,jarfile,dagname);

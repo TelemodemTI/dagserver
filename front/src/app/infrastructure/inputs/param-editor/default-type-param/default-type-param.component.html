@@ -38,5 +38,13 @@
             </select>
             <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
         </ng-container>
+        <ng-container *ngIf="item.type == 'credentials'">
+            <label>{{item.key}}</label>
+            <select class="form-control param-value-input" id="param-{{item.key}}-value">
+                <option selected disabled>Select Keystore Entry</option>
+                <option *ngFor="let opt of entries" value="{{opt.name}}" [selected]="item.value == opt.name">{{opt.name}}</option>
+            </select>
+            <p class="help-block">{{item.source == 'PAR'?'required':'optional' }}</p>
+        </ng-container>
     </div>
 </div>

@@ -47,7 +47,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 		}
 		return this.generateOutput(dagtmp, dagname, stepName);
 	}
-	
+	 
 	private Properties loadProperties(String[] args,JSONObject step) {
 		Properties properties = new Properties();
 		for (String arg : args) {
@@ -174,10 +174,10 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 	}
 
 	@Override
-	public File exportKeystore(String token, String password) throws DomainException {
+	public File exportKeystore(String token) throws DomainException {
 		auth.untokenize(token);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-		return keystore.generateKeystoreFile("LOCAL_KEYSTORE_"+sdf.format(new Date()), password);
+		return keystore.generateKeystoreFile("LOCAL_KEYSTORE_"+sdf.format(new Date()));
 	}
 
 	@Override

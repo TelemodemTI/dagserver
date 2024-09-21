@@ -12,8 +12,8 @@ export abstract class InputsChannelsInputPort {
     public abstract removeGithubWebhook(name:string):Promise<void>;
     public abstract createGithubWebhook(name:string,repourl:string,secret:string,jarname:string,dagname:string):Promise<void>;
     public abstract getChannels():Promise<any[]>;
-    public abstract saveRabbitChannel(host:string, user:string, pwd:string, port:number):Promise<void>;
+    public abstract saveRabbitChannel(host:string, cred:string, port:number):Promise<void>;
     public abstract addQueue(queue:string,jarfile:string,dagname:string):Promise<void>;
 	public abstract delQueue(queue:string):Promise<void>;
-    public abstract saveActiveMQChannel(host:string, user:string, pwd:string):Promise<void>;
+    public abstract saveActiveMQChannel(host:string, cred:string):Promise<void>;
 }

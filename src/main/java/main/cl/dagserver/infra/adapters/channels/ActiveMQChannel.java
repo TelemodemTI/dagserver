@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.ActiveMQChannelUseCase;
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
 import main.cl.dagserver.infra.adapters.input.channels.ChannelException;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 import jakarta.jms.*;
@@ -24,6 +26,9 @@ public class ActiveMQChannel extends InputChannel {
 
     @Autowired
     private ActiveMQChannelUseCase handler;
+    
+    @Autowired
+    private InternalOperatorUseCase internal;
   
     public void runForever() throws ChannelException {
         try {
@@ -98,8 +103,10 @@ public class ActiveMQChannel extends InputChannel {
     
     public void listenToActiveMQ(Properties activemqProps) throws DomainException {
         String brokerURL = activemqProps.getProperty("host");
-        String username = activemqProps.getProperty("user");
-        String password = activemqProps.getProperty("pwd");
+        String alias = activemqProps.getProperty("cred");
+        CredentialsDTO cred = this.internal.getCredentials(alias);
+        String username = cred.getUsername();
+        String password = cred.getPassword();
         activemqProps.stringPropertyNames().stream()
             .filter(key -> key.startsWith("queue_"))
             .forEach(queueKey -> {

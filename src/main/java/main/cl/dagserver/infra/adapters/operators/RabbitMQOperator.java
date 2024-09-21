@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 
 import com.nhl.dflib.DataFrame;
 import com.nhl.dflib.row.RowProxy;
@@ -16,14 +17,18 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
+
+import main.cl.dagserver.application.ports.input.InternalOperatorUseCase;
 import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.CredentialsDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 
 
-@Operator(args={"host","username","password","port","mode"},optionalv = {"xcom","exchange","routingKey","queue","body"})
+@Operator(args={"host","credentials","port","mode"},optionalv = {"xcom","exchange","routingKey","queue","body"})
 public class RabbitMQOperator extends OperatorStage {
 
 	@Override
@@ -86,8 +91,7 @@ public class RabbitMQOperator extends OperatorStage {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.RabbitMQOperator");
 		metadata.setType("MQ");
 		metadata.setParameter("host", "text");
-		metadata.setParameter("username", "text");
-		metadata.setParameter("password", "password");
+		metadata.setParameter("credentials", "credentials");
 		metadata.setParameter("port", "number");
 		metadata.setParameter("mode", "list", Arrays.asList("publish","consume"));
 		metadata.setOpts("xcom", "xcom");
@@ -101,10 +105,22 @@ public class RabbitMQOperator extends OperatorStage {
 	public String getIconImage() {
 		return "rabbit.png";
 	}
-	private Channel getConnection() throws IOException, TimeoutException {
+	@SuppressWarnings("static-access")
+	private Channel getConnection() throws IOException, TimeoutException, DomainException {
+		
+		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
+		CredentialsDTO credentials = null;
+		if(appCtx != null) {
+			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
+			credentials = handler.getCredentials(this.args.getProperty("credentials"));	
+		}
+		if(credentials == null) {
+			throw new DomainException(new Exception("invalid credentials entry in keystore"));
+		}
+		
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setUsername(this.args.getProperty("username"));
-		factory.setPassword(this.args.getProperty("password"));
+		factory.setUsername(credentials.getUsername());
+		factory.setPassword(credentials.getPassword());
 		factory.setHost(this.args.getProperty("host"));
 		factory.setPort(Integer.parseInt(this.args.getProperty("port")));
 

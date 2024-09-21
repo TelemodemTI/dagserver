@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { PropsInputPort } from 'src/app/application/inputs/props.input.port';
 import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { UploadModalComponent } from '../../base/upload-modal/upload-modal.component';
 
 declare var $:any;
 @Component({
@@ -13,6 +14,7 @@ declare var $:any;
 export class PropsComponent {
 
   @ViewChild("valuemodal") valuemodal!: ValueModalComponent;
+  @ViewChild("uploader") uploader!: UploadModalComponent;
   @ViewChild("propImporter") propImporter!: ElementRef;
   
 
@@ -126,10 +128,10 @@ export class PropsComponent {
     },5000)
   }
   importProps(){
-    $("#importPropertiesModal").modal("show");
+    this.uploader.show()
   }
-  upload(event: any) {
-    const file = event.target.files[0];
+  selectEvent(event_req:any){
+    const file = event_req.target.files[0]
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
@@ -138,8 +140,7 @@ export class PropsComponent {
         this.uploadedProps = JSON.parse( atob(contentbase64))
     };
   }
-  
-  async importPropperties(){
+  async uploadEvent(file:any){
     for (let index = 0; index < this.uploadedProps.length; index++) {
       const element = this.uploadedProps[index];
       await this.service.createProperty(element.name,element.description,element.value,element.group);
@@ -148,4 +149,5 @@ export class PropsComponent {
       this.router.navigate(['auth',"props"]);
     });
   }
+  
 }
