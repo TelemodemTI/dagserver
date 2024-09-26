@@ -9,10 +9,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.core.DataFrameUtils;
@@ -151,7 +156,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 	}
 
 	@Override
-	public void executeDag(String token, String jarname, String dagname, Map<String, String> args) throws DomainException {
+	public Map<String, DataFrame> executeDag(String token, String jarname, String dagname, Map<String, String> args) throws DomainException {
 		var list = this.repository.getProperties("HTTP_CHANNEL_API_KEY");
 		Boolean rv = Boolean.FALSE;
 		for (Iterator<PropertyParameterDTO> iterator = list.iterator(); iterator.hasNext();) {
@@ -161,16 +166,27 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 				break;
 			}
 		}
-		if(Boolean.TRUE.equals(rv)) {
-			scanner.init().execute(jarname, dagname,"HTTP API Endpoint",new JSONObject(args).toString());	
-		} else {
-			throw new DomainException(new Exception("Unauthorized"));
+		try {
+			if(Boolean.TRUE.equals(rv)) {
+				var completable = scanner.init().execute(jarname, dagname,"HTTP API Endpoint",new JSONObject(args).toString());
+				return completable.get();
+			} else {
+				throw new DomainException(new Exception("Unauthorized"));
+			}	
+		} catch (Exception e) {
+			throw new DomainException(e);
 		}
+		
 	}
 
 	@Override
-	public void executeDag(String jarname, String dagname, JSONObject args) throws DomainException {
-		scanner.init().execute(jarname, dagname,"Calcite Driver",args.toString());	
+	public Map<String, DataFrame> executeDag(String jarname, String dagname, JSONObject args) throws DomainException {
+		var completable = scanner.init().execute(jarname, dagname,"Calcite Driver",args.toString());
+		try {
+			return completable.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new DomainException(e);
+		}
 	}
 
 	@Override

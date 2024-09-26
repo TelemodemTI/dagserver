@@ -93,6 +93,7 @@ public class DagExecutable implements Job,JobListener  {
 	protected SchedulerRepositoryOutputPort repo;
 	protected ApplicationEventPublisher eventPublisher;
 	protected Map<String,OperatorStatus> constraints = new HashMap<>();
+	protected Map<String,DataFrame> xcom = new HashMap<>();
 	protected Boolean isRunning = true;
 	protected String dagname = "";
 	protected String executionSource = "";
@@ -140,7 +141,7 @@ public class DagExecutable implements Job,JobListener  {
 		Map<String,Object> data = new HashMap<>();
 		data.put("channelData", this.channelData);
 		DataFrame dfdata = DataFrameUtils.buildDataFrameFromMap(Arrays.asList(data));
-		Map<String,DataFrame> xcom = new HashMap<>();
+		//Map<String,DataFrame> xcom = new HashMap<>();
 		xcom.put("args", dfdata);
 		Logger logdag = Logger.getLogger(evalstring);
 		logdag.setLevel(Level.INFO);
@@ -508,6 +509,14 @@ public class DagExecutable implements Job,JobListener  {
 
 	public void setChannelData(String channelData) {
 		this.channelData = channelData;
+	}
+
+	public Map<String, DataFrame> getXcom() {
+		return xcom;
+	}
+
+	public void setXcom(Map<String, DataFrame> xcom) {
+		this.xcom = xcom;
 	}
 
 	

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -23,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+
+import com.nhl.dflib.DataFrame;
+
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
@@ -286,34 +290,46 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	}
 	
 	@SuppressWarnings("resource")
-	public void execute(String jarname, String dagname, String type, String data) throws DomainException {
-		try {
-			List<Map<String,String>> classNames = classMap.get(jarname);
-			Path jarfileO = this.findJarFile(jarname);
-			if(jarfileO!= null) {
-				Boolean founded = false;
-				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
-					String classname = iterator.next().get(CLASSNAME);
-					Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname);
-					Dag toschedule = clazz.getAnnotation(Dag.class);
-					if(toschedule.name().equals(dagname)) {
-						founded = true;
-						DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
-						dag.setChannelData(data);
-						dag.setExecutionSource(type);
-						quartz.executeInmediate(dag);
-						break;
-					}
-				}
-				if(Boolean.FALSE.equals(founded)) {
-					throw new DomainException(new Exception("dagname not found"));
-				}	
-			}	
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
+	public CompletableFuture<Map<String, DataFrame>> execute(String jarname, String dagname, String type, String data) throws DomainException {
+	    try {
+	        List<Map<String, String>> classNames = classMap.get(jarname);
+	        Path jarfileO = this.findJarFile(jarname);
+	        if (jarfileO != null) {
+	            Boolean founded = false;
+	            for (Iterator<Map<String, String>> iterator = classNames.iterator(); iterator.hasNext();) {
+	                String classname = iterator.next().get(CLASSNAME);
+	                Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname);
+	                Dag toschedule = clazz.getAnnotation(Dag.class);
+	                if (toschedule.name().equals(dagname)) {
+	                    founded = true;
+	                    DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
+	                    dag.setChannelData(data);
+	                    dag.setExecutionSource(type);
+	                    quartz.executeInmediate(dag);
+
+	                    // Retornar CompletableFuture que espera hasta que isRunning sea false
+	                    return CompletableFuture.supplyAsync(() -> {
+	                        while (dag.getIsRunning()) {
+	                            try {
+	                                Thread.sleep(100);
+	                            } catch (InterruptedException e) {
+	                                throw new RuntimeException("Error waiting for DAG to finish", e);
+	                            }
+	                        }
+	                        return dag.getXcom();
+	                    });
+	                }
+	            }
+	            if (Boolean.FALSE.equals(founded)) {
+	                throw new DomainException(new Exception("dagname not found"));
+	            }
+	        }
+	        return CompletableFuture.failedFuture(new DomainException(new Exception("Jarfile not found")));
+	    } catch (Exception e) {
+	        return CompletableFuture.failedFuture(new DomainException(e));
+	    }
 	}
-	
+
 	public List<Map<String,Object>> listScheduled() throws DomainException {
 		try {
 			return quartz.listScheduled();	

@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +33,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.view.RedirectView;
+
+import com.nhl.dflib.DataFrame;
+
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
+import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.input.controllers.types.ExecuteDagRequest;
 
@@ -90,15 +97,25 @@ public class DefaultController {
 	public ResponseEntity<String> apiChannel(@RequestBody ExecuteDagRequest executeReq, @RequestHeader("Authorization") String authorizationHeader) throws IOException, DomainException{
 		if(authorizationHeader.length() > 7) {
 			String token = authorizationHeader.substring(7);
-			api.executeDag(token,executeReq.getJarname(),executeReq.getDagname(),executeReq.getArgs());
+			var xcom = api.executeDag(token,executeReq.getJarname(),executeReq.getDagname(),executeReq.getArgs());
 			var status = new JSONObject();
+			var xcomJson = this.serializeXcom(xcom);
 			status.put("status", "OK");
+			status.put("xcom", xcomJson);
 			return new ResponseEntity<>(status.toString(), HttpStatus.OK);	
 		} else {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 	}
-	
+	private JSONObject serializeXcom(Map<String, DataFrame> xcom) {
+		JSONObject wrapper = new JSONObject();
+		var keys = xcom.keySet();
+		for (Iterator<String> iterator2 = keys.iterator(); iterator2.hasNext();) {
+			 var string = iterator2.next();
+			 wrapper.put(string, DataFrameUtils.dataFrameToJson(xcom.get(string)));
+		}
+		return wrapper;
+	}
 	
 	
 	@PostMapping(value = "/explorer/upload-file", consumes = {"multipart/form-data"})
