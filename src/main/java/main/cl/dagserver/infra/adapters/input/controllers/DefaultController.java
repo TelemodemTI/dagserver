@@ -54,17 +54,15 @@ public class DefaultController {
 	private String allowedExtensions;
 	
 	private StageApiUsecase api;
-	
-	@Autowired
 	private ApplicationContext applicationContext;
-	
-	@Autowired
 	private ResourceLoader resourceLoader;
 
 	
 	@Autowired
-	public DefaultController(StageApiUsecase api) {
+	public DefaultController(StageApiUsecase api,ApplicationContext applicationContext,ResourceLoader resourceLoader) {
 		this.api = api;
+		this.applicationContext = applicationContext;
+		this.resourceLoader = resourceLoader;
 	}
 	
 	@GetMapping(path="/version/")

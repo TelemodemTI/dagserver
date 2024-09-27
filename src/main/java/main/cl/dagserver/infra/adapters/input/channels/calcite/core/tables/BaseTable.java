@@ -85,11 +85,11 @@ public abstract class BaseTable extends AbstractTable {
 	}
 	protected List<Object[]> schemaForColumn() throws DomainException{
 		List<Object[]> list = new ArrayList<>();
-		var availables = this.provider.availableJobs();
-		for (Map.Entry<String, List<Map<String, String>>> entry : availables.entrySet()) {
-			for (Map<String, String> operatormap : entry.getValue()) {
-				String rdagname = operatormap.get(DAGNAME);
-				List<String> arr = this.calcite.getSchemas(rdagname);
+		var availables1 = this.provider.availableJobs();
+		for (Map.Entry<String, List<Map<String, String>>> entry : availables1.entrySet()) {
+			for (Map<String, String> operatormap1 : entry.getValue()) {
+				String rdagname1 = operatormap1.get(DAGNAME);
+				List<String> arr = this.calcite.getSchemas(rdagname1);
 				for (Iterator<String> iterator = arr.iterator(); iterator.hasNext();) {
 					String schema1 = iterator.next();
 					List<String> tables = this.calcite.getTables(schema1);

@@ -25,10 +25,13 @@ import main.cl.dagserver.domain.model.KeystoreEntryDTO;
 public class KeystoreAdapter implements KeystoreOutputPort {
 
 	@Value("${param.keystore.password}")
-	private String password;
+	private String password;	
+	private KeyStore local;
 	
 	@Autowired
-	private KeyStore local;
+	public KeystoreAdapter(KeyStore local){
+		this.local = local;
+	}
 	
 	@Override
 	public List<KeystoreEntryDTO> getEntries() throws DomainException {
