@@ -6,6 +6,7 @@ import org.quartz.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -87,5 +88,8 @@ public class WebConfig implements WebMvcConfigurer {
 			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "contextCleanupEvent"));
 		}
 	}
-	
+	@Bean
+	public ApplicationEventPublisher eventPublisher() {
+		return eventPublisher;
+	}
 }
