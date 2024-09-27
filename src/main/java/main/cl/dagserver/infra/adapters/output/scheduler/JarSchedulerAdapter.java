@@ -309,11 +309,11 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 
 	                    // Retornar CompletableFuture que espera hasta que isRunning sea false
 	                    return CompletableFuture.supplyAsync(() -> {
-	                        while (dag.getIsRunning()) {
+	                        while (Boolean.TRUE.equals(dag.getIsRunning())) {
 	                            try {
 	                                Thread.sleep(100);
 	                            } catch (InterruptedException e) {
-	                                throw new RuntimeException("Error waiting for DAG to finish", e);
+	                            	eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "execute SchedulerAdapter"));
 	                            }
 	                        }
 	                        return dag.getXcom();

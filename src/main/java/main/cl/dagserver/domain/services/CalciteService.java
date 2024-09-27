@@ -34,7 +34,7 @@ public class CalciteService extends BaseServiceComponent  implements CalciteUseC
 	@Override
 	public List<String> getTables(String schema) {
 		var map = this.storage.getEntry(schema);
-		return new ArrayList<String>(map.keySet());
+		return new ArrayList<>(map.keySet());
 	}
 
 	@Override

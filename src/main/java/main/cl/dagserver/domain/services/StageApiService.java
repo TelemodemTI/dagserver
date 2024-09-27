@@ -169,16 +169,20 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 		try {
 			if(Boolean.TRUE.equals(rv)) {
 				var completable = scanner.init().execute(jarname, dagname,"HTTP API Endpoint",new JSONObject(args).toString());
-				if(wfr) {
+				if(Boolean.TRUE.equals(wfr)) {
 					return completable.get();	
 				} else {
-					return new HashMap<String, DataFrame>();
+					return new HashMap<>();
 				}
 			} else {
 				throw new DomainException(new Exception("Unauthorized"));
 			}	
-		} catch (Exception e) {
-			throw new DomainException(e);
+		
+		} catch (InterruptedException ie) {
+            Thread.currentThread().interrupt(); // Vuelve a establecer la interrupción
+            throw new DomainException(ie); // Relanza la excepción para que sea manejada en el método principal
+        } catch (ExecutionException e) {
+        	throw new DomainException(e);
 		}
 		
 	}

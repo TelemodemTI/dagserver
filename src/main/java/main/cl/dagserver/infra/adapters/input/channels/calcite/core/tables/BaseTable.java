@@ -15,13 +15,14 @@ import main.cl.dagserver.infra.adapters.input.channels.calcite.core.tables.mappe
 
 public abstract class BaseTable extends AbstractTable {
 	private static final String TABLE = "TABLE";
+	private static final String DAGNAME = "dagname";
 	protected SchedulerQueryHandlerService provider;
 	protected CalciteUseCase calcite;
 	protected ApplicationEventPublisher eventPublisher;
 	protected DagTypeMapper mapper = new DagTypeMapper();
 	
 	@SuppressWarnings("static-access")
-	public BaseTable() {
+	protected BaseTable() {
 		if(this.provider == null) {
 			ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 			this.provider =  appCtx.getBean("schedulerQueryHandlerService", SchedulerQueryHandlerService.class);
@@ -35,7 +36,7 @@ public abstract class BaseTable extends AbstractTable {
 		var availables = this.provider.availableJobs();
 		for (Map.Entry<String, List<Map<String, String>>> entry : availables.entrySet()) {
 			for (Map<String, String> operatormap : entry.getValue()) {
-				String rdagname = operatormap.get("dagname");
+				String rdagname = operatormap.get(DAGNAME);
 				List<String> arr = this.calcite.getSchemas(rdagname);
 				for (Iterator<String> iterator = arr.iterator(); iterator.hasNext();) {
 					String schema1 = iterator.next();
@@ -54,7 +55,7 @@ public abstract class BaseTable extends AbstractTable {
 		var availables = this.provider.availableJobs();
 		for (Map.Entry<String, List<Map<String, String>>> entry : availables.entrySet()) {
 			for (Map<String, String> operatormap : entry.getValue()) {
-				String rdagname = operatormap.get("dagname");
+				String rdagname = operatormap.get(DAGNAME);
 				List<String> arr = this.calcite.getSchemas(rdagname);
 				for (Iterator<String> iterator = arr.iterator(); iterator.hasNext();) {
 					String name = iterator.next();
@@ -74,7 +75,7 @@ public abstract class BaseTable extends AbstractTable {
 		for (Map.Entry<String, List<Map<String, String>>> entry : availables.entrySet()) {
 			for (Map<String, String> operatormap : entry.getValue()) {
 				Object[] row = new Object[1];
-				String rdagname = operatormap.get("dagname");
+				String rdagname = operatormap.get(DAGNAME);
 	        	var splitted = rdagname.split("\\.");
 	        	row[0] = splitted[splitted.length-1];
 	        	list.add(row);
@@ -87,7 +88,7 @@ public abstract class BaseTable extends AbstractTable {
 		var availables = this.provider.availableJobs();
 		for (Map.Entry<String, List<Map<String, String>>> entry : availables.entrySet()) {
 			for (Map<String, String> operatormap : entry.getValue()) {
-				String rdagname = operatormap.get("dagname");
+				String rdagname = operatormap.get(DAGNAME);
 				List<String> arr = this.calcite.getSchemas(rdagname);
 				for (Iterator<String> iterator = arr.iterator(); iterator.hasNext();) {
 					String schema1 = iterator.next();
@@ -98,7 +99,7 @@ public abstract class BaseTable extends AbstractTable {
 						for (Iterator<Map<String,Object>> iterator3 = columns.iterator(); iterator3.hasNext();) {
 							Map<String, Object> objects = iterator3.next();
 							String typep = objects.get("type").toString().replace("class ", "");
-							list.add(new Object[] {table,"TABLE",objects.get("name"),this.mapper.evaluate(typep),255,false});
+							list.add(new Object[] {table,TABLE,objects.get("name"),this.mapper.evaluate(typep),255,false});
 						}
 					}
 				}
@@ -106,7 +107,7 @@ public abstract class BaseTable extends AbstractTable {
 		}
 		return list;
 	}
-	protected List<Object[]> schemaForDag(String schema, String tableName) throws DomainException{
+	protected List<Object[]> schemaForDag(String schema, String tableName) {
 		List<Map<String,Object>> columns = this.calcite.getColumns(schema,tableName);
 		List<Object[]> list = new ArrayList<>();
 		Integer count = this.calcite.getCount("SCH"+schema,tableName);		

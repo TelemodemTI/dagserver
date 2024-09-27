@@ -10,7 +10,7 @@ public class DagTypeMapper {
 	private Map<String,SqlTypeName> mapper;
 	
 	public DagTypeMapper() {
-		this.mapper = new HashMap<String,SqlTypeName>();
+		this.mapper = new HashMap<>();
 		this.mapper.put("java.lang.String", SqlTypeName.VARCHAR);
 		this.mapper.put("java.lang.Integer", SqlTypeName.INTEGER);
 		this.mapper.put("java.lang.Boolean", SqlTypeName.BOOLEAN);

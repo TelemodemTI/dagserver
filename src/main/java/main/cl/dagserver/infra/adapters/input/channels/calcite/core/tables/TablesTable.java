@@ -24,11 +24,11 @@ public class TablesTable extends BaseTable implements ScannableTable {
 	}
 	@Override
 	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-		RelDataTypeFactory.Builder builder = typeFactory.builder();
-		builder.add("TABLE_SCHEM", SqlTypeName.VARCHAR);
-		builder.add("TABLE_NAME", SqlTypeName.VARCHAR);
-		builder.add("TABLE_TYPE", SqlTypeName.VARCHAR);
-		return builder.build();
+		RelDataTypeFactory.Builder builder2 = typeFactory.builder();
+		builder2.add("TABLE_SCHEM", SqlTypeName.VARCHAR);
+		builder2.add("TABLE_NAME", SqlTypeName.VARCHAR);
+		builder2.add("TABLE_TYPE", SqlTypeName.VARCHAR);
+		return builder2.build();
 	}
 
 	@Override
