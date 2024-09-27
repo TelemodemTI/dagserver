@@ -4,35 +4,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.ScannableTable;
-import org.apache.calcite.schema.impl.AbstractTable;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.context.ApplicationContext;
+import main.cl.dagserver.domain.core.ExceptionEventLog;
+import main.cl.dagserver.domain.exceptions.DomainException;
 
-import lombok.extern.log4j.Log4j2;
-import main.cl.dagserver.application.ports.input.CalciteUseCase;
-import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
-import main.cl.dagserver.infra.adapters.input.channels.calcite.core.tables.mapper.DagTypeMapper;
-
-@Log4j2
-public class DagTable extends AbstractTable implements ScannableTable {
+public class DagTable extends BaseTable implements ScannableTable {
 
 	private String schema;
 	private String tableName;
-	private CalciteUseCase calcite;
-	private DagTypeMapper mapper = new DagTypeMapper();
-	@SuppressWarnings("static-access")
 	public DagTable(String schema,String tableName) {
+		super();
 		this.schema = schema;
 		this.tableName = tableName;
-		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
-		this.calcite =  appCtx.getBean("calciteService", CalciteUseCase.class);	
 	}
 
 	@Override
@@ -45,7 +34,7 @@ public class DagTable extends AbstractTable implements ScannableTable {
 				String typep = map.get("type").toString().replace("class ", "");
 				builder.add(map.get("name").toString(), this.mapper.evaluate(typep));	
 			} catch (Exception e) {
-				log.error(e);
+				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "JDBC CALCITE DAGTABLE"));
 			}
 		}
 		return builder.build();
@@ -53,24 +42,12 @@ public class DagTable extends AbstractTable implements ScannableTable {
 
 	@Override
 	public Enumerable<@Nullable Object[]> scan(DataContext root) {
-		List<Map<String,Object>> columns = this.calcite.getColumns(schema,tableName);
 		List<Object[]> list = new ArrayList<>();
-		Integer count = this.calcite.getCount("SCH"+schema,tableName);		
-		for (int i = 0; i < count; i++) {
-			var index = 0;
-			var obj = new Object[columns.size()];
-			for (Iterator<Map<String, Object>> iterator = columns.iterator(); iterator.hasNext();) {
-				Map<String, Object> map = iterator.next();
-				String columnName = map.get("name").toString();
-				obj[index] = this.calcite.getCell("SCH"+schema,tableName,columnName,i);
-				index++;	
-			}
-			list.add(obj);
-			
+		try {
+			list = this.schemaForDag(schema, tableName);
+		} catch (Exception e) {
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "JDBC CALCITE DAGTABLE"));
 		}
-		
-		
-		
 		return Linq4j.asEnumerable(list);
 	}
 
