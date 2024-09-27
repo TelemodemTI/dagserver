@@ -45,14 +45,14 @@ paths:
         - name: Authorization
           in: header
           required: true
-          description: Bearer token for authorization (starts with "Bearer ")
+          description: Bearer token for authorization (starts with "Bearer "). This corresponds to the api-key generated as authorization for the HTTP channel.
           schema:
             type: string
             example: "Bearer eyJhbGciOiJIUzI1NiIsInR5..."
         - name: WFR
           in: header
           required: false
-          description: Boolean flag indicating if WFR is set
+          description: Boolean that indicates whether to wait for the result of the request to the dagserver or not. (WAIT_FOR_RESULT)
           schema:
             type: boolean
             example: true
