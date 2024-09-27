@@ -193,6 +193,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 		try {
 			return completable.get();
 		} catch (InterruptedException | ExecutionException e) {
+			Thread.currentThread().interrupt();
 			throw new DomainException(e);
 		}
 	}
