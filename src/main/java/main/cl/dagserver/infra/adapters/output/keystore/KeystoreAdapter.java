@@ -65,8 +65,8 @@ public class KeystoreAdapter implements KeystoreOutputPort {
 	        byte[] keyBytes = json.toString().getBytes();
 	        SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
 	        KeyStore.SecretKeyEntry secret = new KeyStore.SecretKeyEntry(secretKey);
-	        KeyStore.ProtectionParameter password = new KeyStore.PasswordProtection(this.password.toCharArray());
-	        local.setEntry(alias, secret, password);
+	        KeyStore.ProtectionParameter password1 = new KeyStore.PasswordProtection(this.password.toCharArray());
+	        local.setEntry(alias, secret, password1);
 	    } catch (Exception e) {
 	        throw new DomainException(e);
 	    }

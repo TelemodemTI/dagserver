@@ -47,11 +47,11 @@ import main.cl.dagserver.infra.adapters.input.controllers.types.ExecuteDagReques
 @Controller
 @CrossOrigin(origins = "*",methods={RequestMethod.GET,RequestMethod.POST})
 public class DefaultController {
+	private static final String CONTENTDISPOSITION = "Content-Disposition";
+	private static final String STATUS = "status";
 	
 	@Value("${spring.allowed.file.extensions}")
 	private String allowedExtensions;
-	
-	
 	
 	private StageApiUsecase api;
 	
@@ -79,7 +79,7 @@ public class DefaultController {
 	    for (int i = 0; i < beanNames.length; i++) {
 	    	arr.put(beanNames[i]);
 		}
-	    return new ResponseEntity<String>(arr.toString(),HttpStatus.OK);
+	    return new ResponseEntity<>(arr.toString(),HttpStatus.OK);
 	}
 	@GetMapping(value = "/openapi", produces = "application/x-yaml")
 	public ResponseEntity<byte[]> getOpenApiYaml() {
@@ -91,7 +91,7 @@ public class DefaultController {
 	      InputStream inputStream = resource.getInputStream();
 	      byte[] fileContent = inputStream.readAllBytes();
 	      return ResponseEntity.ok()
-	                    .header("Content-Disposition", "attachment; filename=\"openapi.yaml\"")
+	                    .header(CONTENTDISPOSITION, "attachment; filename=\"openapi.yaml\"")
 	                    .contentType(org.springframework.http.MediaType.parseMediaType("application/x-yaml"))
 	                    .body(fileContent);
 	   } catch (IOException e) {
@@ -141,7 +141,7 @@ public class DefaultController {
 			var xcom = api.executeDag(token,executeReq.getJarname(),executeReq.getDagname(),executeReq.getArgs(),wfr);
 			var status = new JSONObject();
 			var xcomJson = this.serializeXcom(xcom);
-			status.put("status", "OK");
+			status.put(STATUS, "OK");
 			status.put("xcom", xcomJson);
 			return new ResponseEntity<>(status.toString(), HttpStatus.OK);	
 		} else {
@@ -167,7 +167,7 @@ public class DefaultController {
 	        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);	        
 	        api.uploadFile(tempFile,uploadPath,file.getOriginalFilename(),token);
 	        JSONObject response = new JSONObject();
-	        response.put("status", "ok");
+	        response.put(STATUS, "ok");
 
 	        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	    } catch (IOException e) {
@@ -201,7 +201,7 @@ public class DefaultController {
 	        byte[] fileContent = Files.readAllBytes(file);
 	        String contentType = Files.probeContentType(file);
 	        return ResponseEntity.ok()
-	                .header("Content-Disposition", "attachment; filename=\"" + file.getFileName().toString() + "\"")
+	                .header(CONTENTDISPOSITION, "attachment; filename=\"" + file.getFileName().toString() + "\"")
 	                .contentType(org.springframework.http.MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
 	                .body(fileContent);
 	    } catch (IOException e) {
@@ -217,7 +217,7 @@ public class DefaultController {
 			 byte[] fileContent = Files.readAllBytes(keystore.toPath());
 		        String contentType = Files.probeContentType(keystore.toPath());
 		        return ResponseEntity.ok()
-		                .header("Content-Disposition", "attachment; filename=\"" + keystore.toPath().getFileName().toString() + "\"")
+		                .header(CONTENTDISPOSITION, "attachment; filename=\"" + keystore.toPath().getFileName().toString() + "\"")
 		                .contentType(org.springframework.http.MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
 		                .body(fileContent);	 
 		 } catch (IOException e) {
@@ -233,7 +233,7 @@ public class DefaultController {
 		        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);	        
 		        api.uploadKeystore(tempFile,file.getOriginalFilename(),token);
 		        JSONObject response = new JSONObject();
-		        response.put("status", "ok");
+		        response.put(STATUS, "ok");
 		        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 		    } catch (IOException e) {
 		        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);

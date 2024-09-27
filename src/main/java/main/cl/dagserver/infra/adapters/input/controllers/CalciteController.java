@@ -29,14 +29,16 @@ import java.util.Properties;
 @RequestMapping("/calcite")
 public class CalciteController {
 
-	@Autowired
-	CalciteUseCase calcite;
+	private CalciteUseCase calcite;
+	private LoginUseCase login;
 	
 	@Autowired
-	LoginUseCase login;
-	
-	
-    @PostMapping("/execute")
+	public CalciteController(CalciteUseCase calcite,LoginUseCase login) {
+		this.calcite = calcite;
+		this.login = login;
+	}
+
+	@PostMapping("/execute")
     public String execute(@RequestBody String bodyStr,@RequestHeader("Authorization") String authorizationHeader) {
         try {
         	String authCode = authorizationHeader.substring(7);
@@ -69,10 +71,7 @@ public class CalciteController {
     			boolean hasResultSet = false;
                 for (String sql1 : sqlStatements) {
                 	if (!sql1.trim().isEmpty()) {                		
-                		if(sql1.toUpperCase().startsWith("CALL ")) {
-                			String sqlr = "SELECT "+sql1.substring(5);
-                			hasResultSet = statement.execute(sqlr.trim());
-                		} else if(sql1.toUpperCase().startsWith("EXEC ")) {
+                		if(sql1.toUpperCase().startsWith("CALL ") || sql1.toUpperCase().startsWith("EXEC ")) {
                 			String sqlr = "SELECT "+sql1.substring(5);
                 			hasResultSet = statement.execute(sqlr.trim());
                 		} else {

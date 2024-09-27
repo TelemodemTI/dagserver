@@ -14,5 +14,5 @@ public interface KeystoreOutputPort {
 	public void removeKey(String alias) throws DomainException;
 	public File generateKeystoreFile(String filename) throws DomainException;
 	public void importKeystore(Path tempFile, String originalFilename) throws DomainException;
-	public CredentialsDTO getCredentials(String alias) throws DomainException;;
+	public CredentialsDTO getCredentials(String alias) throws DomainException;
 }
