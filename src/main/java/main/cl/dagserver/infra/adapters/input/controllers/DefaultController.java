@@ -2,6 +2,7 @@ package main.cl.dagserver.infra.adapters.input.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -20,6 +21,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +59,10 @@ public class DefaultController {
 	private ApplicationContext applicationContext;
 	
 	@Autowired
+	private ResourceLoader resourceLoader;
+
+	
+	@Autowired
 	public DefaultController(StageApiUsecase api) {
 		this.api = api;
 	}
@@ -64,6 +71,43 @@ public class DefaultController {
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
 		return new ResponseEntity<>("dagserver is running! v0.8.X", HttpStatus.OK);
 	}
+	
+	@GetMapping(path = "/beans")
+	public ResponseEntity<String> getAllBeans() {
+		String[] beanNames = applicationContext.getBeanDefinitionNames();
+	    JSONArray arr = new JSONArray();
+	    for (int i = 0; i < beanNames.length; i++) {
+	    	arr.put(beanNames[i]);
+		}
+	    return new ResponseEntity<String>(arr.toString(),HttpStatus.OK);
+	}
+	@GetMapping(value = "/openapi", produces = "application/x-yaml")
+	public ResponseEntity<byte[]> getOpenApiYaml() {
+		try {
+	      Resource resource = resourceLoader.getResource("classpath:openapi.yaml");
+	      if (!resource.exists() || !resource.isReadable()) {
+	    	  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	      }
+	      InputStream inputStream = resource.getInputStream();
+	      byte[] fileContent = inputStream.readAllBytes();
+	      return ResponseEntity.ok()
+	                    .header("Content-Disposition", "attachment; filename=\"openapi.yaml\"")
+	                    .contentType(org.springframework.http.MediaType.parseMediaType("application/x-yaml"))
+	                    .body(fileContent);
+	   } catch (IOException e) {
+	       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	   }
+	}
+	@GetMapping(path={"/"})
+    public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {		
+		String path = request.getContextPath();
+		RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(path+"/index.html");
+        return redirectView;
+	}
+	
+	//necesito agregar un endpoint aqui que obtenga el archivo openapi.yaml y lo responda via httpget
+	
 	
 	@PostMapping(path = "/stageApi/",consumes = {"application/json"}, produces= {"application/json"})
 	public ResponseEntity<String> stageApi(HttpEntity<String> httpEntity,HttpServletResponse response) throws DomainException {
@@ -77,13 +121,7 @@ public class DefaultController {
 	}
 	
 	
-	@GetMapping(path={"/"})
-    public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {		
-		String path = request.getContextPath();
-		RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(path+"/index.html");
-        return redirectView;
-	}
+	
 	
 	@ExceptionHandler(NoHandlerFoundException.class)
     public RedirectView handle404(HttpServletRequest request, HttpServletResponse response) {
@@ -94,10 +132,13 @@ public class DefaultController {
     }
 	
 	@PostMapping(value = "/api/execute")
-	public ResponseEntity<String> apiChannel(@RequestBody ExecuteDagRequest executeReq, @RequestHeader("Authorization") String authorizationHeader) throws IOException, DomainException{
+	public ResponseEntity<String> apiChannel(
+			@RequestBody ExecuteDagRequest executeReq, 
+			@RequestHeader("Authorization") String authorizationHeader,
+			@RequestHeader(value = "WFR", required = false) Boolean wfr) throws IOException, DomainException{
 		if(authorizationHeader.length() > 7) {
 			String token = authorizationHeader.substring(7);
-			var xcom = api.executeDag(token,executeReq.getJarname(),executeReq.getDagname(),executeReq.getArgs());
+			var xcom = api.executeDag(token,executeReq.getJarname(),executeReq.getDagname(),executeReq.getArgs(),wfr);
 			var status = new JSONObject();
 			var xcomJson = this.serializeXcom(xcom);
 			status.put("status", "OK");
@@ -168,15 +209,6 @@ public class DefaultController {
 	    }
 	}
 	
-	@GetMapping(path = "/beans")
-	public ResponseEntity<String> getAllBeans() {
-		String[] beanNames = applicationContext.getBeanDefinitionNames();
-	    JSONArray arr = new JSONArray();
-	    for (int i = 0; i < beanNames.length; i++) {
-	    	arr.put(beanNames[i]);
-		}
-	    return new ResponseEntity<String>(arr.toString(),HttpStatus.OK);
-	}
 	
 	 @GetMapping("/download-keystore")
 	 public ResponseEntity<byte[]> downloadKeystore(@RequestParam("token") String token) throws DomainException {

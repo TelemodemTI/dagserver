@@ -1,0 +1,103 @@
+openapi: 3.0.3
+info:
+  title: Dagserver HTTP ENDPOINT 3.0
+  description: |-
+    Some useful links:
+    - [Official repository](https://github.com/TelemodemTI/dagserver)
+  termsOfService: https://github.com/TelemodemTI/dagserver/blob/main/README.md
+  contact:
+    email: contacto@telemodem.cl
+  license:
+    name: Apache 2.0
+    url: https://github.com/TelemodemTI/dagserver/blob/main/LICENSE
+  version: 0.8.1
+servers:
+  - url: https://localhost:8081
+tags:
+  - name: execution
+    description: Execute dag via HTTP
+paths:
+  /api/execute:
+    post:
+      tags:
+        - dag
+      summary: Execute a DAG on de DAGSERVER
+      operationId: execute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payload'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'          
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+          
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer token for authorization (starts with "Bearer ")
+          schema:
+            type: string
+            example: "Bearer eyJhbGciOiJIUzI1NiIsInR5..."
+        - name: WFR
+          in: header
+          required: false
+          description: Boolean flag indicating if WFR is set
+          schema:
+            type: boolean
+            example: true
+      security:
+        - bearerAuth: []
+
+  
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Payload:
+      type: object
+      properties:
+        jarname:
+          type: string
+          format: string based collection
+          example: "jarname.jar"
+        dagname:
+          type: string
+          format: string based collection
+          example: "generated_dag.main.DAG_example"
+        args:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            param1: "value1"
+            param2: "value2"
+    Response:
+      type: object
+      properties:
+        status:
+          type: string
+          format: string based collection
+          example: "OK"
+        xcom:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            xcomkey1: "content"
+            xcomkey2: "content"

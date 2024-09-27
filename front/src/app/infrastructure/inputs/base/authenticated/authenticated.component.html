@@ -12,15 +12,63 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-
-        <ul class="nav navbar-nav navbar-left navbar-top-links">
-            <li><a (click)="viewProps()" class="linker"><i class="fa fa-briefcase fa-fw"></i> Properties </a></li>
-            <li><a (click)="viewExceptions()" class="linker"><i class="fa fa-exclamation fa-fw"></i> Exceptions </a></li>
-            <li><a (click)="viewKeystore()" class="linker"><i class="fa fa-key fa-fw"></i> Keystore </a></li>
-        </ul>
   
         <ul class="nav navbar-right navbar-top-links">
-            
+            <li class="dropdown navbar-inverse">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-edit fa-fw"></i> <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li>
+                        <a class="linker" (click)="viewProps()">
+                            <div>
+                                <i class="fa fa-briefcase fa-fw"></i> 
+                                <span class="pull-right text-muted small">System Properties</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="linker" (click)="viewExceptions()">
+                            <div>
+                                <i class="fa fa-exclamation fa-fw"></i> 
+                                <span class="pull-right text-muted small">Exceptions Registry</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="linker" (click)="viewKeystore()">
+                            <div>
+                                <i class="fa fa-key fa-fw"></i> 
+                                <span class="pull-right text-muted small">Security Local Keystore</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="linker" (click)="viewBeans()">
+                            <div>
+                                <i class="fa fa-compass fa-fw"></i> 
+                                <span class="pull-right text-muted small">Show loaded beans</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="linker" (click)="viewGraphi()">
+                            <div>
+                                <i class="fa fa-crop fa-fw"></i> 
+                                <span class="pull-right text-muted small">GraphQLi Client</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="linker" (click)="viewOpenApiJSON()">
+                            <div>
+                                <i class="fa fa-columns fa-fw"></i> 
+                                <span class="pull-right text-muted small">Swagger HTTP Endpoint</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
             
             <li class="dropdown navbar-inverse">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" (click)="reset()">

@@ -156,7 +156,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 	}
 
 	@Override
-	public Map<String, DataFrame> executeDag(String token, String jarname, String dagname, Map<String, String> args) throws DomainException {
+	public Map<String, DataFrame> executeDag(String token, String jarname, String dagname, Map<String, String> args, Boolean wfr) throws DomainException {
 		var list = this.repository.getProperties("HTTP_CHANNEL_API_KEY");
 		Boolean rv = Boolean.FALSE;
 		for (Iterator<PropertyParameterDTO> iterator = list.iterator(); iterator.hasNext();) {
@@ -169,7 +169,11 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 		try {
 			if(Boolean.TRUE.equals(rv)) {
 				var completable = scanner.init().execute(jarname, dagname,"HTTP API Endpoint",new JSONObject(args).toString());
-				return completable.get();
+				if(wfr) {
+					return completable.get();	
+				} else {
+					return new HashMap<String, DataFrame>();
+				}
 			} else {
 				throw new DomainException(new Exception("Unauthorized"));
 			}	

@@ -82,6 +82,15 @@ export class AuthenticatedComponent {
   viewKeystore(){
     this.router.navigateByUrl("auth/keystore")
   }
+  viewBeans(){
+    window.location.href = "/beans"
+  }
+  viewGraphi(){
+    window.location.href = "/graphiql"
+  }
+  viewOpenApiJSON(){
+    window.location.href = "/openapi"
+  }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
   }
