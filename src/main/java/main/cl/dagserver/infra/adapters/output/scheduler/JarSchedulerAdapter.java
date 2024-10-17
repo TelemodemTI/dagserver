@@ -309,11 +309,11 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    }
 	}
 
-	private Class<?> loadDagClass(String jarname, Path jarfileO, String dagname) throws DomainException, Exception {
+	private Class<?> loadDagClass(String jarname, Path jarfileO, String dagname) throws DomainException {
 	    List<Map<String, String>> classNames = classMap.get(jarname);
-	    for (Map<String, String> classMap : classNames) {
-	        String classname = classMap.get(CLASSNAME);
-	        Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname);
+	    for (Map<String, String> classMap1 : classNames) {
+	        String classname1 = classMap1.get(CLASSNAME);
+	        Class<?> clazz = fileSystem.loadFromJar(jarfileO, classname1);
 	        Dag toschedule = clazz.getAnnotation(Dag.class);
 	        if (toschedule.name().equals(dagname)) {
 	            return clazz;
@@ -322,11 +322,17 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    throw new DomainException(new Exception("dagname not found"));
 	}
 
-	private DagExecutable initializeDag(Class<?> dagClass, String type, String data) throws Exception {
-	    DagExecutable dag = (DagExecutable) dagClass.getDeclaredConstructor().newInstance();
-	    dag.setChannelData(data);
-	    dag.setExecutionSource(type);
-	    return dag;
+	private DagExecutable initializeDag(Class<?> dagClass, String type, String data) throws DomainException {
+	    try {
+	    	DagExecutable dag = (DagExecutable) dagClass.getDeclaredConstructor().newInstance();
+		    dag.setChannelData(data);
+		    dag.setExecutionSource(type);
+		    return dag;	
+		} catch (Exception e) {
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "initializeDag"));
+			throw new DomainException(e);
+		}
+		
 	}
 
 	private CompletableFuture<Map<String, DataFrame>> waitForCompletion(DagExecutable dag) {
@@ -336,6 +342,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	                Thread.sleep(100);
 	            } catch (InterruptedException e) {
 	                eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "execute SchedulerAdapter"));
+	                Thread.currentThread().interrupt();
 	            }
 	        }
 	        return dag.getXcom();

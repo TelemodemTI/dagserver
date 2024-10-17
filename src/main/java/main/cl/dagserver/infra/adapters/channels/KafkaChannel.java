@@ -1,6 +1,7 @@
 package main.cl.dagserver.infra.adapters.channels;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,7 @@ public class KafkaChannel extends InputChannel {
 
 	@Value( "${param.kafka.refresh.timeout}" )
 	private Integer kafkaRefresh;	
-    private List<Map<String,String>> runningConsumers;
+    private List<Map<String,String>> runningConsumers = new ArrayList<>();
     @Autowired
     private KafkaChannelUseCase handler;
     @Autowired

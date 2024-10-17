@@ -339,7 +339,9 @@ public class CompilerHandler implements CompilerOutputPort {
     public void deleteJarfile(String jarname) throws DomainException {
         try {
             Path removePath = fileSystem.getFolderPath(jarname);
-            Files.deleteIfExists(removePath);  // Esto elimina el archivo si existe, similar a FileDeleteStrategy.FORCE.delete
+            if(removePath != null) {
+            	Files.deleteIfExists(removePath);  // Esto elimina el archivo si existe, similar a FileDeleteStrategy.FORCE.delete
+            }
             Thread.sleep(2000);
         } catch (IOException e) {
             throw new DomainException(e);
@@ -352,7 +354,7 @@ public class CompilerHandler implements CompilerOutputPort {
     @Override
     public JSONObject reimport(String jarname) throws DomainException {
         Path jarFilePath = fileSystem.getFolderPath(jarname);
-        if (!Files.exists(jarFilePath)) {
+        if (jarFilePath == null || !Files.exists(jarFilePath)) {
             throw new DomainException(new Exception("Jar file not found"));
         }
 
