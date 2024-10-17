@@ -329,7 +329,23 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			
+			<plugin>
+	            <artifactId>maven-surefire-plugin</artifactId>
+	            <!-- latest version does not work well with JUnit5 -->
+	            <version>2.19.1</version>
+	            <dependencies>
+	                <dependency>
+	                    <groupId>org.junit.platform</groupId>
+	                    <artifactId>junit-platform-surefire-provider</artifactId>
+	                    <version>1.0.3</version>
+	                </dependency>
+	                <dependency>
+	                    <groupId>org.junit.jupiter</groupId>
+	                    <artifactId>junit-jupiter-engine</artifactId>
+	                    <version>5.0.3</version>
+	                </dependency>
+	            </dependencies>
+	        </plugin>	
 			 <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -360,38 +376,38 @@
 		        <configuration>
                 	<workingDirectory>front</workingDirectory>
         		</configuration>
-        	<executions>
-                <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-	                        <nodeVersion>v16.13.0</nodeVersion>
-	                        <npmVersion>6.14.11</npmVersion>
+	        	<executions>
+	                <execution>
+	                        <id>install node and npm</id>
+	                        <goals>
+	                            <goal>install-node-and-npm</goal>
+	                        </goals>
+	                        <configuration>
+		                        <nodeVersion>v16.13.0</nodeVersion>
+		                        <npmVersion>6.14.11</npmVersion>
+		                    </configuration>
+	                </execution>
+					<execution>
+	                    <id>npm install</id>
+	                    <goals>
+	                        <goal>npm</goal>
+	                    </goals>
+	                    <configuration>
+	                        <arguments>install</arguments>
 	                    </configuration>
-                </execution>
-				<execution>
-                    <id>npm install</id>
-                    <goals>
-                        <goal>npm</goal>
-                    </goals>
-                    <configuration>
-                        <arguments>install</arguments>
-                    </configuration>
-                </execution>
-	            <execution>
-				    <id>npm run build</id>
-				    <goals>
-				        <goal>npm</goal>
-				    </goals>
-				    <phase>generate-resources</phase>
-				    <configuration>
-				        <arguments>run build</arguments>
-				    </configuration>
-				</execution>
-        </executions>
-       </plugin>
+	                </execution>
+		            <execution>
+					    <id>npm run build</id>
+					    <goals>
+					        <goal>npm</goal>
+					    </goals>
+					    <phase>generate-resources</phase>
+					    <configuration>
+					        <arguments>run build</arguments>
+					    </configuration>
+					</execution>
+	        	</executions>
+       		</plugin>
 			
 			
 		</plugins>
