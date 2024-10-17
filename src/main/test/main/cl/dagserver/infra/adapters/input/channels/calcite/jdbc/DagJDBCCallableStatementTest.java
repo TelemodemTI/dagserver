@@ -7,19 +7,19 @@ import org.mockito.Mockito;
 
 import java.sql.SQLException;
 
-public class DagJDBCCallableStatementTest {
+ class DagJDBCCallableStatementTest {
 
     private DagJDBCCallableStatement callableStatement;
     private DagJDBCConnection mockConnection;
     private String testSql = "SELECT * FROM users";
     
     @BeforeEach
-    public void setup() {
+     void setup() {
         mockConnection = Mockito.mock(DagJDBCConnection.class);
     }
 
     @Test
-    public void testExecuteQuery() throws SQLException {
+     void testExecuteQuery() throws SQLException {
         DagJDBCResultSet mockResultSet = Mockito.mock(DagJDBCResultSet.class);
         callableStatement = Mockito.spy(new DagJDBCCallableStatement(mockConnection, testSql));
         
@@ -34,18 +34,18 @@ public class DagJDBCCallableStatementTest {
     
     
     @Test
-    public void testExecute() throws SQLException {
+     void testExecute() throws SQLException {
         DagJDBCResultSet mockResultSet = Mockito.mock(DagJDBCResultSet.class);
         callableStatement = Mockito.spy(new DagJDBCCallableStatement(mockConnection, testSql));
         
         Mockito.doReturn(mockResultSet).when(callableStatement).executeQuery(testSql);
         
-        boolean result = callableStatement.execute();
+        Boolean result = callableStatement.execute();
         assertNotNull(result);
     }
     
     @Test
-    public void testExecuteQuery2() throws SQLException {
+     void testExecuteQuery2() throws SQLException {
         DagJDBCResultSet mockResultSet = Mockito.mock(DagJDBCResultSet.class);
         callableStatement = Mockito.spy(new DagJDBCCallableStatement(mockConnection, testSql,1,1));
         
@@ -59,7 +59,7 @@ public class DagJDBCCallableStatementTest {
     }
     
     @Test
-    public void testExecuteQuery3() throws SQLException {
+     void testExecuteQuery3() throws SQLException {
         DagJDBCResultSet mockResultSet = Mockito.mock(DagJDBCResultSet.class);
         callableStatement = Mockito.spy(new DagJDBCCallableStatement(mockConnection, testSql,1,1,1));
         
@@ -73,7 +73,7 @@ public class DagJDBCCallableStatementTest {
     }
 
     @Test
-    public void testExecuteUpdate() throws SQLException {
+     void testExecuteUpdate() throws SQLException {
         callableStatement = Mockito.spy(new DagJDBCCallableStatement(mockConnection, testSql));
         
         Mockito.doReturn(1).when(callableStatement).executeUpdate(testSql);
