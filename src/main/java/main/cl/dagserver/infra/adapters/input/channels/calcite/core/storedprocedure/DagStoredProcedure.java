@@ -22,7 +22,7 @@ public class DagStoredProcedure  {
 			api.executeDag(jarname, dagname, obj);
 			return 0;
 		} catch (DomainException e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(DagStoredProcedure.class, new DomainException(e), "JDBC CALCITE DagStoredProcedure"));;
+			eventPublisher.publishEvent(new ExceptionEventLog(DagStoredProcedure.class, new DomainException(e), "JDBC CALCITE DagStoredProcedure"));
 			return -1;
 		}
     	 

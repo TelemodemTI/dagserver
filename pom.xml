@@ -317,9 +317,6 @@
 		</resources>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
-	
-	
-			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -357,13 +354,13 @@
             </plugin>
 			
 			<plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>1.13.4</version>
-        <configuration>
-                <workingDirectory>front</workingDirectory>
-        </configuration>
-        <executions>
+		        <groupId>com.github.eirslett</groupId>
+		        <artifactId>frontend-maven-plugin</artifactId>
+		        <version>1.13.4</version>
+		        <configuration>
+                	<workingDirectory>front</workingDirectory>
+        		</configuration>
+        	<executions>
                 <execution>
                         <id>install node and npm</id>
                         <goals>
