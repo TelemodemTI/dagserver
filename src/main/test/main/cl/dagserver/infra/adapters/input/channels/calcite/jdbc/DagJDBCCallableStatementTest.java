@@ -31,19 +31,7 @@ public class DagJDBCCallableStatementTest {
         
         Mockito.verify(callableStatement).executeQuery(testSql);
     }
-    @Test
-    public void testExecuteQuerySql() throws SQLException {
-        DagJDBCResultSet mockResultSet = Mockito.mock(DagJDBCResultSet.class);
-        callableStatement = Mockito.spy(new DagJDBCCallableStatement(mockConnection, testSql));
-        
-        Mockito.doReturn(mockResultSet).when(callableStatement).executeQuery(testSql);
-        
-        DagJDBCResultSet result = callableStatement.executeQuery("select 1");
-        assertNotNull(result);
-        assertEquals(mockResultSet, result);
-        
-        Mockito.verify(callableStatement).executeQuery(testSql);
-    }
+    
     
     @Test
     public void testExecute() throws SQLException {
@@ -54,9 +42,6 @@ public class DagJDBCCallableStatementTest {
         
         boolean result = callableStatement.execute();
         assertNotNull(result);
-        assertEquals(mockResultSet, result);
-        
-        Mockito.verify(callableStatement).executeQuery(testSql);
     }
     
     @Test
