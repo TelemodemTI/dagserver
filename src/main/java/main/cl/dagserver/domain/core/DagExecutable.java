@@ -519,5 +519,13 @@ public class DagExecutable implements Job,JobListener  {
 		this.xcom = xcom;
 	}
 
+	public String getDagname() {
+		return dagname;
+	}
+
+	public void setDagname(String dagname) {
+		this.dagname = dagname;
+	}
+
 	
 }

@@ -2,6 +2,10 @@ package main.cl.dagserver.infra.adapters.confs;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.nhl.dflib.DataFrame;
+
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
@@ -17,10 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.JobListener;
 import org.quartz.Matcher;
@@ -34,6 +42,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.KeyMatcher;
 import org.quartz.utils.Key;
 
+@Log4j2
 @Component
 public class QuartzConfig {
 	
@@ -107,18 +116,62 @@ public class QuartzConfig {
 		}
 	}
 	
-	public void executeInmediate(DagExecutable dag) throws DomainException {
-		Job jobType = (Job) dag;
-		try {
-	    	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
-		    JobDetail jobDetail = JobBuilder.newJob(jobType.getClass()).withIdentity(jobType.getClass().getName()).build();
-		    jobDetail.getJobDataMap().put("channel", dag.getExecutionSource());
-		    jobDetail.getJobDataMap().put("channelData", dag.getChannelData());
-		    this.scheduler.scheduleJob(jobDetail,trigger);	
-		} catch (Exception e) {
-			throw new DomainException(e);
-		}
+	
+
+	public CompletableFuture<Map<String,DataFrame>> executeInmediate(DagExecutable dag) throws DomainException {
+	    Job jobType = (Job) dag;
+	    CompletableFuture<Map<String,DataFrame>> future = new CompletableFuture<>();
+
+	    try {
+	        // Crear el trigger para ejecutar el job inmediatamente
+	        Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
+
+	        // Crear el JobDetail, incluyendo la información que quieres pasar
+	        JobDetail jobDetail = JobBuilder.newJob(jobType.getClass())
+	                .withIdentity(jobType.getClass().getName())
+	                .build();
+
+	        // Pasar los datos al JobDataMap
+	        jobDetail.getJobDataMap().put("channel", dag.getExecutionSource());
+	        jobDetail.getJobDataMap().put("channelData", dag.getChannelData());
+
+	        // Agregar el listener para el job actual
+	        JobListener jobListener = new JobListener() {
+	            @Override
+	            public String getName() {
+	                return "JobCompletionListener";
+	            }
+
+	            @Override
+	            public void jobToBeExecuted(JobExecutionContext context) {
+	                
+	            }
+
+	            @Override
+	            public void jobExecutionVetoed(JobExecutionContext context) {
+	                future.completeExceptionally(new RuntimeException("Job vetado: " + context.getJobDetail().getKey()));
+	            }
+
+	            @Override
+	            public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+	                if (jobException != null) {
+	                    future.completeExceptionally(jobException);
+	                } else {
+	                    var dagexec = (DagExecutable) context.getJobInstance();
+	                    future.complete(dagexec.getXcom());
+	                }
+	            }
+	        };
+	        this.scheduler.getListenerManager().addJobListener(jobListener, KeyMatcher.keyEquals(jobDetail.getKey()));
+	        this.scheduler.scheduleJob(jobDetail, trigger);
+	    } catch (Exception e) {
+	        future.completeExceptionally(e);
+	        throw new DomainException(e);
+	    }
+	    return future;
 	}
+
+
 	
 	public void activateJob(Job jobType,String group) throws SchedulerException {	
 		Dag type = jobType.getClass().getAnnotation(Dag.class); 

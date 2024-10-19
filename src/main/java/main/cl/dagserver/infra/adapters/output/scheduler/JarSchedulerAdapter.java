@@ -297,13 +297,10 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	        }
 
 	        Class<?> dagClass = loadDagClass(jarname, jarfileO, dagname);
-	        DagExecutable dag = initializeDag(dagClass, type, data);
+	        DagExecutable dag = initializeDag(dagname,dagClass, type, data);
 
 	        // Ejecutar el DAG
-	        quartz.executeInmediate(dag);
-
-	        // Esperar que el DAG termine
-	        return waitForCompletion(dag);
+	        return quartz.executeInmediate(dag);
 	    } catch (Exception e) {
 	        return CompletableFuture.failedFuture(new DomainException(e));
 	    }
@@ -322,11 +319,12 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    throw new DomainException(new Exception("dagname not found"));
 	}
 
-	private DagExecutable initializeDag(Class<?> dagClass, String type, String data) throws DomainException {
+	private DagExecutable initializeDag(String dagname,Class<?> dagClass, String type, String data) throws DomainException {
 	    try {
 	    	DagExecutable dag = (DagExecutable) dagClass.getDeclaredConstructor().newInstance();
 		    dag.setChannelData(data);
 		    dag.setExecutionSource(type);
+		    dag.setDagname(dagname);
 		    return dag;	
 		} catch (Exception e) {
 			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "initializeDag"));
@@ -335,19 +333,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		
 	}
 
-	private CompletableFuture<Map<String, DataFrame>> waitForCompletion(DagExecutable dag) {
-	    return CompletableFuture.supplyAsync(() -> {
-	        while (Boolean.TRUE.equals(dag.getIsRunning())) {
-	            try {
-	                Thread.sleep(100);
-	            } catch (InterruptedException e) {
-	                eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "execute SchedulerAdapter"));
-	                Thread.currentThread().interrupt();
-	            }
-	        }
-	        return dag.getXcom();
-	    });
-	}
+	
 
 
 	public List<Map<String,Object>> listScheduled() throws DomainException {
