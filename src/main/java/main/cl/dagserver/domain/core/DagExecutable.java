@@ -144,7 +144,7 @@ public class DagExecutable implements Job,JobListener  {
 		//Map<String,DataFrame> xcom = new HashMap<>();
 		xcom.put("args", dfdata);
 		Logger logdag = Logger.getLogger(evalstring);
-		logdag.setLevel(Level.INFO);
+		logdag.setLevel(Level.DEBUG);
 		logdag.debug("executing dag::"+this.dagname);
 		Map<String,String> parmdata = new HashMap<>(); 
 		parmdata.put("evalkey",evalstring);

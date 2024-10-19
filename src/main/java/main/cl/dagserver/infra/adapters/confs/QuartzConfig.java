@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.nhl.dflib.DataFrame;
-
-import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
@@ -42,7 +40,6 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.KeyMatcher;
 import org.quartz.utils.Key;
 
-@Log4j2
 @Component
 public class QuartzConfig {
 	

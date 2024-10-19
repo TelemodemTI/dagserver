@@ -118,7 +118,7 @@ public abstract class DagFileSystem implements FileSystemOutputPort {
 	        if (file == null || file.isEmpty()) {
 	            targetPath = this.getFolderPath(folder);
 	        } else {
-	            String realpath = (folder + File.separator + file).replace("//", File.separator );
+	            String realpath = (folder + SEP + file).replace("//", SEP ).replace("/\\", SEP);            
 	            targetPath = this.getFolderPath(realpath);
 	        }
 	        Files.delete(targetPath);
