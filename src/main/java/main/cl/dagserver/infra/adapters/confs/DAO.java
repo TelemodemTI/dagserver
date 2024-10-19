@@ -23,7 +23,6 @@ public class DAO {
 	@Transactional
     public <T> T save(T o){
 		entityManager.merge(o);
-		entityManager.flush();
 		return o;
 	}
 	@Transactional
@@ -62,6 +61,7 @@ public class DAO {
     		queryO.setMaxResults(limit);	
     	}
     	var list = queryO.getResultList();
+    	
     	if(isListOfType(list, returnType)) {
     		return list;	
     	} else {
