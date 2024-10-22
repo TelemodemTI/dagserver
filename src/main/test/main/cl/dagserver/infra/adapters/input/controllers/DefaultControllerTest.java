@@ -83,7 +83,7 @@ class DefaultControllerTest {
     	obj.put("uncompiled", 0);
     	obj.put("token", "token");
     	JSONObject ret = new JSONObject();
-    	when(stage.executeTmp(anyInt(),anyString(),anyString(),anyString())).thenReturn(ret);
+    	when(stage.executeTmp(anyInt(),anyString(),anyString(),anyString(),anyString())).thenReturn(ret);
     	when(httpEntity.getBody()).thenReturn(obj.toString());
     	if(controller.stageApi(httpEntity, response).getStatusCode().is2xxSuccessful()) {
     		assertTrue(true);

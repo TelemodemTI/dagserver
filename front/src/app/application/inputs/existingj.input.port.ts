@@ -6,6 +6,6 @@ export abstract class ExistingJInputPort {
   public abstract saveUncompiled(uncompiledId:number,base64:String):Promise<void>;
   public abstract getOperatorMetadata():Promise<string>;
   public abstract getIcons(type:string) : Promise<string>;
-  public abstract executeDagUncompiled(uncompiledId:number,dagname:string,stepname:string) : Promise<any>
+  public abstract executeDagUncompiled(uncompiledId:number,dagname:string,stepname:string,args:string) : Promise<any>
   public abstract sendResultExecution(data:any): Promise<void>
 }

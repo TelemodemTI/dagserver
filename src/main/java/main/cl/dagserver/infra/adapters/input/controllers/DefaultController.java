@@ -114,7 +114,8 @@ public class DefaultController {
 		String dagname = body.getString("dagname");
 		String stepname = body.getString("stepname");
 		String token = body.getString("token");
-		JSONObject responsej = api.executeTmp(uncompiled,dagname,stepname,token);
+		String args = body.getString("args");
+		JSONObject responsej = api.executeTmp(uncompiled,dagname,stepname,token,args);
 		return new ResponseEntity<>(responsej.toString(), HttpStatus.OK);
 	}
 	
