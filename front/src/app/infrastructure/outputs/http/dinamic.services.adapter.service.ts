@@ -79,7 +79,7 @@ export class DinamicAdapterService implements DinamicOutputPort {
             })
         })
     }
-    executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string): Promise<any> {
+    executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string, args:string): Promise<any> {
         return new Promise<any>((resolve,reject)=>{
             let url = uri + "stageApi/";
             const headers = new HttpHeaders({
@@ -90,7 +90,8 @@ export class DinamicAdapterService implements DinamicOutputPort {
                 uncompiled: uncompiledId,
                 dagname: dagname,
                 stepname: stepname,
-                token: token
+                token: token,
+                args: args,
             };
             this.http.post(url, JSON.stringify(body), { headers: headers }).subscribe((result:any)=>{
                 resolve(result)

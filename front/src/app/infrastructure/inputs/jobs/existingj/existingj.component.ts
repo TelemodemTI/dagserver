@@ -28,7 +28,7 @@ export class ExistingjComponent {
   @ViewChild("modalparam") modalparam!:ParamExistingjComponent;
   @ViewChild("modalparamv") vlmod!:ValueModalComponent;  
   @ViewChild("resultStepModal") resultStepModal!:ResultStepModalComponent;  
-  
+  @ViewChild("valuer") valuer!:ValueModalComponent  
 
   parameters: any[] = []
   boxes: any = []
@@ -40,6 +40,8 @@ export class ExistingjComponent {
   selectedObj!:any
   hasViewDetail:boolean = false
   timestamp : number = new Date().getTime();
+  currDagname:string = "";
+  currStepname:string = ""
   private keydownListener!: () => void;
 
   constructor(private router: Router, 
@@ -226,19 +228,38 @@ export class ExistingjComponent {
     step.params = paramarr
     var base64 = Buffer.from(JSON.stringify(this.data)).toString('base64')
     await this.service.saveUncompiled(parseInt(this.uncompiled),base64)  
-    let data = await this.service.executeDagUncompiled(this.uncompiled,item.dagname,item.step);    
-    this.service.sendResultExecution(data);
+    this.currDagname = item.dagname
+    this.currStepname = item.step
     this.modalparam.close()
-    this.resultStepModal.show(data);
+    this.valuer.show()
+    /*
+    let data = await this.service.executeDagUncompiled(this.uncompiled,item.dagname,item.step,"");    
+    this.service.sendResultExecution(data);
+    this.resultStepModal.show(data);*/
   }
   async playDesignJob(){
     if(this.hasViewDetail){
-      let data = await this.service.executeDagUncompiled(this.uncompiled,this.selectedTab,"");    
+      this.currDagname = this.selectedTab
+      this.currStepname = ""
+      this.valuer.show()
+      /*
+      let data = await this.service.executeDagUncompiled(this.uncompiled,this.selectedTab,"","");    
       this.service.sendResultExecution(data);
       this.resultStepModal.show(data);
+      */
     } else {
       alert("you must select DAG implementation first!")
+    }    
+  }
+
+  async changeValueEvent1(data1:any){
+    this.valuer.close();
+    try {
+      let data = await this.service.executeDagUncompiled(this.uncompiled,this.currDagname,this.currStepname,data1[1]);    
+      this.service.sendResultExecution(data);
+      this.resultStepModal.show(data);
+    } catch (error) {
+      
     }
-    
   }
 }

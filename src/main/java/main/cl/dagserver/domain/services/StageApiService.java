@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.nhl.dflib.DataFrame;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.core.DataFrameUtils;
@@ -26,6 +28,7 @@ import main.cl.dagserver.domain.core.TemporalDagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 
+@Log4j2
 @Service
 public class StageApiService extends BaseServiceComponent implements StageApiUsecase {
 
@@ -33,7 +36,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 	private static final String VALUE = "value";
 	
 	@Override
-	public JSONObject executeTmp(Integer uncompiled, String dagname, String stepName, String token) throws DomainException {
+	public JSONObject executeTmp(Integer uncompiled, String dagname, String stepName, String token, String args) throws DomainException {
 		auth.untokenize(token);
 		String json = repository.getUncompiledBin(uncompiled);
 		JSONObject daguncompiled = new JSONObject(json);
@@ -50,10 +53,10 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 				}	
 			}
 		}
-		return this.generateOutput(dagtmp, dagname, stepName);
+		return this.generateOutput(dagtmp, dagname, stepName,args);
 	}
 	 
-	private Properties loadProperties(String[] args,JSONObject step) {
+	private  Properties loadProperties(String[] args,JSONObject step) {
 		Properties properties = new Properties();
 		for (String arg : args) {
             if (step.has(PARAMS)) {
@@ -61,7 +64,11 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
                 for (int k = 0; k < params.length(); k++) {
                     JSONObject param = params.getJSONObject(k);
                     if (param.has("key") && param.has(VALUE) && param.getString("key").equals(arg)) {
-                        properties.setProperty(arg, param.getString(VALUE));
+                        try {
+                        	properties.setProperty(arg, param.getString(VALUE));	
+						} catch (Exception e) {
+							log.debug(e);
+						}
                     }
                 }
             }
@@ -106,10 +113,11 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			}
 		}
 	}
-	private JSONObject generateOutput(TemporalDagExecutable dagtmp,String dagname,String stepName) {
+	private JSONObject generateOutput(TemporalDagExecutable dagtmp,String dagname,String stepName,String args) {
 		JSONObject output = new JSONObject();
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+			dagtmp.setChannelData(args);
 			String result = dagtmp.execute(stepName);
 			String locatedAt = repository.createInternalStatus(dagtmp.getXcom());		
 			String objetive = (stepName.isEmpty())?"COMPLETE":stepName;
@@ -130,7 +138,11 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 				 var string = iterator2.next();
 				 wrapper.put(string, DataFrameUtils.dataFrameToJson(xcom.get(string)));
 			}
-			
+			Map<String,Object> data = new HashMap<>();
+			data.put("channelData", args);
+			DataFrame dfdata = DataFrameUtils.buildDataFrameFromMap(Arrays.asList(data));
+			//Map<String,DataFrame> xcom = new HashMap<>();
+			wrapper.put("args", DataFrameUtils.dataFrameToJson(dfdata));
 			output.put("xcom", wrapper);
 			output.put("result", result);
 			output.put("dagname", dagname);

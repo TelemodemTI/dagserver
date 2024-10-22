@@ -171,8 +171,8 @@ export class FrontEndDomainService implements
   delQueue(queue: string): Promise<void> {
     return this.adapter.delQueue(queue);
   }
-  executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string): Promise<any> {
-    return this.httpd.executeDagUncompiled(uncompiledId,dagname,stepname)
+  executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string, args:string): Promise<any> {
+    return this.httpd.executeDagUncompiled(uncompiledId,dagname,stepname,args)
   }
   
   renameUncompiled(uncompiled: number, arg1: any): Promise<void> {
