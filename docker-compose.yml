@@ -12,7 +12,10 @@ services:
       APP_MIGRATION_JDBC_TYPE: classpath:/db/migration/h2
       APP_HIBERNATE_DIALECT: org.hibernate.dialect.H2Dialect
       APP_EXTENSIONS: jar,txt,xls,xlsx,csv,log,out,sql,jks,db
-      PROFILES_DEFAULT: storage-hashmap,auth-internal,filesystem-memory
+      APP_PROFILES_DEFAULT: storage-hashmap,auth-internal,filesystem-memory
+      APP_FOLDERPATH:
+      APP_STORAGE_EXCEPTION:
+      APP_XCOMPATH:
     ports:
       - "11000:8081"
     extra_hosts:
