@@ -17,6 +17,8 @@ ENV env_name APP_JDBC_PASSWORD
 ENV env_name APP_JDBC_DRIVER
 ENV env_name APP_MIGRATION_JDBC_TYPE
 ENV env_name APP_HIBERNATE_DIALECT
+ENV env_name APP_EXTENSIONS
+ENV env_name PROFILES_DEFAULT
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["java","-jar","dagserver-0.8.0-SNAPSHOT.jar"]

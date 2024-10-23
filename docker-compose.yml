@@ -4,23 +4,29 @@ services:
   dagserver:
     build: .
     container_name: dagserver
+    environment:
+      APP_JDBC_URL: jdbc:h2:mem:AZ;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=LEGACY
+      APP_JDBC_USER: sa
+      APP_JDBC_PASSWORD: 
+      APP_JDBC_DRIVER: org.h2.Driver
+      APP_MIGRATION_JDBC_TYPE: classpath:/db/migration/h2
+      APP_HIBERNATE_DIALECT: org.hibernate.dialect.H2Dialect
+      APP_EXTENSIONS: jar,txt,xls,xlsx,csv,log,out,sql,jks,db
+      PROFILES_DEFAULT: storage-hashmap,auth-internal,filesystem-memory
     ports:
       - "11000:8081"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-    - "C:/tmp/:/root/dags/"
+      - "C:/tmp/:/root/dags/"
     networks:
       vpcbr:
         ipv4_address: 10.5.0.3
-  
   
 networks:
   vpcbr:
     driver: bridge
     ipam:
-     config:
-       - subnet: 10.5.0.0/16
-         gateway: 10.5.0.1
-volumes:
-  my-db: 
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
