@@ -39,7 +39,7 @@ public class FileSystemAdapter extends DagFileSystem implements FileSystemOutput
 	public DirectoryEntryDTO getContents() throws DomainException {
 		Path root = this.getFolderPath();
 		DirectoryEntryDTO directoryEntry = new DirectoryEntryDTO();
-	    directoryEntry.setPath(File.separator);
+	    directoryEntry.setPath("/");
 	    directoryEntry.setContent(getFileEntries(root));
 	    return directoryEntry;
 	}
