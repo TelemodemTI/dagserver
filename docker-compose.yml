@@ -16,6 +16,10 @@ services:
       APP_FOLDERPATH:
       APP_STORAGE_EXCEPTION:
       APP_XCOMPATH:
+      KEYCLOAK_HOST:
+      KEYCLOAK_REALM:
+      KEYCLOAK_CLIENT_ID:
+      KEYCLOAK_CLIENT_SECRET:
     ports:
       - "11000:8081"
     extra_hosts:
