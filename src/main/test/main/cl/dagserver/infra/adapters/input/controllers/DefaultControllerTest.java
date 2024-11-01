@@ -82,6 +82,7 @@ class DefaultControllerTest {
     	obj.put("stepname", "step");
     	obj.put("uncompiled", 0);
     	obj.put("token", "token");
+    	obj.put("args", "{}");
     	JSONObject ret = new JSONObject();
     	when(stage.executeTmp(anyInt(),anyString(),anyString(),anyString(),anyString())).thenReturn(ret);
     	when(httpEntity.getBody()).thenReturn(obj.toString());
