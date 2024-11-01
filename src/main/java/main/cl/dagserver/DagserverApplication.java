@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class DagserverApplication {
 
 	public static void main(String[] args) {
+		System.out.println("Valor de APP_PROFILES_DEFAULT: " + System.getenv("APP_PROFILES_DEFAULT"));
 		SpringApplication.run(DagserverApplication.class, args);
 	}
 
