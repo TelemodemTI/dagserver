@@ -77,7 +77,8 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    }
 
 	    for (Path jarFile : jarFiles) {
-	        jars.add(jarFile);
+	        log.info("cargando archivo desde {}",jarFile.toString());
+	    	jars.add(jarFile);
 	        classMap.put(jarFile.getFileName().toString(), this.analizeJar(jarFile));
 	        quartz.validate(jarFile.getFileName().toString().replace(".jar", ""), this.analizeJarProperties(jarFile));
 	    }
