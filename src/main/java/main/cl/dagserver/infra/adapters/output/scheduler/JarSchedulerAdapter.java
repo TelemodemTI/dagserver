@@ -153,7 +153,8 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	            }
 	        }
 	    } catch (Exception e) {
-	        eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJar"));
+	    	log.error(e);       
+	    	eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJar"));
 	    }
 	    return classNames;
 	}

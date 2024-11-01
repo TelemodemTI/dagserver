@@ -82,7 +82,7 @@ public class MapDBStorage implements StorageOutputPort {
 	        
 	        String classname = evento.getSource().getClass().getCanonicalName();
 			String method = evento.getMessage();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMsshhmmss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 			StringWriter stringWriter = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(stringWriter);
 			evento.getException().printStackTrace(printWriter);
@@ -92,7 +92,9 @@ public class MapDBStorage implements StorageOutputPort {
 			excpd.put("method",method);
 			excpd.put("stacktrace",stacktrace);
 			map1.put(sdf.format(new Date()), excpd);
-	    }
+	    } catch (Exception e) {
+			log.error(e);
+		}
 	}
 	@SuppressWarnings("unchecked")
 	@Override
