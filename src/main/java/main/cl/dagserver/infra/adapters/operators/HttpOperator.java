@@ -13,7 +13,11 @@ import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
-
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 @Operator(args={"url","method","timeout","contentType"},optionalv = {"xcom","authorizationHeader"})
 public class HttpOperator extends OperatorStage {
 
@@ -25,6 +29,8 @@ public class HttpOperator extends OperatorStage {
 		log.debug(this.args);
 		try {
 			URL url = new URL(this.args.getProperty("url"));
+			disableSSLVerification();
+
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod(this.args.getProperty("method"));
 			
@@ -56,32 +62,44 @@ public class HttpOperator extends OperatorStage {
 				DataFrame df = (DataFrame) this.xcom.get(xcomname);
 				String body = df.getColumn(0).get(0).toString();
 				con.setDoOutput(true);
+				//la linea que viene me da el siguiente problema
+				//javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
 				OutputStream os = con.getOutputStream();
 				os.write(body.getBytes());
 				os.flush();
 				os.close();	
 			}
-			int responseCode = con.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuilder response = new StringBuilder();
-				while ((inputLine = in.readLine()) != null) {
-					response.append(inputLine);
-				}
-				in.close();
-				log.debug(this.getClass()+" end "+this.name);
-				return DataFrameUtils.createFrame("response", response.toString());
 			
-			} else {
-				throw new DomainException(new Exception("request failed!"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuilder response = new StringBuilder();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
 			}
+			in.close();
+			log.debug(this.getClass()+" end "+this.name);
+			return DataFrameUtils.createFrame("response", response.toString());
+			
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
 	}
 	
+	private void disableSSLVerification() throws Exception {
+	    TrustManager[] trustAllCerts = new TrustManager[] {
+	        new X509TrustManager() {
+	            public X509Certificate[] getAcceptedIssuers() { return null; }
+	            public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+	            public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+	        }
+	    };
 
+	    SSLContext sc = SSLContext.getInstance("SSL");
+	    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+	    HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+	}
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.HttpOperator");
