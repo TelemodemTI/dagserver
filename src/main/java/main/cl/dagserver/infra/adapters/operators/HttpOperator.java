@@ -35,11 +35,11 @@ public class HttpOperator extends OperatorStage {
 					if(this.xcom.containsKey(xcomheader)) {
 						DataFrame df = (DataFrame) this.xcom.get(xcomheader);
 						String header = df.getColumn("output").get(0).toString();
-						log.debug("AUTHORIZATION_HEADER "+header);
+						log.debug("AUTHORIZATION_HEADER "+header.substring(0, 5) + "..." );
 						con.setRequestProperty("Authorization", header);	
 					}
 				} else {
-					log.debug("AUTHORIZATION_HEADER "+value);
+					log.debug("AUTHORIZATION_HEADER "+value.substring(0, 5) + "..." );
 					con.setRequestProperty("Authorization", value);	
 				}	
 			}
