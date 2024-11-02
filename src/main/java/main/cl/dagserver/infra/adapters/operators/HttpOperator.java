@@ -29,7 +29,17 @@ public class HttpOperator extends OperatorStage {
 			con.setRequestMethod(this.args.getProperty("method"));
 			
 			if(this.optionals.get(AUTHORIZATION_HEADER) != null) {
-				con.setRequestProperty("Authorization", this.optionals.getProperty(AUTHORIZATION_HEADER));	
+				String value = this.optionals.getProperty(AUTHORIZATION_HEADER);
+				if(value.startsWith("${") && value.endsWith("}")) {
+					String xcomheader = value.replace("${", "").replace("}", "");
+					if(this.xcom.containsKey(xcomheader)) {
+						DataFrame df = (DataFrame) this.xcom.get(xcomheader);
+						String header = df.getColumn("content").get(0).toString();
+						con.setRequestProperty("Authorization", header);	
+					}
+				} else {
+					con.setRequestProperty("Authorization", value);	
+				}	
 			}
 			con.setRequestProperty("Content-Type", this.args.getProperty("contentType"));
 			Integer timeout = Integer.parseInt(this.args.getProperty("timeout"));
