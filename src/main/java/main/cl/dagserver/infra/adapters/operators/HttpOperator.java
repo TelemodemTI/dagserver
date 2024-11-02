@@ -6,6 +6,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONObject;
 import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.domain.annotations.Operator;
@@ -69,17 +72,19 @@ public class HttpOperator extends OperatorStage {
 				os.flush();
 				os.close();	
 			}
-			
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuilder response = new StringBuilder();
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-			log.debug(this.getClass()+" end "+this.name);
-			return DataFrameUtils.createFrame("response", response.toString());
-			
+				int responseCode = con.getResponseCode();
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				StringBuilder response = new StringBuilder();
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+				log.debug(this.getClass()+" end "+this.name);
+				Map<String,Object> output = new HashMap<>();
+				output.put("response", response.toString());
+				output.put("responseCode", responseCode);
+				return DataFrameUtils.buildDataFrameFromMap(Arrays.asList(output));
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
