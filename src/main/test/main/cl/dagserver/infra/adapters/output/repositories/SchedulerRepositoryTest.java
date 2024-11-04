@@ -35,7 +35,7 @@ import main.cl.dagserver.infra.adapters.output.repositories.entities.ScheUncompi
 import main.cl.dagserver.infra.adapters.output.repositories.entities.User;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapper;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapperImpl;
-import main.cl.dagserver.infra.adapters.output.storage.hashmap.HashMapStorage;
+import main.cl.dagserver.infra.adapters.output.storage.HashMapStorage;
 import static org.mockito.Mockito.when;
 
 class SchedulerRepositoryTest {
