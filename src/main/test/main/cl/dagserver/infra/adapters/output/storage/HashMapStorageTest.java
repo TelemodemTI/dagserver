@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.output.storage.hashmap;
+package main.cl.dagserver.infra.adapters.output.storage;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

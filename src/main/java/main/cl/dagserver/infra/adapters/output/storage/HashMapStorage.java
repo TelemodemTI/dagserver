@@ -1,4 +1,4 @@
-package main.cl.dagserver.infra.adapters.output.storage.hashmap;
+package main.cl.dagserver.infra.adapters.output.storage;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import com.nhl.dflib.DataFrame;
 import lombok.extern.log4j.Log4j2;
@@ -20,7 +19,6 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 @Component
 @Log4j2
 @ImportResource("classpath:properties-config.xml")
-@Profile("storage-hashmap")
 public class HashMapStorage implements StorageOutputPort {
 
 	
