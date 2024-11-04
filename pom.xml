@@ -243,11 +243,6 @@
 		    <version>3.25.0-GA</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.mapdb</groupId>
-		    <artifactId>mapdb</artifactId>
-		    <version>3.0.10</version>
-		</dependency>
-		<dependency>
 		    <groupId>org.apache.poi</groupId>
 		    <artifactId>poi</artifactId>
 		    <version>4.1.2</version> <!-- Utiliza la versión más reciente disponible -->

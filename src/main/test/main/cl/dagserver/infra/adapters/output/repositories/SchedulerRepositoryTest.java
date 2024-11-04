@@ -35,8 +35,7 @@ import main.cl.dagserver.infra.adapters.output.repositories.entities.ScheUncompi
 import main.cl.dagserver.infra.adapters.output.repositories.entities.User;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapper;
 import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapperImpl;
-import main.cl.dagserver.infra.adapters.output.storage.mapdb.MapDBStorage;
-
+import main.cl.dagserver.infra.adapters.output.storage.hashmap.HashMapStorage;
 import static org.mockito.Mockito.when;
 
 class SchedulerRepositoryTest {
@@ -47,7 +46,7 @@ class SchedulerRepositoryTest {
 	@Mock
 	private SchedulerMapper mapper;
 	@Mock
-	private MapDBStorage storage;
+	private HashMapStorage storage;
 	
 	
 	private SchedulerRepository repo = new SchedulerRepository();
@@ -56,7 +55,7 @@ class SchedulerRepositoryTest {
     void init() {
 		dao = mock(DAO.class);
 		mapper = new SchedulerMapperImpl();
-		storage = mock(MapDBStorage.class);
+		storage = mock(HashMapStorage.class);
 		ReflectionTestUtils.setField(repo, "dao", dao);
 		ReflectionTestUtils.setField(repo, "mapper", mapper);
 		ReflectionTestUtils.setField(repo, "storage", storage);
