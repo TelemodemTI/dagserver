@@ -20,8 +20,7 @@ ENV env_name APP_HIBERNATE_DIALECT
 ENV env_name APP_EXTENSIONS
 ENV env_name APP_PROFILES_DEFAULT
 ENV env_name APP_FOLDERPATH
-ENV env_name APP_STORAGE_EXCEPTION
-ENV env_name APP_XCOMPATH
+
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["java","-jar","dagserver-0.8.0-SNAPSHOT.jar"]
