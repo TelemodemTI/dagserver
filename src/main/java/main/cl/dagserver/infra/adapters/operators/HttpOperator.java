@@ -72,8 +72,6 @@ public class HttpOperator extends OperatorStage {
 				DataFrame df = (DataFrame) this.xcom.get(xcomname);
 				String body = df.getColumn(0).get(0).toString();
 				con.setDoOutput(true);
-				//la linea que viene me da el siguiente problema
-				//javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
 				OutputStream os = con.getOutputStream();
 				os.write(body.getBytes());
 				os.flush();
