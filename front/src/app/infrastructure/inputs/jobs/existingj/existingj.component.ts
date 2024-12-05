@@ -165,6 +165,7 @@ export class ExistingjComponent {
     this.saveDag(tabname);
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == $("#stepinput-"+tabname).val();})[0]
     this.redraw(obj,this.diagram)
+    this.changeTab(tabname)
   }
 
   saveDag(dag:any){
