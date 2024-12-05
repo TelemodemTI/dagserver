@@ -31,7 +31,17 @@ public class HttpOperator extends OperatorStage {
 		log.debug("args");
 		log.debug(this.args);
 		try {
-			URL url = new URL(this.args.getProperty("url"));
+			
+			String urlStr = this.args.getProperty("url");
+			if(urlStr.startsWith("${") && urlStr.endsWith("}")) {
+				String xcomheader = urlStr.replace("${", "").replace("}", "");
+				if(this.xcom.containsKey(xcomheader)) {
+					DataFrame df = (DataFrame) this.xcom.get(xcomheader);
+					urlStr = df.getColumn("output").get(0).toString();
+				}
+			}
+			
+			URL url = new URL(urlStr);
 			disableSSLVerification();
 
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -57,9 +67,6 @@ public class HttpOperator extends OperatorStage {
 			con.setConnectTimeout(timeout);
 			con.setReadTimeout(timeout);
 			
-			
-			
-			
 			String xcomname = this.optionals.getProperty("xcom");
 			if(this.xcom.containsKey(xcomname)) {
 				DataFrame df = (DataFrame) this.xcom.get(xcomname);
@@ -72,19 +79,19 @@ public class HttpOperator extends OperatorStage {
 				os.flush();
 				os.close();	
 			}
-				int responseCode = con.getResponseCode();
-				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuilder response = new StringBuilder();
-				while ((inputLine = in.readLine()) != null) {
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuilder response = new StringBuilder();
+			while ((inputLine = in.readLine()) != null) {
 					response.append(inputLine);
-				}
-				in.close();
-				log.debug(this.getClass()+" end "+this.name);
-				Map<String,Object> output = new HashMap<>();
-				output.put("response", response.toString());
-				output.put("responseCode", responseCode);
-				return DataFrameUtils.buildDataFrameFromMap(Arrays.asList(output));
+			}
+			in.close();
+			log.debug(this.getClass()+" end "+this.name);
+			Map<String,Object> output = new HashMap<>();
+			output.put("response", response.toString());
+			output.put("responseCode", responseCode);
+			return DataFrameUtils.buildDataFrameFromMap(Arrays.asList(output));
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
