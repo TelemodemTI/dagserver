@@ -1,5 +1,5 @@
 package main.cl.dagserver.infra.adapters.operators;
-
+import javax.activation.DataSource;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +16,8 @@ import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.CredentialsDTO;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
-
+import javax.mail.util.ByteArrayDataSource;
+import javax.activation.DataHandler;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -125,7 +126,10 @@ public class MailOperator extends OperatorStage {
 	    	        byte[] fileBytes = Base64.getDecoder().decode(base64File);
 	    	        // Crear una parte del cuerpo del mensaje para el archivo adjunto
 	                BodyPart fileBodyPart = new MimeBodyPart();
-	                fileBodyPart.setContent(fileBytes, "application/octet-stream");
+	                //fileBodyPart.setContent(fileBytes, "application/octet-stream");
+	                DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
+
+	                fileBodyPart.setDataHandler(new DataHandler(dataSource));
 	                fileBodyPart.setFileName(attachedFilename);
 
 	                // Crear el cuerpo del mensaje y adjuntar la parte del archivo
