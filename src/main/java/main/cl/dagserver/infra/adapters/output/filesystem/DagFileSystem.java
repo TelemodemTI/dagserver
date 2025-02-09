@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,10 +17,12 @@ import com.linkedin.cytodynamics.nucleus.IsolationLevel;
 import com.linkedin.cytodynamics.nucleus.LoaderBuilder;
 import com.linkedin.cytodynamics.nucleus.OriginRestriction;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.FileEntryDTO;
 
+@Log4j2
 public abstract class DagFileSystem implements FileSystemOutputPort {
 	
 	
@@ -65,7 +69,8 @@ public abstract class DagFileSystem implements FileSystemOutputPort {
 			return loader.getResourceAsStream(resource);
 		}
 	public Class<?> loadFromOperatorJar(String name, List<URI> list) throws DomainException {
-			ClassLoader loader = LoaderBuilder
+		
+		ClassLoader loader = LoaderBuilder
 				    .anIsolatingLoader()
 				    .withOriginRestriction(OriginRestriction.allowByDefault())
 				    .withClasspath(list)
@@ -74,11 +79,19 @@ public abstract class DagFileSystem implements FileSystemOutputPort {
 				        .build())
 				    .build();
 			try {
+				URL[] urls = ((URLClassLoader) loader).getURLs();
+				for (URL url : urls) {
+				    log.info("Classpath: " + url);
+				}
 				return loader.loadClass(name.replace(File.separator , ".").replace(CLASSEXT, ""));
 			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 				throw new DomainException(e);
 			}
 		
+			
+			
+			
 		}
 
 	protected List<FileEntryDTO> getFileEntries(Path directory) throws DomainException {

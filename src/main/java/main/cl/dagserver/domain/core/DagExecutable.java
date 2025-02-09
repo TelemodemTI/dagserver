@@ -356,7 +356,7 @@ public class DagExecutable implements Job,JobListener  {
 		for (int i = 0; i < argsarr.length; i++) {
 			String string = argsarr[i];
 			if(!args.containsKey(string)) {
-				throw new DomainException(new Exception(string + " not found"));
+				throw new DomainException(new Exception(string + " not found in "+name+"::"+operator.getCanonicalName()));
 			}
 		}
 		if(this.extrArgs != null) {
