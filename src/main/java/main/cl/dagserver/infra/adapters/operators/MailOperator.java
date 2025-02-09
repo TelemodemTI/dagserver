@@ -120,7 +120,7 @@ public class MailOperator extends OperatorStage {
 	    	  
 	    	  //Map<String,Object> obj = lista.get(0);
 	    	  RowProxy obj = df.iterator().next();
-	    	  String base64File = (String) obj.get("result");
+	    	  String base64File = (String) obj.get("output");
 	    	  if (base64File  != null && !base64File.isEmpty()) {
 	    	        byte[] fileBytes = Base64.getDecoder().decode(base64File);
 	    	        // Crear una parte del cuerpo del mensaje para el archivo adjunto
