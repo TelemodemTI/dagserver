@@ -62,6 +62,7 @@ public class JavaOperator extends OperatorStage {
 				throw new DomainException(new Exception("jar not loaded"));
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new DomainException(e);
 		}
 	}
@@ -90,7 +91,7 @@ public class JavaOperator extends OperatorStage {
                 @SuppressWarnings("unchecked")
                 Callable<T> callableInstance = (Callable<T>) loadedClass.getDeclaredConstructor().newInstance();
                 if(this.methodExist(callableInstance, "setXcom")){
-                	this.execSetParams(callableInstance,"setXcom" , this.xcom.toString());
+                	this.execSetParams(callableInstance,"setXcom" , this.xcom);
                 }
                 if(this.methodExist(callableInstance, "setArgs")){
                 	this.execSetParams(callableInstance,"setArgs" , this.args);
@@ -124,7 +125,7 @@ public class JavaOperator extends OperatorStage {
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.JavaOperator");
 		metadata.setType("PROCCESS");
-		metadata.setParameter("classpath", "file");
+		metadata.setParameter("classpath", "text");
 		metadata.setParameter("className", "text");
 		return metadata.generate();
 	}
