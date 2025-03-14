@@ -47,7 +47,7 @@ class SchedulerQueryHandlerServiceTest {
 	protected CompilerOutputPort compiler;
 	
 	@BeforeEach
-    public void init() {
+    void init() {
 		scanner = mock(JarSchedulerOutputPort.class);
 		repository = mock(SchedulerRepositoryOutputPort.class);
 		tokenEngine = mock(AuthenticationOutputPort.class);

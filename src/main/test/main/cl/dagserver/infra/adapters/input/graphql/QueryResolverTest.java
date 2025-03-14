@@ -51,7 +51,7 @@ class QueryResolverTest {
 	QueryResolverMapper mapper;
 	
 	@BeforeEach
-    public void init() {
+    void init() {
 		handler = mock(SchedulerQueryUseCase.class);
 		login = mock(LoginUseCase.class);
 		mapper = mock(QueryResolverMapper.class);

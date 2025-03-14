@@ -34,7 +34,7 @@ class DefaultControllerTest {
 	
 	
 	@BeforeEach
-    public void init() {
+    void init() {
 		stage = mock(StageApiUsecase.class);
 		applicationContext = mock(ApplicationContext.class);
 		resourceLoader = mock(ResourceLoader.class);

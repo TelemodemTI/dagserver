@@ -31,7 +31,7 @@ class LoginServiceTest {
 	AuthenticationOutputPort tokenEngine;
 	
 	@BeforeEach
-    public void init() {
+    void init() {
 		repo = mock(SchedulerRepositoryOutputPort.class);
 		tokenEngine = mock(AuthenticationOutputPort.class);
 		login = new LoginService(tokenEngine);

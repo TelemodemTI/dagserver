@@ -85,7 +85,6 @@ public abstract class DagFileSystem implements FileSystemOutputPort {
 				}
 				return loader.loadClass(name.replace(File.separator , ".").replace(CLASSEXT, ""));
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 				throw new DomainException(e);
 			}
 		
