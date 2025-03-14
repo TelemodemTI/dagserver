@@ -302,6 +302,13 @@
 		    <artifactId>activemq-broker</artifactId>
       	</dependency>
       
+      <dependency>
+		    <groupId>io.minio</groupId>
+		    <artifactId>minio</artifactId>
+		    <version>8.5.17</version>
+		</dependency>
+      
+      
 	</dependencies>          
     <build>
 		<testSourceDirectory>src/main/test</testSourceDirectory>
