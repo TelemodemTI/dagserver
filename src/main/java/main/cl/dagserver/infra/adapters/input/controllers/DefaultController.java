@@ -79,6 +79,7 @@ public class DefaultController {
 		}
 	    return new ResponseEntity<>(arr.toString(),HttpStatus.OK);
 	}
+	
 	@GetMapping(value = "/openapi", produces = "application/x-yaml")
 	public ResponseEntity<byte[]> getOpenApiYaml() {
 		try {
@@ -103,9 +104,6 @@ public class DefaultController {
         redirectView.setUrl(path+"/index.html");
         return redirectView;
 	}
-	
-	//necesito agregar un endpoint aqui que obtenga el archivo openapi.yaml y lo responda via httpget
-	
 	
 	@PostMapping(path = "/stageApi/",consumes = {"application/json"}, produces= {"application/json"})
 	public ResponseEntity<String> stageApi(HttpEntity<String> httpEntity,HttpServletResponse response) throws DomainException {
@@ -188,19 +186,19 @@ public class DefaultController {
 			throw new DomainException(new Exception("invalid file"));
 		}
 	}
+	private String sanitizePath(String path) {
+	    return path.replaceAll("[^a-zA-Z0-9/._-]", "_");
+	}
+	
 	
 	@GetMapping(value = "/explorer/download-file")
 	public ResponseEntity<byte[]> downloadFile(@RequestParam("folder") String folderPath,@RequestParam("file") String filePath, @RequestParam("token") String token) throws DomainException {
 	    try {
-	        Path file = api.getFilePath(folderPath,this.sanitizeFilename(filePath), token);
-	        if (!Files.exists(file) || !Files.isReadable(file)) {
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	        }
-	        
-	        byte[] fileContent = Files.readAllBytes(file);
-	        String contentType = Files.probeContentType(file);
+	        Path file1 = api.getFilePath(sanitizePath(folderPath),this.sanitizeFilename(filePath), token);         
+	        byte[] fileContent = Files.readAllBytes(file1);
+	        String contentType = Files.probeContentType(file1);
 	        return ResponseEntity.ok()
-	                .header(CONTENTDISPOSITION, "attachment; filename=\"" + file.getFileName().toString() + "\"")
+	                .header(CONTENTDISPOSITION, "attachment; filename=\"" + file1.getFileName().toString() + "\"")
 	                .contentType(org.springframework.http.MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
 	                .body(fileContent);
 	    } catch (IOException e) {

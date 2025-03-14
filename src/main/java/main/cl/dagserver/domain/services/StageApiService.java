@@ -60,20 +60,24 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 		Properties properties = new Properties();
 		for (String arg : args) {
             if (step.has(PARAMS)) {
-                JSONArray params = step.getJSONArray(PARAMS);
-                for (int k = 0; k < params.length(); k++) {
-                    JSONObject param = params.getJSONObject(k);
-                    if (param.has("key") && param.has(VALUE) && param.getString("key").equals(arg)) {
-                        try {
-                        	properties.setProperty(arg, param.getString(VALUE));	
-						} catch (Exception e) {
-							log.debug(e);
-						}
-                    }
-                }
+                loadPropertiesParameters(step, properties, arg);
             }
         }
 		return properties;
+	}
+
+	private void loadPropertiesParameters(JSONObject step, Properties properties, String arg) {
+		JSONArray params = step.getJSONArray(PARAMS);
+		for (int k = 0; k < params.length(); k++) {
+		    JSONObject param = params.getJSONObject(k);
+		    if (param.has("key") && param.has(VALUE) && param.getString("key").equals(arg)) {
+		        try {
+		        	properties.setProperty(arg, param.getString(VALUE));	
+				} catch (Exception e) {
+					log.debug(e);
+				}
+		    }
+		}
 	}
 	private Properties loadOptionals(String[] optionals,JSONObject step) {
 		Properties options = new Properties();
