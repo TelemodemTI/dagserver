@@ -35,7 +35,7 @@ class RabbitChannelServiceTest {
 	protected AuthenticationOutputPort tokenEngine;
 	
 	@BeforeEach
-    public void init() {
+    void init() {
 		scanner = mock(JarSchedulerOutputPort.class);
 		repository = mock(SchedulerRepositoryOutputPort.class);
 		compiler = mock(CompilerOutputPort.class);

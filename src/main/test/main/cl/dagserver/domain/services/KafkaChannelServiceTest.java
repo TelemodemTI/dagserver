@@ -25,7 +25,7 @@ class KafkaChannelServiceTest {
 	private SchedulerRepositoryOutputPort repository;
 	
 	@BeforeEach
-    public void init() {
+    void init() {
         repository = mock(SchedulerRepositoryOutputPort.class);
         ReflectionTestUtils.setField(service, "repository", repository);
         ReflectionTestUtils.setField(service, "kafkaPropkey", "kafkaPropkey");

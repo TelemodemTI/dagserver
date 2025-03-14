@@ -141,7 +141,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			Map<String,Object> data = new HashMap<>();
 			data.put("channelData", args);
 			DataFrame dfdata = DataFrameUtils.buildDataFrameFromMap(Arrays.asList(data));
-			//Map<String,DataFrame> xcom = new HashMap<>();
+			
 			wrapper.put("args", DataFrameUtils.dataFrameToJson(dfdata));
 			output.put("xcom", wrapper);
 			output.put("result", result);
