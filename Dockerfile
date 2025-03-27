@@ -19,6 +19,9 @@ ENV env_name APP_HIBERNATE_DIALECT
 ENV env_name APP_EXTENSIONS
 ENV env_name APP_PROFILES_DEFAULT
 ENV env_name APP_FOLDERPATH
+ENV env_name APP_USERNAME
+ENV env_name APP_PWD
+ENV env_name APP_INIT_API_KEY
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["java","-jar","dagserver-0.8.0-SNAPSHOT.jar"]
