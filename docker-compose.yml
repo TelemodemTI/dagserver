@@ -18,12 +18,15 @@ services:
       KEYCLOAK_REALM:
       KEYCLOAK_CLIENT_ID:
       KEYCLOAK_CLIENT_SECRET:
+      APP_USERNAME:
+      APP_PWD:
+      APP_INIT_API_KEY:
     ports:
       - "11000:8081"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - "C:/tmp/:/root/dags/"
+      - "/opt/dags:/root/dags/"
     networks:
       vpcbr:
         ipv4_address: 10.5.0.3
