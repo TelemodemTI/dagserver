@@ -4,7 +4,6 @@ COPY / /app/dagserver/
 WORKDIR /app/dagserver/
 RUN ["mvn","--quiet","clean","install"]
 
-
 #FROM openjdk:17-oracle
 FROM eclipse-temurin:17-jdk-alpine
 COPY --from=maven_builder /app/dagserver/target/dagserver-0.8.0-SNAPSHOT.jar /
@@ -20,7 +19,6 @@ ENV env_name APP_HIBERNATE_DIALECT
 ENV env_name APP_EXTENSIONS
 ENV env_name APP_PROFILES_DEFAULT
 ENV env_name APP_FOLDERPATH
-
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["java","-jar","dagserver-0.8.0-SNAPSHOT.jar"]
