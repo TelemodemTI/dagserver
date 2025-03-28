@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 declare var $:any
 @Component({
   selector: 'app-remote-type-param',
@@ -6,6 +6,9 @@ declare var $:any
   styleUrls: ['./remote-type-param.component.css']
 })
 export class RemoteTypeParamComponent {
+  @ViewChild("remoterActionSelector") remoterActionSelector!:ElementRef;
+  @ViewChild("remoterInput1") remoterInput1!:ElementRef;
+  @ViewChild("remoterInput2") remoterInput2!:ElementRef;
   @Input("generatedIdParams") generatedIdParams:any
   remote_cmd:string[] = []
   setValue(value:any){
@@ -26,7 +29,16 @@ export class RemoteTypeParamComponent {
   }
   remoteAdd(){
     var action = $("#remoter-action-selector").val()
-    var filepath = $("#remoter-file").val();
+    var filepath = this.remoterInput1.nativeElement.value + " " + this.remoterInput2.nativeElement.value
     this.remote_cmd.push(action+" "+filepath)
   }
+  onChange(){
+    let value = this.remoterActionSelector.nativeElement.value
+    if(value=="list"){
+      this.remoterInput2.nativeElement.disabled = 'true'
+    } else {
+      this.remoterInput2.nativeElement.disabled = ''
+    }
+  }
+  
 }
