@@ -7,7 +7,7 @@ import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
 import main.cl.dagserver.domain.annotations.Dag;
 
 
-@Dag(name = "background_system_dag",cronExpr = "0 0/10 * ? * *", group="system_dags", target = "DAG")
+@Dag(name = "background_system_dag",cronExpr = "${param.backgroundjobs.cron}", group="system_dags", target = "DAG")
 public class BackgroundSystemDag extends DagExecutable {
 
 	public BackgroundSystemDag() throws DomainException {

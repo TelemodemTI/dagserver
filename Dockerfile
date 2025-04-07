@@ -22,6 +22,7 @@ ENV env_name APP_FOLDERPATH
 ENV env_name APP_USERNAME
 ENV env_name APP_PWD
 ENV env_name APP_INIT_API_KEY
+ENV env_name APP_BACKGROUND_JOBS
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["java","-jar","dagserver-0.8.0-SNAPSHOT.jar"]
