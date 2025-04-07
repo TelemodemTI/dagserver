@@ -23,6 +23,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.nhl.dflib.DataFrame;
@@ -37,6 +38,7 @@ import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
+import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 import main.cl.dagserver.infra.adapters.confs.ChannelScanner;
 import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
@@ -139,7 +141,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	                        var map = new HashMap<String,String>();
 	                        map.put("dagname", dag.name());
 	                        map.put("groupname", dag.group());
-	                        map.put("cronExpr", dag.cronExpr());
+	                        map.put("cronExpr", this.getRealCronExpr(dag.cronExpr()));
 	                        map.put("onStart", dag.onStart());
 	                        map.put("onEnd", dag.onEnd());
 	                        String className = ze.getName().replace('/', '.');
@@ -158,7 +160,14 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    }
 	    return classNames;
 	}
-
+	private String getRealCronExpr(String cronExpr) {
+	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {
+	        String key = cronExpr.substring(2, cronExpr.length() - 1); // Extrae la clave sin ${}
+	        Environment env = ApplicationContextUtils.getApplicationContext().getBean(Environment.class);
+	        return env.getProperty(key, cronExpr); 
+	    }
+	    return cronExpr;
+	}
 	@Override
 	public Map<String,List<Map<String,String>>> getOperators(){
 		return classMap;
@@ -177,7 +186,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 						if(toschedule.name().equals(dagname)) {
 							quartz.propertiesToRepo(prop);
 							DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
-							if(toschedule.cronExpr().equals("")) {
+							if(toschedule.cronExpr().isEmpty()) {
 								quartz.configureListener(toschedule,dag);	
 							} else {
 								quartz.activateJob( dag, toschedule.group());	
@@ -221,7 +230,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			Dag toschedule = clazz.getAnnotation(Dag.class);
 			if(toschedule.name().equals(dagname)) {
 				DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
-				if(toschedule.cronExpr().equals("")) {
+				if(toschedule.cronExpr().isEmpty()) {
 					quartz.removeListener(toschedule);
 				} else {
 					quartz.deactivateJob(dag);	
@@ -277,7 +286,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();	
 					DagDTO dto = new DagDTO();
 					dto.setDagname(scheduled.name());
-					dto.setCronExpr(scheduled.cronExpr());
+					dto.setCronExpr(this.getRealCronExpr(scheduled.cronExpr()));
 					dto.setGroup(scheduled.group());
 					dto.setOnEnd(scheduled.onEnd());
 					dto.setOnStart(scheduled.onStart());

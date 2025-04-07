@@ -1,6 +1,7 @@
 package main.cl.dagserver.infra.adapters.confs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.nhl.dflib.DataFrame;
@@ -169,13 +170,22 @@ public class QuartzConfig {
 	}
 
 
+	private String getRealCronExpr(String cronExpr) {
+	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {
+	        String key = cronExpr.substring(2, cronExpr.length() - 1); // Extrae la clave sin ${}
+	        Environment env = ApplicationContextUtils.getApplicationContext().getBean(Environment.class);
+	        return env.getProperty(key, cronExpr); 
+	    }
+	    return cronExpr;
+	}
 	
 	public void activateJob(Job jobType,String group) throws SchedulerException {	
 		Dag type = jobType.getClass().getAnnotation(Dag.class); 
 		String jobName = PREFIX_JOB_DB + type.name();
 		JobKey jobKey = new JobKey(jobName,group);
 		TriggerKey triggerKey = new TriggerKey(Key.DEFAULT_GROUP + jobName);
-		Trigger trigger = this.createOrGetTrigger(triggerKey,type.cronExpr());
+		String rcron = type.cronExpr();
+		Trigger trigger = this.createOrGetTrigger(triggerKey,this.getRealCronExpr(rcron));
 		this.createOrUpdateJob(jobKey, jobType.getClass(), trigger,type.cronExpr());
 	}
 	@SuppressWarnings("static-access")
@@ -238,7 +248,7 @@ public class QuartzConfig {
 				Dag type = jobType.getClass().getAnnotation(Dag.class); 
 				DagExecutable executable = (DagExecutable) jobType;
 				executable.setName(type.name());
-				if(!type.cronExpr().equals("")){
+				if(!type.cronExpr().isEmpty()){
 					this.activateJob(executable,type.group());	
 				} else {
 					this.configureListener(type,executable);
