@@ -231,8 +231,10 @@ export class JardetailComponent {
       }
       $("#canvas-det").on("change", function() {
         var fromSelenium = $("#canvas-det").val().trim();
-        let json = JSON.parse(fromSelenium);
-        root.triggerClick(json.dagname,json.selectedStep)
+        //let json = JSON.parse(fromSelenium);
+        var dagname = fromSelenium.split(";")[0];
+        var step = fromSelenium.split(";")[1];
+        root.triggerClick(dagname,step)
       })
     })
   }
