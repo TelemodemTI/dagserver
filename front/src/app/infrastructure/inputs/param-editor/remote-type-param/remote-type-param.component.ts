@@ -5,12 +5,15 @@ declare var $:any
   templateUrl: './remote-type-param.component.html',
   styleUrls: ['./remote-type-param.component.css']
 })
-export class RemoteTypeParamComponent {
+export class RemoteTypeParamComponent  {
+  
   @ViewChild("remoterActionSelector") remoterActionSelector!:ElementRef;
   @ViewChild("remoterInput1") remoterInput1!:ElementRef;
   @ViewChild("remoterInput2") remoterInput2!:ElementRef;
   @Input("generatedIdParams") generatedIdParams:any
   remote_cmd:string[] = []
+
+
   setValue(value:any){
     this.remote_cmd = value.split(";")
   }
