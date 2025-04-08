@@ -16,7 +16,9 @@ export class FileTypeParamComponent implements OnChanges {
   data:any[] = []
 
   constructor(private service: ExplorerInputPort){}
+  
 
+ 
   async ngOnChanges(changes: SimpleChanges) {
     if(this.generatedIdParams){
       var content:any = await this.service.getMounted();    
@@ -29,6 +31,7 @@ export class FileTypeParamComponent implements OnChanges {
       this.showFlag = (arr.length > 0)?true:false
     }
     console.log(this.generatedIdParams)
+    
   }
   
   configure(item:any){
@@ -40,6 +43,12 @@ export class FileTypeParamComponent implements OnChanges {
         var path = data.instance.get_path(data.node,'/');  
         item.value = path
       })
+      $(".file-selector-hiden").on("change", function (this: HTMLInputElement) {
+        const value = $(this).val(); // o lo que necesites hacer
+        //var id = $(this).attr("id").replace("file-selector-","");
+        item.value = value
+        //$("#param-"+id+"-value").val(value);
+      });
     },10)
   }
 
