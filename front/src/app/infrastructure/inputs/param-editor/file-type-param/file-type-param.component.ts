@@ -49,7 +49,7 @@ export class FileTypeParamComponent implements OnChanges {
             type: node.type,
             icon: this.getIconForType(node.type)
         };
-        if (node.type === 'folder') {
+        if (node.type === 'folder' && node.content) {
             jstreeNode.children = node.content.map((child:any) => this.traverse(child));
         }
 
