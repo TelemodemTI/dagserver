@@ -65,8 +65,10 @@ export class NewjComponent {
     this.selectedTab = dagname
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]
     this.boxes = obj.boxes
-    this.diagram.clear()
-    this.redraw(obj,this.diagram)
+    if(this.diagram){
+		this.diagram.clear()
+		this.redraw(obj,this.diagram)	
+	}
   }
   clickedStep(event:any){
     this.selectedObj = event
