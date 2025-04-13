@@ -129,6 +129,7 @@ public class CompilerHandler implements CompilerOutputPort {
 			}	
 			this.packageJar(jarname, classBytes ,props, bin);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new DomainException(e);
 		}
 	}
@@ -230,7 +231,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	        varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))
 	                .define(TARGET, dtomap.get(TARGET))
-	                .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase())))
+	                .define(dtomap.get(LISTENERLABEL), dtomap.get(dtomap.get(LISTENERLABEL).toLowerCase()))
 	                .define(GROUP, dtomap.get(GROUP))
 	                .build())
 	            .make(pool);
