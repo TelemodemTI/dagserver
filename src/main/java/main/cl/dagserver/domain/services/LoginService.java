@@ -3,13 +3,11 @@ package main.cl.dagserver.domain.services;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import main.cl.dagserver.application.ports.input.LoginUseCase;
-import main.cl.dagserver.application.ports.output.AuthenticationOutputPort;
 import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.model.SessionDTO;
@@ -24,15 +22,7 @@ public class LoginService  extends BaseServiceComponent implements LoginUseCase 
 	private String password;
 	@Value("${param.application.init.apikey}")
 	private String apiKey;
-	
-	private final AuthenticationOutputPort auth;
-	
-	
-    @Autowired
-    public LoginService(AuthenticationOutputPort auth) {
-        this.auth = auth;
-    }
-	
+
     @PostConstruct
     public void start() {
     	if(!username.trim().isEmpty() && password.trim().isEmpty() ) {
