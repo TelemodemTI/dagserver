@@ -162,7 +162,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	}
 	private String getRealCronExpr(String cronExpr) {
 	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {
-	        String key = cronExpr.substring(2, cronExpr.length() - 1); // Extrae la clave sin ${}
+	        String key = cronExpr.substring(2, cronExpr.length() - 1); 
 	        Environment env = ApplicationContextUtils.getApplicationContext().getBean(Environment.class);
 	        return env.getProperty(key, cronExpr); 
 	    }
