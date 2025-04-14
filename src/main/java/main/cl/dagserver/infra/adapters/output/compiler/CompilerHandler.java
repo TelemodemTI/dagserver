@@ -129,7 +129,6 @@ public class CompilerHandler implements CompilerOutputPort {
 			}	
 			this.packageJar(jarname, classBytes ,props, bin);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new DomainException(e);
 		}
 	}
