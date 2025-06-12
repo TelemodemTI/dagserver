@@ -58,7 +58,7 @@ public class HttpOperator extends OperatorStage {
 						con.setRequestProperty("Authorization", header);	
 					}
 				} else {
-					log.debug("AUTHORIZATION_HEADER "+value.substring(0, 5) + "..." );
+					log.debug("AUTHORIZATION_HEADER "+value );
 					con.setRequestProperty("Authorization", value);	
 				}	
 			}
