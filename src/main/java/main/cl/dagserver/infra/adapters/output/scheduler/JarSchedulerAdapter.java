@@ -1,10 +1,11 @@
 package main.cl.dagserver.infra.adapters.output.scheduler;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,22 +97,20 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 
 
 	private boolean filtrarEsDag(Path path) {
-		try (InputStream inputStream = Files.newInputStream(path);
-		     ZipInputStream zip = new ZipInputStream(inputStream)) {
-		    ZipEntry entry;
-		    while ((entry = zip.getNextEntry()) != null) {
-		        if (entry.getName().equals(".source")) {
-		            byte[] buffer = new byte[1024];
-		            ByteArrayOutputStream output = new ByteArrayOutputStream();
-		            int len;
-		            while ((len = zip.read(buffer)) > 0) {
-		                output.write(buffer, 0, len);
-		            }
-		            String content = output.toString(StandardCharsets.UTF_8).trim();
-		            return "dagserver-generated-jar".equals(content);
-		        }
-		    }
-		    return false;
+		try (
+				ZipFile zfile = new ZipFile(path.toString());
+			) {
+			ZipEntry entry = zfile.getEntry(".source");
+			if(entry!= null) {
+				InputStream zip = zfile.getInputStream(entry);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(zip, StandardCharsets.UTF_8));
+			    String content = reader.readLine();
+				reader.close();
+				zip.close();
+				return "dagserver-generated-jar".equals(content);	
+			} else {
+				return false;
+			}
 		} catch (IOException e) {
 		    log.error("Error reading .source file from jar:", e);
 		    return false;
