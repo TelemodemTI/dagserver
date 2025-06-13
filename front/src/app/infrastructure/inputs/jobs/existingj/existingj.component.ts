@@ -162,7 +162,7 @@ export class ExistingjComponent {
   }
 
   async createNewStep(tabname:string){  
-    this.saveDag(tabname);
+    this.saveDag({name:tabname});
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == $("#stepinput-"+tabname).val();})[0]
     this.redraw(obj,this.diagram)
     this.changeTab(tabname)
@@ -170,8 +170,7 @@ export class ExistingjComponent {
 
   saveDag(dag:any){
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dag.name})[0]
-    dag.boxes = this.boxes
-    obj = dag
+	dag.boxes = this.boxes
     this.changeTab(obj.name)
   }
   changeDagName(newname:any){
