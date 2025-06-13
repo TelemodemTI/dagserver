@@ -113,12 +113,20 @@ export class ExistingjComponent {
   changeTab(dagname:string){
     this.hasViewDetail = true
     this.selectedTab = dagname
-
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]    
     this.boxes = obj.boxes
     if(this.diagram){
       this.diagram.clear()
-      this.redraw(obj,this.diagram)
+	  try {
+		this.redraw(obj,this.diagram)
+	  } catch(error){
+		console.log("hubo un error ahi!")
+		setTimeout(()=>{
+			console.log("reintentando!")
+			this.changeTab(dagname)
+		},250)
+	  }
+      
     }
   }
   redraw(obj:any,g:any){
