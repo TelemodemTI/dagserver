@@ -1,9 +1,11 @@
 package main.cl.dagserver.infra.adapters.output.scheduler;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -72,8 +74,11 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    List<Path> jarFiles = new ArrayList<>();
 	    try (Stream<Path> paths = Files.walk(folderPath)) {
 	        jarFiles = paths
-	            .filter(path -> path.toString().endsWith(".jar"))
-	            .collect(Collectors.toList());
+	        .filter(path -> path.toString().endsWith(".jar"))
+            .filter(path -> {
+                return filtrarEsDag(path);
+            })
+	        .collect(Collectors.toList());
 	    } catch (IOException e) {
 	        log.error("JarSchedulerAdapter init:", e);
 	    }
@@ -86,6 +91,30 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    }
 
 	    return this;
+	}
+
+
+	private boolean filtrarEsDag(Path path) {
+		try (InputStream inputStream = Files.newInputStream(path);
+		     ZipInputStream zip = new ZipInputStream(inputStream)) {
+		    ZipEntry entry;
+		    while ((entry = zip.getNextEntry()) != null) {
+		        if (entry.getName().equals(".source")) {
+		            byte[] buffer = new byte[1024];
+		            ByteArrayOutputStream output = new ByteArrayOutputStream();
+		            int len;
+		            while ((len = zip.read(buffer)) > 0) {
+		                output.write(buffer, 0, len);
+		            }
+		            String content = output.toString(StandardCharsets.UTF_8).trim();
+		            return "dagserver-generated-jar".equals(content);
+		        }
+		    }
+		    return false;
+		} catch (IOException e) {
+		    log.error("Error reading .source file from jar:", e);
+		    return false;
+		}
 	}
 	
 	
