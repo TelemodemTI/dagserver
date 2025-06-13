@@ -727,7 +727,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   }
   getAvailableJobs(): Promise<AvailableJobs[]> {
     return new Promise<AvailableJobs[]>((resolve, reject) => {
-      var string = "query availableJobs {availableJobs {jarname,classname,groupname,dagname,cronExpr,triggerEvent,targetDagname}}"
+      var string = "query availableJobs {availableJobs {jarname,classname,groupname,dagname,cronExpr,triggerEvent,targetDagname,owner}}"
       this.query(string,{}).subscribe((result:any)=>{
         if(result && result.availableJobs){
           resolve(result.availableJobs as AvailableJobs[])

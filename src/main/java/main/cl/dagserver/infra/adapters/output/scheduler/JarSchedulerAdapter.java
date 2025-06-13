@@ -158,9 +158,11 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	}
 	private List<Map<String,String>> analizeJar(Path jarFile) {
 	    List<Map<String,String>> classNames = new ArrayList<>();
-	    
-	    try (BufferedInputStream buffered = new BufferedInputStream(Files.newInputStream(jarFile))) {
-	        try (ZipInputStream zip = new ZipInputStream(buffered)) {
+	    try (
+	    		ZipFile zfile = new ZipFile(jarFile.toString());
+	    		BufferedInputStream buffered = new BufferedInputStream(Files.newInputStream(jarFile))) {
+	    	String owner = getOwnerFromZip(zfile);
+	    	try (ZipInputStream zip = new ZipInputStream(buffered)) {
 	            ZipEntry ze;
 	            while ((ze = zip.getNextEntry()) != null) {
 	                if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
@@ -173,6 +175,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	                        map.put("cronExpr", this.getRealCronExpr(dag.cronExpr()));
 	                        map.put("onStart", dag.onStart());
 	                        map.put("onEnd", dag.onEnd());
+	                        map.put("owner", owner);
 	                        String className = ze.getName().replace('/', '.');
 	                        String finalname = className.substring(0, className.length() - CLASSEXT.length());
 	                        if (finalname != null && !finalname.startsWith("bin")) {
@@ -188,6 +191,17 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    	eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJar"));
 	    }
 	    return classNames;
+	}
+
+
+	private String getOwnerFromZip(ZipFile zfile) throws IOException {
+		ZipEntry entry = zfile.getEntry(".owner");
+		InputStream zipTmp = zfile.getInputStream(entry);
+		BufferedReader reader1 = new BufferedReader(new InputStreamReader(zipTmp, StandardCharsets.UTF_8));
+		String owner = reader1.readLine();
+		reader1.close();
+		zipTmp.close();
+		return owner;
 	}
 	private String getRealCronExpr(String cronExpr) {
 	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {

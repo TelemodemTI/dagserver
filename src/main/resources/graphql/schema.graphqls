@@ -69,6 +69,7 @@ type Available {
 	cronExpr: String
 	triggerEvent: String
 	targetDagname: String
+	owner: String
 }
 
 type Scheduled {

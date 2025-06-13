@@ -9,8 +9,14 @@ public class Available {
 	private String cronExpr;
 	private String triggerEvent;
 	private String targetDagname;
+	private String owner;
 	
-	
+	public String getOwner() {
+		return owner;
+	}
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 	public String getJarname() {
 		return jarname;
 	}

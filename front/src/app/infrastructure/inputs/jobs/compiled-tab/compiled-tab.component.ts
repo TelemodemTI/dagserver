@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { JobsInputPort } from 'src/app/application/inputs/jobs.input.port';
 import { AvailableJobs } from 'src/app/domain/models/availableJobs.model';
 import { ValueModalComponent } from '../../base/value-modal/value-modal.component';
+import { AuthenticatedInputPort } from 'src/app/application/inputs/authenticated.input.port';
 declare var $:any;
 @Component({
   selector: 'app-compiled-tab',
@@ -20,11 +21,14 @@ export class CompiledTabComponent {
   jarname!:string
   dagname!:string
   constructor(private router: Router, 
-    private service: JobsInputPort){
+    private service: JobsInputPort,
+    private auservice: AuthenticatedInputPort){
   }
 
   async ngOnInit(): Promise<void> {
-    this.jobs = await this.service.getAvailableJobs()
+    var res = this.auservice.getDecodedAccessToken()
+    var jobsAll = await this.service.getAvailableJobs()
+    this.jobs = jobsAll.filter((job:any) => job.owner == res.username || job.owner == null)
     this.calculateActive()
     setTimeout(()=>{
       if(!this.table){
