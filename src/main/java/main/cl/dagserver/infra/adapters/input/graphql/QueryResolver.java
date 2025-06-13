@@ -96,7 +96,7 @@ public class QueryResolver {
 	            operator.setCronExpr(operatormap.get("cronExpr"));
 	            operator.setGroupname(operatormap.get("groupname"));
 	            operator.setDagname(operatormap.get("dagname"));
-
+	            operator.setOwner(operatormap.get("owner"));
 	            String cronExpr = operatormap.get("cronExpr");
 	            if (!cronExpr.isEmpty()) {
 	                operator.setTriggerEvent("CRON STATEMENT");

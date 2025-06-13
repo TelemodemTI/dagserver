@@ -84,6 +84,7 @@ public class AuthenticationAdapter implements AuthenticationOutputPort {
 			result.setIssueAt(issuedAt);
 			result.setSubject(jwt.getSubject());
 			result.setAccountType(AccountType.valueOf(claims.get("typeAccount")));
+			result.setUsername(claims.get("username"));
 			return result;
 	
 		} catch (Exception e) {

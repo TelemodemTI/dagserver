@@ -11,4 +11,5 @@ public class AuthDTO {
 	private Date issueAt;
 	private String subject;
 	private AccountType accountType;
+	private String username;
 }
