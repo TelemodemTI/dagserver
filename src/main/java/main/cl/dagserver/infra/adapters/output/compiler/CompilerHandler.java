@@ -39,6 +39,7 @@ import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.AuthDTO;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.modifier.Visibility;
@@ -81,7 +82,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	} 
 	
 	@Override
-	public void createJar(String bin,Boolean force,Properties props) throws DomainException {
+	public void createJar(String bin,Boolean force,Properties props,AuthDTO auth) throws DomainException {
 		try {
 			ByteBuddyAgent.install();
 			ClassReloadingStrategy.fromInstalledAgent().reset(DagExecutable.class);
@@ -127,7 +128,7 @@ public class CompilerHandler implements CompilerOutputPort {
 				var dagdef1 = this.getClassDefinition(dtomap ,dag.getJSONArray("boxes"));
 				classBytes.put(classname, dagdef1.getBytes());
 			}	
-			this.packageJar(jarname, classBytes ,props, bin);
+			this.packageJar(jarname, classBytes ,props, bin, auth);
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -246,7 +247,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	    return varu;
 	}
 
-	private void packageJar(String jarname, Map<String, byte[]> classbytes, Properties props, String bin) {
+	private void packageJar(String jarname, Map<String, byte[]> classbytes, Properties props, String bin, AuthDTO auth) {
 	    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 	    Path jarFilePath = fileSystem.getFolderPath(jarname);
 	    try (
@@ -277,6 +278,10 @@ public class CompilerHandler implements CompilerOutputPort {
 	        }
 	        zos.putNextEntry(new ZipEntry("dagdef.json"));
 	        zos.write(bin.getBytes());
+	        zos.closeEntry();
+	        
+	        zos.putNextEntry(new ZipEntry(".owner"));
+	        zos.write(auth.getUsername().getBytes());
 	        zos.closeEntry();
 
 	        // Add the properties file

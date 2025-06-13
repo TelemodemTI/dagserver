@@ -207,7 +207,7 @@ class SchedulerMutationHandlerServiceTest {
 	@Test
 	void compileErrorTest() throws DomainException {
 		AuthDTO ret = new AuthDTO();
-		doThrow(new DomainException(new Exception("test"))).when(compiler).createJar(anyString(),any(),any());
+		doThrow(new DomainException(new Exception("test"))).when(compiler).createJar(anyString(),any(),any(),any());
 		try {
 			when(tokenEngine.untokenize(anyString())).thenReturn(ret);
 			service.compile("token", 1, true);

@@ -108,7 +108,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Override
 	public void compile(String token, Integer uncompiled, Boolean force) throws DomainException {
 		try {
-			auth.untokenize(token);
+			var objauth = auth.untokenize(token);
 			String bin = repository.getUncompiledBin(uncompiled);
 			JSONObject def = new JSONObject(bin);
 			String jarname = def.getString(JARNAME);
@@ -119,7 +119,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 				var propitem = repository.getProperties(string);
 				this.convertToProperties(prop,propitem);
 			}
-			compiler.createJar(bin,force,prop);
+			compiler.createJar(bin,force,prop,objauth);
 				
 		} catch (Exception e) {
 			throw new DomainException(e);
