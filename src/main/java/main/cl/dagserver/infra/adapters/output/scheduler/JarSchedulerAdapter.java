@@ -1,6 +1,5 @@
 package main.cl.dagserver.infra.adapters.output.scheduler;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,41 +79,43 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
                 return filtrarEsDag(path);
             })
 	        .collect(Collectors.toList());
+	        for (Path jarFile : jarFiles) {
+		        
+		    	jars.add(jarFile);
+		        classMap.put(jarFile.getFileName().toString(), this.analizeJar(jarFile));
+		        quartz.validate(jarFile.getFileName().toString().replace(".jar", ""), this.analizeJarProperties(jarFile));
+		    }
+
+		    return this;
 	    } catch (IOException e) {
 	        log.error("JarSchedulerAdapter init:", e);
+	        return this;
 	    }
-
-	    for (Path jarFile : jarFiles) {
-	        
-	    	jars.add(jarFile);
-	        classMap.put(jarFile.getFileName().toString(), this.analizeJar(jarFile));
-	        quartz.validate(jarFile.getFileName().toString().replace(".jar", ""), this.analizeJarProperties(jarFile));
-	    }
-
-	    return this;
 	}
 
 
-	private boolean filtrarEsDag(Path path) {
+	private boolean filtrarEsDag(Path jarFile) {
 		try (
-				ZipFile zfile = new ZipFile(path.toString());
-			) {
-			ZipEntry entry = zfile.getEntry(".source");
-			if(entry!= null) {
-				InputStream zip = zfile.getInputStream(entry);
-				BufferedReader reader = new BufferedReader(new InputStreamReader(zip, StandardCharsets.UTF_8));
-			    String content = reader.readLine();
-				reader.close();
-				zip.close();
-				return "dagserver-generated-jar".equals(content);	
-			} else {
-				return false;
+			InputStream inputStream = Files.newInputStream(jarFile);
+			ZipInputStream zip = new ZipInputStream(inputStream);) {
+			ZipEntry ze;
+			while ((ze = zip.getNextEntry()) != null) {
+				 if (!ze.isDirectory() && ze.getName().endsWith(".source")) {
+					InputStream zip1 = fileSystem.loadResourceFromJar(jarFile, ze.getName());
+					BufferedReader reader = new BufferedReader(new InputStreamReader(zip1, StandardCharsets.UTF_8));
+					String content = reader.readLine();
+					reader.close();
+					return "dagserver-generated-jar".equals(content);	
+				}
 			}
+			return false;
 		} catch (IOException e) {
-		    log.error("Error reading .source file from jar:", e);
-		    return false;
+			log.error("Error reading .source file from jar:", e);
+			return false;
 		}
 	}
+
+					
 	
 	
 	private Map<String,Properties> analizeJarProperties(Path jarFile){
@@ -156,15 +156,13 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		}
 		return prop;
 	}
-	private List<Map<String,String>> analizeJar(Path jarFile) {
-	    List<Map<String,String>> classNames = new ArrayList<>();
-	    try (
-	    		ZipFile zfile = new ZipFile(jarFile.toString());
-	    		BufferedInputStream buffered = new BufferedInputStream(Files.newInputStream(jarFile))) {
-	    	String owner = getOwnerFromZip(zfile);
-	    	try (ZipInputStream zip = new ZipInputStream(buffered)) {
-	            ZipEntry ze;
-	            while ((ze = zip.getNextEntry()) != null) {
+	private List<Map<String,String>> analizeJar(Path jarFile) throws IOException, DomainException {
+		List<Map<String,String>> classNames = new ArrayList<>();
+	    InputStream inputStream = Files.newInputStream(jarFile);
+		ZipInputStream zip = new ZipInputStream(inputStream); 
+		ZipEntry ze;
+	    	String owner = getOwnerFromZip(jarFile);
+	        while ((ze = zip.getNextEntry()) != null) {
 	                if (!ze.isDirectory() && ze.getName().endsWith(CLASSEXT)) {
 	                    Class<?> clazz = fileSystem.loadFromJar(jarFile, ze.getName());
 	                    Dag dag = clazz.getAnnotation(Dag.class);
@@ -185,23 +183,32 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	                    }
 	                }
 	            }
-	        }
-	    } catch (Exception e) {
-	    	log.error(e);       
-	    	eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJar"));
-	    }
+	        
+	    zip.close();
+	    inputStream.close();
 	    return classNames;
 	}
 
 
-	private String getOwnerFromZip(ZipFile zfile) throws IOException {
-		ZipEntry entry = zfile.getEntry(".owner");
-		InputStream zipTmp = zfile.getInputStream(entry);
-		BufferedReader reader1 = new BufferedReader(new InputStreamReader(zipTmp, StandardCharsets.UTF_8));
-		String owner = reader1.readLine();
-		reader1.close();
-		zipTmp.close();
-		return owner;
+	private String getOwnerFromZip(Path jarFile) throws IOException{
+		
+		InputStream inputStream = Files.newInputStream(jarFile);
+		ZipInputStream zip = new ZipInputStream(inputStream);
+		ZipEntry ze;
+		while ((ze = zip.getNextEntry()) != null) {
+			if (!ze.isDirectory() && ze.getName().endsWith(".owner")) {
+					InputStream zip1 = fileSystem.loadResourceFromJar(jarFile, ze.getName());
+					BufferedReader reader = new BufferedReader(new InputStreamReader(zip1, StandardCharsets.UTF_8));
+					String owner = reader.readLine(); 
+					zip.close();
+					reader.close();
+					inputStream.close();
+					return owner;
+			}
+		}
+		zip.close();
+		inputStream.close();
+		return "";
 	}
 	private String getRealCronExpr(String cronExpr) {
 	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {
