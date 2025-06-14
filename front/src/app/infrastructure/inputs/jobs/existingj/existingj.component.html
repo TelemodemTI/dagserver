@@ -65,6 +65,7 @@
                                         
                                         <app-dag-props #dagPropsComponent
                                             [dagName]="tabs.name"
+                                            [group]="tabs.group"
                                             [data]="data"
                                             (saveDagEvent)="saveDag($event)"
                                             (changeDagNameEvent)="changeDagName($event)"

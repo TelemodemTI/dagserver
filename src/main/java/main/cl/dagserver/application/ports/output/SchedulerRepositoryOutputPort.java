@@ -18,7 +18,7 @@ import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 
 public interface SchedulerRepositoryOutputPort {
-	public void addEventListener(String name,String onstart,String onend,String groupname);
+	public void addEventListener(String name,String onstart,String onend,String groupname,String tag,String jarname);
 	public void removeListener(String name);
 	public List<EventListenerDTO> listEventListeners();
 	public List<EventListenerDTO> getEventListeners(String listenerName);

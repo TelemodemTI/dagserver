@@ -10,6 +10,7 @@ declare var $:any
 })
 export class DagPropsComponent {
     @Input('dagName') dagName!: string
+	@Input('group') group!: string
     @Input('data') data!: any
     @Output() saveDagEvent = new EventEmitter<any>();
     @Output() changeDagNameEvent = new EventEmitter<any>();

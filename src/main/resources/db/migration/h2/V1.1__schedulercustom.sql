@@ -2,7 +2,9 @@ CREATE TABLE sche_events_listeners (
   `LISTENER_NAME` varchar(190) NOT NULL,
   `GROUP_NAME` varchar(190) NOT NULL,
   `ONSTART` varchar(190) DEFAULT NULL,
-  `ONEND` varchar(190) DEFAULT NULL
+  `ONEND` varchar(190) DEFAULT NULL,
+  `TAG` varchar(190) DEFAULT NULL,
+  `JARNAME` varchar(190) DEFAULT NULL
 );
 
 

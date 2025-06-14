@@ -64,7 +64,7 @@ export class NewjComponent {
   changeTab(dagname:any){
     this.selectedTab = dagname
     let obj = this.data.dags.filter(( obj:any )=> {return obj.name == dagname;})[0]
-    this.boxes = obj.boxes
+	this.boxes = obj.boxes
     if(this.diagram){
 		this.diagram.clear()
 		this.redraw(obj,this.diagram)	
