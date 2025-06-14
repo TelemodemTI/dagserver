@@ -78,12 +78,14 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
     }	
 	
 	
-	public void addEventListener(String name,String onstart,String onend,String groupname) {
+	public void addEventListener(String name,String onstart,String onend,String groupname,String tag, String jarname) {
 		var event = new EventListener();
 		event.setListenerName(name);
 		event.setOnStart(onstart);
 		event.setOnEnd(onend);
 		event.setGroupName(groupname);
+		event.setTag(tag);
+		event.setJarname(jarname);
 		dao.save(event);
 	}
 	

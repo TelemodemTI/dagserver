@@ -37,6 +37,8 @@ public class SchedulerMapperImpl implements SchedulerMapper {
 		e.setListenerName(eventListener.getListenerName());
 		e.setOnEnd(eventListener.getOnEnd());
 		e.setOnStart(eventListener.getOnStart());
+		e.setTag(eventListener.getTag());
+		e.setJarname(eventListener.getJarname());
 		return e;
 	}
 

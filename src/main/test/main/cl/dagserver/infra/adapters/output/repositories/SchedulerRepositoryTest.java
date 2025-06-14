@@ -63,7 +63,7 @@ class SchedulerRepositoryTest {
 	
 	@Test
 	void addEventListenerTest() {
-		repo.addEventListener("name", "onstart", "onend", "group");
+		repo.addEventListener("name", "onstart", "onend", "group","tag","jarname");
 		assertTrue(true);
 	}
 	@Test

@@ -237,7 +237,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 							quartz.propertiesToRepo(prop);
 							DagExecutable dag = (DagExecutable) clazz.getDeclaredConstructor().newInstance();
 							if(toschedule.cronExpr().isEmpty()) {
-								quartz.configureListener(toschedule,dag);	
+								quartz.configureListener(toschedule,dag,jarname);	
 							} else {
 								quartz.activateJob( dag, toschedule.group());	
 							}

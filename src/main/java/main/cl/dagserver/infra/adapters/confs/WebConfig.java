@@ -67,7 +67,7 @@ public class WebConfig implements WebMvcConfigurer {
 					 if(!type.cronExpr().isEmpty()) {
 						 quartz.executeInmediate((DagExecutable) job);	 
 					 } else {
-						 quartz.configureListener(type, (DagExecutable) job);
+						 quartz.configureListener(type, (DagExecutable) job,"SYSTEM");
 					 }
 					 	
 				}

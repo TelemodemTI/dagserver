@@ -45,6 +45,11 @@ import main.cl.dagserver.infra.adapters.confs.InMemoryLoggerAppender;
 
 public class DagExecutable implements Job,JobListener  {
 	
+	public String getGroup() {
+		Dag anno = this.getClass().getAnnotation(Dag.class);
+		return anno.group();
+	}
+
 	private static final String VALUE = "value";
 	private static final String EVALSTRING = "evalstring";
 	private static final String STATUSTOBE = "statusToBe";

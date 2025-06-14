@@ -21,8 +21,26 @@ public class EventListener{
 	 
 	 @Column(name = "GROUP_NAME", nullable = true)
 	 private String groupName;
+	 
+	 @Column(name = "TAG", nullable = true)
+	 private String tag;
 
-	 public String getListenerName() {
+	 @Column(name = "JARNAME", nullable = true)
+	 private String jarname;
+	 
+	 public String getJarname() {
+		return jarname;
+	}
+	public void setJarname(String jarname) {
+		this.jarname = jarname;
+	}
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	public String getListenerName() {
 			return listenerName;
 		}
 		public void setListenerName(String listenerName) {

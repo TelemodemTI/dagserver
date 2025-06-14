@@ -5,10 +5,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.nhl.dflib.DataFrame;
+
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.domain.model.EventListenerDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 import main.cl.dagserver.infra.adapters.output.repositories.SchedulerRepository;
+import main.cl.dagserver.infra.adapters.output.scheduler.JarSchedulerAdapter;
+import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
@@ -42,6 +48,7 @@ import org.quartz.impl.matchers.KeyMatcher;
 import org.quartz.utils.Key;
 
 @Component
+@Log4j2
 public class QuartzConfig {
 	
 	
@@ -57,9 +64,10 @@ public class QuartzConfig {
 	
 	private static final String PREFIX_JOB_DB = "";
 	private Scheduler scheduler;
+	private Map<String,DagExecutable> events = new HashMap<>();
 	
 	@Autowired
-	public QuartzConfig(SchedulerRepository repo) {
+	public QuartzConfig(SchedulerRepository repo ) {
 		this.repo = repo;
 	}
 	
@@ -114,62 +122,112 @@ public class QuartzConfig {
 		}
 	}
 	
-	
+	private JobDetail getJobDetailFromDag(DagExecutable dag) {
+		Job jobType = (Job) dag;
+        JobDetail jobDetail = JobBuilder.newJob(jobType.getClass())
+                .withIdentity(jobType.getClass().getName())
+                .build();
+        jobDetail.getJobDataMap().put("channel", dag.getExecutionSource());
+        jobDetail.getJobDataMap().put("channelData", dag.getChannelData());
+        return jobDetail;
+	}
 
 	public CompletableFuture<Map<String,DataFrame>> executeInmediate(DagExecutable dag) throws DomainException {
-	    Job jobType = (Job) dag;
 	    CompletableFuture<Map<String,DataFrame>> future = new CompletableFuture<>();
-
 	    try {
-	        // Crear el trigger para ejecutar el job inmediatamente
-	        Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
-
-	        // Crear el JobDetail, incluyendo la información que quieres pasar
-	        JobDetail jobDetail = JobBuilder.newJob(jobType.getClass())
-	                .withIdentity(jobType.getClass().getName())
-	                .build();
-
-	        // Pasar los datos al JobDataMap
-	        jobDetail.getJobDataMap().put("channel", dag.getExecutionSource());
-	        jobDetail.getJobDataMap().put("channelData", dag.getChannelData());
-
-	        // Agregar el listener para el job actual
-	        JobListener jobListener = new JobListener() {
-	            @Override
-	            public String getName() {
-	                return "JobCompletionListener";
-	            }
-
-	            @Override
-	            public void jobToBeExecuted(JobExecutionContext context) {
-	                
-	            }
-
-	            @Override
-	            public void jobExecutionVetoed(JobExecutionContext context) {
-	                future.completeExceptionally(new RuntimeException("Job vetado: " + context.getJobDetail().getKey()));
-	            }
-
-	            @Override
-	            public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
-	                if (jobException != null) {
-	                    future.completeExceptionally(jobException);
-	                } else {
-	                    var dagexec = (DagExecutable) context.getJobInstance();
-	                    future.complete(dagexec.getXcom());
-	                }
-	            }
-	        };
-	        this.scheduler.getListenerManager().addJobListener(jobListener, KeyMatcher.keyEquals(jobDetail.getKey()));
+	        
+	    	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
+	        JobDetail jobDetail = this.getJobDetailFromDag(dag);
+	        Map<String, List<DagExecutable>> returned = getListeners(dag);
+	        this.processListeners(dag,jobDetail,returned,future);
+	        this.scheduler.deleteJob(jobDetail.getKey());
 	        this.scheduler.scheduleJob(jobDetail, trigger);
+
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        future.completeExceptionally(e);
 	        throw new DomainException(e);
 	    }
 	    return future;
 	}
 
+		
+	
+	private void processListeners(DagExecutable dag, JobDetail jobDetail,Map<String, List<DagExecutable>> returned,CompletableFuture<Map<String,DataFrame>> future) throws SchedulerException {
+        
+        JobListener jobListener = new JobListener() {
+            @Override
+            public String getName() {
+                return "JobCompletionListener";
+            }
+            @Override
+            public void jobToBeExecuted(JobExecutionContext context) {
+            	var onStartListeners = returned.get("onStart");
+            	for (Iterator<DagExecutable> iterator = onStartListeners.iterator(); iterator.hasNext();) {
+            		DagExecutable dagL = iterator.next();
+                	try {
+                		/*
+                		JobDetail jobDetail = getJobDetailFromDag(dagL);
+                		Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
+                		scheduler.scheduleJob(jobDetail, trigger);*/
+					} catch (Exception e) {
+						e.printStackTrace();
+						log.error(e);
+					} 					
+                }		
+            }
 
+            @Override
+            public void jobExecutionVetoed(JobExecutionContext context) {
+                future.completeExceptionally(new RuntimeException("Job vetado: " + context.getJobDetail().getKey()));
+            }
+
+            @Override
+            public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+            	var onEndListeners = returned.get("onEnd");
+            	for (Iterator<DagExecutable> iterator = onEndListeners.iterator(); iterator.hasNext();) {
+            		DagExecutable dagL = iterator.next();
+                	try {
+                		executeInmediate(dagL).get();
+                		/*
+                		JobDetail jobDetail = getJobDetailFromDag(dagL);
+               		 	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
+               		 	scheduler.scheduleJob(jobDetail, trigger);*/
+					} catch (Exception e) {
+						e.printStackTrace();
+						log.error(e);
+					} 					
+                }
+            }
+        };
+        this.scheduler.getListenerManager().addJobListener(jobListener, KeyMatcher.keyEquals(jobDetail.getKey()));
+	}
+
+	private Map<String, List<DagExecutable>> getListeners(DagExecutable dag) {
+		var listener = repo.listEventListeners();
+		Map<String,List<DagExecutable>> returned = new HashMap<>();
+        List<DagExecutable> onEndListeners = new ArrayList<>();
+        List<DagExecutable> onStartListeners = new ArrayList<>();
+		for (Iterator<EventListenerDTO> iterator = listener.iterator(); iterator.hasNext();) {
+			EventListenerDTO eventListenerDTO = iterator.next();
+			if(eventListenerDTO.getTag().equals("DAG")){
+				if(dag.getDagname().equals(eventListenerDTO.getOnEnd())) {
+					onEndListeners.add(this.events.get(eventListenerDTO.getListenerName()));
+				} else if(dag.getDagname().equals(eventListenerDTO.getOnStart())) {
+					onStartListeners.add(this.events.get(eventListenerDTO.getListenerName()));
+				}
+			} else {
+				if(dag.getGroup().equals(eventListenerDTO.getOnEnd())) {
+					onEndListeners.add(this.events.get(eventListenerDTO.getListenerName()));
+				} else if(dag.getGroup().equals(eventListenerDTO.getOnStart())) {
+					onStartListeners.add(this.events.get(eventListenerDTO.getListenerName()));
+				}
+			}
+		}
+		returned.put("onStart", onStartListeners);
+		returned.put("onEnd", onEndListeners);
+		return returned;
+	}
 	private String getRealCronExpr(String cronExpr) {
 	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {
 	        String key = cronExpr.substring(2, cronExpr.length() - 1); // Extrae la clave sin ${}
@@ -251,7 +309,7 @@ public class QuartzConfig {
 				if(!type.cronExpr().isEmpty()){
 					this.activateJob(executable,type.group());	
 				} else {
-					this.configureListener(type,executable);
+					this.configureListener(type,executable,"SYSTEM");
 				}
 			}
 			this.scheduler.start();	
@@ -260,7 +318,7 @@ public class QuartzConfig {
 		}
 		
 	}
-	public void configureListener(Dag annotation,DagExecutable executable) throws SchedulerException {
+	public void configureListener(Dag annotation,DagExecutable executable, String jarname) throws SchedulerException {
 		String eventname = annotation.onEnd().equals("") ? "onStart" : "onEnd";
 		executable.setEventname(eventname);
 		executable.setName(annotation.name());
@@ -275,7 +333,8 @@ public class QuartzConfig {
 			list.add(GroupMatcher.jobGroupEquals(matcherkey));	
 		}	
 		this.scheduler.getListenerManager().addJobListener(listener,list);
-		this.repo.addEventListener(listener.getName(), annotation.onStart(), annotation.onEnd(), annotation.group());
+		this.repo.addEventListener(listener.getName(), annotation.onStart(), annotation.onEnd(), annotation.group(),target,jarname);
+		this.events.put(listener.getName(), executable);
 	}
 	public void removeListener(Dag annotation) throws SchedulerException {
 		this.scheduler.getListenerManager().removeJobListener(annotation.name());
