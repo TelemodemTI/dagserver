@@ -12,8 +12,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.EventListenerDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 import main.cl.dagserver.infra.adapters.output.repositories.SchedulerRepository;
-import main.cl.dagserver.infra.adapters.output.scheduler.JarSchedulerAdapter;
-import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +24,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -141,8 +137,7 @@ public class QuartzConfig {
 	        Map<String, List<DagExecutable>> returned = getListeners(dag);
 	        this.processListeners(dag,jobDetail,returned,future);
 	        this.scheduler.deleteJob(jobDetail.getKey());
-	        this.scheduler.scheduleJob(jobDetail, trigger);
-
+	        this.scheduler.scheduleJob(jobDetail, trigger);	
 	    } catch (Exception e) {
 	    	e.printStackTrace();
 	        future.completeExceptionally(e);
@@ -166,10 +161,7 @@ public class QuartzConfig {
             	for (Iterator<DagExecutable> iterator = onStartListeners.iterator(); iterator.hasNext();) {
             		DagExecutable dagL = iterator.next();
                 	try {
-                		/*
-                		JobDetail jobDetail = getJobDetailFromDag(dagL);
-                		Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
-                		scheduler.scheduleJob(jobDetail, trigger);*/
+                		executeInmediate(dagL).get();
 					} catch (Exception e) {
 						e.printStackTrace();
 						log.error(e);
@@ -189,10 +181,6 @@ public class QuartzConfig {
             		DagExecutable dagL = iterator.next();
                 	try {
                 		executeInmediate(dagL).get();
-                		/*
-                		JobDetail jobDetail = getJobDetailFromDag(dagL);
-               		 	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
-               		 	scheduler.scheduleJob(jobDetail, trigger);*/
 					} catch (Exception e) {
 						e.printStackTrace();
 						log.error(e);

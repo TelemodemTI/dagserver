@@ -6,6 +6,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Jarname</th>
+                                                <th>CreatedAt</th>
                                                 <th>ClassName</th>
                                                 <th>GroupName</th>
                                                 <th>DagName</th>
@@ -17,7 +18,8 @@
                                         </thead>
                                         <tbody>
                                             <tr *ngFor="let item of jobs">
-                                                <td>{{item.jarname}}</td>
+                                                <td>{{item.jarname === 'SYSTEM' ? item.jarname : item.jarname.split('.')[1]}}</td>
+                                                <td>{{item.jarname === 'SYSTEM' ? '' : item.jarname.split('.')[0]}}</td>
                                                 <td>{{item.classname}}</td>
                                                 <td>{{item.groupname}}</td>
                                                 <td>{{item.dagname}}</td>
