@@ -70,6 +70,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	public JarSchedulerAdapter init() throws DomainException {
 	    this.classMap = new HashMap<>();
+	    this.jars = new ArrayList<>();
 	    Path folderPath = fileSystem.getFolderPath();
 	    List<Path> jarFiles = new ArrayList<>();
 	    try (Stream<Path> paths = Files.walk(folderPath)) {
@@ -249,10 +250,25 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 			}	
 		}
 	}	
-	private Path findJarFile(String jarFilename) {
-	    Path jar = null;
+	private Path findJarFileFecha(String jarFilename) {
+		Path jar = null;
 	    for (Path path : jars) { 
-	        if (path.getFileName().toString().equals(jarFilename)) {
+	        if (path.getFileName().toString().trim().equals(jarFilename.trim())) {
+	            jar = path;
+	            break;
+	        }
+	    }
+	    return jar;
+	}
+	
+	private Path findJarFile(String jarFilename) {
+		Path jar = null;
+	    for (Path path : jars) { 
+	    	
+	    	String valorFD = path.getFileName().toString().trim();
+	    	Integer posicion = valorFD.indexOf(".");
+			String nombreJar = valorFD.substring(posicion +1);
+	        if (nombreJar.equals(jarFilename.trim())) {
 	            jar = path;
 	            break;
 	        }
@@ -326,7 +342,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private List<DagDTO> getDagDetailJAR(String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
 		var result = new ArrayList<DagDTO>();
-		Path jarfileO = this.findJarFile(jarname);
+		Path jarfileO = this.findJarFileFecha(jarname);
 		if(jarfileO != null) {
 			try {
 				for (Iterator<Map<String,String>> iterator = classNames.iterator(); iterator.hasNext();) {
@@ -352,12 +368,12 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	public CompletableFuture<Map<String, DataFrame>> execute(String jarname, String dagname, String type, String data) throws DomainException {
 	    try {
-	        Path jarfileO = this.findJarFile(jarname);
+	        Path jarfileO = this.findJarFileFecha(jarname);
 	        if (jarfileO == null) {
 	            return CompletableFuture.failedFuture(new DomainException(new Exception("Jarfile not found")));
 	        }
 
-	        Class<?> dagClass = loadDagClass(jarname, jarfileO, dagname);
+	        Class<?> dagClass = loadDagClass(jarfileO.getFileName().toString(), jarfileO, dagname);
 	        DagExecutable dag = initializeDag(dagname,dagClass, type, data);
 
 	        // Ejecutar el DAG
