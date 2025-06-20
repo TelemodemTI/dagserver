@@ -72,6 +72,23 @@ public class JobsCompiledTab {
         }
         Thread.sleep(3000);
     }
+
+    public String getSchedulerActive(String dagname) {
+        WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("dataTables-jobs")));
+        WebElement tabla = driver.findElement(By.id("dataTables-jobs"));
+        List<WebElement> filas = tabla.findElements(By.tagName("tr"));
+        for (int i = 1; i < filas.size(); i++) {
+            
+            WebElement fila = filas.get(i);
+            List<WebElement> columnas = fila.findElements(By.tagName("td"));
+            WebElement dagColumn = columnas.get(3);
+            if(dagColumn.getText().equals(dagname)) {
+              return columnas.get(4).getText();
+            }
+        }
+		return null;
+    }
     
     
 

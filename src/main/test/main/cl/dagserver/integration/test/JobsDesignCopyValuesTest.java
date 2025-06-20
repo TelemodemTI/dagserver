@@ -9,7 +9,7 @@ import main.cl.dagserver.integration.pom.LoginPage;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
-public class JobsDesignCopyValues extends BaseIntegrationTest{
+public class JobsDesignCopyValuesTest extends BaseIntegrationTest{
 
     @Test(priority = 1)
     public void createDesign() throws InterruptedException {

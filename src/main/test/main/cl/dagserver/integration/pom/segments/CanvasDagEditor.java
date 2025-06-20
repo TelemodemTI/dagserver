@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -109,7 +110,7 @@ public class CanvasDagEditor {
         WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(5));
         wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"canvas-"+dagname+"\"]/a")));
         driver.findElement(By.xpath("//*[@id=\"canvas-"+dagname+"\"]/a")).click();
-        Thread.sleep(3000);
+        Thread.sleep(5000);
     }
 
     public void save() throws InterruptedException {
@@ -184,6 +185,81 @@ public class CanvasDagEditor {
 	    Thread.sleep(3000);
 		driver.findElement(button).click();
 	    Thread.sleep(1000);
+    }
+
+    public void createListenerDag(String dagname, String group, String listenerType, String triggerType,
+            String nameTarget) throws InterruptedException {
+            this.generate();
+            WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[contains(@id,'dagnameinput-')]")));
+            driver.findElement(By.xpath("//*[contains(@id,'dagnameinput-')]")).clear();
+            driver.findElement(By.xpath("//*[contains(@id,'dagnameinput-')]")).sendKeys(dagname);
+            Thread.sleep(1000);
+            driver.findElement(By.xpath("//*[contains(@id,'canvas-')]/a")).click();
+            Thread.sleep(1000);
+            driver.findElement(By.xpath("//*[contains(@id,'daggroupinput-')]")).clear();
+            driver.findElement(By.xpath("//*[contains(@id,'daggroupinput-')]")).sendKeys(group);
+            driver.findElement(By.xpath("//*[@id=\"listener-type-link\"]")).click();
+            Thread.sleep(1000);
+                if(listenerType.equals("onStart")) {
+                    driver.findElement(By.xpath("//*[@id=\"optionslistenerLoc1\"]")).click();
+                } else {
+                    driver.findElement(By.xpath("//*[@id=\"optionslistenerLoc2\"]")).click();
+                }
+                Thread.sleep(1000);
+                if(triggerType.equals("DAG")) {
+                    driver.findElement(By.xpath("//*[@id=\"optionslistenerGroup1\"]")).click();
+                } else {
+                    driver.findElement(By.xpath("//*[@id=\"optionslistenerGroup2\"]")).click();
+                }
+                Thread.sleep(3000);
+                if(triggerType.equals("GROUP")) {
+                    Select select = new Select(driver.findElement(By.xpath("//*[contains(@id,'dagtargetgroupinput-')]")));
+                    select.selectByValue(nameTarget);
+                } else {
+                    Select select = new Select(driver.findElement(By.xpath("//*[contains(@id,'dagtargetinput-')]")));
+                    select.selectByValue(nameTarget);   	
+                }
+    }
+
+
+  
+
+    public DesignNewPreExecutionModal execute() {
+        driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/div[1]/div/button[4]")).click();
+		if(isAlertPresent()) {
+                    driver.switchTo().alert().accept();
+                    return null;
+                } else {
+                    return new DesignNewPreExecutionModal(driver);
+                }
+    }
+        
+    private boolean isAlertPresent() {
+                try 
+                    { 
+                        driver.switchTo().alert(); 
+                        return true; 
+                    }   
+                    catch (NoAlertPresentException Ex) 
+                    { 
+                        return false; 
+                    }   
+    }
+
+    public RenameJarModal renameModal() {
+        driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/div[1]/div/button[3]")).click();
+        return new RenameJarModal(driver);
+    }
+
+    public DesignNewPreExecutionModal test() {
+        driver.findElement(By.xpath("//*[@id=\"param-modalexistingj\"]/div[2]/div/div[2]/div[1]/button[2]")).click();
+		if(this.isAlertPresent()) {
+			driver.switchTo().alert().accept();
+            return new DesignNewPreExecutionModal(driver);
+        } else {
+            return null;
+        }
     }
 
 }

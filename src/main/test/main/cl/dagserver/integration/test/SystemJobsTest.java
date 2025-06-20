@@ -24,7 +24,8 @@ public class SystemJobsTest extends BaseIntegrationTest {
             if(compileds.existJob("background_system_dag") && compileds.existJob("event_system_dag")) {
                 compileds.selectOption("background_system_dag", 1);
                 JarDetailPage jarDetailPage = new JarDetailPage(this.driver);
-                jarDetailPage.selectStage("background_system_dag", "internal");
+                var modal = jarDetailPage.selectStage("background_system_dag", "internal");
+                modal.close();
                 authenticatedPage.goToJobs();
                 authenticatedPage.logout();
                 Assertions.assertTrue(true);

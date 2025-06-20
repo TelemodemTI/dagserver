@@ -8,6 +8,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import main.cl.dagserver.integration.pom.segments.JarDetailStepViewerModal;
+
 public class JarDetailPage {
     private WebDriver driver;
 
@@ -23,19 +25,12 @@ public class JarDetailPage {
         Thread.sleep(3000);
     }
 
-    public void selectStage(String dagname, String stepName) throws InterruptedException {
+    public JarDetailStepViewerModal selectStage(String dagname, String stepName) throws InterruptedException {
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         String strcd = "jQuery(\"#canvas-det\").val(\""+dagname+";"+stepName+"\");";
         jsExecutor.executeScript(strcd);
         String str2 = "jQuery(\"#canvas-det\").trigger(\"change\");";
         jsExecutor.executeScript(str2);
-        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"param-modaljardetailj\"]")));
-        WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
-        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"param-modaljardetailj\"]")));
-        
-        driver.findElement(By.xpath("//*[@id=\"param-modaljardetailj\"]/div[2]/div/div[3]/button[1]")).click();
-        WebDriverWait wait3 = new WebDriverWait(driver,Duration.ofSeconds(3));
-        wait3.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"param-modaljardetailj\"]")));
+        return new JarDetailStepViewerModal(driver);
     }
 }

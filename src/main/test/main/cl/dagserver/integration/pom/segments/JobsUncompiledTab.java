@@ -104,4 +104,37 @@ public class JobsUncompiledTab {
         }
         throw new TestException("no se encontro el dag?");
     }
+
+    public ImportJsonDesignModal importJarModal() {
+        driver.findElement(By.xpath("//*[@id=\"templates\"]/app-uncompiled-tab/button")).click();
+        return new ImportJsonDesignModal(driver);
+    }
+
+    public void compileDesign(String jarname) {
+        WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("dataTables-uncompiledjobs")));
+        WebElement tabla = driver.findElement(By.id("dataTables-uncompiledjobs"));
+        List<WebElement> filas = tabla.findElements(By.tagName("tr"));
+        for (int i = 1; i < filas.size(); i++) {
+            WebElement fila = filas.get(i);
+            List<WebElement> columnas = fila.findElements(By.tagName("td"));
+            WebElement userColumn = columnas.get(1);
+            if(userColumn.getText().equals(jarname)) {
+              if(i == 1){
+                driver.findElement(By.xpath("//*[@id=\"dataTables-uncompiledjobs\"]/tbody/tr/td[4]/button[3]")).click();
+              } else {
+                driver.findElement(By.xpath("//*[@id=\"dataTables-uncompiledjobs\"]/tbody/tr["+i+"]/td[4]/button[3]")).click();
+              }
+            break;
+            }
+        }
+        try {
+        	WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"errorUncompiled\"]")));
+            WebDriverWait wait9 = new WebDriverWait(driver,Duration.ofSeconds(3));
+			wait9.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"errorUncompiled\"]")));
+		} catch (Exception e) {
+			
+		}
+    }
 }

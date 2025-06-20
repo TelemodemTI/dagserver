@@ -95,4 +95,9 @@ public class JobLogsPage {
         }
         throw new TestException("No se encontró el log con el ID: " + id);
     }
+
+    public void deleteAll() throws InterruptedException {
+        driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/button[4]")).click();
+		Thread.sleep(3000);
+    }
 }
