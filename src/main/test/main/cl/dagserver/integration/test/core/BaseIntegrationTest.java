@@ -29,7 +29,9 @@ public class BaseIntegrationTest {
       String containerPath = "/selenium";
 	  DockerImageName seleniumImage = DockerImageName.parse("selenium/standalone-chrome:latest");
 	  this.application = new GenericContainer<>(DockerImageName.parse("maximolira/dagserver:latest"))
-		  .withExposedPorts(8081);
+			  .withEnv("APP_PROFILES_DEFAULT", "auth-internal,filesystem-normal")
+			  .withEnv("APP_FOLDERPATH", "/root/dags/")
+			  .withExposedPorts(8081);
       this.seleniumContainer = new GenericContainer<>(seleniumImage)
           .withExposedPorts(4444)
           .withSharedMemorySize(2L * 1024L * 1024L * 1024L)
