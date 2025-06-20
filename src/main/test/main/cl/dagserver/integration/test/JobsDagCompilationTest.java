@@ -22,7 +22,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
     public void importAndCompileDag() throws InterruptedException {
         String jarname = "testing.jar";
         String uploadFileReal = "jarfile_json.json";
-        String dagname = "generated_dag.main.DAG_TEST";
+        String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -53,7 +53,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
     @Test(priority = 2)
     public void validateExecution() throws InterruptedException {
         
-        String dagname = "generated_dag.main.DAG_TEST";
+        String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -91,7 +91,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 3)
     public void deleteLog() throws InterruptedException{
-        String dagname = "generated_dag.main.DAG_TEST";
+        String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -114,7 +114,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 4)
     public void deleteAllLogs() throws InterruptedException{
-        String dagname = "generated_dag.main.DAG_TEST";
+        String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -124,7 +124,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
             JobLogsPage jobLogsPage = new JobLogsPage(this.driver);
             jobLogsPage.deleteAll();
             var data = jobLogsPage.getActualLogs();
-            if(data.isEmpty()) {
+            if(data.get(0).get("Id").equals("No data available in table")) {
                 authenticatedPage.goToJobs();
                 authenticatedPage.logout();
                 Assertions.assertTrue(true);
@@ -136,7 +136,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 5)
     public void validateDetail() throws InterruptedException{
-        String dagname = "generated_dag.main.DAG_TEST";
+        String dagname = "generated_dag.main.DAG_pJAmLy";
         String stepname = "step1";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){

@@ -84,7 +84,7 @@ public class JobsCompiledTab {
             List<WebElement> columnas = fila.findElements(By.tagName("td"));
             WebElement dagColumn = columnas.get(4);
             if(dagColumn.getText().equals(dagname)) {
-              return columnas.get(4).getText();
+              return columnas.get(5).getText();
             }
         }
 		return null;
