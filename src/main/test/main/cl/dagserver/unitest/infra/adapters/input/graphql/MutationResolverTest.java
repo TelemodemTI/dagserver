@@ -1,0 +1,298 @@
+package main.cl.dagserver.unitest.infra.adapters.input.graphql;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import main.cl.dagserver.application.ports.input.SchedulerMutationUseCase;
+import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.infra.adapters.input.graphql.MutationResolver;
+
+class MutationResolverTest {
+
+	private MutationResolver mutation;
+	
+	@Mock
+	SchedulerMutationUseCase handler;
+	
+	@BeforeEach
+    void init() {
+		handler = mock(SchedulerMutationUseCase.class);
+		mutation = new MutationResolver(handler);
+		ReflectionTestUtils.setField(mutation, "handler", handler);
+	}
+	@Test
+	void scheduleDagTest() throws DomainException {
+		var resp = mutation.scheduleDag("test", "etst", "test");
+		assertNotNull(resp);
+		resp.getStatus();
+		resp.setStatus("test");
+		resp.getCode();
+		resp.setCode(1);
+		resp.getValue();
+		resp.setValue("value");
+		assertTrue(true);
+	}
+	@Test
+	void scheduleDagErrorTest() throws DomainException {
+		doThrow(new DomainException(new Exception("test"))).when(handler).scheduleDag(anyString(),anyString(),anyString());
+		var resp = mutation.scheduleDag("test", "etst", "test");
+		assertNotNull(resp);
+	}
+	@Test
+	void unscheduleDagTest() throws DomainException {
+		var resp = mutation.unscheduleDag("test", "test", "test");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).unscheduleDag(anyString(), anyString(), anyString());
+		var resp2 = mutation.unscheduleDag("test", "test", "test");
+		assertNotNull(resp2);
+	}
+	
+	@Test
+	void createPropertyTest() throws DomainException {
+		var resp = mutation.createProperty("test", "test", "test","test","test");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).createProperty(anyString(), anyString(), anyString(), anyString(), anyString());
+		var resp2 = mutation.createProperty("test", "test", "test","test","test");
+		assertNotNull(resp2);
+	}
+	
+	@Test
+	void deletePropertyTest() throws DomainException {
+		var resp = mutation.deleteProperty("test", "test", "test");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteProperty(anyString(), anyString(), anyString());
+		var resp2 = mutation.deleteProperty("test", "test", "test");
+		assertNotNull(resp2);
+	}
+	
+	@Test
+	void deleteGroupPropertyTest() throws DomainException {
+		var resp = mutation.deleteGroupProperty("test", "test", "test");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteGroupProperty(anyString(), anyString(), anyString());
+		var resp2 = mutation.deleteGroupProperty("test", "test", "test");
+		assertNotNull(resp2);
+	}
+	
+	@Test
+	void executeDagTest() throws DomainException {
+		var resp = mutation.executeDag("test", "test", "test","");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).execute(anyString(), anyString(), anyString(),anyString(),anyString());
+		var resp2 = mutation.executeDag("test", "test", "test","");
+		assertNotNull(resp2);
+	}
+	
+	@Test
+	void saveUncompiledTest() throws DomainException {
+		var resp = mutation.saveUncompiled("test", "eyJ0ZXN0IjoidGVzdCJ9");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).saveUncompiled(anyString(), any());
+		var resp2 = mutation.saveUncompiled("test", "test");
+		assertNotNull(resp2);
+	}
+	@Test
+	void updateUncompiledTest() throws DomainException {
+		var resp = mutation.updateUncompiled("test", 1,"eyJ0ZXN0IjoidGVzdCJ9" );
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).updateUncompiled(anyString(), anyInt(), any());
+		var resp2 = mutation.updateUncompiled("test", 1,"eyJ0ZXN0IjoidGVzdCJ9" );
+		assertNotNull(resp2);
+	}
+	@Test 
+	void compileTest() throws DomainException  {
+		var resp = mutation.compile("test", 1, 1);
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).compile(anyString(), anyInt(), any());
+		var resp2 = mutation.compile("test", 1, 1);
+		assertNotNull(resp2);
+	}
+	@Test
+	void deleteUncompiledTest() throws DomainException {
+		var resp = mutation.deleteUncompiled("token",1);
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteUncompiled(anyString(), anyInt());
+		var resp2 = mutation.deleteUncompiled("token",1);
+		assertNotNull(resp2);
+	}
+	@Test
+	void createAccountTest() throws DomainException {
+		var resp = mutation.createAccount("token", "username", "accountype", "hash");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).createAccount(anyString(),anyString(),anyString(),anyString() );
+		var resp2 = mutation.createAccount("token", "username", "accountype", "hash");
+		assertNotNull(resp2);
+	}
+	
+	@Test
+	void deleteAccountTest() throws DomainException {
+		var resp = mutation.deleteAccount("token", "username");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteAccount(anyString(),anyString() );
+		var resp2 = mutation.deleteAccount("token", "username");
+		assertNotNull(resp2);
+	}
+	@Test
+	void updateParamsCompiledTest() throws DomainException {
+		var resp = mutation.updateParamsCompiled("token", "idope", "typeope", "jarname", "bin");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).updateParamsCompiled(anyString(),anyString(),anyString(),anyString() ,anyString());
+		var resp2 = mutation.updateParamsCompiled("token", "idope", "typeope", "jarname", "bin");
+		assertNotNull(resp2);
+	}
+	@Test
+	void updatePropTest() throws DomainException {
+		var resp = mutation.updateProp("test","group","key", "value");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).updateProp(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.updateProp("test","group","key", "value");
+		assertNotNull(resp2);
+	}
+	@Test
+	void deleteJarfileTest() throws DomainException {
+		var resp = mutation.deleteJarfile("test","group");
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteJarfile(anyString(),anyString());
+		var resp2 = mutation.deleteJarfile("test","group");
+		assertNotNull(resp2);
+	}
+	@Test
+	void deleteLogTest() throws DomainException {
+		var resp = mutation.deleteLog(anyString(), anyInt());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteLog(anyString(), anyInt());
+		var resp2 = mutation.deleteLog(anyString(), anyInt());
+		assertNotNull(resp2);
+	}
+	@Test
+	void deleteAllLogsTest() throws DomainException {
+		var resp = mutation.deleteAllLogs(anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).deleteAllLogs(anyString(), anyString());
+		var resp2 = mutation.deleteAllLogs(anyString(), anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void renameUncompiledTest() throws DomainException {
+		var resp = mutation.renameUncompiled(anyString(), anyInt(),anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).renameUncompiled(anyString(), anyInt(),anyString());
+		var resp2 = mutation.renameUncompiled(anyString(), anyInt(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void saveRabbitChannelTest() throws DomainException {
+		var resp = mutation.saveRabbitChannel(anyString(), anyString(),  anyString(), anyInt());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).saveRabbitChannel(anyString(),anyString(),anyString() ,anyInt());
+		var resp2 = mutation.saveRabbitChannel(anyString(),anyString(),anyString(), anyInt());
+		assertNotNull(resp2);
+	}
+	@Test
+	void addQueueTest() throws DomainException {
+		var resp = mutation.addQueue(anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).addQueue(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.addQueue(anyString(),anyString(),anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void delQueueTest() throws DomainException {
+		var resp = mutation.delQueue(anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).delQueue(anyString(),anyString());
+		var resp2 = mutation.delQueue(anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void saveRedisChannelTest() throws DomainException {
+		var resp = mutation.saveRedisChannel(anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).saveRedisChannel(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.saveRedisChannel(anyString(),anyString(),anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void addListenerTest() throws DomainException {
+		var resp = mutation.addListener(anyString(), anyString(), anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).addListener(anyString(),anyString(),anyString(),anyString());
+		var resp2 = mutation.addListener(anyString(),anyString(),anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void delListenerTest() throws DomainException {
+		var resp = mutation.delListener(anyString(), anyString());
+		assertNotNull(resp);
+		doThrow(new RuntimeException("test")).when(handler).delListener(anyString(),anyString());
+		var resp2 = mutation.delListener(anyString(),anyString());
+		assertNotNull(resp2);
+	}
+	@Test
+	void saveKafkaChannelTest() throws DomainException {
+	    var resp = mutation.saveKafkaChannel("testToken", "bootstrapServers", "groupId", 100);
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).saveKafkaChannel(anyString(), anyString(), anyString(), anyInt());
+	    var resp2 = mutation.saveKafkaChannel("testToken", "bootstrapServers", "groupId", 100);
+	    assertNotNull(resp2);
+	}
+	@Test
+	void addConsumerTest() throws DomainException {
+	    var resp = mutation.addConsumer("testToken", "testTopic", "testJarfile", "testDagname");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).addConsumer(anyString(), anyString(), anyString(), anyString());
+	    var resp2 = mutation.addConsumer("testToken", "testTopic", "testJarfile", "testDagname");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void delConsumerTest() throws DomainException {
+	    var resp = mutation.delConsumer("testToken", "testTopic");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).delConsumer(anyString(), anyString());
+	    var resp2 = mutation.delConsumer("testToken", "testTopic");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void saveActiveMQChannelTest() throws DomainException {
+	    var resp = mutation.saveActiveMQChannel("testToken", "testHost", "testcred");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).saveActiveMQChannel(anyString(), anyString(),  anyString());
+	    var resp2 = mutation.saveActiveMQChannel("testToken", "testHost", "testcred");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void addConsumerAMTest() throws DomainException {
+	    var resp = mutation.addConsumerAM("testToken", "testQueue", "testJarfile", "testDagname");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).addConsumerAM(anyString(), anyString(), anyString(), anyString());
+	    var resp2 = mutation.addConsumerAM("testToken", "testQueue", "testJarfile", "testDagname");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void delConsumerAMTest() throws DomainException {
+	    var resp = mutation.delConsumerAM("testToken", "testQueue");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).delConsumerAM(anyString(), anyString());
+	    var resp2 = mutation.delConsumerAM("testToken", "testQueue");
+	    assertNotNull(resp2);
+	}
+	@Test
+	void removeExceptionTest() throws DomainException {
+	    var resp = mutation.removeException("testToken", "2024-01-01T00:00:00Z");
+	    assertNotNull(resp);
+	    doThrow(new RuntimeException("test")).when(handler).removeException(anyString(), anyString());
+	    var resp2 = mutation.removeException("testToken", "2024-01-01T00:00:00Z");
+	    assertNotNull(resp2);
+	}
+
+}

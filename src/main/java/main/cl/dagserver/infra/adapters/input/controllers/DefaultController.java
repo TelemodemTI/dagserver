@@ -67,7 +67,7 @@ public class DefaultController {
 	
 	@GetMapping(path="/version/")
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
-		return new ResponseEntity<>("dagserver is running! v0.8.3.20250613", HttpStatus.OK);
+		return new ResponseEntity<>("dagserver is running! v0.8.3.20250621", HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/beans")

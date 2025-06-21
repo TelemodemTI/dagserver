@@ -226,7 +226,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	@Override
 	public void scheduler(String dagname,String jarname) throws DomainException {
 		List<Map<String,String>> classNames = classMap.get(jarname);
-		Path jarfileO = this.findJarFile(jarname);
+		Path jarfileO = this.findJarFileFecha(jarname);
 		Properties prop = this.getProperties(jarfileO);
 		if(jarfileO!= null) {
 			try {
