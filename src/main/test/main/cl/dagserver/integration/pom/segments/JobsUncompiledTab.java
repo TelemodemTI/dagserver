@@ -110,7 +110,7 @@ public class JobsUncompiledTab {
         return new ImportJsonDesignModal(driver);
     }
 
-    public void compileDesign(String jarname) {
+    public ErrorWhenCompileModal compileDesign(String jarname) {
         WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("dataTables-uncompiledjobs")));
         WebElement tabla = driver.findElement(By.id("dataTables-uncompiledjobs"));
@@ -129,12 +129,9 @@ public class JobsUncompiledTab {
             }
         }
         try {
-        	WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"errorUncompiled\"]")));
-            WebDriverWait wait9 = new WebDriverWait(driver,Duration.ofSeconds(3));
-			wait9.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"errorUncompiled\"]")));
+        	return new ErrorWhenCompileModal(driver);
 		} catch (Exception e) {
-			
+			return null;
 		}
     }
 }

@@ -22,4 +22,12 @@ public class JarPreExecutionModal {
         wait3.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"compiled-args-value-inputer\"]")));
         return new JarResultExecutionModal(driver);
     }
+    public void setArgs(String args) throws InterruptedException {
+        var input = By.xpath("//*[@id=\"compiled-args-value-inputer\"]/div[2]/div/div[2]/div/input");
+        WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait2.until(ExpectedConditions.visibilityOfElementLocated(input));
+        driver.findElement(input).clear();
+        driver.findElement(input).sendKeys(args);
+        Thread.sleep(3000);
+    }
 }

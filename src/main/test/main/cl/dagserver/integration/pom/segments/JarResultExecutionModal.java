@@ -20,4 +20,9 @@ public class JarResultExecutionModal {
         WebDriverWait wait5 = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait5.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"propertyNotFoundModal\"]")));
     }
+
+    public String getStatus() {
+        var  status = By.xpath("//*[@id=\"propertyNotFoundModal\"]/div[2]/div/div[2]");
+		return driver.findElement(status).getText();
+    }
 }

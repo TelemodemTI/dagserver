@@ -262,4 +262,19 @@ public class CanvasDagEditor {
         }
     }
 
+    public String createTmpDagNone() throws InterruptedException {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollTo(0, 0);");
+  
+   		
+        WebDriverWait wait4 = new WebDriverWait(driver,Duration.ofSeconds(3));
+	    wait4.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"create-dag-btn\"]")));
+		driver.findElement(By.xpath("//*[@id=\"create-dag-btn\"]")).click();
+		Thread.sleep(2000);
+		List<String> arr = (List<String>) js.executeScript("let arr = [];jQuery('.tabpill').each(function () {arr.push(jQuery(this).text());}); return arr;");
+  		Thread.sleep(5000);      
+  		String name = arr.get(arr.size() - 1);
+  		return name;
+    }
+
 }

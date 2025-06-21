@@ -1,6 +1,7 @@
 package main.cl.dagserver.integration.pom.segments;
 
 import java.time.Duration;
+import java.util.Base64;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -64,5 +65,28 @@ public class EditorParamModal {
         driver.findElement(By.xpath("//*[@id=\"param-modalexistingj\"]/div[2]/div/div[3]/button[1]")).click();
         WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait2.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"param-modalexistingj\"]")));        
+    }
+
+    public void sendScript(String cmd1) throws InterruptedException {
+        Thread.sleep(2000);
+		JavascriptExecutor js = (JavascriptExecutor)driver;
+		StringBuilder str = new StringBuilder();
+		String script = Base64.getEncoder().encodeToString(cmd1.getBytes());
+		if(script.contains("'")) {
+			str.append("jQuery('#canvas-codemirror-new-det').val(\""+script+"\");");
+		} else {
+			str.append("jQuery('#canvas-codemirror-new-det').val('"+script+"');");
+		}
+	    js.executeScript(str.toString());
+	    String str2 = "jQuery('#canvas-codemirror-new-det').trigger('change');";
+	    js.executeScript(str2);
+    }
+
+    public void setInputStatusType(String string) throws InterruptedException {
+        WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(5));
+        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"settings\"]/div[2]/select")));
+        Select select = new Select(driver.findElement(By.xpath("//*[@id=\"settings\"]/div[2]/select")));
+        select.selectByValue(string);
+		Thread.sleep(1000);
     }
 }

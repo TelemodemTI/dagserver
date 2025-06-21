@@ -22,4 +22,17 @@ public class DesignNewResultModal {
 		WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait2.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"result-step-modal\"]")));
     }
+
+    public String getOutputXcom(String step1) {
+        try {
+			WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(30));
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"accordion-"+step1+"\"]/div/div[1]/h4/a")));
+			driver.findElement(By.xpath("//*[@id=\"accordion-"+step1+"\"]/div/div[1]/h4/a")).click();
+			WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+			wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"accordion-"+step1+"\"]/div/div[1]/h4/a")));
+			return driver.findElement(By.xpath("//*[@id=\"collapseOne-"+step1+"\"]/div/div")).getText();
+		} catch (Exception e) {
+			return "[]";
+		}  		
+    }
 }

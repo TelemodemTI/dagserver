@@ -44,12 +44,12 @@ public class JobsCompiledTab {
         }
         return datosTabla;
     }
-    public Boolean existJob(String propkey){
+    public Boolean existJob(String dagname){
         Boolean found = false;
 		var data = this.getActualJobs();
 		for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
 			Map<String, String> map =  iterator.next();
-			if(map.containsValue(propkey)) {
+			if(map.containsValue(dagname)) {
 				found = true;
 				break;
 			}

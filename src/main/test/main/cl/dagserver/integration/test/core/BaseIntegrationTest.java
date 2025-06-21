@@ -31,6 +31,7 @@ public class BaseIntegrationTest {
 	  this.application = new GenericContainer<>(DockerImageName.parse("maximolira/dagserver:latest"))
 			  .withEnv("APP_PROFILES_DEFAULT", "auth-internal,filesystem-normal")
 			  .withEnv("APP_FOLDERPATH", "/root/dags/")
+        .withEnv("APP_BACKGROUND_JOBS", "0 0/1 * ? * *")
 			  .withExposedPorts(8081);
       this.seleniumContainer = new GenericContainer<>(seleniumImage)
           .withExposedPorts(4444)
