@@ -262,7 +262,8 @@ public class CanvasDagEditor {
         }
     }
 
-    public String createTmpDagNone() throws InterruptedException {
+    @SuppressWarnings("unchecked")
+	public String createTmpDagNone() throws InterruptedException {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollTo(0, 0);");
   
