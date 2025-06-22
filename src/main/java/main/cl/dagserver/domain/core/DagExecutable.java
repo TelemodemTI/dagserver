@@ -41,6 +41,7 @@ import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 import main.cl.dagserver.infra.adapters.confs.InMemoryLoggerAppender;
+import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
 
 
 public class DagExecutable implements Job,JobListener  {
@@ -96,6 +97,7 @@ public class DagExecutable implements Job,JobListener  {
 	private SecureRandom random = new SecureRandom();
 	protected Properties extrArgs;
 	protected SchedulerRepositoryOutputPort repo;
+	protected QuartzConfig quartzConfig;
 	protected ApplicationEventPublisher eventPublisher;
 	protected Map<String,OperatorStatus> constraints = new HashMap<>();
 	protected Map<String,DataFrame> xcom = new HashMap<>();
@@ -111,6 +113,7 @@ public class DagExecutable implements Job,JobListener  {
 		ApplicationContext appCtx = ApplicationContextUtils.getApplicationContext();
 		if(appCtx!=null) {
 			repo =  appCtx.getBean("schedulerRepository", SchedulerRepositoryOutputPort.class);
+			quartzConfig = appCtx.getBean("quartzConfig", QuartzConfig.class);
 			eventPublisher = appCtx;
 		}
 	}
@@ -409,8 +412,8 @@ public class DagExecutable implements Job,JobListener  {
 		if(this.eventname.equals("onStart")) {
 			try {
 				this.executionSource = "JOB_LISTENER";
-				this.evaluate();
-			} catch (JobExecutionException e) {
+				this.quartzConfig.executeInmediate(this);
+			} catch (DomainException e) {
 				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "jobToBeExecuted"));
 			}	
 		}
@@ -428,8 +431,8 @@ public class DagExecutable implements Job,JobListener  {
 		if(this.eventname.equals("onEnd")) {
 			try {
 				this.executionSource = "JOB_LISTENER";
-				this.evaluate();
-			} catch (JobExecutionException e) {
+				this.quartzConfig.executeInmediate(this);
+			} catch (DomainException e) {
 				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "jobWasExecuted"));
 			}	
 		}

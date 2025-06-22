@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import com.nhl.dflib.DataFrame;
 
+import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
@@ -54,4 +55,5 @@ public interface SchedulerRepositoryOutputPort {
 	public List<LogDTO> getLastLogs();
 	public String getUncompiledBinByName(String dagname);
 	public List<LogDTO> getAllLogs();
+	public Map<String, List<DagExecutable>> getListeners(DagExecutable dag,Map<String,DagExecutable> events);
 }
