@@ -18,7 +18,7 @@
                     <label>Credentials</label><br>
                     <select #rabbitcred class="form-control">
                         <option disabled selected>Select Keystore Entry</option>
-                        <option *ngFor="let item of entries" value="{{item.name}}">{{item.name}}</option>
+                        <option *ngFor="let item of entries" [selected]="item.name == rbcred" value="{{item.name}}">{{item.name}}</option>
                     </select>
                     
                 </div>
