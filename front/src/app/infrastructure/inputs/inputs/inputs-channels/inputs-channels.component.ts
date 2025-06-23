@@ -45,7 +45,7 @@ export class InputsChannelsComponent {
   }
 
   selectJarFile(file:any){
-    this.dags = this.jobs.filter((ele:any)=>{ return ele.jarname == file})
+    this.dags = this.jobs.filter((ele:any)=>{ return ele.jarname.split('.').slice(1).join('.') == file})
   }
   
 }
