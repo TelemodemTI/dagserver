@@ -26,7 +26,7 @@ export class InputsChannelsComponent {
     this.items = []
     this.items = await this.service.getChannels()
     this.jobs = await this.service2.getAvailableJobs()
-    let jarsf = this.jobs.map((eleme:any)=>{return eleme.jarname })
+    let jarsf = this.jobs.map((eleme:any)=>{return eleme.jarname == "SYSTEM" ? eleme.jarname :  eleme.jarname.split('.').slice(1).join('.') })
     this.jars = [...new Set(jarsf)];
   }
   options(item:any){
