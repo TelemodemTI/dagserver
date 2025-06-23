@@ -21,7 +21,7 @@ export class DagPropsComponent {
     triggerval:any = "0 0/1 * * * ?"
     loc:string = ""
     targetType:string="DAG"
-
+    targetGroup:string=""
     constructor(private service: DagPropsInputPort){
     }
 
@@ -30,9 +30,13 @@ export class DagPropsComponent {
         $("#props-collapser").trigger("click");
       },50)
       let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.dagName;})[0]
+      console.log("triggerval")
+        console.log(obj)
+        console.log("fin triggerval")
       if(obj.trigger){
         this.changeTrigger(obj.trigger)
         this.triggerval = obj.cron
+        this.targetGroup = obj.targetGroup
         this.loc = obj.loc
         this.targetType = obj.target
       }

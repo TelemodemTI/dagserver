@@ -78,7 +78,7 @@
                 </ng-container>
                 <ng-template #groupele>
                     <select class="form-control" id="dagtargetgroupinput-{{dagName}}">
-                        <option *ngFor="let item of groups" value="{{item}}" [selected]="triggerval == item ? 'selected':''">{{item}}</option>
+                        <option *ngFor="let item of groups" value="{{item}}" [selected]="targetGroup == item ? 'selected':''">{{item}}</option>
                     </select>
                 </ng-template>
             </div>
