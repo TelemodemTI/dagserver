@@ -30,9 +30,6 @@ export class DagPropsComponent {
         $("#props-collapser").trigger("click");
       },50)
       let obj = this.data.dags.filter(( obj:any )=> {return obj.name == this.dagName;})[0]
-      console.log("triggerval")
-        console.log(obj)
-        console.log("fin triggerval")
       if(obj.trigger){
         this.changeTrigger(obj.trigger)
         this.triggerval = obj.cron
