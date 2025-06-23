@@ -13,6 +13,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import main.cl.dagserver.integration.pom.segments.KeystoreImportModal;
 import main.cl.dagserver.integration.pom.segments.NewKeystoreEntryModal;
 
 public class KeystorePage {
@@ -69,4 +70,28 @@ public class KeystorePage {
 		driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/button[1]")).click();
 		return new NewKeystoreEntryModal(driver);
 	}
+    public void downloadKeystore() throws InterruptedException {
+        driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/button[2]")).click();
+        Thread.sleep(1000);
+    }
+    public KeystoreImportModal openImportKeystoreModal() {
+        driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/button[3]")).click();
+        return new KeystoreImportModal(driver);
+    }
+    public void deleteKeystore(String keystoreAlias) throws InterruptedException {
+        WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("dataTables-keystore")));
+        WebElement tabla = driver.findElement(By.id("dataTables-keystore"));
+        List<WebElement> filas = tabla.findElements(By.tagName("tr"));
+        for (int i = 1; i < filas.size(); i++) {
+            WebElement fila = filas.get(i);
+            List<WebElement> columnas = fila.findElements(By.tagName("td"));
+            WebElement idColumn = columnas.get(0);
+            if(idColumn.getText().equals(keystoreAlias)) {
+            	driver.findElement(By.xpath("//*[@id=\"dataTables-keystore\"]/tbody/tr["+i+"]/td[3]/button")).click();
+            	break;
+            }
+        }
+        Thread.sleep(3000);
+    }
 }

@@ -12,15 +12,43 @@ public class KeystoreTest extends BaseIntegrationTest{
 
     @Test(priority = 1)
     public void testKeystore() throws InterruptedException{
+        String keystoreAlias = "test";
+        String keystoreUsername = "test";
+        String keystorePassword = "test";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
             KeystorePage keystorePage = authenticatedPage.goToKeystore();
             var modal = keystorePage.openNewKeystoreEntryModal();
-            modal.create("test", "test", "test");
-            keystorePage.search("test");
+            modal.create(keystoreAlias, keystoreUsername, keystorePassword);
+            keystorePage.search(keystoreAlias);
             var keystores = keystorePage.getActualKeystores();
-            if(keystores.get(0).get("Alias").equals("test")){
+            if(keystores.get(0).get("Alias").equals(keystoreAlias)){
+                authenticatedPage.logout();
+                Assertions.assertTrue(true);
+            }
+            else{
+                Assertions.fail("keystore not found");
+            }
+        }
+    }
+
+    @Test(priority = 2)
+    public void exportKeystore() throws InterruptedException{
+        String keystoreAlias = "test";
+        String jksFile = "keystore.jks";
+        LoginPage loginPage = new LoginPage(this.driver);
+        if(loginPage.login("dagserver", "dagserver")){
+            AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
+            KeystorePage keystorePage = authenticatedPage.goToKeystore();
+            keystorePage.downloadKeystore();
+            keystorePage.deleteKeystore(keystoreAlias);
+            var modal = keystorePage.openImportKeystoreModal();
+            modal.importKeystore(jksFile);
+            keystorePage = authenticatedPage.goToKeystore();
+            keystorePage.search(keystoreAlias);
+            var keystores = keystorePage.getActualKeystores();
+            if(keystores.get(0).get("Alias").equals(keystoreAlias)){
                 authenticatedPage.logout();
                 Assertions.assertTrue(true);
             }
