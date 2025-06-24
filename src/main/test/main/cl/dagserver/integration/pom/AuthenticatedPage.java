@@ -62,13 +62,4 @@ public class AuthenticatedPage {
         driver.findElement(By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[3]/a")).click();
         return new KeystorePage(driver);
     }
-
-    public ChannelsPage goToChannels() throws InterruptedException{
-        By jobsLink = By.xpath("//*[@id=\"side-menu\"]/li[1]/ul/li[1]/a");
-        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.elementToBeClickable(jobsLink));
-        driver.findElement(jobsLink).click();
-        return new ChannelsPage(driver);
-        
-    }
 }

@@ -222,7 +222,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Override
 	public void reimport(String token, String jarname) throws DomainException {
 		auth.untokenize(token);
-		JSONObject json = compiler.reimport(jarname);
+		JSONObject reimportResult = compiler.reimport(jarname);
+		
+		// Verificar que no exista ya un diseño con el mismo jarname
 		var list = repository.getUncompileds();
 		for (Iterator<UncompiledDTO> iterator = list.iterator(); iterator.hasNext();) {
 			UncompiledDTO uncompiledDTO = iterator.next();
@@ -231,7 +233,24 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 				throw new DomainException(new Exception("design of jarname already exists"));
 			}
 		}
-		repository.addUncompiled(json.getString(JARNAME),json);	
+		
+		// Extraer el dagdef.json y las propiedades
+		JSONObject dagdef = reimportResult.getJSONObject("dagdef");
+		JSONObject configProperties = reimportResult.getJSONObject("configProperties");
+		
+		// Guardar el diseño como uncompiled
+		repository.addUncompiled(dagdef.getString(JARNAME), dagdef);
+		
+		// Procesar y cargar las propiedades a la base de datos
+		if (configProperties != null && configProperties.length() > 0) {
+			Properties props = new Properties();
+			for (String key : configProperties.keySet()) {
+				props.setProperty(key, configProperties.getString(key));
+			}
+			
+			// Cargar las propiedades usando el método existente de QuartzConfig
+			quartz.propertiesToRepo(props);
+		}
 	}
 	@Override
 	public void logout(String token) throws DomainException {

@@ -368,6 +368,9 @@ public class CompilerHandler implements CompilerOutputPort {
 
         try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(jarFilePath))) {
             ZipEntry entry;
+            JSONObject result = new JSONObject();
+            Properties configProperties = new Properties();
+            
             while ((entry = zis.getNextEntry()) != null) {
                 if ("dagdef.json".equals(entry.getName())) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -377,10 +380,24 @@ public class CompilerHandler implements CompilerOutputPort {
                         baos.write(buffer, 0, len);
                     }
                     String jsonStr = baos.toString(StandardCharsets.UTF_8);
-                    return new JSONObject(jsonStr);
+                    result.put("dagdef", new JSONObject(jsonStr));
+                } else if ("config.properties".equals(entry.getName())) {
+                    configProperties.load(zis);
                 }
             }
-            throw new DomainException(new Exception("dagdef.json not found in jar"));
+            
+            if (!result.has("dagdef")) {
+                throw new DomainException(new Exception("dagdef.json not found in jar"));
+            }
+            
+            // Convertir las propiedades a JSON para incluirlas en el resultado
+            JSONObject propsJson = new JSONObject();
+            for (String key : configProperties.stringPropertyNames()) {
+                propsJson.put(key, configProperties.getProperty(key));
+            }
+            result.put("configProperties", propsJson);
+            
+            return result;
         } catch (IOException | JSONException e) {
             throw new DomainException(e);
         }
