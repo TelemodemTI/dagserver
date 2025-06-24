@@ -19,24 +19,12 @@ export abstract class GraphQLOutputPort {
     public abstract reimport(jarname: any): Promise<any>;
     public abstract removeException(eventDt: string): Promise<void>
     public abstract getExceptions(): Promise<any[]>
-    public abstract addConsumer(topic: any, jarFile: any, dag: any): Promise<void>
-    public abstract delConsumer(topic: any): Promise<void>
-    public abstract saveKaflaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void>;
     public abstract getLastLogs(): Promise<Log[]>;
     public abstract logout(): Promise<void>;
-    public abstract delListener(channel: string): Promise<void>;
-    public abstract addListener(channel: string, jarfile: string, dagname: string): Promise<void>;
-    public abstract saveRedisChannel(mode: any, hostnames: string, ports: any): Promise<void>;
-    public abstract delQueue(queue: string): Promise<void>;
-    public abstract addQueue(queue: string, jarfile: string, dagname: string): Promise<void>;
-    public abstract saveRabbitChannel(host: string, cred: string, port: number): Promise<void>;
     public abstract renameUncompiled(uncompiled: number, arg1: any): Promise<void>;
     public abstract removeLog(id: any): Promise<void>;
     public abstract removeAllLog(dagname: any): Promise<void>;
     public abstract exportUncompiled(uncompiledId: number): Promise<any>;
-    public abstract createGithubWebhook(name:string,repourl:string,secret:string,jarname:string,dagname:string): Promise<void>;
-    public abstract removeGithubWebhook(name:string): Promise<void>;
-    public abstract getChannels(): Promise<any[]>;
     public abstract removeJarfile(jarname: any): Promise<void>;
     public abstract updateProp(group: String,name: String, value: String): Promise<void>;
     public abstract getIcons(type: string): Promise<string>;
@@ -64,9 +52,6 @@ export abstract class GraphQLOutputPort {
     public abstract getCredentials(): Promise<Credential[]>;
     public abstract updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void>;
     public abstract getDependencies(jarname: string,dagname:string):Promise<any>;
-    public abstract saveActiveMQChannel(host: string, cred: string): Promise<void>;
-    public abstract addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void>
-    public abstract delConsumerAM(queue: any): Promise<void>
     public abstract createKeyEntry(alias: any,key:any,pwd:any): Promise<void>
     public abstract removeEntry(alias: any): Promise<void>
   }

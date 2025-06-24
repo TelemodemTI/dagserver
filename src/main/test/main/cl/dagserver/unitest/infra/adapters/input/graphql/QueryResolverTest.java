@@ -25,8 +25,6 @@ import main.cl.dagserver.application.ports.input.LoginUseCase;
 import main.cl.dagserver.application.ports.input.SchedulerQueryUseCase;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
-import main.cl.dagserver.domain.model.ChannelDTO;
-import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyDTO;
@@ -235,18 +233,7 @@ class QueryResolverTest {
 		var returned = resolver.getDependencies("test", "test");
 		assertNotNull(returned);
 	}
-	@Test
-	void channelStatus() throws DomainException {
-		List<ChannelPropsDTO> props = new ArrayList<>();
-		List<ChannelDTO> list = new ArrayList<>();
-		ChannelDTO dto = new ChannelDTO();
-		dto.setName("name");
-		dto.setStatus("test");
-		dto.setProps(props);
-		when(handler.getChannels(anyString())).thenReturn(list);
-		var rt = resolver.channelStatus("test");
-		assertNotNull(rt);
-	}
+	
 	@Test
 	void exportUncompiledTest() throws DomainException {
 		when(handler.exportUncompiled(anyString(),anyInt())).thenReturn("test");

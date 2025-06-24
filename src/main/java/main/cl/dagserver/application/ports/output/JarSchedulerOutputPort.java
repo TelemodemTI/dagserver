@@ -21,5 +21,4 @@ public interface JarSchedulerOutputPort {
 	public List<Map<String,Object>> listScheduled() throws DomainException;
 	public String getIcons(String type) throws DomainException;
 	public void deleteXCOM(Date time)  throws DomainException;
-	public boolean isEnabled(String activemqListener) throws DomainException;
 }

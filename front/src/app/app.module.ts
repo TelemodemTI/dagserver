@@ -32,7 +32,6 @@ import { JardetailpInputPort } from './application/inputs/jardetailp.input.port'
 import { APP_BASE_HREF } from '@angular/common';
 import { DependenciesInputPort } from './application/inputs/dependencies.input.port';
 import { InputsChannelsInputPort } from './application/inputs/inputschannels.input.port';
-import { InputsModule } from './infrastructure/inputs/inputs/inputs.module';
 import { DinamicOutputPort } from './application/outputs/dinamic.output.port';
 import { DinamicAdapterService } from './infrastructure/outputs/http/dinamic.services.adapter.service';
 import { SharedOutputPort } from './application/outputs/shared.output.port';
@@ -44,6 +43,7 @@ import { ExplorerInputPort } from './application/inputs/explorer.input.port';
 import { BrowserFSModule } from './infrastructure/inputs/browser-fs/browser-fs.module';
 import { KeystoreInputPort } from './application/inputs/keystore.input.port';
 import { KeystoreModule } from './infrastructure/inputs/keystore/keystore.module';
+import { HttpApiSecurityModule } from './infrastructure/inputs/http-api-security/http-api-security.module';
 
 
 
@@ -64,10 +64,10 @@ declare var window: any;
     PropsModule,
     KeystoreModule,
     CredentialsModule,
-    InputsModule,
     ExceptionsModule,
     ParamEditorModule,
-    BrowserFSModule
+    BrowserFSModule,
+    HttpApiSecurityModule
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: window["base-href"]},

@@ -73,9 +73,6 @@ export class AuthenticatedComponent {
   viewProps(){
     this.router.navigateByUrl("auth/props");
   }
-  viewChannels(){
-    this.router.navigateByUrl("auth/channels")
-  }
   viewExceptions(){
     this.router.navigateByUrl("auth/exceptions")
   }
@@ -93,6 +90,9 @@ export class AuthenticatedComponent {
   }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
+  }
+  viewApikeys(){
+    this.router.navigateByUrl("auth/api-keys");
   }
   reset(){
     this.badget = 0

@@ -29,6 +29,14 @@
                         </a>
                     </li>
                     <li>
+                        <a class="linker" (click)="viewApikeys()">
+                            <div>
+                                <i class="fa fa-briefcase fa-fw"></i> 
+                                <span class="pull-right text-muted small">Api Keys</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
                         <a class="linker" (click)="viewExceptions()">
                             <div>
                                 <i class="fa fa-exclamation fa-fw"></i> 
@@ -133,9 +141,6 @@
                         <li>
                             <a href="#"><i class="fa fa-cogs fa-fw"></i> Options<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
-                                <li>
-                                    <a (click)="viewChannels()" class="linker"> Channels </a>
-                                </li>
                                 <li>
                                     <a (click)="viewJobs()" class="linker"> Jobs </a>
                                 </li>

@@ -41,9 +41,7 @@ import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
-import main.cl.dagserver.infra.adapters.confs.ChannelScanner;
 import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
-import main.cl.dagserver.infra.adapters.input.channels.InputChannel;
 import main.cl.dagserver.infra.adapters.operators.DummyOperator;
 import main.cl.dagserver.infra.adapters.operators.LogsRollupOperator;
 import main.cl.dagserver.infra.adapters.operators.RegisterSchedulerOperator;
@@ -59,8 +57,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private QuartzConfig quartz;
 	@Autowired
 	private FileSystemOutputPort fileSystem;
-	@Autowired
-	private ChannelScanner channels;
+	
 	
 	private static final String CLASSNAME = "classname";
 	private static final String CLASSEXT = ".class";
@@ -434,28 +431,5 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public void deleteXCOM(Date time) throws DomainException {
 		storage.deleteXCOM(time);
 	}
-
-
-	@Override
-	public boolean isEnabled(String propKey) throws DomainException {
-		var list = channels.availableChannels();
-		for (Iterator<Class<? extends InputChannel>> iterator = list.iterator(); iterator.hasNext();) {
-			Class<? extends InputChannel> class1 = iterator.next();
-			if(	propKey.equals("ACTIVEMQ_PROPS") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.ActiveMQChannel")) {
-				return true;
-			}
-			if(propKey.equals("KAFKA_CONSUMER") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.KafkaChannel")) {
-				return true;
-			}
-			if(propKey.equals("REDIS_PROPS") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.RedisChannel")) {
-				return true;
-			}
-			if(propKey.equals("RABBIT_PROPS") && class1.getCanonicalName().equals("main.cl.dagserver.infra.adapters.channels.RabbitChannel")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 
 }

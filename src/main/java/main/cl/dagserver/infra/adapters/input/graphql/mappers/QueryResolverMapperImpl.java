@@ -1,11 +1,8 @@
 package main.cl.dagserver.infra.adapters.input.graphql.mappers;
 
 import java.util.ArrayList;
-import java.util.List;
 import org.springframework.stereotype.Component;
 import main.cl.dagserver.domain.model.AgentDTO;
-import main.cl.dagserver.domain.model.ChannelDTO;
-import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DirectoryEntryDTO;
 import main.cl.dagserver.domain.model.ExceptionsDTO;
 import main.cl.dagserver.domain.model.FileEntryDTO;
@@ -16,8 +13,6 @@ import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Account;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Agent;
-import main.cl.dagserver.infra.adapters.input.graphql.types.Channel;
-import main.cl.dagserver.infra.adapters.input.graphql.types.ChannelProps;
 import main.cl.dagserver.infra.adapters.input.graphql.types.DirectoryEntry;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Exceptions;
 import main.cl.dagserver.infra.adapters.input.graphql.types.FileEntry;
@@ -66,29 +61,6 @@ public class QueryResolverMapperImpl implements QueryResolverMapper {
 		a.setTypeAccount(elt.getTypeAccount());
 		a.setUsername(elt.getUsername());
 		return a;
-	}
-
-	@Override
-	public Channel toChannel(ChannelDTO dto) {
-		List<ChannelProps> props = new ArrayList<>();
-		if(dto.getProps()!=null) {
-			props = dto.getProps().stream().map(this::toChannelProps).toList();
-		}
-		Channel c = new Channel();
-		c.setName(dto.getName());
-		c.setProps(props);
-		c.setStatus(dto.getStatus());
-		c.setIcon(dto.getIcon());
-		return c;
-	}
-
-	@Override
-	public ChannelProps toChannelProps(ChannelPropsDTO dto) {
-		ChannelProps cp = new ChannelProps();
-		cp.setDescr(dto.getDescr());
-		cp.setKey(dto.getKey());
-		cp.setValue(dto.getValue());
-		return cp;
 	}
 
 	@Override

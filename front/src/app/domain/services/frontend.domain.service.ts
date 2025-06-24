@@ -122,23 +122,6 @@ export class FrontEndDomainService implements
     return this.httpd.getEntry(key);
   }
 
-  delQueueAM(queue: any): Promise<void> {
-    return this.adapter.delConsumerAM(queue);
-  }
-  addQueueAM(queue: any, jarFile: any, dag: any): Promise<void> {
-    return this.adapter.addConsumerAM(queue,jarFile,dag);
-  }
-
-  delConsumer(channel: any): Promise<void> {
-    return this.adapter.delConsumer(channel);
-  }
-  addConsumer(topic: any, jarFile: any, dag: any): Promise<void> {
-    return this.adapter.addConsumer(topic,jarFile,dag);
-  }
-  
-  saveKafkaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void> {
-    return this.adapter.saveKaflaChannel(bootstrapServers,groupId,poll);
-  }
   
   getLastLogs(): Promise<Log[]> {
     return this.adapter.getLastLogs();
@@ -148,29 +131,7 @@ export class FrontEndDomainService implements
     return this.httpd.version()
   }
   
-  addListener(channel: string, jarfile: string, dagname: string): Promise<void> {
-    return this.adapter.addListener(channel,jarfile,dagname);
-  }
-  delListener(channel: string): Promise<void> {
-    return this.adapter.delListener(channel);
-  }
   
-  saveRedisChannel(mode: any, hostname: string, ports: any): Promise<void> {
-    return this.adapter.saveRedisChannel(mode,hostname,ports)
-  }
-
-  saveRabbitChannel(host: string, cred: string, port: number): Promise<void> {
-    return this.adapter.saveRabbitChannel(host, cred, port)
-  }
-  saveActiveMQChannel(host: string, cred: string): Promise<void> {
-    return this.adapter.saveActiveMQChannel(host, cred)
-  }
-  addQueue(queue: string, jarfile: string, dagname: string): Promise<void> {
-    return this.adapter.addQueue(queue,jarfile,dagname);
-  }
-  delQueue(queue: string): Promise<void> {
-    return this.adapter.delQueue(queue);
-  }
   executeDagUncompiled(uncompiledId: number, dagname: string, stepname: string, args:string): Promise<any> {
     return this.httpd.executeDagUncompiled(uncompiledId,dagname,stepname,args)
   }
@@ -188,15 +149,6 @@ export class FrontEndDomainService implements
   exportUncompiled(uncompiledId: number): Promise<void> {
     return this.adapter.exportUncompiled(uncompiledId);
   }
-  
-  removeGithubWebhook(name: string): Promise<void> {
-    return this.adapter.removeGithubWebhook(name);
-  }
-
-  createGithubWebhook(name:string,repourl:string,secret:string,jarname:string,dagname:string): Promise<void> {
-    return this.adapter.createGithubWebhook(name,repourl,secret,jarname,dagname);
-  }
-  
   remove(jarname: any): Promise<void> {
     return this.adapter.removeJarfile(jarname);
   }
@@ -329,9 +281,7 @@ export class FrontEndDomainService implements
   updateParamsCompiled(jarname: string, idope: string,typeope:string, bin: any): Promise<void> {
     return this.adapter.updateParamsCompiled(jarname,idope,typeope,bin);
   }
-  getChannels(): Promise<any[]> {
-    return this.adapter.getChannels();
-  }
+  
   sendResultExecution(data:any): Promise<void>{
     return this.shared.sendEventStart(data);
   }

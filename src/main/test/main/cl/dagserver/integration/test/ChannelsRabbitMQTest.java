@@ -13,9 +13,11 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.ChannelsPage;
+import main.cl.dagserver.integration.pom.JobLogsPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.KeystorePage;
 import main.cl.dagserver.integration.pom.LoginPage;
+import main.cl.dagserver.integration.pom.segments.JobsCompiledTab;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
@@ -32,31 +34,23 @@ public class ChannelsRabbitMQTest extends BaseIntegrationTest{
 
     private void startDockerContainer() {
 
-        String host = "localhost";
         String usernameb = "testuser";
         String passwordb = "password";
         Integer port = 5672;
         Integer UIport = 15672;
-        String exchange = "exchange";
-        String routingKey = "routingKey";
-        String queue = "queue";
-        String message = "Hello, RabbitMQ!";
-		
-        
+
         this.rabbitContainer = new FixedHostPortGenericContainer("rabbitmq:3-management")
 					.withFixedExposedPort(UIport,UIport)
 					.withFixedExposedPort(port,port)		
 					.withEnv("RABBITMQ_DEFAULT_USER", usernameb)
 					.withEnv("RABBITMQ_DEFAULT_PASS", passwordb);
 		this.rabbitContainer.start();
-		try {
-            Thread.sleep(15000);    
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+	}
+
+
+	private void sendMessage(String usernameb, String passwordb,String host, Integer port, String queue, String message) {
+		ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(host);
         factory.setPort(port);
         factory.setUsername(usernameb);
         factory.setPassword(passwordb);
@@ -84,8 +78,8 @@ public class ChannelsRabbitMQTest extends BaseIntegrationTest{
     @Test(priority = 1)
     public void createKeystore() throws InterruptedException {
         String alias = "test";
-        String username = "test";
-        String password = "test";
+        String username = "testuser";
+        String password = "password";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -124,12 +118,38 @@ public class ChannelsRabbitMQTest extends BaseIntegrationTest{
 
     @Test(priority = 3)
     public void createChannelRabbitMQ() throws InterruptedException{
+        String host = "localhost";
+        Integer port = 5672;
+        String keystore = "test";
+        String queue = "queue";
+        String jarfile = "testing.jar";
+        String dagname = "generated_dag.main.DAGTEST";
+        String usernameb = "testuser";
+        String passwordb = "password";
+        String message = "Hello, RabbitMQ!";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
             ChannelsPage channelsPage = authenticatedPage.goToChannels();
             var modal = channelsPage.openChannelRabbitModal();
+            modal.configuraServer(host, port, keystore);
+            modal = channelsPage.openChannelRabbitModal();
+            modal.bindQueue(queue, jarfile, dagname);
+            modal = channelsPage.openChannelRabbitModal();
+            var actualBindings = modal.getActualBindings();
+            Assertions.assertTrue(actualBindings.stream().anyMatch(binding -> binding.get("Queue").equals(queue)));
+            modal.close();
+            sendMessage(usernameb, passwordb, host,port, queue, message);
             
+            JobsPage jobsPage = authenticatedPage.goToJobs();
+            JobsCompiledTab compileds = jobsPage.goToCompiledTab();
+            compileds.selectOption(dagname, 3);  
+            JobLogsPage jobLogsPage = new JobLogsPage(this.driver);
+            var data = jobLogsPage.getActualLogs();
+            if(data.get(0).get("Id").equals("No data available in table")) {
+                Assertions.fail("no se ejecuto el dag!");
+            }
+            Assertions.assertTrue(true);
         }
     }
 }
