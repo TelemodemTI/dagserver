@@ -62,6 +62,7 @@ public class ApiKeyPage {
         return found;
     }
     public void createApiKey(String apiKey){
+        driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/button")).click();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.alertIsPresent());
         var alert = driver.switchTo().alert();
@@ -77,7 +78,7 @@ public class ApiKeyPage {
         for (int i = 1; i < filas.size(); i++) {
             WebElement fila = filas.get(i);
             List<WebElement> columnas = fila.findElements(By.tagName("td"));
-            WebElement userColumn = columnas.get(1);
+            WebElement userColumn = columnas.get(0);
             if(userColumn.getText().equals(apikey)) {
             	driver.findElement(By.xpath("//*[@id=\"dataTables-apikey\"]/tbody/tr["+i+"]/td[3]/button[1]")).click();
                 break;
