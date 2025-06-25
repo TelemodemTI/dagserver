@@ -57,7 +57,6 @@ class SchedulerQueryHandlerServiceTest {
 		ReflectionTestUtils.setField(service, "repository", repository);
 		ReflectionTestUtils.setField(service, "auth", tokenEngine);
 		ReflectionTestUtils.setField(service, "compiler", compiler);
-		ReflectionTestUtils.setField(service, "rabbitPropkey", "rabbitPropkey");
 	}
 	
 	@Test

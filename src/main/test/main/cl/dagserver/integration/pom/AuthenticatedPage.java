@@ -62,4 +62,13 @@ public class AuthenticatedPage {
         driver.findElement(By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[3]/a")).click();
         return new KeystorePage(driver);
     }
+
+    public ApiKeyPage goToApiKey() {
+        driver.findElement(By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/a")).click();
+        var propsLink = By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[2]/a/div");
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(propsLink));
+        driver.findElement(By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[2]/a")).click();
+        return new ApiKeyPage(driver);        
+    }
 }
