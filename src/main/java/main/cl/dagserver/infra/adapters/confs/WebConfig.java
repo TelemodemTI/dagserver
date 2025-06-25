@@ -14,6 +14,9 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import main.cl.dagserver.application.ports.input.GetDefaultJobsUseCase;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.core.DagExecutable;
@@ -39,6 +42,8 @@ public class WebConfig implements WebMvcConfigurer {
 	@Value( "${org.quartz.dataSource.quartzDS.password}" )
 	private String dbPass;
 
+	@Value("${param.dagserver.version}")
+	private String version;
 	
 	private List<Job> defaultjobs;
 
@@ -91,5 +96,15 @@ public class WebConfig implements WebMvcConfigurer {
 	@Bean
 	public ApplicationEventPublisher eventPublisher() {
 		return eventPublisher;
+	}
+	
+	
+	@Bean
+	public OpenAPI customOpenAPI() {
+	    return new OpenAPI()
+	        .info(new Info()
+	            .title("Dagserver")
+	            .version(version)
+	            .description("Dagserver API REST Documentation"));
 	}
 }

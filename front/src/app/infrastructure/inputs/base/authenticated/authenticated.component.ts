@@ -86,7 +86,7 @@ export class AuthenticatedComponent {
     window.location.href = "/graphiql"
   }
   viewOpenApiJSON(){
-    window.location.href = "/openapi"
+    window.location.href = "/swagger-ui/index.html"
   }
   credentials(){
     this.router.navigateByUrl("auth/admin/credentials");
