@@ -205,7 +205,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 
 	@Override
 	public Map<String, DataFrame> executeDag(String jarname, String dagname, JSONObject args) throws DomainException {
-		var completable = scanner.init().execute(jarname, dagname,"Calcite Driver",args.toString());
+		var completable = scanner.init().execute(jarname, dagname,"HTTP_API",args.toString());
 		try {
 			return completable.get();
 		} catch (InterruptedException | ExecutionException e) {

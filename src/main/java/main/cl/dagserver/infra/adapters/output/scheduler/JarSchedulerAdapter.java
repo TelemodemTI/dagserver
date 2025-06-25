@@ -365,7 +365,12 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	
 	public CompletableFuture<Map<String, DataFrame>> execute(String jarname, String dagname, String type, String data) throws DomainException {
 	    try {
-	        Path jarfileO = this.findJarFileFecha(jarname);
+	    	Path jarfileO = null;
+	    	if(type.equals("HTTP API Endpoint")) {
+	    		jarfileO = this.findJarFile(jarname);
+	    	} else {
+	    		jarfileO = this.findJarFileFecha(jarname);
+	    	}
 	        if (jarfileO == null) {
 	            return CompletableFuture.failedFuture(new DomainException(new Exception("Jarfile not found")));
 	        }
