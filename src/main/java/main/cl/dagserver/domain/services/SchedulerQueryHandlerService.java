@@ -2,14 +2,12 @@ package main.cl.dagserver.domain.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.json.JSONArray;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 import com.nhl.dflib.DataFrame;
@@ -18,8 +16,6 @@ import main.cl.dagserver.domain.core.BaseServiceComponent;
 import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
-import main.cl.dagserver.domain.model.ChannelDTO;
-import main.cl.dagserver.domain.model.ChannelPropsDTO;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.domain.model.DirectoryEntryDTO;
 import main.cl.dagserver.domain.model.EventListenerDTO;
@@ -36,25 +32,8 @@ import main.cl.dagserver.domain.model.KeystoreEntryDTO;
 @Service
 @ImportResource("classpath:properties-config.xml")
 public class SchedulerQueryHandlerService extends BaseServiceComponent implements SchedulerQueryUseCase {
-	
-	private static final String INACTIVE = "INACTIVE";
-	private static final String ACTIVE = "ACTIVE";
-	private static final String STATUS = "STATUS";
-	private static final String RABBITMQ = "RABBIT_PROPS";
-	private static final String REDIS_LISTENER = "REDIS_PROPS";
-	private static final String KAFKA_CONSUMER = "KAFKA_CONSUMER";
-	private static final String ACTIVEMQ_LISTENER = "ACTIVEMQ_PROPS";
 
-	
-	@Value( "${param.rabbit.propkey}" )
-	private String rabbitPropkey;
-	
-	@Value( "${param.redis.propkey}" )
-	private String redisPropkey;
-	
-	@Value( "${param.kafka.propkey}" )
-	private String kafkaPropkey;
-	
+
 	@Override
 	public List<Map<String,Object>> listScheduledJobs() throws DomainException {
 		List<Map<String,Object>> realscheduled = scanner.listScheduled();
@@ -173,66 +152,6 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 		return returnv+"."+dagname;
 	}
 
-	
-	@Override
-	public List<ChannelDTO> getChannels(String token) throws DomainException {
-		auth.untokenize(token);
-	    List<ChannelDTO> channels = new ArrayList<>();
-	    channels.add(createChannel("SCHEDULER", ACTIVE, "scheduler.png", Collections.emptyList()));
-	    channels.add(createChannel("GRAPHQL", ACTIVE, "graphql.png", Collections.emptyList()));
-	    channels.add(createChannel("HTTP_ENDPOINT", ACTIVE, "http.png", getChannelProps("HTTP_CHANNEL_API_KEY")));
-	    if(this.scanner.isEnabled(RABBITMQ)) {
-	    	channels.add(createChannel(RABBITMQ, getChannelStatus(RABBITMQ), "rabbit.png", getChannelProps(RABBITMQ)));
-	    }
-	    if(this.scanner.isEnabled(REDIS_LISTENER)) {
-	    	channels.add(createChannel(REDIS_LISTENER, getChannelStatus(REDIS_LISTENER), "redis.png", getChannelProps(REDIS_LISTENER)));	
-	    }
-	    if(this.scanner.isEnabled(KAFKA_CONSUMER)) {
-	    	channels.add(createChannel(KAFKA_CONSUMER, getChannelStatus(KAFKA_CONSUMER), "kafka.png", getChannelProps(KAFKA_CONSUMER)));	
-	    }
-	    if(this.scanner.isEnabled(ACTIVEMQ_LISTENER)) {
-	    	channels.add(createChannel(ACTIVEMQ_LISTENER, getChannelStatus(ACTIVEMQ_LISTENER), "activemq.png", getChannelProps(ACTIVEMQ_LISTENER)));	
-	    }
-	    return channels;
-	}
-
-	private String getChannelStatus(String channelName) throws DomainException {
-	    String status = INACTIVE;
-	    List<PropertyParameterDTO> propsList = repository.getProperties(channelName);
-	    
-	    for (PropertyParameterDTO prop : propsList) {
-	        if (prop.getName().equals(STATUS)) {
-	            status = prop.getValue();
-	            break;
-	        }
-	    }
-	    return status;
-	}
-
-	private List<ChannelPropsDTO> getChannelProps(String channelName) throws DomainException {
-	    List<ChannelPropsDTO> props = new ArrayList<>();
-	    List<PropertyParameterDTO> propsList = repository.getProperties(channelName);
-	    
-	    for (PropertyParameterDTO prop : propsList) {
-	        if (!prop.getName().equals(STATUS)) {
-	            ChannelPropsDTO channelProp = new ChannelPropsDTO();
-	            channelProp.setKey(prop.getName());
-	            channelProp.setDescr(prop.getDescription());
-	            channelProp.setValue(prop.getValue());
-	            props.add(channelProp);
-	        }
-	    }
-	    return props;
-	}
-
-	private ChannelDTO createChannel(String name, String status, String icon, List<ChannelPropsDTO> props) {
-	    ChannelDTO channel = new ChannelDTO();
-	    channel.setName(name);
-	    channel.setStatus(status);
-	    channel.setIcon(icon);
-	    channel.setProps(props);
-	    return channel;
-	}
 	@Override
 	public String exportUncompiled(String token, Integer uncompiled) throws DomainException {
 		auth.untokenize(token);

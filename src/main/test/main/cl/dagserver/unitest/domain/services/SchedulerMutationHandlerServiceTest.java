@@ -414,46 +414,5 @@ class SchedulerMutationHandlerServiceTest {
 		service.renameUncompiled("token",1,"asdf");
 		assertTrue(true);
 	}
-	@Test
-	void saveRabbitChannelTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		service.saveRabbitChannel("token","asdf","asdf",1);
-		assertTrue(true);
-	}
-	@Test
-	void addQueueTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		service.addQueue("token","asdf","asdf","asdf");
-		assertTrue(true);
-	}
-	@Test
-	void delQueueTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		service.delQueue("token","asdf");
-		assertTrue(true);
-	}
-	@Test
-	void saveRedisChannelTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		service.saveRedisChannel("token","asdf","asdf","asdf");
-		assertTrue(true);
-	}
-	@Test
-	void addListenerTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		service.addListener("token","asdf","asdf","asdf");
-		assertTrue(true);
-	}
-	@Test
-	void delListenerTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		service.delListener("token","asdf");
-		assertTrue(true);
-	}
+	
 }

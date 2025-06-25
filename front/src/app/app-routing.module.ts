@@ -13,10 +13,10 @@ import { ExistingjComponent } from './infrastructure/inputs/jobs/existingj/exist
 import { LogsComponent } from './infrastructure/inputs/logs/logs/logs.component';
 import { CredentialsComponent } from './infrastructure/inputs/credentials/credentials/credentials.component';
 import { DependenciesComponent } from './infrastructure/inputs/jobs/dependencies/dependencies.component';
-import { InputsChannelsComponent } from './infrastructure/inputs/inputs/inputs-channels/inputs-channels.component';
 import { ExceptionsListComponent } from './infrastructure/inputs/exceptions/exceptions-list/exceptions-list.component';
 import { ExplorerComponent } from './infrastructure/inputs/browser-fs/explorer/explorer.component';
 import { KeystoreContentComponent } from './infrastructure/inputs/keystore/keystore-content/keystore-content.component';
+import { ApiKeyComponent } from './infrastructure/inputs/http-api-security/api-key/api-key.component';
 
 
 const routes: Routes = [
@@ -24,9 +24,9 @@ const routes: Routes = [
   { path: 'auth', component: AuthenticatedComponent, children: [
     { path: '', component: HomeComponent },
     { path: 'jobs', component: JobsComponent },
+    { path: 'api-keys', component: ApiKeyComponent },
     { path: 'props', component: PropsComponent },
     { path: "njob" , component: NewjComponent },
-    { path: 'channels' , component: InputsChannelsComponent },
     { path: 'browser' , component: ExplorerComponent },
     { path: "exceptions", component: ExceptionsListComponent },
     { path: "keystore", component: KeystoreContentComponent },

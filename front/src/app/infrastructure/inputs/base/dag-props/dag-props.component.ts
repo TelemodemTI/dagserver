@@ -21,7 +21,7 @@ export class DagPropsComponent {
     triggerval:any = "0 0/1 * * * ?"
     loc:string = ""
     targetType:string="DAG"
-
+    targetGroup:string=""
     constructor(private service: DagPropsInputPort){
     }
 
@@ -33,6 +33,7 @@ export class DagPropsComponent {
       if(obj.trigger){
         this.changeTrigger(obj.trigger)
         this.triggerval = obj.cron
+        this.targetGroup = obj.targetGroup
         this.loc = obj.loc
         this.targetType = obj.target
       }

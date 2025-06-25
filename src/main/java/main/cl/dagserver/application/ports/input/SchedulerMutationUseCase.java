@@ -25,18 +25,11 @@ public interface SchedulerMutationUseCase {
 	void deleteLog(String token, Integer logid) throws DomainException;
 	void deleteAllLogs(String token, String dagname) throws DomainException;
 	void renameUncompiled(String token, Integer uncompiled, String newname) throws DomainException;
-	void saveRabbitChannel(String token, String host, String cred, Integer port) throws DomainException;
-	void addQueue(String token, String queue, String jarfile, String dagname) throws DomainException;
-	void delQueue(String token, String queue) throws DomainException;
-	void saveRedisChannel(String token, String mode, String hostnames, String portnumbers) throws DomainException;
-	void addListener(String token, String listener, String jarfile, String dagname) throws DomainException;
-	void delListener(String token, String listener) throws DomainException;
-	void saveKafkaChannel(String token, String bootstrapServers, String groupId, Integer poll) throws DomainException;
-	void addConsumer(String token, String topic, String jarfile, String dagname) throws DomainException;
-	void delConsumer(String token, String topic) throws DomainException;
-	void saveActiveMQChannel(String token,String host,String cred) throws DomainException;
-	void addConsumerAM(String token, String queue, String jarfile, String dagname) throws DomainException;
-	void delConsumerAM(String token,String queue) throws DomainException;
+	
+	
+	
+	
+	
 	void removeException(String token, String eventDt) throws DomainException;
 	void reimport(String token, String jarname) throws DomainException;
 	void logout(String token) throws DomainException;

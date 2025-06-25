@@ -190,46 +190,6 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
     })
   }
   
-  addConsumerAM(queue: any, jarFile: any, dag: any): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation addConsumerAM($token:String,$queue:String,$jarfile:String,$dagname:String) { addConsumerAM(token:$token,queue:$queue,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
-      this.query(string,{token:token,queue:queue,jarfile:jarFile,dagname:dag}).subscribe((result:any)=>{
-        if(result && result.addConsumerAM && result.addConsumerAM.status == "ok"){
-          resolve()
-        } else if(result && result.addConsumerAM) {
-          reject(result.addConsumerAM.status)
-        } 
-      })
-    })
-  }
-  delConsumerAM(queue: any): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation delConsumerAM($token:String,$queue:String) { delConsumerAM(token:$token,queue:$queue) {status,code,value} }"
-      this.query(string,{token:token,queue:queue}).subscribe((result:any)=>{
-        if(result && result.delConsumerAM && result.delConsumerAM.status == "ok"){
-          resolve()
-        } else if(result && result.delConsumerAM) {
-          reject(result.delConsumerAM.status)
-        } 
-      })
-    })
-  }
-
-  saveActiveMQChannel(host: string, cred: string): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation saveActiveMQChannel($token:String,$host:String,$cred:String) { saveActiveMQChannel(token:$token,host:$host,cred:$cred) {status,code,value} }"
-      this.query(string,{token:token,host:host,cred:cred}).subscribe((result:any)=>{
-        if(result && result.saveActiveMQChannel && result.saveActiveMQChannel.status == "ok"){
-          resolve()
-        } else if(result && result.saveActiveMQChannel) {
-          reject(result.saveActiveMQChannel.status)
-        }      
-      })
-    })
-  }
 
   getLastLogs(): Promise<Log[]> {
     return new Promise<Log[]>((resolve, reject) => {
@@ -242,129 +202,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
     })
   }
   
-  delListener(channel: string): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation delListener($token:String,$channel:String) { delListener(token:$token,channel:$channel) {status,code,value} }"
-      this.query(string,{token:token,channel:channel}).subscribe((result:any)=>{
-        if(result && result.delListener && result.delListener.status == "ok"){
-          resolve()
-        } else if(result && result.delListener) {
-          reject(result.delListener.status)
-        } 
-      })
-    })
-  }
-  addListener(channel: string, jarfile: string, dagname: string): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation addListener($token:String,$channel:String,$jarfile:String,$dagname:String) { addListener(token:$token,channel:$channel,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
-      this.query(string,{token:token,channel:channel,jarfile:jarfile,dagname:dagname}).subscribe((result:any)=>{
-        if(result && result.addListener && result.addListener.status == "ok"){
-          resolve()
-        } else if(result && result.addListener) {
-          reject(result.addListener.status)
-        } 
-      })
-    })
-  }
   
-  saveRedisChannel(mode: any, hostnames: string, ports: any): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation saveRedisChannel($token:String,$mode:String,$hostnames:String,$portnumbers:String) { saveRedisChannel(token:$token,mode:$mode,hostnames:$hostnames,portnumbers:$portnumbers) {status,code,value} }"
-      this.query(string,{token:token,mode:mode,hostnames:hostnames,portnumbers:ports}).subscribe((result:any)=>{
-        if(result && result.saveRedisChannel && result.saveRedisChannel.status == "ok"){
-          resolve()
-        } else if(result && result.saveRedisChannel) {
-          reject(result.saveRedisChannel.status)
-        }      
-      })
-    })
-  }
-
-  
-  addConsumer(topic: any, jarFile: any, dag: any): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation addConsumer($token:String,$topic:String,$jarfile:String,$dagname:String) { addConsumer(token:$token,topic:$topic,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
-      this.query(string,{token:token,topic:topic,jarfile:jarFile,dagname:dag}).subscribe((result:any)=>{
-        if(result && result.addConsumer && result.addConsumer.status == "ok"){
-          resolve()
-        } else if(result && result.addConsumer) {
-          reject(result.addConsumer.status)
-        } 
-      })
-    })
-  }
-  delConsumer(topic: any): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation delConsumer($token:String,$topic:String) { delConsumer(token:$token,topic:$topic) {status,code,value} }"
-      this.query(string,{token:token,topic:topic}).subscribe((result:any)=>{
-        if(result && result.delConsumer && result.delConsumer.status == "ok"){
-          resolve()
-        } else if(result && result.delConsumer) {
-          reject(result.delConsumer.status)
-        } 
-      })
-    })
-  }
-
-  saveKaflaChannel(bootstrapServers: any, groupId: any, poll: any): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation saveKafkaChannel($token:String,$bootstrapServers:String,$groupId:String,$poll:Int) { saveKafkaChannel(token:$token,bootstrapServers:$bootstrapServers,groupId:$groupId,poll:$poll) {status,code,value} }"
-      this.query(string,{token:token,bootstrapServers:bootstrapServers,groupId:groupId,poll:parseInt(poll)}).subscribe((result:any)=>{
-        if(result && result.saveKafkaChannel && result.saveKafkaChannel.status == "ok"){
-          resolve()
-        } else if(result && result.saveKafkaChannel) {
-          reject(result.saveKafkaChannel.status)
-        }      
-      })
-    })
-  }
-
-  delQueue(queue: string): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation delQueue($token:String,$queue:String) { delQueue(token:$token,queue:$queue) {status,code,value} }"
-      this.query(string,{token:token,queue:queue}).subscribe((result:any)=>{
-        if(result && result.delQueue && result.delQueue.status == "ok"){
-          resolve()
-        } else if(result && result.delQueue) {
-          reject(result.delQueue.status)
-        }      
-      })
-    })
-  }
-  addQueue(queue: string, jarfile: string, dagname: string): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation addQueue($token:String,$queue:String,$jarfile:String,$dagname:String) { addQueue(token:$token,queue:$queue,jarfile:$jarfile,dagname:$dagname) {status,code,value} }"
-      this.query(string,{token:token,queue:queue,jarfile:jarfile,dagname:dagname}).subscribe((result:any)=>{
-        if(result && result.addQueue && result.addQueue.status == "ok"){
-          resolve()
-        } else if(result && result.addQueue) {
-          reject(result.addQueue.status)
-        }      
-      })
-    })
-  }
-  saveRabbitChannel(host: string, cred: string, port: number): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation saveRabbitChannel($token:String,$host:String,$cred:String,$port:Int) { saveRabbitChannel(token:$token,host:$host,cred:$cred,port:$port) {status,code,value} }"
-      this.query(string,{token:token,host:host,cred:cred,port:port}).subscribe((result:any)=>{
-        if(result && result.saveRabbitChannel && result.saveRabbitChannel.status == "ok"){
-          resolve()
-        } else if(result && result.saveRabbitChannel) {
-          reject(result.saveRabbitChannel.status)
-        }      
-      })
-    })
-  }
-
   renameUncompiled(uncompiled: any, arg1: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{
       var token = localStorage.getItem("dagserver_token")
@@ -418,45 +256,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
     })
   }
   
-  removeGithubWebhook(name: string): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation removeGithubWebhook($token:String,$name:String) { removeGithubWebhook(token:$token,name:$name) { status,code,value }}"
-      this.query(string,{token:token,name:name}).subscribe((result:any)=>{
-        if(result && result.removeGithubWebhook && result.removeGithubWebhook.status == "ok"){
-          resolve()
-        } else if(result && result.removeGithubWebhook) {
-          reject(result.removeGithubWebhook.status)
-        }      
-      })
-    })
-  }
   
-  createGithubWebhook(name:string,repourl:string,secret:string,jarname:string,dagname:string): Promise<void> {
-    return new Promise<void>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "mutation addGitHubWebhook($token:String,$name:String,$repository:String,$secret:String,$dagname:String, $jarname:String) { addGitHubWebhook(token:$token,name:$name,repository:$repository,secret:$secret,dagname:$dagname, jarname:$jarname) { status,code,value }}"
-      this.query(string,{token:token,name:name,repository:repourl,secret:secret,jarname:jarname,dagname:dagname}).subscribe((result:any)=>{
-        if(result && result.addGitHubWebhook && result.addGitHubWebhook.status == "ok"){
-          resolve()
-        } else if(result && result.addGitHubWebhook) {
-          reject(result.addGitHubWebhook.status)
-        }      
-      })
-    })
-  }
-
-  getChannels(): Promise<any[]> {
-    return new Promise<any[]>((resolve,reject)=>{
-      var token = localStorage.getItem("dagserver_token")
-      var string = "query channelStatus($token:String) { channelStatus(token:$token) { name,status,icon,props { key,value,descr } } }"
-      this.query(string,{token:token}).subscribe((result:any)=>{
-        if(result && result.channelStatus){
-          resolve(result.channelStatus)
-        } 
-      })
-    })
-  }
 
   removeJarfile(jarname: any): Promise<void> {
     return new Promise<void>((resolve,reject)=>{

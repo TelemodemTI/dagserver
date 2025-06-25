@@ -57,7 +57,6 @@ class SchedulerQueryHandlerServiceTest {
 		ReflectionTestUtils.setField(service, "repository", repository);
 		ReflectionTestUtils.setField(service, "auth", tokenEngine);
 		ReflectionTestUtils.setField(service, "compiler", compiler);
-		ReflectionTestUtils.setField(service, "rabbitPropkey", "rabbitPropkey");
 	}
 	
 	@Test
@@ -234,42 +233,8 @@ class SchedulerQueryHandlerServiceTest {
 		var rt = service.getDependencies("type","test1");
 		assertNotNull(rt);
 	}
-	@Test
-	void getChannelsTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		ret.setAccountType(AccountType.ADMIN);
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		PropertyParameterDTO prop = new PropertyParameterDTO();
-		prop.setName("STATUS");
-		PropertyParameterDTO prop1 = new PropertyParameterDTO();
-		prop1.setName("asdf");
-		var propertyList = new ArrayList<PropertyParameterDTO>();
-		propertyList.add(prop);
-		propertyList.add(prop1);
-		when(repository.getProperties(anyString())).thenReturn(propertyList);
-		
-		var rt = service.getChannels("token");
-		assertNotNull(rt);
-	}
-	@Test
-	void getChannelsErrorTest() throws DomainException {
-		AuthDTO ret = new AuthDTO();
-		ret.setAccountType(AccountType.USER);
-		when(tokenEngine.untokenize(anyString())).thenReturn(ret);
-		PropertyParameterDTO prop = new PropertyParameterDTO();
-		prop.setName("STATUS");
-		PropertyParameterDTO prop1 = new PropertyParameterDTO();
-		prop1.setName("asdf");
-		var propertyList = new ArrayList<PropertyParameterDTO>();
-		propertyList.add(prop);
-		propertyList.add(prop1);
-		when(repository.getProperties(anyString())).thenReturn(propertyList);
-		try {
-			service.getChannels("token");	
-		} catch (Exception e) {
-			assertTrue(true);
-		}
-	}
+	
+	
 	@Test
 	void exportUncompiledTest() throws DomainException {
 		AuthDTO ret = new AuthDTO();

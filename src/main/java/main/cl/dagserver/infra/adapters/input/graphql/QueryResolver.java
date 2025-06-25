@@ -25,7 +25,6 @@ import main.cl.dagserver.infra.adapters.input.graphql.mappers.QueryResolverMappe
 import main.cl.dagserver.infra.adapters.input.graphql.types.Account;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Agent;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Available;
-import main.cl.dagserver.infra.adapters.input.graphql.types.Channel;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Deps;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Detail;
 import main.cl.dagserver.infra.adapters.input.graphql.types.DetailStatus;
@@ -249,10 +248,6 @@ public class QueryResolver {
 		deps.setOnStart(returned.get(0));
 		deps.setOnEnd(returned.get(1));
 		return deps; 
-	}
-	@QueryMapping
-	public List<Channel> channelStatus(@Argument String token) throws DomainException {
-		return handler.getChannels(token).stream().map(elt -> mapper.toChannel(elt)).toList();
 	}
 	@QueryMapping
 	public String exportUncompiled(@Argument String token,@Argument Integer uncompiled) throws DomainException {

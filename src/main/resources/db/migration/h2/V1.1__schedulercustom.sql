@@ -40,11 +40,6 @@ CREATE TABLE `sche_properties` (
   `prop_description` varchar(500) DEFAULT NULL
 );
 
-INSERT INTO `sche_properties` VALUES ('1','STATUS','RABBIT_PROPS','INACTIVE','rabbit channel status');
-INSERT INTO `sche_properties` VALUES ('2','STATUS','REDIS_PROPS','INACTIVE','redis channel status');
-INSERT INTO `sche_properties` VALUES ('3','STATUS','KAFKA_PROPS','INACTIVE','kafka channel status');
-INSERT INTO `sche_properties` VALUES ('4','STATUS','ACTIVEMQ_PROPS','INACTIVE','activemq channel status');
-
 
 CREATE TABLE `sche_metadata` (
   `metadata_id` int NOT NULL AUTO_INCREMENT,

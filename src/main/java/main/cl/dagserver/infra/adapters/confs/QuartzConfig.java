@@ -9,7 +9,6 @@ import com.nhl.dflib.DataFrame;
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.domain.model.EventListenerDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
 import main.cl.dagserver.infra.adapters.output.repositories.SchedulerRepository;
 import main.cl.dagserver.domain.annotations.Dag;
@@ -134,7 +133,7 @@ public class QuartzConfig {
 	        
 	    	Trigger trigger = TriggerBuilder.newTrigger().startNow().build();
 	        JobDetail jobDetail = this.getJobDetailFromDag(dag);
-	        Map<String, List<DagExecutable>> returned = getListeners(dag);
+	        Map<String, List<DagExecutable>> returned = this.repo.getListeners(dag,this.events);
 	        this.processListeners(dag,jobDetail,returned,future);
 	        this.scheduler.deleteJob(jobDetail.getKey());
 	        this.scheduler.scheduleJob(jobDetail, trigger);	
@@ -189,32 +188,6 @@ public class QuartzConfig {
             }
         };
         this.scheduler.getListenerManager().addJobListener(jobListener, KeyMatcher.keyEquals(jobDetail.getKey()));
-	}
-
-	private Map<String, List<DagExecutable>> getListeners(DagExecutable dag) {
-		var listener = repo.listEventListeners();
-		Map<String,List<DagExecutable>> returned = new HashMap<>();
-        List<DagExecutable> onEndListeners = new ArrayList<>();
-        List<DagExecutable> onStartListeners = new ArrayList<>();
-		for (Iterator<EventListenerDTO> iterator = listener.iterator(); iterator.hasNext();) {
-			EventListenerDTO eventListenerDTO = iterator.next();
-			if(eventListenerDTO.getTag().equals("DAG")){
-				if(dag.getDagname().equals(eventListenerDTO.getOnEnd())) {
-					onEndListeners.add(this.events.get(eventListenerDTO.getListenerName()));
-				} else if(dag.getDagname().equals(eventListenerDTO.getOnStart())) {
-					onStartListeners.add(this.events.get(eventListenerDTO.getListenerName()));
-				}
-			} else {
-				if(dag.getGroup().equals(eventListenerDTO.getOnEnd())) {
-					onEndListeners.add(this.events.get(eventListenerDTO.getListenerName()));
-				} else if(dag.getGroup().equals(eventListenerDTO.getOnStart())) {
-					onStartListeners.add(this.events.get(eventListenerDTO.getListenerName()));
-				}
-			}
-		}
-		returned.put("onStart", onStartListeners);
-		returned.put("onEnd", onEndListeners);
-		return returned;
 	}
 	private String getRealCronExpr(String cronExpr) {
 	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {
@@ -324,6 +297,14 @@ public class QuartzConfig {
 		this.repo.addEventListener(listener.getName(), annotation.onStart(), annotation.onEnd(), annotation.group(),target,jarname);
 		this.events.put(listener.getName(), executable);
 	}
+	public Map<String, DagExecutable> getEvents() {
+		return events;
+	}
+
+	public void setEvents(Map<String, DagExecutable> events) {
+		this.events = events;
+	}
+
 	public void removeListener(Dag annotation) throws SchedulerException {
 		this.scheduler.getListenerManager().removeJobListener(annotation.name());
 		repo.removeListener(annotation.name());

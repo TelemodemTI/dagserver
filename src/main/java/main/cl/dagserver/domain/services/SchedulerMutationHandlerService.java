@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
@@ -26,25 +25,8 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 
 	private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private static final String JARNAME = "jarname";
-	private static final String DAGNAME = "dagname";
-	private static final String GENERATED = "GENERATED";
-	private static final String STATUS = "STATUS";
-	private static final String ACTIVE = "ACTIVE";
+	
 	private static final SecureRandom random = new SecureRandom();
-	
-	
-	@Value( "${param.rabbit.propkey}" )
-	private String rabbitPropkey;
-	
-	@Value( "${param.redis.propkey}" )
-	private String redisPropkey;
-	
-	@Value( "${param.kafka.propkey}" )
-	private String kafkaPropkey;
-	
-	@Value( "${param.activemq.propkey}" )
-	private String activeMQPropkey;
-	
 	
 	@Override
 	public void scheduleDag(String token, String dagname,String jarname) throws DomainException {
@@ -222,56 +204,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 		auth.untokenize(token);
 		repository.renameUncompiled(uncompiled,newname);
 	}
-	@Override
-	public void saveRabbitChannel(String token, String host, String cred, Integer port)
-			throws DomainException {
-		auth.untokenize(token);
-		repository.setProperty("host", GENERATED, host, rabbitPropkey );
-		repository.setProperty("cred", GENERATED, cred, rabbitPropkey );
-		repository.setProperty("port", GENERATED, port.toString(), rabbitPropkey );
-		repository.setProperty(STATUS, "rabbit channel status", ACTIVE, rabbitPropkey );
-	}
-	@Override
-	public void addQueue(String token, String queue, String jarfile, String dagname) throws DomainException {
-		auth.untokenize(token);
-		repository.setProperty(queue , GENERATED, "rabbit_consumer_queue" , rabbitPropkey );
-		repository.setProperty(DAGNAME, GENERATED, dagname, queue);
-		repository.setProperty(JARNAME, GENERATED, jarfile, queue);
-	}
-	@Override
-	public void delQueue(String token, String queue) throws DomainException {
-		auth.untokenize(token);
-		repository.delProperty(queue, rabbitPropkey);
-		repository.delGroupProperty(queue);
-	}
-	@Override
-	public void saveRedisChannel(String token, String mode, String hostnames, String portnumbers) throws DomainException {
-		auth.untokenize(token);
-		Boolean bmode = Boolean.parseBoolean(mode);
-		String[] hosallarr = hostnames.split(";");
-		String[] portnumbersarr = portnumbers.split(";");
-		for (int i = 0; i < hosallarr.length; i++) {
-			String string = hosallarr[i];
-			String portnumber = portnumbersarr[i];
-			repository.setProperty("hostname", GENERATED, string, redisPropkey );
-			repository.setProperty("port", GENERATED, portnumber, redisPropkey );
-		}
-		repository.setProperty("MODE", GENERATED, bmode.toString(), redisPropkey );
-		repository.setProperty(STATUS, "rabbit channel status", ACTIVE, redisPropkey );
-	}
-	@Override
-	public void addListener(String token, String listener, String jarfile, String dagname) throws DomainException {
-		auth.untokenize(token);
-		repository.setProperty(listener , GENERATED, "redis_consumer_listener" , redisPropkey );
-		repository.setProperty(DAGNAME, GENERATED, dagname, listener);
-		repository.setProperty(JARNAME, GENERATED, jarfile, listener);
-	}
-	@Override
-	public void delListener(String token, String listener) throws DomainException {
-		auth.untokenize(token);
-		repository.delProperty(listener, redisPropkey);
-		repository.delGroupProperty(listener);
-	}
+	
 	private void convertToProperties(Properties inputProps, List<PropertyParameterDTO> propitem) {
 		for (Iterator<PropertyParameterDTO> iterator = propitem.iterator(); iterator.hasNext();) {
 			PropertyParameterDTO propertyParameterDTO = iterator.next();
@@ -280,49 +213,7 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 			inputProps.put("group."+propertyParameterDTO.getName(), propertyParameterDTO.getGroup());
 		}
 	}
-	@Override
-	public void saveKafkaChannel(String token, String bootstrapServers, String groupId, Integer poll) throws DomainException {
-		auth.untokenize(token);
-		repository.setProperty("bootstrapServers", GENERATED, bootstrapServers, kafkaPropkey );
-		repository.setProperty("groupId", GENERATED, groupId, kafkaPropkey );
-		repository.setProperty("poll", GENERATED, poll.toString(), kafkaPropkey );
-		repository.setProperty(STATUS, "kafka channel status", ACTIVE, kafkaPropkey );
-	}
-	@Override
-	public void addConsumer(String token, String topic, String jarfile, String dagname) throws DomainException {
-		auth.untokenize(token);
-		repository.setProperty(topic , GENERATED, "kafka_consumer_listener" , kafkaPropkey );
-		repository.setProperty(DAGNAME, GENERATED, dagname, topic);
-		repository.setProperty(JARNAME, GENERATED, jarfile, topic);
-		
-	}
-	@Override
-	public void delConsumer(String token, String topic) throws DomainException {
-		auth.untokenize(token);
-		repository.delProperty(topic, redisPropkey);
-		repository.delGroupProperty(topic);
-	}
-	@Override
-	public void saveActiveMQChannel(String token, String host, String cred) throws DomainException {
-		auth.untokenize(token);
-		repository.setProperty("host", GENERATED, host, activeMQPropkey );
-		repository.setProperty("cred", GENERATED, cred, activeMQPropkey );
-		repository.setProperty(STATUS, "activeMQ channel status", ACTIVE, activeMQPropkey );
-	}
 	
-	@Override
-	public void addConsumerAM(String token, String queue, String jarfile, String dagname) throws DomainException {
-		auth.untokenize(token);
-		repository.setProperty(queue , GENERATED, "activemq_consumer_listener" , activeMQPropkey );
-		repository.setProperty(DAGNAME, GENERATED, dagname, queue);
-		repository.setProperty(JARNAME, GENERATED, jarfile, queue);
-	}
-	@Override
-	public void delConsumerAM(String token,String queue) throws DomainException {
-		auth.untokenize(token);
-		repository.delProperty(queue, activeMQPropkey);
-		repository.delGroupProperty(queue);
-	}
 	@Override
 	public void removeException(String token, String eventDt) throws DomainException {
 		auth.untokenize(token);
@@ -331,7 +222,9 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 	@Override
 	public void reimport(String token, String jarname) throws DomainException {
 		auth.untokenize(token);
-		JSONObject json = compiler.reimport(jarname);
+		JSONObject reimportResult = compiler.reimport(jarname);
+		
+		// Verificar que no exista ya un diseño con el mismo jarname
 		var list = repository.getUncompileds();
 		for (Iterator<UncompiledDTO> iterator = list.iterator(); iterator.hasNext();) {
 			UncompiledDTO uncompiledDTO = iterator.next();
@@ -340,7 +233,24 @@ public class SchedulerMutationHandlerService extends BaseServiceComponent implem
 				throw new DomainException(new Exception("design of jarname already exists"));
 			}
 		}
-		repository.addUncompiled(json.getString(JARNAME),json);	
+		
+		// Extraer el dagdef.json y las propiedades
+		JSONObject dagdef = reimportResult.getJSONObject("dagdef");
+		JSONObject configProperties = reimportResult.getJSONObject("configProperties");
+		
+		// Guardar el diseño como uncompiled
+		repository.addUncompiled(dagdef.getString(JARNAME), dagdef);
+		
+		// Procesar y cargar las propiedades a la base de datos
+		if (configProperties != null && configProperties.length() > 0) {
+			Properties props = new Properties();
+			for (String key : configProperties.keySet()) {
+				props.setProperty(key, configProperties.getString(key));
+			}
+			
+			// Cargar las propiedades usando el método existente de QuartzConfig
+			quartz.propertiesToRepo(props);
+		}
 	}
 	@Override
 	public void logout(String token) throws DomainException {

@@ -23,6 +23,7 @@ import com.nhl.dflib.DataFrame;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.annotations.Operator;
+import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.enums.OperatorStatus;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AgentDTO;
@@ -552,5 +553,30 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		return list.get(0).getBin();
 	}
 
-	
+	@Override
+	public Map<String, List<DagExecutable>> getListeners(DagExecutable dag,Map<String,DagExecutable> events) {
+		var listener = this.listEventListeners();
+		Map<String,List<DagExecutable>> returned = new HashMap<>();
+        List<DagExecutable> onEndListeners = new ArrayList<>();
+        List<DagExecutable> onStartListeners = new ArrayList<>();
+		for (Iterator<EventListenerDTO> iterator = listener.iterator(); iterator.hasNext();) {
+			EventListenerDTO eventListenerDTO = iterator.next();
+			if(eventListenerDTO.getTag().equals("DAG")){
+				if(dag.getDagname().equals(eventListenerDTO.getOnEnd())) {
+					onEndListeners.add(events.get(eventListenerDTO.getListenerName()));
+				} else if(dag.getDagname().equals(eventListenerDTO.getOnStart())) {
+					onStartListeners.add(events.get(eventListenerDTO.getListenerName()));
+				}
+			} else {
+				if(dag.getGroup().equals(eventListenerDTO.getOnEnd())) {
+					onEndListeners.add(events.get(eventListenerDTO.getListenerName()));
+				} else if(dag.getGroup().equals(eventListenerDTO.getOnStart())) {
+					onStartListeners.add(events.get(eventListenerDTO.getListenerName()));
+				}
+			}
+		}
+		returned.put("onStart", onStartListeners);
+		returned.put("onEnd", onEndListeners);
+		return returned;
+	}
 }

@@ -2,7 +2,6 @@ package main.cl.dagserver.infra.adapters.input.controllers;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -21,8 +20,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +33,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.view.RedirectView;
-
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.nhl.dflib.DataFrame;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
 import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.exceptions.DomainException;
+import main.cl.dagserver.infra.adapters.input.controllers.types.DagResultResponse;
 import main.cl.dagserver.infra.adapters.input.controllers.types.ExecuteDagRequest;
 
 @Controller
@@ -53,21 +56,23 @@ public class DefaultController {
 	@Value("${spring.allowed.file.extensions}")
 	private String allowedExtensions;
 	
+	@Value("${param.dagserver.version}")
+	private String version;
+
 	private StageApiUsecase api;
 	private ApplicationContext applicationContext;
-	private ResourceLoader resourceLoader;
+	
 
 	
 	@Autowired
-	public DefaultController(StageApiUsecase api,ApplicationContext applicationContext,ResourceLoader resourceLoader) {
+	public DefaultController(StageApiUsecase api,ApplicationContext applicationContext) {
 		this.api = api;
 		this.applicationContext = applicationContext;
-		this.resourceLoader = resourceLoader;
 	}
 	
 	@GetMapping(path="/version/")
     public ResponseEntity<String> version(Model model,HttpServletRequest request,HttpServletResponse response) {				
-		return new ResponseEntity<>("dagserver is running! v0.8.3.20250621", HttpStatus.OK);
+		return new ResponseEntity<>("dagserver is running! v"+this.version, HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/beans")
@@ -80,23 +85,6 @@ public class DefaultController {
 	    return new ResponseEntity<>(arr.toString(),HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/openapi", produces = "application/x-yaml")
-	public ResponseEntity<byte[]> getOpenApiYaml() {
-		try {
-	      Resource resource = resourceLoader.getResource("classpath:openapi.yaml");
-	      if (!resource.exists() || !resource.isReadable()) {
-	    	  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	      }
-	      InputStream inputStream = resource.getInputStream();
-	      byte[] fileContent = inputStream.readAllBytes();
-	      return ResponseEntity.ok()
-	                    .header(CONTENTDISPOSITION, "attachment; filename=\"openapi.yaml\"")
-	                    .contentType(org.springframework.http.MediaType.parseMediaType("application/x-yaml"))
-	                    .body(fileContent);
-	   } catch (IOException e) {
-	       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	   }
-	}
 	@GetMapping(path={"/"})
     public RedirectView defaultGet(Model model,HttpServletRequest request,HttpServletResponse response) {		
 		String path = request.getContextPath();
@@ -128,11 +116,22 @@ public class DefaultController {
         return redirectView;
     }
 	
+	@Operation(
+        summary = "Execute a DAG",
+        description = "Execute a DAG"
+    )
+	@ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK",content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = DagResultResponse.class)
+		)),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
 	@PostMapping(value = "/api/execute")
 	public ResponseEntity<String> apiChannel(
-			@RequestBody ExecuteDagRequest executeReq, 
-			@RequestHeader("Authorization") String authorizationHeader,
-			@RequestHeader(value = "WFR", required = false) Boolean wfr) throws IOException, DomainException{
+			@Parameter(description = "Request body") @RequestBody ExecuteDagRequest executeReq, 
+			@Parameter(description = "Authorization header") @RequestHeader("Authorization") String authorizationHeader,
+			@Parameter(description = "WFR header") @RequestHeader(value = "WFR", required = false) Boolean wfr) throws IOException, DomainException{
 		if(authorizationHeader.length() > 7) {
 			String token = authorizationHeader.substring(7);
 			var xcom = api.executeDag(token,executeReq.getJarname(),executeReq.getDagname(),executeReq.getArgs(),wfr);

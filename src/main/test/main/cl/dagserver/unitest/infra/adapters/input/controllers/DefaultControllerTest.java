@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.ui.Model;
 import main.cl.dagserver.application.ports.input.StageApiUsecase;
@@ -31,16 +30,13 @@ class DefaultControllerTest {
 	@Mock
 	private ApplicationContext applicationContext;
 	
-	@Mock
-	private ResourceLoader resourceLoader;
 	
 	
 	@BeforeEach
     void init() {
 		stage = mock(StageApiUsecase.class);
 		applicationContext = mock(ApplicationContext.class);
-		resourceLoader = mock(ResourceLoader.class);
-		controller = new DefaultController(stage, applicationContext,resourceLoader);
+		controller = new DefaultController(stage, applicationContext);
 	}
 	
     @Test
