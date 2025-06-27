@@ -1,9 +1,7 @@
 package main.cl.dagserver.integration.test;
 
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
-
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;

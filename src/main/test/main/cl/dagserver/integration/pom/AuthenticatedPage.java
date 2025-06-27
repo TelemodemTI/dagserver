@@ -33,7 +33,7 @@ public class AuthenticatedPage {
         return new CredentialsPage(driver,title);
     }
     public JobsPage goToJobs(){
-        By jobsLink = By.xpath("//*[@id=\"side-menu\"]/li[1]/ul/li[2]/a");
+        By jobsLink = By.xpath("//*[@id=\"side-menu\"]/li[1]/ul/li[1]/a");
         WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait.until(ExpectedConditions.elementToBeClickable(jobsLink));
         driver.findElement(jobsLink).click();
