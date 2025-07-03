@@ -464,7 +464,8 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.selectTab("//*[@id=\"file_li\"]/a");
             params.selectFile("${step0}");
             params.save();
-            canvas.saveJar();
+            canvas.save();
+            canvas.close();
         	jobsPage = authenticatedPage.goToJobs();
         	var status = executeDesign(step2, jarname, dagname,jobsPage);
         	if(!status.isEmpty()) {
