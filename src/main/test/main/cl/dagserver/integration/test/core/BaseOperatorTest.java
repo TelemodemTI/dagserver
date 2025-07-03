@@ -8,7 +8,7 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 public class BaseOperatorTest extends BaseIntegrationTest {
 
 	
-    protected CanvasDagEditor createJob(JobsPage jobsPage,String jarname, String dagname, String group, String step) throws InterruptedException {
+    protected CanvasDagEditor createJob(JobsPage jobsPage,String jarname, String dagname, String group) throws InterruptedException {
         
         var canvas = jobsPage.createNewJobCanvas();
         canvas.setName(jarname);
@@ -17,7 +17,7 @@ public class BaseOperatorTest extends BaseIntegrationTest {
     }
     
     protected void createGroovyJob(JobsPage jobsPage,String dagname, String step, String group, String jarname, String cmd1) throws InterruptedException {
-		CanvasDagEditor canvas = createJob(jobsPage,jarname, dagname, group, step);
+		CanvasDagEditor canvas = createJob(jobsPage,jarname, dagname, group);
         canvas.addStep(dagname,step,"main.cl.dagserver.infra.adapters.operators.GroovyOperator");
         EditorParamModal params = canvas.selectStage(step);
         params.selectTab("//*[@id=\"profile_li\"]/a");

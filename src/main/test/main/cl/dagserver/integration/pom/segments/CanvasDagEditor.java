@@ -75,8 +75,11 @@ public class CanvasDagEditor {
     }
 
     public void addStep(String dagname, String step1, String operator) throws InterruptedException {
-        driver.findElement(By.xpath("//*[@id=\"props-collapser-son-"+dagname+"\"]")).click();
+
+    	driver.findElement(By.xpath("//*[@id=\"props-collapser-son-"+dagname+"\"]")).click();
         Thread.sleep(3000);
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"stepinput-"+dagname+"\"]")));
         driver.findElement(By.xpath("//*[@id=\"stepinput-"+dagname+"\"]")).clear();
         driver.findElement(By.xpath("//*[@id=\"stepinput-"+dagname+"\"]")).sendKeys(step1);
     

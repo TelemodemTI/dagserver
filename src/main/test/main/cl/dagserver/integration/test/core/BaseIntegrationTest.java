@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.containers.BindMode;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -31,13 +32,14 @@ public class BaseIntegrationTest {
 	  this.application = new GenericContainer<>(DockerImageName.parse("maximolira/dagserver:latest"))
 			  .withEnv("APP_PROFILES_DEFAULT", "auth-internal,filesystem-normal")
 			  .withEnv("APP_FOLDERPATH", "/root/dags/")
-        .withEnv("APP_BACKGROUND_JOBS", "0 0/1 * ? * *")
-			  .withExposedPorts(8081);
+			  .withEnv("APP_BACKGROUND_JOBS", "0 0/1 * ? * *")
+			  .withExposedPorts(8081)
+	  		  .withFileSystemBind(hostPath, containerPath, BindMode.READ_WRITE);
       this.seleniumContainer = new GenericContainer<>(seleniumImage)
           .withExposedPorts(4444)
           .withSharedMemorySize(2L * 1024L * 1024L * 1024L)
           .withEnv("SE_VNC_NO_PASSWORD", "1")
-          .withFileSystemBind(hostPath, containerPath);
+          .withFileSystemBind(hostPath, containerPath, BindMode.READ_WRITE);
       this.seleniumContainer.start();
       this.application.start();
       this.appUrl = "http://host.docker.internal:"+this.application.getFirstMappedPort().toString()+"/";

@@ -39,7 +39,7 @@ public class FileOperator extends OperatorStage {
 			log.debug(this.getClass()+" end "+this.name);
 			Integer mode = this.getMode(this.args.getProperty("mode"));
 			String xcomname = this.optionals.getProperty("xcom");
-			String filepath = this.args.getProperty("filepath");
+			String filepath = this.getInputProperty("filepath");
 			Boolean firstrow = Boolean.valueOf(this.args.getProperty("firstRowTitles"));
 			String rowDelimiter = (this.optionals.getProperty("rowDelimiter") == null || this.optionals.getProperty("rowDelimiter").isEmpty())?"":this.optionals.getProperty("rowDelimiter"); 
 			if(mode.equals(0)) {
