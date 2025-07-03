@@ -18,6 +18,9 @@ public class DesignNewResultModal {
     }
 
     public void close(){
+    	WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
+    	wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"result-step-modal\"]/div[2]/div/div[2]/div[3]/button")));
+    	
         driver.findElement(By.xpath("//*[@id=\"result-step-modal\"]/div[2]/div/div[2]/div[3]/button")).click();
 		WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait2.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"result-step-modal\"]")));

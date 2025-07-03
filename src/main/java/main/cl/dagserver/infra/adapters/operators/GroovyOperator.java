@@ -30,7 +30,9 @@ public class GroovyOperator extends OperatorStage {
 		ApplicationContext appCtx = ApplicationContextUtils.getApplicationContext();
 		var repo =  appCtx.getBean("schedulerRepository", SchedulerRepositoryOutputPort.class);
 		var scanner =  appCtx.getBean("jarSchedulerAdapter", JarSchedulerOutputPort.class);
-		String source = this.args.getProperty("source");
+		
+		String source = this.getInputProperty("source");
+
 	    Binding binding = new Binding();
 	    var dagapi = new DagOperatorApi();
 	    var dagdag = new DagGraphApi(repo,scanner);

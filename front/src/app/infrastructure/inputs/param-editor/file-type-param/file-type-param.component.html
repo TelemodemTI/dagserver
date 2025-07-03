@@ -20,6 +20,7 @@
                                         <input type="text" id="param-{{item.key}}-value" class="selectorfileinput" disabled value="{{item.value}}" />
                                         <input type="text" id="file-selector-{{item.key}}" class="noDisplay file-selector-hiden"/>
                                         <button (click)="configure(item)" type="button" class="btn btn-default btn-circle"><i class="fa fa-edit"></i></button>
+                                        <button (click)="custom(item)" type="button" class="btn btn-default btn-circle"><i class="fa fa-cog"></i></button>
                                     </td>
                                     <ng-container *ngIf="item.value; else nosel">
                                         <td class="alert alert-success">

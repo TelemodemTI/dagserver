@@ -51,7 +51,15 @@ export class FileTypeParamComponent implements OnChanges {
       });
     },10)
   }
-
+  custom(item:any) {
+    item.value = prompt("Custom value of parameter:",item.value);
+    $(".file-selector-hiden").on("change", function (this: HTMLInputElement) {
+      const value = $(this).val(); // o lo que necesites hacer
+      //var id = $(this).attr("id").replace("file-selector-","");
+      item.value = value
+      //$("#param-"+id+"-value").val(value);
+    });
+  }
   traverse(node:any) {
         let jstreeNode:any = {
             text: node.name,

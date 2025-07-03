@@ -24,7 +24,19 @@ public abstract class OperatorStage implements Callable<DataFrame> {
 	public abstract DataFrame call() throws DomainException;
     public abstract JSONObject getMetadataOperator();
     
-		
+	
+	public String getInputProperty(String key) {
+		String value = this.args.getProperty(key);
+		if(value.startsWith("${") && value.endsWith("}")) {
+			String xcomheader = value.replace("${", "").replace("}", "");
+			if(this.xcom.containsKey(xcomheader)) {
+				DataFrame df = (DataFrame) this.xcom.get(xcomheader);
+				value = df.getColumn("output").get(0).toString();
+			}
+		}
+		return value;
+	}
+
 	public String getIconImage() {
 		return "internal.png";
 	}
