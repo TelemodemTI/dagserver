@@ -253,6 +253,36 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 10)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
+
+        String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
+        String step = "step1";
+        String group = "group.test";
+        String jarname = "canBeExecutedInGroovyTest.jar";
+        String cmd1 = "def args = new Properties();def optionals = new Properties();" +
+                  "args.setProperty(\"timeout\",\"10000\" );"+
+                  "args.setProperty(\"contentType\",\"text/html\" );"+
+                  "args.setProperty(\"method\",\"GET\" );"+
+                  "args.setProperty(\"url\",\""+urlr+"\" );"+
+                  "return operator.setArgs(args).setOptionals(optionals).setOperator(\"HttpOperator\").execute()";
+        LoginPage loginPage = new LoginPage(this.driver);
+        if(loginPage.login("dagserver", "dagserver")){
+        	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
+        	JobsPage jobsPage = authenticatedPage.goToJobs();
+        	this.createGroovyJob(jobsPage, dagname, step, group, jarname, cmd1);
+        	jobsPage = authenticatedPage.goToJobs();
+        	var status = executeDesign(step, jarname, dagname,jobsPage);
+        	if(!status.isEmpty()) {
+                Integer rc = status.getJSONObject(0).getInt("responseCode");
+        		if(rc.equals(200)) {
+        			authenticatedPage.goToJobs();
+                    authenticatedPage.logout();
+        			Assertions.assertTrue(true);
+        		} else {
+        			Assertions.fail("Problema al ejecutar el operador?");
+        		}
+        	}
+        }
+
     }
     @Test(priority = 11)
     public void urlCanBeOutputStepTest() throws InterruptedException {

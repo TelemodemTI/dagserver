@@ -31,36 +31,16 @@ public class HttpOperator extends OperatorStage {
 		log.debug("args");
 		log.debug(this.args);
 		try {
-			
-			String urlStr = this.args.getProperty("url");
-			if(urlStr.startsWith("${") && urlStr.endsWith("}")) {
-				String xcomheader = urlStr.replace("${", "").replace("}", "");
-				if(this.xcom.containsKey(xcomheader)) {
-					DataFrame df = (DataFrame) this.xcom.get(xcomheader);
-					urlStr = df.getColumn("output").get(0).toString();
-				}
-			}
-			
+			String urlStr = this.getInputProperty("url");
 			URL url = new URL(urlStr);
 			disableSSLVerification();
 
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod(this.args.getProperty("method"));
-			
 			if(this.optionals.get(AUTHORIZATION_HEADER) != null) {
-				String value = this.optionals.getProperty(AUTHORIZATION_HEADER);
-				if(value.startsWith("${") && value.endsWith("}")) {
-					String xcomheader = value.replace("${", "").replace("}", "");
-					if(this.xcom.containsKey(xcomheader)) {
-						DataFrame df = (DataFrame) this.xcom.get(xcomheader);
-						String header = df.getColumn("output").get(0).toString();
-						log.debug("AUTHORIZATION_HEADER "+header.substring(0, 5) + "..." );
-						con.setRequestProperty("Authorization", header);	
-					}
-				} else {
-					log.debug("AUTHORIZATION_HEADER "+value );
-					con.setRequestProperty("Authorization", value);	
-				}	
+				String value = this.getOptionalProperty(AUTHORIZATION_HEADER);
+				log.debug("AUTHORIZATION_HEADER "+value );
+				con.setRequestProperty("Authorization", value);
 			}
 			con.setRequestProperty("Content-Type", this.args.getProperty("contentType"));
 			Integer timeout = Integer.parseInt(this.args.getProperty("timeout"));
