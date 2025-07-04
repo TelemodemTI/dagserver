@@ -52,7 +52,7 @@ public class FTPOperator extends OperatorStage {
 		}
 		try {
 			var ftp = new FTPClient();
-			ftp.connect(this.args.getProperty("host"),Integer.parseInt(this.args.getProperty("port")));
+			ftp.connect(this.getInputProperty("host"),Integer.parseInt(this.getInputProperty("port")));
 			int reply = ftp.getReplyCode();
 			if (!FTPReply.isPositiveCompletion(reply)) {
 				ftp.disconnect();
@@ -65,7 +65,7 @@ public class FTPOperator extends OperatorStage {
 			ftp.enterLocalPassiveMode();
 			log.debug(this.getClass()+" end "+this.name);
 
-			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
+			List<String> comds = Arrays.asList(this.getInputProperty("commands").split(";"));
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
 				String[] cmd = iterator.next().split(" ");
 				switch (cmd[0]) {

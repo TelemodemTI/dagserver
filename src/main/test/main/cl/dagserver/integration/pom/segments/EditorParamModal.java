@@ -89,4 +89,29 @@ public class EditorParamModal {
         select.selectByValue(string);
 		Thread.sleep(1000);
     }
+
+    public void sendRemote(String action, String remoter1 , String local1) throws InterruptedException {
+		WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-action-selector\"]")));
+        Select select = new Select(driver.findElement(By.xpath("//*[@id=\"remoter-action-selector\"]")));
+        select.selectByValue(action);
+        
+        WebDriverWait wait3 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait3.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-file-1\"]")));
+        driver.findElement(By.xpath("//*[@id=\"remoter-file-1\"]")).clear();
+		driver.findElement(By.xpath("//*[@id=\"remoter-file-1\"]")).sendKeys(remoter1);	
+		
+		if(local1 != null && !local1.isEmpty()) {
+			WebDriverWait wait5 = new WebDriverWait(driver,Duration.ofSeconds(3));
+	        wait5.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-file-2\"]")));
+	        driver.findElement(By.xpath("//*[@id=\"remoter-file-2\"]")).clear();
+			driver.findElement(By.xpath("//*[@id=\"remoter-file-2\"]")).sendKeys(local1);	
+		}
+		
+		
+		WebDriverWait wait4 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait4.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-file-btn\"]")));
+        driver.findElement(By.xpath("//*[@id=\"remoter-file-btn\"]")).click();
+        Thread.sleep(1000);
+	}
 }

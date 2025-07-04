@@ -56,10 +56,10 @@ public class AuthenticatedPage {
         
     public KeystorePage goToKeystore(){
         driver.findElement(By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/a")).click();
-        var propsLink = By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[3]/a");
+        var propsLink = By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[4]/a");
         WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait.until(ExpectedConditions.visibilityOfElementLocated(propsLink));
-        driver.findElement(By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[3]/a")).click();
+        driver.findElement(By.xpath("//*[@id=\"wrapper\"]/nav/ul/li[1]/ul/li[4]/a")).click();
         return new KeystorePage(driver);
     }
 
