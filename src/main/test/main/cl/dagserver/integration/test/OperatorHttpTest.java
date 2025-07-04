@@ -28,10 +28,12 @@ import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
 public class OperatorHttpTest extends BaseOperatorTest {
 
+	@SuppressWarnings("rawtypes")
 	private GenericContainer webserverContainer;
 	private String urlr = "http://host.docker.internal/";
 	
-    @BeforeMethod
+    @SuppressWarnings({ "resource", "deprecation", "rawtypes" })
+	@BeforeMethod
     public void setUp() throws InterruptedException {
         this.webserverContainer = new FixedHostPortGenericContainer("edmur/webhooks.standalone")
             .withFixedExposedPort(80,80);
@@ -286,8 +288,101 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 11)
     public void urlCanBeOutputStepTest() throws InterruptedException {
+    	String dagname = "TEST_FILE1_DAG";
+        String step1 = "step0";
+        String step2 = "step1";
+        String group = "group.test";
+        String jarname = "filetest1.jar";
+        String methodr = "GET";
+    	String contentr = "text/html";
+    	String timeoutr = "10000";
+        String cmd1 = "return \""+urlr+"\";";
+        LoginPage loginPage = new LoginPage(this.driver);
+        if(loginPage.login("dagserver", "dagserver")){
+        	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
+        	JobsPage jobsPage = authenticatedPage.goToJobs();
+        	createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
+        	
+        	jobsPage = authenticatedPage.goToJobs();
+            JobsUncompiledTab uncompileds = jobsPage.goToUncompiledTab();
+            uncompileds.searchUncompiled(jarname);
+            CanvasDagEditor canvas = uncompileds.editDesign(jarname);
+            canvas.selectDag(dagname);
+
+            canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.HttpOperator");
+            EditorParamModal params = canvas.selectStage(step2);
+            params.selectTab("//*[@id=\"home_li\"]/a");
+            params.sendParameter("timeout", timeoutr, "input");
+    		params.sendParameter("contentType", contentr, "input");
+    		params.sendParameter("method", methodr, "list");
+    		params.sendParameter("url", "${"+step1+"}", "input");
+            params.save();
+            canvas.save();
+            canvas.close();
+        	jobsPage = authenticatedPage.goToJobs();
+        	var status = executeDesign(step2, jarname, dagname,jobsPage);
+        	if(!status.isEmpty()) {
+        		Integer rc = status.getJSONObject(0).getInt("responseCode");
+        		if(rc.equals(200)) {
+        			authenticatedPage.goToJobs();
+                    authenticatedPage.logout();
+        			Assertions.assertTrue(true);
+        		} else {
+        			Assertions.fail("Problema al ejecutar el operador?");
+        		}
+        	} else {
+        		Assertions.fail("Problema al ejecutar el operador?");
+        	}
+        }
     }
     @Test(priority = 12)
     public void authorizationHeaderCanBeOutputStepTest() throws InterruptedException {
+    	String dagname = "TEST_FILE1_DAG";
+        String step1 = "step0";
+        String step2 = "step1";
+        String group = "group.test";
+        String jarname = "filetest1.jar";
+        String methodr = "GET";
+    	String contentr = "text/html";
+    	String timeoutr = "10000";
+        String cmd1 = "return \"Bearer 123ABC\";";
+        LoginPage loginPage = new LoginPage(this.driver);
+        if(loginPage.login("dagserver", "dagserver")){
+        	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
+        	JobsPage jobsPage = authenticatedPage.goToJobs();
+        	createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
+        	
+        	jobsPage = authenticatedPage.goToJobs();
+            JobsUncompiledTab uncompileds = jobsPage.goToUncompiledTab();
+            uncompileds.searchUncompiled(jarname);
+            CanvasDagEditor canvas = uncompileds.editDesign(jarname);
+            canvas.selectDag(dagname);
+
+            canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.HttpOperator");
+            EditorParamModal params = canvas.selectStage(step2);
+            params.selectTab("//*[@id=\"home_li\"]/a");
+            params.sendParameter("timeout", timeoutr, "input");
+    		params.sendParameter("contentType", contentr, "input");
+    		params.sendParameter("method", methodr, "list");
+    		params.sendParameter("url", urlr, "input");
+    		params.sendParameter("authorizationHeader", "${"+step1+"}", "input");
+            params.save();
+            canvas.save();
+            canvas.close();
+        	jobsPage = authenticatedPage.goToJobs();
+        	var status = executeDesign(step2, jarname, dagname,jobsPage);
+        	if(!status.isEmpty()) {
+        		Integer rc = status.getJSONObject(0).getInt("responseCode");
+        		if(rc.equals(200)) {
+        			authenticatedPage.goToJobs();
+                    authenticatedPage.logout();
+        			Assertions.assertTrue(true);
+        		} else {
+        			Assertions.fail("Problema al ejecutar el operador?");
+        		}
+        	} else {
+        		Assertions.fail("Problema al ejecutar el operador?");
+        	}
+        }
     }
 }
