@@ -23,10 +23,10 @@ public class CmdOperator extends OperatorStage {
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("win")) {
 				// Windows
-				builder = new ProcessBuilder("cmd", "/c", this.args.getProperty("cmd"));
+				builder = new ProcessBuilder("cmd", "/c",  this.getInputProperty("cmd"));
 			} else {
 				// Unix/Linux/Mac
-				builder = new ProcessBuilder("sh", "-c", this.args.getProperty("cmd"));
+				builder = new ProcessBuilder("sh", "-c", this.getInputProperty("cmd"));
 			}
 		    builder.redirectErrorStream(true);
 		    Process p = builder.start();
