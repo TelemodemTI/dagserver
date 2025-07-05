@@ -40,14 +40,14 @@ public class EditorParamModal {
 		}
     }
 
-    public void selectFile(String file) throws InterruptedException {
+    public void selectFile(String key,String file) throws InterruptedException {
         Thread.sleep(3000);
         driver.findElement(By.xpath("//*[@id=\"filer\"]/div/table/tbody/tr/td[2]/button")).click();
         Thread.sleep(3000);
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-        String str = "jQuery(\"#file-selector-filepath\").val(\""+file+"\");";
+        String str = "jQuery(\"#file-selector-"+key+"\").val(\""+file+"\");";
         jsExecutor.executeScript(str);
-        String str2 = "jQuery(\"#file-selector-filepath\").trigger(\"change\");";
+        String str2 = "jQuery(\"#file-selector-"+key+"\").trigger(\"change\");";
         jsExecutor.executeScript(str2);
         Thread.sleep(3000);
         String text = driver.findElement(By.xpath("//*[@id=\"filer\"]/div[1]/table/tbody/tr/td[3]/b")).getText();

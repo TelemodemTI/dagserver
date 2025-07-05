@@ -31,6 +31,7 @@
 			**/infra/adapters/confs/**,
 			**/infra/adapters/input/channels/calcite/jdbc/**,
 			**/application/pojos/**,
+			**/integration/**,
 			**DagserverApplication.java
 		</sonar.exclusions>
 	</properties>

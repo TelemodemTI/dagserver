@@ -38,7 +38,7 @@ public class JobsDesignCopyValuesTest extends BaseIntegrationTest{
             editor.sendParameter("mode", "read", "list");
             editor.sendParameter("rowDelimiter", delimoriginal,"input");
             editor.selectTab("//*[@id=\"file_li\"]/a");
-            editor.selectFile("//test.txt");
+            editor.selectFile("filepath","//test.txt");
             editor.save();
             canvas.saveJar();
             authenticatedPage.goToJobs();

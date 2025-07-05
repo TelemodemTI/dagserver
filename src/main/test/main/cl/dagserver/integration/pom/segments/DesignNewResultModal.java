@@ -17,7 +17,8 @@ public class DesignNewResultModal {
         wait3.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"result-step-modal\"]/div[2]/div/div[2]/div[1]")));	
     }
 
-    public void close(){
+    public void close() throws InterruptedException{
+    	Thread.sleep(3000);
     	WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
     	wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"result-step-modal\"]/div[2]/div/div[2]/div[3]/button")));
     	
