@@ -19,7 +19,15 @@ public class CmdOperator extends OperatorStage {
 	@Override
 	public DataFrame call() throws DomainException {		
 		try {
-			ProcessBuilder builder = new ProcessBuilder("cmd", "/c",this.args.getProperty("cmd"));
+			ProcessBuilder builder;
+			String os = System.getProperty("os.name").toLowerCase();
+			if (os.contains("win")) {
+				// Windows
+				builder = new ProcessBuilder("cmd", "/c", this.args.getProperty("cmd"));
+			} else {
+				// Unix/Linux/Mac
+				builder = new ProcessBuilder("sh", "-c", this.args.getProperty("cmd"));
+			}
 		    builder.redirectErrorStream(true);
 		    Process p = builder.start();
 		    BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
