@@ -309,12 +309,7 @@
 		    <version>1.37.0</version>
 		</dependency>
 
-		<dependency>
-		    <groupId>org.apache.activemq</groupId>
-		    <artifactId>activemq-broker</artifactId>
-      	</dependency>
-      
-      <dependency>
+        <dependency>
 		    <groupId>io.minio</groupId>
 		    <artifactId>minio</artifactId>
 		    <version>8.5.17</version>
