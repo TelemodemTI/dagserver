@@ -35,14 +35,14 @@ public class JavaOperator extends OperatorStage {
 			if(appCtx != null) {
 				var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
 				List<String> fJar = new ArrayList<>();
-				String fpath = this.args.getProperty("classpath");
+				String fpath = this.getInputProperty("classpath");
 				this.searchJarFiles(new File(fpath),fJar );
 				List<URI> list = new ArrayList<>();
 				for (Iterator<String> iterator = fJar.iterator(); iterator.hasNext();) {
 					String jarpath = iterator.next();
 					list.add(new File(jarpath).toURI());
 				}
-				Class<?> loadedClass = handler.loadFromOperatorJar(this.args.getProperty("className"),list);
+				Class<?> loadedClass = handler.loadFromOperatorJar(this.getInputProperty("className"),list);
 				Object result = this.runCallableFromJar(loadedClass);
 				log.debug(this.args);
 				log.debug(this.getClass()+" end "+this.name);
