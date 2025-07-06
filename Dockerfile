@@ -9,6 +9,8 @@ FROM eclipse-temurin:17-jdk-alpine
 COPY --from=maven_builder /app/dagserver/target/dagserver-0.8.0-SNAPSHOT.jar /
 COPY --from=maven_builder /app/dagserver/selenium /
 RUN mkdir /root/dags/
+RUN mkdir /root/dags/drivers
+RUN cp /mysql-connector-j-9.0.0.jar /root/dags/drivers/mysql-connector-j-9.0.0.jar
 EXPOSE 8081
 
 ENV env_name APP_JDBC_URL

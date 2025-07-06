@@ -58,33 +58,33 @@ public class JdbcOperator extends OperatorStage {
 		if(appCtx != null) {
 			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
 			try {
-				Path driversPath = handler.getJDBCDriversPath(this.args.getProperty("driverPath"));
+				Path driversPath = handler.getJDBCDriversPath(this.getInputProperty("driverPath"));
 				this.credentials = handler.getCredentials(this.args.getProperty("credentials"));
 				this.searchJarFiles(driversPath,archivosJar);	
 			} catch (Exception e) {
 				
 			}
 			List<URI> list = this.getListURI(archivosJar);
-			DbUtils.loadDriver(handler.getClassLoader(list), this.args.getProperty("driver"));
+			DbUtils.loadDriver(handler.getClassLoader(list), this.getInputProperty("driver"));
 		}
 		if(this.credentials == null) {
 			throw new DomainException(new Exception("invalid credentials entry in keystore"));
 		}
 		String xcomname = this.optionals.getProperty("xcom");
-		try(Connection con = DriverManager.getConnection(this.args.getProperty("url"), this.credentials.getUsername(), this.credentials.getPassword());) {
+		try(Connection con = DriverManager.getConnection(this.getInputProperty("url"), this.credentials.getUsername(), this.credentials.getPassword());) {
 			if(xcomname != null && !xcomname.isEmpty()) {
 				if(!this.xcom.containsKey(xcomname)) {
 					throw new DomainException(new Exception("xcom not exist for dagname::"+xcomname));
 				}
 				DataFrame data = this.xcom.get(xcomname);	
-				if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
-					String sql = this.args.getProperty(QUERY);
+				if(this.getInputProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
+					String sql = this.getInputProperty(QUERY);
 					RowProxy firstRow = data.iterator().next();
 					var kv = this.namedParameter(sql, firstRow);
 					var returnv = queryRunner.query(con, kv.getKey(), new MapListHandler(),kv.getValue());
 					return DataFrameUtils.buildDataFrameFromMap(returnv);
 				} else {
-					String sql = this.args.getProperty(QUERY);
+					String sql = this.getInputProperty(QUERY);
 					for (Iterator<RowProxy> iterator = data.iterator(); iterator.hasNext();) {
 						RowProxy map =  iterator.next();
 					    var kv = this.namedParameter(sql, map);
@@ -93,11 +93,11 @@ public class JdbcOperator extends OperatorStage {
 					return DataFrameUtils.createStatusFrame("ok");
 				} 
 			} else {
-					if(this.args.getProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
-						var returningv = queryRunner.query(con, this.args.getProperty(QUERY), new MapListHandler());
+					if(this.getInputProperty(QUERY).split(" ")[0].equalsIgnoreCase("select")) {
+						var returningv = queryRunner.query(con, this.getInputProperty(QUERY), new MapListHandler());
 						return DataFrameUtils.buildDataFrameFromMap(returningv);
 					} else {
-						queryRunner.update(con, this.args.getProperty(QUERY));
+						queryRunner.update(con, this.getInputProperty(QUERY));
 						return DataFrameUtils.createStatusFrame("ok");
 					}
 			}	
