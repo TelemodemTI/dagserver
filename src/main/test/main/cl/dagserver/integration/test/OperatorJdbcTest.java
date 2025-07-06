@@ -354,7 +354,6 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     		params.sendParameter("url", "${step0}", "input");
             params.sendParameter("credentials", "keystore1", "list");
     		params.sendParameter("driver", jdbcdriver, "input");
-    		params.sendParameter("xcom", step1,"list");
     		params.selectTab("//*[@id=\"file_li\"]/a");
             params.selectFile("driverPath","//root//dags//drivers//mysql-connector-j-9.0.0.jar");
     		params.selectTab("//*[@id=\"profile_li\"]/a");
@@ -406,7 +405,6 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     		params.sendParameter("url", jdbcurl, "input");
             params.sendParameter("credentials", "keystore1", "list");
     		params.sendParameter("driver", "${step0}", "input");
-    		params.sendParameter("xcom", step1,"list");
     		params.selectTab("//*[@id=\"file_li\"]/a");
             params.selectFile("driverPath","//root//dags//drivers//mysql-connector-j-9.0.0.jar");
     		params.selectTab("//*[@id=\"profile_li\"]/a");
@@ -457,7 +455,6 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     		params.sendParameter("url", jdbcurl, "input");
             params.sendParameter("credentials", "keystore1", "list");
     		params.sendParameter("driver", jdbcdriver, "input");
-    		params.sendParameter("xcom", step1,"list");
     		params.selectTab("//*[@id=\"file_li\"]/a");
             params.selectFile("driverPath","${step0}");
     		params.selectTab("//*[@id=\"profile_li\"]/a");
@@ -479,6 +476,53 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     }
     @Test(priority = 10)
     public void queryCanBeOutputStepTest() throws InterruptedException {
+    	String dagname = "TEST_FILE1_DAG";
+    	String step1 = "step0";
+    	String step2 = "step1";
+        String group = "group.test";
+        String jarname = "filetest1.jar";
+        String jdbcdriver = "com.mysql.cj.jdbc.Driver";
+        String sql = "SELECT * FROM testcontainer.tests";
+        var jdbcurl = this.mySQLContainer.getJdbcUrl().replace("localhost", "host.docker.internal");
+        String cmd1 = "return \""+sql+"\"";
+        LoginPage loginPage = new LoginPage(this.driver);
+        if(loginPage.login("dagserver", "dagserver")){
+        	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
+        	createKeystore(authenticatedPage, "keystore1", "test", "test");
+        	JobsPage jobsPage = authenticatedPage.goToJobs();
+        	createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
+            
+
+            jobsPage = authenticatedPage.goToJobs();
+            JobsUncompiledTab uncompileds = jobsPage.goToUncompiledTab();
+            uncompileds.searchUncompiled(jarname);
+            CanvasDagEditor canvas = uncompileds.editDesign(jarname);
+            canvas.selectDag(dagname);
+            canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.JdbcOperator");
+            EditorParamModal params = canvas.selectStage(step2);
+            params.selectTab("//*[@id=\"home_li\"]/a");
+            
+    		params.sendParameter("url", jdbcurl, "input");
+            params.sendParameter("credentials", "keystore1", "list");
+    		params.sendParameter("driver", jdbcdriver, "input");
+    		params.selectTab("//*[@id=\"file_li\"]/a");
+            params.selectFile("driverPath","//root//dags//drivers//mysql-connector-j-9.0.0.jar");
+    		params.selectTab("//*[@id=\"profile_li\"]/a");
+    		params.sendScript("${step0}");
+
+            params.save();
+            canvas.save();
+            canvas.close();
+            jobsPage = authenticatedPage.goToJobs();
+        	var status = executeDesign(step2, jarname, dagname,jobsPage);
+        	if(!status.isEmpty()) {
+        		authenticatedPage.goToJobs();
+                authenticatedPage.logout();
+        		Assertions.assertTrue(true);
+        	} else {
+        		Assertions.fail("Problema al ejecutar el operador?");
+        	}
+        }
     }
    
 }
