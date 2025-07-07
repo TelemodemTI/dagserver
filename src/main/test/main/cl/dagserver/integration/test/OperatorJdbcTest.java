@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Assertions;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.MySQLContainer;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -41,6 +42,10 @@ public class OperatorJdbcTest extends BaseOperatorTest {
 		}
     }
 
+    @AfterMethod
+    public void tearDown() {
+        this.mySQLContainer.stop();
+    }
 
     @Test(priority = 1)
     public void executeSelectJdbc() throws InterruptedException {
