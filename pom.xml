@@ -214,10 +214,6 @@
 		    <version>0.2.0</version>
 		</dependency>
 		<dependency>
-		  <groupId>com.rabbitmq</groupId>
-		  <artifactId>amqp-client</artifactId>
-		</dependency>
-		<dependency>
 		    <groupId>com.github.plexpt</groupId>
 		    <artifactId>chatgpt</artifactId>
 		    <version>4.0.1</version>
