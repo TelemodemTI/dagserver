@@ -57,7 +57,7 @@ public class BaseIntegrationTest {
           e.printStackTrace();
       }
       driver.get(appUrl);
-	  log.error("Docker images Ready");
+	  log.info("Docker images Ready");
   }
 
   @AfterClass

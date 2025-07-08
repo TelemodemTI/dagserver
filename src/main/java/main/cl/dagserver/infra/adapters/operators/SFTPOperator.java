@@ -57,7 +57,7 @@ public class SFTPOperator extends OperatorStage  {
 			if(credentials == null) {
 				throw new DomainException(new Exception("invalid credentials entry in keystore"));
 			}
-			Session session = ssh.getSession(credentials.getUsername(), this.args.getProperty("host"),Integer.parseInt(this.args.getProperty("port")));
+			Session session = ssh.getSession(credentials.getUsername(), this.getInputProperty("host"),Integer.parseInt(this.getInputProperty("port")));
 			session.setPassword(credentials.getPassword());
 			Properties config = new Properties(); 
 			config.put("StrictHostKeyChecking", "no");
@@ -68,7 +68,7 @@ public class SFTPOperator extends OperatorStage  {
 			ChannelSftp sftp = (ChannelSftp) channel;
 			
 			List<Map<String,Object>> results = new ArrayList<>();
-			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
+			List<String> comds = Arrays.asList(this.getInputProperty("commands").split(";"));
 			Map<String,Object> status1 = new HashMap<String,Object>();
 			status1.put("status", "ok");
 			

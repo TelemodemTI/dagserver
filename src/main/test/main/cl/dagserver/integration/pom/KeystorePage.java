@@ -67,6 +67,8 @@ public class KeystorePage {
     }
 
 	public NewKeystoreEntryModal openNewKeystoreEntryModal(){
+        WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/button[1]")));
 		driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/button[1]")).click();
 		return new NewKeystoreEntryModal(driver);
 	}

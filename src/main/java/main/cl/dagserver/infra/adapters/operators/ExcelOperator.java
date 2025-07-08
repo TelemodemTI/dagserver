@@ -19,7 +19,7 @@ import main.cl.dagserver.domain.core.MetadataManager;
 import main.cl.dagserver.domain.core.OperatorStage;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
-@Operator(args={"filePath", "mode", "sheetName","startRow", "startColumn"}, optionalv={"xcom","endRow", "endColumn"})
+@Operator(args={"filePath", "mode", "sheetName","startRow", "startColumn","includeTitles"}, optionalv={"xcom","endRow", "endColumn"})
 public class ExcelOperator extends OperatorStage {
 
 	@Override
@@ -32,7 +32,7 @@ public class ExcelOperator extends OperatorStage {
             log.debug(this.optionals);
             log.debug(this.getClass() + " end " + this.name);
 
-            String filePath = this.args.getProperty("filePath");
+            String filePath = this.getInputProperty("filePath");
             String mode = this.args.getProperty("mode");
 
             if ("read".equalsIgnoreCase(mode)) {
@@ -51,7 +51,7 @@ public class ExcelOperator extends OperatorStage {
         try (FileInputStream fis = new FileInputStream(filePath);
              Workbook workbook = getWorkbook(filePath, fis)) {
 
-            String sheetName = this.args.getProperty("sheetName");
+        	String sheetName = this.getInputProperty("sheetName");
             Sheet sheet = workbook.getSheet(sheetName);
 
             if (sheet != null) {
@@ -108,8 +108,7 @@ public class ExcelOperator extends OperatorStage {
     private DataFrame writeExcel(String filePath) throws DomainException {
         try {
             Workbook workbook = getWorkbook(filePath, null);
-            Sheet sheet = workbook.createSheet(this.args.getProperty("sheetName"));
-
+            Sheet sheet = workbook.createSheet(this.getInputProperty("sheetName"));
             DataFrame data = (DataFrame) this.xcom.get(this.optionals.getProperty("xcom"));
             //List<Dagmap> data = (List<Dagmap>) this.xcom.get(this.optionals.getProperty("xcom"));
             int startRow = Integer.parseInt(this.args.getProperty("startRow", "0"));

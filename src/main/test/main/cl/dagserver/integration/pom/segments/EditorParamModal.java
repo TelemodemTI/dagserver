@@ -40,14 +40,14 @@ public class EditorParamModal {
 		}
     }
 
-    public void selectFile(String file) throws InterruptedException {
+    public void selectFile(String key,String file) throws InterruptedException {
         Thread.sleep(3000);
         driver.findElement(By.xpath("//*[@id=\"filer\"]/div/table/tbody/tr/td[2]/button")).click();
         Thread.sleep(3000);
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-        String str = "jQuery(\"#file-selector-filepath\").val(\""+file+"\");";
+        String str = "jQuery(\"#file-selector-"+key+"\").val(\""+file+"\");";
         jsExecutor.executeScript(str);
-        String str2 = "jQuery(\"#file-selector-filepath\").trigger(\"change\");";
+        String str2 = "jQuery(\"#file-selector-"+key+"\").trigger(\"change\");";
         jsExecutor.executeScript(str2);
         Thread.sleep(3000);
         String text = driver.findElement(By.xpath("//*[@id=\"filer\"]/div[1]/table/tbody/tr/td[3]/b")).getText();
@@ -56,6 +56,8 @@ public class EditorParamModal {
         }
     }
     public void save(){
+    	WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"param-modalexistingj\"]/div[2]/div/div[3]/button[3]")));
         driver.findElement(By.xpath("//*[@id=\"param-modalexistingj\"]/div[2]/div/div[3]/button[3]")).click();
         WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
         wait2.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"param-modalexistingj\"]")));
@@ -89,4 +91,29 @@ public class EditorParamModal {
         select.selectByValue(string);
 		Thread.sleep(1000);
     }
+
+    public void sendRemote(String action, String remoter1 , String local1) throws InterruptedException {
+		WebDriverWait wait2 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-action-selector\"]")));
+        Select select = new Select(driver.findElement(By.xpath("//*[@id=\"remoter-action-selector\"]")));
+        select.selectByValue(action);
+        
+        WebDriverWait wait3 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait3.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-file-1\"]")));
+        driver.findElement(By.xpath("//*[@id=\"remoter-file-1\"]")).clear();
+		driver.findElement(By.xpath("//*[@id=\"remoter-file-1\"]")).sendKeys(remoter1);	
+		
+		if(local1 != null && !local1.isEmpty()) {
+			WebDriverWait wait5 = new WebDriverWait(driver,Duration.ofSeconds(3));
+	        wait5.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-file-2\"]")));
+	        driver.findElement(By.xpath("//*[@id=\"remoter-file-2\"]")).clear();
+			driver.findElement(By.xpath("//*[@id=\"remoter-file-2\"]")).sendKeys(local1);	
+		}
+		
+		
+		WebDriverWait wait4 = new WebDriverWait(driver,Duration.ofSeconds(3));
+        wait4.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"remoter-file-btn\"]")));
+        driver.findElement(By.xpath("//*[@id=\"remoter-file-btn\"]")).click();
+        Thread.sleep(1000);
+	}
 }

@@ -1,7 +1,10 @@
 package main.cl.dagserver.integration.test.core;
 
 import org.json.JSONArray;
+
+import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
+import main.cl.dagserver.integration.pom.KeystorePage;
 import main.cl.dagserver.integration.pom.segments.CanvasDagEditor;
 import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 
@@ -37,5 +40,12 @@ public class BaseOperatorTest extends BaseIntegrationTest {
 		JSONArray status = new JSONArray(resultstr);
 		return status;
 	}
-
+    protected void createKeystore(AuthenticatedPage authenticatedPage,String alias, String username, String pwd) throws InterruptedException {
+    	Thread.sleep(3000);
+    	KeystorePage keystorePage = authenticatedPage.goToKeystore();
+        var modal = keystorePage.openNewKeystoreEntryModal();
+        modal.create(alias, username, pwd);
+        keystorePage.search(alias);
+        authenticatedPage.goToJobs();
+    }
 }

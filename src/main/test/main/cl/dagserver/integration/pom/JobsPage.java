@@ -20,6 +20,8 @@ public class JobsPage {
     }
     
     public CanvasDagEditor createNewJobCanvas(){
+    	WebDriverWait wait3 = new WebDriverWait(driver,Duration.ofSeconds(10));
+        wait3.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/a")));
         driver.findElement(By.xpath("//*[@id=\"page-wrapper\"]/div/div[2]/div/div/div[2]/a")).click();
         return new CanvasDagEditor(driver);
     }

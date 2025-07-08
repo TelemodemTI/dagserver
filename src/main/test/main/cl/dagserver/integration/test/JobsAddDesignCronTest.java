@@ -62,7 +62,7 @@ public class JobsAddDesignCronTest extends BaseIntegrationTest{
             params.sendParameter("mode", "read", "list");
             params.sendParameter("rowDelimiter", delimoriginal,"input");
             params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("//test.txt");
+            params.selectFile("filepath","//test.txt");
             params.save();
             canvas.save();
             canvas.close();
