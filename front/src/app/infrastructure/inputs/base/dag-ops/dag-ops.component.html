@@ -52,13 +52,6 @@
                                                                 </ng-container>
                                                             </ng-container>
                                                         </optgroup>
-                                                        <optgroup label="MQ operators">
-                                                            <ng-container *ngFor="let item of parameters" >
-                                                                <ng-container *ngIf="item.type == 'MQ'">
-                                                                    <option  value="{{item.class}}">{{item.name}}</option>
-                                                                </ng-container>
-                                                            </ng-container>
-                                                        </optgroup>
                                                         <optgroup label="Integration operators">
                                                             <ng-container *ngFor="let item of parameters" >
                                                                 <ng-container *ngIf="item.type == 'EXTERNAL'">
