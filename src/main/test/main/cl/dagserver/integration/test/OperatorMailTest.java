@@ -14,15 +14,16 @@ import main.cl.dagserver.integration.pom.segments.CanvasDagEditor;
 import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
-
+@SuppressWarnings("rawtypes")
 public class OperatorMailTest extends BaseOperatorTest{
+	
 	private GenericContainer mailsContainer;
 	private String host = "host.docker.internal";
 	private Integer webPort = 8025;
 	private Integer port = 587;
 	private String fromMail = "test@test.com";
 	private String toMail = "target@test.com";
-	@SuppressWarnings("resource")
+	@SuppressWarnings({ "resource", "deprecation" })
 	@BeforeMethod
     public void setUp() throws InterruptedException {
 		this.mailsContainer = new FixedHostPortGenericContainer("42bv/mailhog")
