@@ -275,6 +275,11 @@
 		    <artifactId>minio</artifactId>
 		    <version>8.5.17</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-compress</artifactId>
+		    <version>1.27.1</version> <!-- o la versión más reciente -->
+		</dependency>
       
       
 		<!-- TESTING -->
