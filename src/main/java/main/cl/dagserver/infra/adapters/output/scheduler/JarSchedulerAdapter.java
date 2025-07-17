@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +29,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
 import com.nhl.dflib.DataFrame;
-
 import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
@@ -71,14 +71,11 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    Path folderPath = fileSystem.getFolderPath();
 	    List<Path> jarFiles = new ArrayList<>();
 	    try (Stream<Path> paths = Files.walk(folderPath)) {
-	        jarFiles = paths
-	        .filter(path -> path.toString().endsWith(".jar"))
-            .filter(path -> {
-                return filtrarEsDag(path);
-            })
-	        .collect(Collectors.toList());
+	        jarFiles = paths.filter(path -> {
+                return path.toString().endsWith(".jar") && filtrarEsDag(path);
+            }).collect(Collectors.toList());
+	        
 	        for (Path jarFile : jarFiles) {
-		        
 		    	jars.add(jarFile);
 		        classMap.put(jarFile.getFileName().toString(), this.analizeJar(jarFile));
 		        quartz.validate(jarFile.getFileName().toString().replace(".jar", ""), this.analizeJarProperties(jarFile));
@@ -91,45 +88,46 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	    }
 	}
 
-
+				
 	private boolean filtrarEsDag(Path jarFile) {
 		try (
-			InputStream inputStream = Files.newInputStream(jarFile);
-			ZipInputStream zip = new ZipInputStream(inputStream);) {
-			ZipEntry ze;
-			while ((ze = zip.getNextEntry()) != null) {
-				 if (!ze.isDirectory() && ze.getName().endsWith(".source")) {
-					InputStream zip1 = fileSystem.loadResourceFromJar(jarFile, ze.getName());
-					BufferedReader reader = new BufferedReader(new InputStreamReader(zip1, StandardCharsets.UTF_8));
-					String content = reader.readLine();
-					reader.close();
-					return "dagserver-generated-jar".equals(content);	
-				}
+				SeekableByteChannel sbc = Files.newByteChannel(jarFile);
+				ZipFile zfile = ZipFile.builder()
+				    .setSeekableByteChannel(sbc)
+				    .setCharset(StandardCharsets.UTF_8)
+				    .get();
+			) {
+			ZipEntry entry = zfile.getEntry(".source");
+			if(entry != null) {
+				InputStream zip = fileSystem.loadResourceFromJar(jarFile, entry.getName());
+				BufferedReader reader = new BufferedReader(new InputStreamReader(zip, StandardCharsets.UTF_8));
+			    String content = reader.readLine();
+				reader.close();
+				zip.close();
+				return "dagserver-generated-jar".equals(content);	
+			} else {
+				return false;
 			}
-			return false;
 		} catch (IOException e) {
-			log.error("Error reading .source file from jar:", e);
-			return false;
+		    log.error("Error reading .source file from jar:", e);
+		    return false;
 		}
 	}
-
-					
-	
 	
 	private Map<String,Properties> analizeJarProperties(Path jarFile){
 		Map<String,Properties> props = new HashMap<>();
 		try(
-				InputStream inputStream = Files.newInputStream(jarFile);
-				ZipInputStream zip = new ZipInputStream(inputStream);) {
-				ZipEntry ze;
-				while ((ze = zip.getNextEntry()) != null) {
-					 if (!ze.isDirectory() && ze.getName().endsWith(".properties")) {
-					    	var prop = new Properties();
-					    	prop.load(fileSystem.loadResourceFromJar(jarFile, ze.getName()));
-					    	String[] name = ze.getName().replace(".properties", "").split("/");
-					    	props.put(name[name.length-1], prop);
-					  }	 
-				}
+				SeekableByteChannel sbc = Files.newByteChannel(jarFile);
+				ZipFile zfile = ZipFile.builder()
+				    .setSeekableByteChannel(sbc)
+				    .setCharset(StandardCharsets.UTF_8)
+				    .get();
+				) {
+			    ZipEntry ze = zfile.getEntry(".properties");
+				var prop = new Properties();
+				prop.load(fileSystem.loadResourceFromJar(jarFile, ze.getName()));
+				String[] name = ze.getName().replace(".properties", "").split("/");
+				props.put(name[name.length-1], prop);
 		} catch (Exception e) {
 			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJarProperties"));
 		}
@@ -189,24 +187,28 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 
 
 	private String getOwnerFromZip(Path jarFile) throws IOException{
-		
-		InputStream inputStream = Files.newInputStream(jarFile);
-		ZipInputStream zip = new ZipInputStream(inputStream);
-		ZipEntry ze;
-		while ((ze = zip.getNextEntry()) != null) {
-			if (!ze.isDirectory() && ze.getName().endsWith(".owner")) {
-					InputStream zip1 = fileSystem.loadResourceFromJar(jarFile, ze.getName());
-					BufferedReader reader = new BufferedReader(new InputStreamReader(zip1, StandardCharsets.UTF_8));
-					String owner = reader.readLine(); 
-					zip.close();
-					reader.close();
-					inputStream.close();
-					return owner;
+		try (
+				SeekableByteChannel sbc = Files.newByteChannel(jarFile);
+				ZipFile zfile = ZipFile.builder()
+				    .setSeekableByteChannel(sbc)
+				    .setCharset(StandardCharsets.UTF_8)
+				    .get();
+			) {
+			ZipEntry entry = zfile.getEntry(".owner");
+			if(entry != null) {
+				InputStream zip = fileSystem.loadResourceFromJar(jarFile, entry.getName());
+				BufferedReader reader = new BufferedReader(new InputStreamReader(zip, StandardCharsets.UTF_8));
+			    String owner = reader.readLine();
+				reader.close();
+				zip.close();
+				return owner;	
+			} else {
+				return "";
 			}
+		} catch (IOException e) {
+		    log.error("Error reading .source file from jar:", e);
+		    return "";
 		}
-		zip.close();
-		inputStream.close();
-		return "";
 	}
 	private String getRealCronExpr(String cronExpr) {
 	    if (cronExpr.startsWith("${") && cronExpr.endsWith("}")) {
@@ -261,7 +263,6 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	private Path findJarFile(String jarFilename) {
 		Path jar = null;
 	    for (Path path : jars) { 
-	    	
 	    	String valorFD = path.getFileName().toString().trim();
 	    	Integer posicion = valorFD.indexOf(".");
 			String nombreJar = valorFD.substring(posicion +1);
