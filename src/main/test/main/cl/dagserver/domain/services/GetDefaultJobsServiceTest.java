@@ -2,12 +2,9 @@ package main.cl.dagserver.domain.services;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
-
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.domain.services.GetDefaultJobsService;
 
-
-class GetDefaultJobsServiceTest {
+public class GetDefaultJobsServiceTest {
 	
 	private GetDefaultJobsService service = new GetDefaultJobsService();
 	

@@ -13,10 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import main.cl.dagserver.application.ports.output.JarSchedulerOutputPort;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
-import main.cl.dagserver.domain.core.DagGraphApi;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import static org.junit.jupiter.api.Assertions.*;
-class DagGraphApiTest {
+public class DagGraphApiTest {
 
 	@Mock()
 	private SchedulerRepositoryOutputPort repository;
