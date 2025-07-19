@@ -11,7 +11,7 @@ import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 public class ApiKeyTest extends BaseIntegrationTest{
 
 	@Test(priority = 1)
-	public void testApiKey() {
+	public void testApiKey() throws InterruptedException {
 		String apiKey = "test";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){

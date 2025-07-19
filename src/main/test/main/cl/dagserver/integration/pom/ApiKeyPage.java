@@ -49,7 +49,8 @@ public class ApiKeyPage {
         return datosTabla;
     }
         
-    public Boolean existApikey(String propkey){
+    public Boolean existApikey(String propkey) throws InterruptedException{
+    	Thread.sleep(3000);
         Boolean found = false;
         var data = this.getActualApiKeys();
         for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext();) {
