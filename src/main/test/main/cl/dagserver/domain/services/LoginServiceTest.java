@@ -17,7 +17,6 @@ import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.UserDTO;
-import main.cl.dagserver.domain.services.LoginService;
 
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertTrue;

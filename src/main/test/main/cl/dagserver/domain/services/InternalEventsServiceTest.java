@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import main.cl.dagserver.application.ports.output.StorageOutputPort;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.exceptions.DomainException;
-import main.cl.dagserver.domain.services.InternalEventsService;
 
 class InternalEventsServiceTest {
 

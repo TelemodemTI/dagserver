@@ -17,7 +17,6 @@ import main.cl.dagserver.domain.enums.AccountType;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.UserDTO;
-import main.cl.dagserver.domain.services.SchedulerMutationHandlerService;
 import main.cl.dagserver.infra.adapters.output.scheduler.JarSchedulerAdapter;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyInt;

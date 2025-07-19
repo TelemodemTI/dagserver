@@ -28,7 +28,6 @@ import main.cl.dagserver.domain.model.AuthDTO;
 import main.cl.dagserver.domain.model.EventListenerDTO;
 import main.cl.dagserver.domain.model.LogDTO;
 import main.cl.dagserver.domain.model.PropertyParameterDTO;
-import main.cl.dagserver.domain.services.SchedulerQueryHandlerService;
 import main.cl.dagserver.infra.adapters.output.scheduler.JarSchedulerAdapter;
 
 class SchedulerQueryHandlerServiceTest {
