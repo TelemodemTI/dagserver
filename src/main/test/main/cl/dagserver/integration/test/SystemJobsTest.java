@@ -3,6 +3,7 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JarDetailPage;
 import main.cl.dagserver.integration.pom.JobDependenciesPage;
@@ -12,10 +13,13 @@ import main.cl.dagserver.integration.pom.LoginPage;
 import main.cl.dagserver.integration.pom.segments.JobsCompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+
+@Log4j2
 public class SystemJobsTest extends BaseIntegrationTest {
 
     @Test(priority = 1)
     public void getDetailSystemJobs() throws InterruptedException {
+        log.info("getDetailSystemJobs");
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -37,6 +41,7 @@ public class SystemJobsTest extends BaseIntegrationTest {
 
     @Test(priority = 2)
     public void getLogsSystemJobs() throws InterruptedException {
+        log.info("getLogsSystemJobs");
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -68,6 +73,7 @@ public class SystemJobsTest extends BaseIntegrationTest {
 
     @Test(priority = 3)
     public void getDependenciesSystemJobs() throws InterruptedException {
+        log.info("getDependenciesSystemJobs");
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
             AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);

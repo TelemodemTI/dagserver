@@ -9,6 +9,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import groovy.util.logging.Log;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -16,7 +17,9 @@ import main.cl.dagserver.integration.pom.segments.CanvasDagEditor;
 import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class OperatorJdbcTest extends BaseOperatorTest {
 
     @SuppressWarnings("rawtypes")
@@ -49,6 +52,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
 
     @Test(priority = 1)
     public void executeSelectJdbc() throws InterruptedException {
+        log.info("executeSelectJdbc");
         String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -96,6 +100,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     }
     @Test(priority = 2)
     public void executeSelectWParamsJdbc() throws InterruptedException {
+        log.info("executeSelectWParamsJdbc");
     	String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -147,6 +152,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
 
     @Test(priority = 3)
     public void executeInsertJdbc() throws InterruptedException {
+        log.info("executeInsertJdbc");
     	String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -198,6 +204,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
 
     @Test(priority = 4)
     public void executeUpdateJdbc() throws InterruptedException {
+        log.info("executeUpdateJdbc");
     	String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -249,6 +256,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
 
     @Test(priority = 5)
     public void executeDeleteJdbc() throws InterruptedException {
+        log.info("executeDeleteJdbc");
     	String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -300,6 +308,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
 
     @Test(priority = 6)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
+        log.info("canBeExecutedInGroovyTest");
     	String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -330,6 +339,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     }
     @Test(priority = 7)
     public void urlCanBeOutputStepTest() throws InterruptedException {
+        log.info("urlCanBeOutputStepTest");
         String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -381,6 +391,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     }
     @Test(priority = 8)
     public void driverCanBeOutputStepTest() throws InterruptedException {
+        log.info("driverCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -431,6 +442,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     }
     @Test(priority = 9)
     public void driverPathCanBeOutputStepTest() throws InterruptedException {
+        log.info("driverPathCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -481,6 +493,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     }
     @Test(priority = 10)
     public void queryCanBeOutputStepTest() throws InterruptedException {
+        log.info("queryCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
