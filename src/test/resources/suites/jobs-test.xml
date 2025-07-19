@@ -3,110 +3,26 @@
   <test name="JobsAddDesignCron Test">
     <classes>
       <class name="main.cl.dagserver.integration.test.JobsAddDesignCronTest"/>
-    </classes>
-  </test>
-  <test name="JobsAddDesignListener Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsAddDesignListenerTest"/>
-    </classes>
-  </test>
-  <test name="JobsAddDesignListener Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsAddDesignListenerTest"/>
-    </classes>
-  </test>
-  <test name="JobsAddDesignNone Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsAddDesignNoneTest"/>
-    </classes>
-  </test>
-  <test name="JobsDagCompilation Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsDagCompilationTest"/>
-    </classes>
-  </test>
-  <test name="JobsDagRecompiled Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsDagRecompiledTest"/>
-    </classes>
-  </test>
-  <test name="JobsDesignCopyValues Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsDesignCopyValuesTest"/>
-    </classes>
-  </test>
-  <test name="JobsDesignEditDag Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsDesignEditDagTest"/>
-    </classes>
-  </test>
-  <test name="JobsEventBubbleCron Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsEventBubbleCronTest"/>
-    </classes>
-  </test>
-  <test name="JobsEventBubbleNone Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsEventBubbleNoneTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecOKAnyNo Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecOKAnyNoTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecOKAnySi Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecOKAnySiTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecOkErrorNo Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecOkErrorNoTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecOkErrorSi Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecOkErrorSiTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecOKOKNo Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecOKOKNoTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecOKOKSi Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecOKOKSiTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecutionCron Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecutionCronTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecutionListener Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecutionListenerTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecutionNoneArgs Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecutionNoneArgsTest"/>
-    </classes>
-  </test>
-  <test name="JobsExecutionNoneInvalidArgs Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsExecutionNoneInvalidArgsTest"/>
-    </classes>
-  </test>
-  <test name="JobsMultiDag Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsMultiDagTest"/>
-    </classes>
-  </test>
-  <test name="JobsValidateStepDuplicate Test">
-    <classes>
       <class name="main.cl.dagserver.integration.test.JobsValidateStepDuplicateTest"/>
     </classes>
   </test>

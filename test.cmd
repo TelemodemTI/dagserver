@@ -1,25 +1,53 @@
 @echo off
 
+rem Eliminar la imagen Docker maximolira/dagserver si existe
+docker image rm -f maximolira/dagserver
+
 rem Ejecutar pruebas JUnit 
-call mvn test -P junit-tests > junit-tests.log 2>&1
+call mvn test -P junit-tests > test-output.log 2>&1
+if errorlevel 1 exit /b 1
+
+rem Contruyendo el contenedor Docker
+docker build -t maximolira/dagserver . >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
 
 rem Ejecutar pruebas TestNG principales
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/login-test.xml > testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/apikey-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/credentials-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/keystore-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/properties-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/system.jobs-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/jobs-test.xml >> testng-tests.log 2>&1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/login-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/apikey-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/credentials-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/keystore-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/properties-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/system.jobs-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/jobs-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
 
 rem Ejecutar pruebas TestNG Operadores
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-cmd-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-excel-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-file-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-ftp-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-groovy-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-http-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-java-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-jdbc-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-mail-test.xml >> testng-tests.log 2>&1
-call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-sftp-test.xml >> testng-tests.log 2>&1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-cmd-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-excel-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-file-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-ftp-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-groovy-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-http-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-java-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-jdbc-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-mail-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-sftp-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+
+docker push maximolira/dagserver >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
