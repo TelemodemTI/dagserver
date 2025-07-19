@@ -2,6 +2,8 @@ package main.cl.dagserver.integration.test;
 
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
+
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -13,10 +15,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@Log4j2
 public class OperatorFileTest extends BaseOperatorTest {
 
     @Test(priority = 1)
     public void readFileWTitleWoRDelimiterOperator() throws InterruptedException {
+        log.info("readFileWTitleWoRDelimiterOperator");
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -52,6 +56,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 2)
     public void readFileWoTitleWoRDelimiterOperator() throws InterruptedException {
+        log.info("readFileWoTitleWoRDelimiterOperator");
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -87,6 +92,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 3)
     public void readFileWTitleWRDelimiterOperator()  throws InterruptedException {
+        log.info("readFileWTitleWRDelimiterOperator");
     	String dagname = "TEST_FILE3_DAG";
         String step = "step1";
         String group = "group.test";
@@ -123,6 +129,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 4)
     public void readFileWoTitleWRDelimiterOperator() throws InterruptedException {
+        log.info("readFileWoTitleWRDelimiterOperator");
     	String dagname = "TEST_FILE3_DAG";
         String step = "step1";
         String group = "group.test";
@@ -160,6 +167,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 5)
     public void readFileWoFileOperator() throws InterruptedException {
+        log.info("readFileWoFileOperator");
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -189,6 +197,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 6)
     public void writeFileWTitleWoRDelimiterOperator() throws InterruptedException, IOException {
+        log.info("writeFileWTitleWoRDelimiterOperator");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -246,6 +255,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 7)
     public void writeFileWoTitleWoRDelimiterOperator() throws InterruptedException, IOException {
+        log.info("writeFileWoTitleWoRDelimiterOperator");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -303,6 +313,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 8)
     public void writeFileWTitleWRDelimiterOperator() throws InterruptedException, IOException {
+        log.info("writeFileWTitleWRDelimiterOperator");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -355,6 +366,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 9)
     public void writeFileWoTitleWRDelimiterOperator() throws InterruptedException, IOException {
+        log.info("writeFileWoTitleWRDelimiterOperator");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -408,6 +420,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }
     @Test(priority = 10)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
+        log.info("canBeExecutedInGroovyTest");
     	String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -437,7 +450,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     }    
     @Test(priority = 11)
     public void fileCanBeOutputStepTest() throws InterruptedException {
-    	
+    	log.info("fileCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";

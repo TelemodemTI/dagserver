@@ -3,6 +3,7 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -11,10 +12,12 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
+@Log4j2
 public class OperatorJavaTest extends BaseOperatorTest {
 
     @Test(priority = 1)
     public void executeJava() throws InterruptedException {
+        log.info("executeJava");
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -53,6 +56,7 @@ public class OperatorJavaTest extends BaseOperatorTest {
     
     @Test(priority = 2)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
+        log.info("canBeExecutedInGroovyTest");
     	String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -84,7 +88,7 @@ public class OperatorJavaTest extends BaseOperatorTest {
     }    
     @Test(priority = 3)
     public void classnameCanBeOutputStepTest() throws InterruptedException {
-    	
+        log.info("classnameCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
@@ -132,8 +136,7 @@ public class OperatorJavaTest extends BaseOperatorTest {
     }
     @Test(priority = 4)
     public void classpathCanBeOutputStepTest() throws InterruptedException {
-    	
-    	
+        log.info("classpathCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";

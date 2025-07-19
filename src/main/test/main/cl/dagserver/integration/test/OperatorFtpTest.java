@@ -7,6 +7,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -15,6 +16,7 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
+@Log4j2
 public class OperatorFtpTest extends BaseOperatorTest {
 
     @SuppressWarnings("rawtypes")
@@ -45,6 +47,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
 
     @Test(priority = 1)
     public void ftpOperatorListTest() throws InterruptedException {
+        log.info("ftpOperatorListTest");
         String dagname = "TEST_FTP1_DAG";
         String jarname = "ftptest1.jar";
         String step = "step1";
@@ -77,6 +80,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
 
     @Test(priority = 2)
     public void ftpOperatorDownloadTest() throws InterruptedException {
+        log.info("ftpOperatorDownloadTest");
         String dagname = "TEST_FTP1_DAG";
         String jarname = "ftptest1.jar";
         String step = "step1";
@@ -109,6 +113,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
 
     @Test(priority = 3)
     public void ftpOperatorUploadTest() throws InterruptedException {
+        log.info("ftpOperatorUploadTest");
         String dagname = "TEST_FTP1_DAG";
         String jarname = "ftptest1.jar";
         String step = "step1";
@@ -140,6 +145,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     }
     @Test(priority = 4)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
+        log.info("canBeExecutedInGroovyTest");
     	String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -167,7 +173,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     }
     @Test(priority = 5)
     public void hostCanBeOutputStepTest() throws InterruptedException {
-    	
+    	log.info("hostCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
@@ -219,7 +225,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     }
     @Test(priority = 6)
     public void portCanBeOutputStepTest() throws InterruptedException {
-    	
+    	log.info("portCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
@@ -270,7 +276,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     }
     @Test(priority = 7)
     public void commandsCanBeOutputStepTest() throws InterruptedException {
-    	
+    	log.info("commandsCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";

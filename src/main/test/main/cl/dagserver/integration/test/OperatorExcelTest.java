@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -15,10 +16,12 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
+@Log4j2
 public class OperatorExcelTest extends BaseOperatorTest {
 
     @Test(priority = 1)
     public void readXLSExcelOperator() throws InterruptedException {
+        log.info("readXLSExcelOperator");
         String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -69,6 +72,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
 
     @Test(priority = 2)
     public void readXLSXExcelOperator() throws InterruptedException {
+        log.info("readXLSXExcelOperator");
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -119,7 +123,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
 
     @Test(priority = 3)
     public void writeXLSExcelOperator() throws InterruptedException, IOException {
-    	
+    	log.info("writeXLSExcelOperator");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -181,7 +185,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
 
     @Test(priority = 4)
     public void writeXLSXExcelOperator() throws InterruptedException, IOException {
-    	
+    	log.info("writeXLSXExcelOperator");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -241,7 +245,9 @@ public class OperatorExcelTest extends BaseOperatorTest {
 
     @Test(priority = 5)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
-    	
+    	log.info("canBeExecutedInGroovyTest");
+        // This test checks if the Groovy operator can execute an Excel operator
+        // It is a simple test to ensure that the Groovy operator can handle Excel operations
     	String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -271,7 +277,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
 
     @Test(priority = 6)
     public void fileCanBeOutputStepTest() throws InterruptedException {
-    	
+    	log.info("fileCanBeOutputStepTest");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";
@@ -328,7 +334,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
 
     @Test(priority = 7)
     public void sheetNameCanBeOutputStepTest() throws InterruptedException {
-
+        log.info("sheetNameCanBeOutputStepTest");
     	String dagname = "TEST_FILE_WRITE_DAG";
     	String step1 = "step0";
     	String step2 = "step1";

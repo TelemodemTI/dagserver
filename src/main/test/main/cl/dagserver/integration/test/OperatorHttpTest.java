@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -25,7 +26,7 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
-
+@Log4j2
 public class OperatorHttpTest extends BaseOperatorTest {
 
 	@SuppressWarnings("rawtypes")
@@ -62,6 +63,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
     
     @Test(priority = 1)
     public void httpOperatorGetTest() throws InterruptedException {
+        log.info("httpOperatorGetTest");
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -102,7 +104,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
 
     @Test(priority = 2)
     public void httpOperatorPostTest() throws InterruptedException {
-    
+        log.info("httpOperatorPostTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
@@ -154,6 +156,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
 
     @Test(priority = 3)
     public void httpOperatorPutTest() throws InterruptedException {
+        log.info("httpOperatorPutTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
@@ -205,6 +208,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
 
     @Test(priority = 4)
     public void httpOperatorDeleteTest() throws InterruptedException {
+        log.info("httpOperatorDeleteTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
@@ -255,7 +259,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 10)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
-
+        log.info("canBeExecutedInGroovyTest");
         String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -288,6 +292,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 11)
     public void urlCanBeOutputStepTest() throws InterruptedException {
+        log.info("urlCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
@@ -337,6 +342,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 12)
     public void authorizationHeaderCanBeOutputStepTest() throws InterruptedException {
+        log.info("authorizationHeaderCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
