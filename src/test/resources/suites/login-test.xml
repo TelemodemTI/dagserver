@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Login Integration Suite">
+  <test name="Login Tests">
+    <classes>
+      <class name="main.cl.dagserver.integration.test.LoginTest"/>
+    </classes>
+  </test>
+</suite>

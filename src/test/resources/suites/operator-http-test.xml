@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Operator Http Tests">
+  <test name="Operator Http Tests">
+    <classes>
+      <class name="main.cl.dagserver.integration.test.OperatorHttpTest"/>
+    </classes>
+  </test>
+</suite>
