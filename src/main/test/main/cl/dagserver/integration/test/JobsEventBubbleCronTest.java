@@ -3,6 +3,7 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobLogsPage;
 import main.cl.dagserver.integration.pom.JobsPage;
@@ -11,10 +12,12 @@ import main.cl.dagserver.integration.pom.segments.JobsCompiledTab;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class JobsEventBubbleCronTest extends BaseIntegrationTest {
 
     @Test(priority = 1)
     public void createFirstDag() throws InterruptedException {
+        log.info("createFirstDag");
         String jarname = "testing.jar";
         String dagname = "DAG_TEST1";
         String group = "first_group";
@@ -52,6 +55,7 @@ public class JobsEventBubbleCronTest extends BaseIntegrationTest {
     }
     @Test(priority = 2)
     public void createSecondDag() throws InterruptedException {
+        log.info("createSecondDag");
         String jarname = "testing2.jar";
         String dagname = "DAG_TEST2";
         String targetGroup = "first_group";
@@ -92,6 +96,7 @@ public class JobsEventBubbleCronTest extends BaseIntegrationTest {
 
     @Test(priority = 3)
     public void createThirdDag() throws InterruptedException {
+        log.info("createThirdDag");
         String jarname = "testing3.jar";
         String dagname = "DAG_TEST3";
         String targetGroup = "second_group";
@@ -131,6 +136,7 @@ public class JobsEventBubbleCronTest extends BaseIntegrationTest {
     }
     @Test(priority = 4)
     public void testEventBubble() throws InterruptedException {
+        log.info("testEventBubble");
         String dagname1 = "generated_dag.main.DAG_TEST1";
         String dagname2 = "generated_dag.main.DAG_TEST2";
         String dagname3 = "generated_dag.main.DAG_TEST3";

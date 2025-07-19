@@ -3,6 +3,7 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -10,11 +11,12 @@ import main.cl.dagserver.integration.pom.segments.JarPreExecutionModal;
 import main.cl.dagserver.integration.pom.segments.JobsCompiledTab;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
-
+@Log4j2
 public class JobsExecutionNoneArgsTest extends BaseIntegrationTest {
     
     @Test(priority = 1)
     public void addDesignNone() throws InterruptedException {
+        log.info("addDesignNone");
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
         String step = "step1";
@@ -44,6 +46,7 @@ public class JobsExecutionNoneArgsTest extends BaseIntegrationTest {
 
     @Test(priority = 2)
     public void compileDag() throws InterruptedException{
+        log.info("compileDag");
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
         LoginPage loginPage = new LoginPage(this.driver);
@@ -65,6 +68,7 @@ public class JobsExecutionNoneArgsTest extends BaseIntegrationTest {
 
     @Test(priority = 3)
     public void executeNoneDag() throws InterruptedException{
+        log.info("executeNoneDag");
         String dagname = "TEST_DAG";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){

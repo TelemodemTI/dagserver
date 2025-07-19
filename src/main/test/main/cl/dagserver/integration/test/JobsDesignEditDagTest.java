@@ -3,16 +3,19 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class JobsDesignEditDagTest extends BaseIntegrationTest{
 
     @Test(priority = 1)
     public void createDag() throws InterruptedException {
+        log.info("createDag");
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
         String group = "group.test";
@@ -42,6 +45,7 @@ public class JobsDesignEditDagTest extends BaseIntegrationTest{
 
     @Test(priority = 2)
     public void validateExecution() throws InterruptedException {
+        log.info("validateExecution");
         String jarname = "testing.jar";
         String newjarname = "testing1.jar";
         String dagname = "TEST_DAG";
