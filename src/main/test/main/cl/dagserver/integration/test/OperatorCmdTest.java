@@ -86,7 +86,7 @@ public class OperatorCmdTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest2.jar";
         String cmd1 = "return \"java -version\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
