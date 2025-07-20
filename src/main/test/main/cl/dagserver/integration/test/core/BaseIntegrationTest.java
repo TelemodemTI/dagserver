@@ -4,6 +4,9 @@ import lombok.extern.log4j.Log4j2;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -48,7 +51,14 @@ public class BaseIntegrationTest {
       URL url;
       try {
           url = new URL("http://" + this.host + ":" + this.port + "/wd/hub");
+
+          final Map<String, Object> chromePrefs = new HashMap<>();
+          chromePrefs.put("credentials_enable_service", false);
+          chromePrefs.put("profile.password_manager_enabled", false);
+          chromePrefs.put("profile.password_manager_leak_detection", false);
+
           ChromeOptions options = new ChromeOptions(); 
+          options.setExperimentalOption("prefs", chromePrefs);
           driver = new RemoteWebDriver(url, options);   
           driver.manage().window().maximize();
           log.info("url: {}","http://" + this.host + ":" + this.port);
