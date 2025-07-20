@@ -314,6 +314,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
         	this.createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
         	jobsPage = authenticatedPage.goToJobs();
 			var uncompiled = jobsPage.goToUncompiledTab();
+			uncompiled.searchUncompiled(jarname);
 			var canvas = uncompiled.editDesign(jarname);
 			canvas.selectDag(dagname);
 			canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.GroovyOperator");
