@@ -284,7 +284,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
         	jobsPage = authenticatedPage.goToJobs();
         	var status = executeDesign(step, jarname, dagname,jobsPage);
         	if(!status.isEmpty()) {
-        		if(status.getJSONObject(0).get("output").equals(step)) {
+        		if(status.getJSONObject(0).get("output").equals("test")) {
         			authenticatedPage.goToJobs();
                     authenticatedPage.logout();
         			Assertions.assertTrue(true);
@@ -313,8 +313,8 @@ public class OperatorGroovyTest extends BaseOperatorTest {
         	JobsPage jobsPage = authenticatedPage.goToJobs();
         	this.createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
         	jobsPage = authenticatedPage.goToJobs();
-			
-			var canvas =jobsPage.goToUncompiledTab().editDesign(jarname);
+			var uncompiled = jobsPage.goToUncompiledTab();
+			var canvas = uncompiled.editDesign(jarname);
 			canvas.selectDag(dagname);
 			canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.GroovyOperator");
 			EditorParamModal params = canvas.selectStage(step2);
