@@ -25,7 +25,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
         String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "exceltest1.jar";
         String sheetName = "Hoja 1";
         String startRow = "0";
         String startColumn = "0";
@@ -76,7 +76,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "exceltest2.jar";
         String sheetName = "Hoja 1";
         String startRow = "0";
         String startColumn = "0";
@@ -193,7 +193,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
         String sheetName = "Hoja 1";
         String startRow = "0";
         String startColumn = "0";
-        String jarname = "writeFileWTitleWoRDelimiterOperator.jar";
+        String jarname = "exceltest4.jar";
         String cmd1 = "return \"testing\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -256,10 +256,10 @@ public class OperatorExcelTest extends BaseOperatorTest {
                   "args.setProperty(\"mode\",\"read\" );"+
                   "args.setProperty(\"filePath\",\"/planilla.xls\" );"+
                   "args.setProperty(\"includeTitles\",\"true\" );"+
-                  "args.setProperty(\"sheetName\",\"Hoja1\" );"+
+                  "args.setProperty(\"sheetName\",\"Hoja 1\" );"+
                   "args.setProperty(\"startRow\",\"0\" );"+
                   "args.setProperty(\"startColumn\",\"0\" );"+
-                  "return operator.setArgs(args).setOptionals(optionals).setOperator(\"FileOperator\").execute()";
+                  "return operator.setArgs(args).setOptionals(optionals).setOperator(\"ExcelOperator\").execute()";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -271,6 +271,8 @@ public class OperatorExcelTest extends BaseOperatorTest {
         		authenticatedPage.goToJobs();
                 authenticatedPage.logout();
         		Assertions.assertTrue(true);
+        	} else {        
+        		Assertions.fail("Problema al ejecutar el operador?");
         	}
         }
     }
@@ -285,7 +287,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
         String sheetName = "Hoja 1";
         String startRow = "0";
         String startColumn = "0";
-        String jarname = "writeFileWTitleWoRDelimiterOperator.jar";
+        String jarname = "fileCanBeOutputStepTest.jar";
         String cmd1 = "return \"/planilla.xls\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -342,7 +344,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
         String sheetName = "Hoja 1";
         String startRow = "0";
         String startColumn = "0";
-        String jarname = "writeFileWTitleWoRDelimiterOperator.jar";
+        String jarname = "sheetNameCanBeOutputStepTest.jar";
         String cmd1 = "return \""+sheetName+"\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){

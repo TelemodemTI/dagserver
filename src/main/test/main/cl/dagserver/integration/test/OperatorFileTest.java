@@ -24,7 +24,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "readFileWTitleWoRDelimiterOperator.jar";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -60,7 +60,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "readFileWoTitleWoRDelimiterOperator.jar";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -96,7 +96,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String dagname = "TEST_FILE3_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest3.jar";
+        String jarname = "readFileWTitleWRDelimiterOperator.jar";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -133,7 +133,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String dagname = "TEST_FILE3_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest3.jar";
+        String jarname = "readFileWoTitleWRDelimiterOperator.jar";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -171,7 +171,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "readFileWoFileOperator.jar";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -260,7 +260,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "writeFileWTitleWoRDelimiterOperator.jar";
+        String jarname = "writeFileWoTitleWoRDelimiterOperator.jar";
         String cmd1 = "return \"testing\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -318,7 +318,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "writeFileWTitleWoRDelimiterOperator.jar";
+        String jarname = "writeFileWTitleWRDelimiterOperator.jar";
         String cmd1 = "return \"testing1\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -371,7 +371,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "writeFileWTitleWoRDelimiterOperator.jar";
+        String jarname = "writeFileWoTitleWRDelimiterOperator.jar";
         String cmd1 = "return \"testing1\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -455,7 +455,7 @@ public class OperatorFileTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "fileCanBeOutputStepTest.jar";
         String cmd1 = "return \"/prueba.csv\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
