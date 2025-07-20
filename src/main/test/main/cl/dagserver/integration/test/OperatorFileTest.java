@@ -451,7 +451,7 @@ public class OperatorFileTest extends BaseOperatorTest {
     @Test(priority = 11)
     public void fileCanBeOutputStepTest() throws InterruptedException {
     	log.info("fileCanBeOutputStepTest");
-    	String dagname = "TEST_FILE1_DAG";
+    	String dagname = "TEST_FILE2_DAG";
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
