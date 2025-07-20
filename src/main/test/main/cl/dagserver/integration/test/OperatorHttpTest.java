@@ -31,7 +31,8 @@ public class OperatorHttpTest extends BaseOperatorTest {
 
 	@SuppressWarnings("rawtypes")
 	private GenericContainer webserverContainer;
-	private String urlr = "http://host.docker.internal/";
+	private String hostname = "http://host.docker.internal/";
+	private String urlr = "";
 	
     @SuppressWarnings({ "resource", "deprecation", "rawtypes" })
 	@BeforeMethod
@@ -48,7 +49,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(responseBody);
                 String uuid = jsonNode.get("uuid").asText();
-                urlr = urlr + uuid;
+                urlr = hostname + uuid;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,7 +68,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorGetTest.jar";
         String timeoutr = "10000";
     	String methodr = "GET";
     	String contentr = "text/html";
@@ -109,7 +110,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorPostTest.jar";
         String methodr = "POST";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -161,7 +162,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorPutTest.jar";
         String methodr = "PUT";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -213,7 +214,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorDeleteTest.jar";
         String methodr = "DELETE";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -297,7 +298,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "urlCanBeOutputStepTest.jar";
         String methodr = "GET";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -347,7 +348,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "authorizationHeaderCanBeOutputStepTest.jar";
         String methodr = "GET";
     	String contentr = "text/html";
     	String timeoutr = "10000";

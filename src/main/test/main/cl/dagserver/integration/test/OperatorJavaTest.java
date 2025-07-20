@@ -93,7 +93,7 @@ public class OperatorJavaTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest3.jar";
         String classpath = "/selenium/jar";
         String className = "cl.dagserver.test.ExampleCallable";
         String cmd1 = "return \""+className+"\"";
@@ -141,7 +141,7 @@ public class OperatorJavaTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest4.jar";
         String classpath = "/selenium/jar";
         String classNames = "cl.dagserver.test.ExampleCallable";
         String cmd1 = "return \""+classpath+"\"";
