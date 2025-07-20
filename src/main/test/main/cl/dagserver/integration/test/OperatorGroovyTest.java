@@ -275,7 +275,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
         String step = "step1";
         String group = "group.test";
         String jarname = "canBeExecutedInGroovyTest.jar";
-        String cmd1 = "def args = new Properties();def optionals = new Properties();def sourceStr = \"source\";def code = \"return [\"test\":\""+step+"\"]\";args.setProperty(sourceStr,code );return operator.setArgs(args).setOptionals(optionals).setOperator(\"GroovyOperator\").execute()";
+        String cmd1 = "def args = new Properties();def optionals = new Properties();def sourceStr = \"source\";def code = \"return \\\"test\\\"\";args.setProperty(sourceStr,code );return operator.setArgs(args).setOptionals(optionals).setOperator(\"GroovyOperator\").execute()";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -291,6 +291,8 @@ public class OperatorGroovyTest extends BaseOperatorTest {
         		} else {
         			Assertions.fail("Problema al ejecutar el operador?");
         		}
+        	} else {
+        		Assertions.fail("Problema al ejecutar el operador?");
         	}
         }
     }

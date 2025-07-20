@@ -135,7 +135,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     		params.sendParameter("port", port.toString(), "input");
     		params.sendParameter("credentials", "keystore1", "list");
     		params.selectTab("//*[@id=\"remote_li\"]/a");
-    		params.sendRemote("upload","/etc/","/prueba.csv");
+    		params.sendRemote("upload","/etc/prueba.csv","/prueba.csv");
     		params.save();
     		canvas.saveJar();
             jobsPage = authenticatedPage.goToJobs();
@@ -210,7 +210,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     		params.sendParameter("port", port.toString(), "input");
     		params.sendParameter("credentials", "keystore1", "list");
     		params.selectTab("//*[@id=\"remote_li\"]/a");
-    		params.sendRemote("upload","/etc/","/prueba.csv");
+    		params.sendRemote("upload","/etc/prueba.csv","/prueba.csv");
     		params.save();
     		canvas.save();
             canvas.close();
