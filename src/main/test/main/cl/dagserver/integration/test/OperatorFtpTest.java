@@ -82,7 +82,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     public void ftpOperatorDownloadTest() throws InterruptedException {
         log.info("ftpOperatorDownloadTest");
         String dagname = "TEST_FTP1_DAG";
-        String jarname = "ftptest1.jar";
+        String jarname = "ftptest2.jar";
         String step = "step1";
         String group = "group.test";
         LoginPage loginPage = new LoginPage(this.driver);
@@ -115,7 +115,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
     public void ftpOperatorUploadTest() throws InterruptedException {
         log.info("ftpOperatorUploadTest");
         String dagname = "TEST_FTP1_DAG";
-        String jarname = "ftptest1.jar";
+        String jarname = "ftptest3.jar";
         String step = "step1";
         String group = "group.test";
         LoginPage loginPage = new LoginPage(this.driver);
@@ -178,7 +178,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest5.jar";
         String cmd1 = "return \""+host+"\"";
 
     	
@@ -230,7 +230,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest6.jar";
         String cmd1 = "return \""+port.toString()+"\"";
 
     	
@@ -281,7 +281,7 @@ public class OperatorFtpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest7.jar";
         String cmd1 = "return \"upload /etc/ /prueba.csv\"";
 
     	

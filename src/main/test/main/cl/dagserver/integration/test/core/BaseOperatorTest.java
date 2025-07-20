@@ -31,6 +31,7 @@ public class BaseOperatorTest extends BaseIntegrationTest {
     
     protected JSONArray executeDesign(String step, String jarname, String dagname,JobsPage jobsPage) throws InterruptedException {
 		var uncompileds = jobsPage.goToUncompiledTab();
+		uncompileds.searchUncompiled(jarname);
 		var canvas = uncompileds.editDesign(jarname);
 		canvas.selectDag(dagname);
 		var modal = canvas.execute();
