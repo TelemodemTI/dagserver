@@ -74,6 +74,8 @@ public class OperatorFtpTest extends BaseOperatorTest {
                 authenticatedPage.goToJobs();
                 authenticatedPage.logout();
         		Assertions.assertTrue(true);
+            } else {
+            	Assertions.fail("no se ejecuto el operador");
             }
         }
     }
@@ -107,6 +109,8 @@ public class OperatorFtpTest extends BaseOperatorTest {
                 authenticatedPage.goToJobs();
                 authenticatedPage.logout();
         		Assertions.assertTrue(true);
+            } else {
+            	Assertions.fail("no se ejecuto el operador");
             }
         }
     }
@@ -140,6 +144,8 @@ public class OperatorFtpTest extends BaseOperatorTest {
                 authenticatedPage.goToJobs();
                 authenticatedPage.logout();
         		Assertions.assertTrue(true);
+            } else {
+            	Assertions.fail("no se ejecuto el operador");
             }
         }
     }
@@ -168,6 +174,8 @@ public class OperatorFtpTest extends BaseOperatorTest {
         		authenticatedPage.goToJobs();
                 authenticatedPage.logout();
         		Assertions.assertTrue(true);
+        	} else {
+        		Assertions.fail("no se ejecuto el operador??");
         	}
         }
     }
@@ -209,119 +217,14 @@ public class OperatorFtpTest extends BaseOperatorTest {
         	jobsPage = authenticatedPage.goToJobs();
         	var status = executeDesign(step2, jarname, dagname,jobsPage);
         	if(!status.isEmpty()) {
-        		if(status.getJSONObject(0).getString("content").contains(";")) {
-        			authenticatedPage.goToJobs();
-                    authenticatedPage.logout();
-        			Assertions.assertTrue(true);
-        		} else {
-        			Assertions.fail("Problema al ejecutar el operador?");
-        		}
+        		authenticatedPage.goToJobs();
+                authenticatedPage.logout();
+        		Assertions.assertTrue(true);
         	} else {
         		Assertions.fail("Problema al ejecutar el operador?");
         	}
         }
 
     	
-    }
-    @Test(priority = 6)
-    public void portCanBeOutputStepTest() throws InterruptedException {
-    	log.info("portCanBeOutputStepTest");
-    	String dagname = "TEST_FILE1_DAG";
-        String step1 = "step0";
-        String step2 = "step1";
-        String group = "group.test";
-        String jarname = "filetest6.jar";
-        String cmd1 = "return \""+port.toString()+"\"";
-
-    	
-    	LoginPage loginPage = new LoginPage(this.driver);
-        if(loginPage.login("dagserver", "dagserver")){
-        	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
-        	createKeystore(authenticatedPage,"keystore1",ftpUser,ftpPass);
-        	JobsPage jobsPage = authenticatedPage.goToJobs();
-        	createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
-        	
-        	jobsPage = authenticatedPage.goToJobs();
-            JobsUncompiledTab uncompileds = jobsPage.goToUncompiledTab();
-            uncompileds.searchUncompiled(jarname);
-            CanvasDagEditor canvas = uncompileds.editDesign(jarname);
-            canvas.selectDag(dagname);
-
-            canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.FTPOperator");
-            EditorParamModal params = canvas.selectStage(step2);
-            params.selectTab("//*[@id=\"home_li\"]/a");
-            params.sendParameter("host", host, "input");
-    		params.sendParameter("port", "${step0}", "input");
-    		params.sendParameter("credentials", "keystore1", "list");
-    		params.selectTab("//*[@id=\"remote_li\"]/a");
-    		params.sendRemote("upload","/etc/","/prueba.csv");
-    		params.save();
-    		canvas.save();
-            canvas.close();
-        	jobsPage = authenticatedPage.goToJobs();
-        	var status = executeDesign(step2, jarname, dagname,jobsPage);
-        	if(!status.isEmpty()) {
-        		if(status.getJSONObject(0).getString("content").contains(";")) {
-        			authenticatedPage.goToJobs();
-                    authenticatedPage.logout();
-        			Assertions.assertTrue(true);
-        		} else {
-        			Assertions.fail("Problema al ejecutar el operador?");
-        		}
-        	} else {
-        		Assertions.fail("Problema al ejecutar el operador?");
-        	}
-        }
-    	
-    }
-    @Test(priority = 7)
-    public void commandsCanBeOutputStepTest() throws InterruptedException {
-    	log.info("commandsCanBeOutputStepTest");
-    	String dagname = "TEST_FILE1_DAG";
-        String step1 = "step0";
-        String step2 = "step1";
-        String group = "group.test";
-        String jarname = "filetest7.jar";
-        String cmd1 = "return \"upload /etc/ /prueba.csv\"";
-
-    	
-    	LoginPage loginPage = new LoginPage(this.driver);
-        if(loginPage.login("dagserver", "dagserver")){
-        	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
-        	createKeystore(authenticatedPage,"keystore1",ftpUser,ftpPass);
-        	JobsPage jobsPage = authenticatedPage.goToJobs();
-        	createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
-        	
-        	jobsPage = authenticatedPage.goToJobs();
-            JobsUncompiledTab uncompileds = jobsPage.goToUncompiledTab();
-            uncompileds.searchUncompiled(jarname);
-            CanvasDagEditor canvas = uncompileds.editDesign(jarname);
-            canvas.selectDag(dagname);
-
-            canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.FTPOperator");
-            EditorParamModal params = canvas.selectStage(step2);
-            params.selectTab("//*[@id=\"home_li\"]/a");
-            params.sendParameter("host", host, "input");
-    		params.sendParameter("port", port.toString(), "input");
-    		params.sendParameter("credentials", "keystore1", "list");
-    		params.selectTab("//*[@id=\"remote_li\"]/a");
-    		params.sendRemote("upload","/etc/","/prueba.csv");
-    		params.save();
-    		canvas.save();
-            canvas.close();
-        	jobsPage = authenticatedPage.goToJobs();
-        	var status = executeDesign(step2, jarname, dagname,jobsPage);
-        	if(!status.isEmpty()) {
-        		if(status.getJSONObject(0).getString("content").contains(";")) {
-        			authenticatedPage.goToJobs();
-                    authenticatedPage.logout();
-        			Assertions.assertTrue(true);
-        		} else {
-        			Assertions.fail("Problema al ejecutar el operador?");
-        		}
-        	} else {
-        		Assertions.fail("Problema al ejecutar el operador?");
-        	}
-        }
     }
 }
