@@ -84,10 +84,12 @@ public class OperatorMailTest extends BaseOperatorTest{
     		
     		jobsPage = authenticatedPage.goToJobs();
         	var status = executeDesign(step, jarname, dagname,jobsPage);
-        	if(status.isEmpty()) {
+        	if(!status.isEmpty()) {
         		authenticatedPage.goToJobs();
                 authenticatedPage.logout();
     			Assertions.assertTrue(true);
+        	} else {
+        		Assertions.fail("no se ejecuto el operador");
         	}
         }
 	}
@@ -100,7 +102,7 @@ public class OperatorMailTest extends BaseOperatorTest{
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest2.jar";
         String subject = "subject";
     	String protocol="plaintext";
     	String cmd1 = "return 'body generado para el test desde groovy'";
@@ -134,10 +136,12 @@ public class OperatorMailTest extends BaseOperatorTest{
     		
     		jobsPage = authenticatedPage.goToJobs();
         	var status = executeDesign(step2, jarname, dagname,jobsPage);
-        	if(status.isEmpty()) {
+        	if(!status.isEmpty()) {
         		authenticatedPage.goToJobs();
                 authenticatedPage.logout();
     			Assertions.assertTrue(true);
+        	} else {
+        		Assertions.fail("no se ejecuto el operador");
         	}
         }	
 	}
@@ -148,7 +152,7 @@ public class OperatorMailTest extends BaseOperatorTest{
 		String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest3.jar";
         String subject = "subject";
     	String protocol="TLSv1.2";
     	String body = "test body";
@@ -188,10 +192,12 @@ public class OperatorMailTest extends BaseOperatorTest{
     		
     		jobsPage = authenticatedPage.goToJobs();
         	var status = executeDesign(step, jarname, dagname,jobsPage);
-        	if(status.isEmpty()) {
+        	if(!status.isEmpty()) {
         		authenticatedPage.goToJobs();
                 authenticatedPage.logout();
     			Assertions.assertTrue(true);
+        	}else {
+        		Assertions.fail("no se ejecuto el operador");
         	}
         }
 	}
@@ -225,6 +231,8 @@ public class OperatorMailTest extends BaseOperatorTest{
         		authenticatedPage.goToJobs();
                 authenticatedPage.logout();
         		Assertions.assertTrue(true);
+        	}else {
+        		Assertions.fail("no se ejecuto el operador");
         	}
         }
     }

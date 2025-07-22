@@ -91,7 +91,7 @@ public class OperatorSftpTest extends BaseOperatorTest {
     public void sftpOperatorDownloadTest() throws InterruptedException {
         log.info("sftpOperatorDownloadTest");
         String dagname = "TEST_FTP1_DAG";
-        String jarname = "ftptest1.jar";
+        String jarname = "ftptest2.jar";
         String step = "step1";
         String group = "group.test";
         LoginPage loginPage = new LoginPage(this.driver);
@@ -127,7 +127,7 @@ public class OperatorSftpTest extends BaseOperatorTest {
     public void sftpOperatorUploadTest() throws InterruptedException {
         log.info("sftpOperatorUploadTest");
         String dagname = "TEST_FTP1_DAG";
-        String jarname = "ftptest1.jar";
+        String jarname = "ftptest3.jar";
         String step = "step1";
         String group = "group.test";
         LoginPage loginPage = new LoginPage(this.driver);
@@ -196,7 +196,7 @@ public class OperatorSftpTest extends BaseOperatorTest {
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest5.jar";
         String cmd1 = "return \""+host+"\"";
 
     	
