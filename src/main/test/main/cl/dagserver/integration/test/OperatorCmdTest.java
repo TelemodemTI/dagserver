@@ -3,6 +3,7 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -11,10 +12,12 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
+@Log4j2
 public class OperatorCmdTest extends BaseOperatorTest {
 
     @Test(priority = 1)
     public void executeCmd() throws InterruptedException {
+        log.info("executeCmd");
         String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
@@ -48,6 +51,7 @@ public class OperatorCmdTest extends BaseOperatorTest {
     
     @Test(priority = 2)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
+        log.info("canBeExecutedInGroovyTest");
     	String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -77,12 +81,12 @@ public class OperatorCmdTest extends BaseOperatorTest {
 
     @Test(priority = 3)
     public void cmdCanBeOutputStepTest() throws InterruptedException {
-    	
+    	log.info("cmdCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest2.jar";
         String cmd1 = "return \"java -version\"";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){

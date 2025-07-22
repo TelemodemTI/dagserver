@@ -3,6 +3,7 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -10,10 +11,12 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class JobsAddDesignCronTest extends BaseIntegrationTest{
     
     @Test(priority = 1)
     public void addDesignCron() throws InterruptedException {
+        log.info("addDesignCron");
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
         String group = "group.test";
@@ -41,6 +44,7 @@ public class JobsAddDesignCronTest extends BaseIntegrationTest{
 
     @Test(priority = 2)
     public void editDesignCron() throws InterruptedException {
+        log.info("editDesignCron");
         String step1 = "step1";
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
@@ -74,6 +78,7 @@ public class JobsAddDesignCronTest extends BaseIntegrationTest{
 
     @Test(priority = 3)
     public void deleteDesignCron() throws InterruptedException {
+        log.info("deleteDesignCron");
         String step1 = "step1";
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";

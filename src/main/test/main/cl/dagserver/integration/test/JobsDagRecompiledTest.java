@@ -2,6 +2,8 @@ package main.cl.dagserver.integration.test;
 
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
+
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -9,10 +11,12 @@ import main.cl.dagserver.integration.pom.segments.JobsCompiledTab;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class JobsDagRecompiledTest  extends BaseIntegrationTest{
    
     @Test(priority = 1)
     public void importJob() throws InterruptedException{
+        log.info("importJob");
         String jarname = "testing.jar";
         String uploadFileReal = "jarfile_json.json";
         String dagname = "generated_dag.main.DAG_pJAmLy";
@@ -45,6 +49,7 @@ public class JobsDagRecompiledTest  extends BaseIntegrationTest{
 
     @Test(priority = 2)
     public void recompileJob() throws InterruptedException{
+        log.info("recompileJob");
         String jarname = "testing.jar";
         String newjarname = "nuevo_nombre.jar";
         LoginPage loginPage = new LoginPage(this.driver);
@@ -78,6 +83,7 @@ public class JobsDagRecompiledTest  extends BaseIntegrationTest{
 
     @Test(priority = 3)
     public void recompileRenamed() throws InterruptedException{
+        log.info("recompileRenamed");
         String jarname = "nuevo_nombre.jar";
         String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);

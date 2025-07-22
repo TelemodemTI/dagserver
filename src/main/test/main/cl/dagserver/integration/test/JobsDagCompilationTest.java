@@ -5,6 +5,7 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JarDetailPage;
 import main.cl.dagserver.integration.pom.JobLogsPage;
@@ -15,11 +16,12 @@ import main.cl.dagserver.integration.pom.segments.JobsCompiledTab;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
-
+@Log4j2
 public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 1)
     public void importAndCompileDag() throws InterruptedException {
+        log.info("importAndCompileDag");
         String jarname = "testing.jar";
         String uploadFileReal = "jarfile_json.json";
         String dagname = "generated_dag.main.DAG_pJAmLy";
@@ -52,7 +54,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 2)
     public void validateExecution() throws InterruptedException {
-        
+        log.info("validateExecution");
         String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -91,6 +93,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 3)
     public void deleteLog() throws InterruptedException{
+        log.info("deleteLog");
         String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -114,6 +117,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 4)
     public void deleteAllLogs() throws InterruptedException{
+        log.info("deleteAllLogs");
         String dagname = "generated_dag.main.DAG_pJAmLy";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
@@ -136,6 +140,7 @@ public class JobsDagCompilationTest extends BaseIntegrationTest{
 
     @Test(priority = 5)
     public void validateDetail() throws InterruptedException{
+        log.info("validateDetail");
         String dagname = "generated_dag.main.DAG_pJAmLy";
         String stepname = "step1";
         LoginPage loginPage = new LoginPage(this.driver);

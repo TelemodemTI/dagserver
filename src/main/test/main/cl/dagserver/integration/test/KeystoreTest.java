@@ -3,15 +3,18 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.KeystorePage;
 import main.cl.dagserver.integration.pom.LoginPage;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class KeystoreTest extends BaseIntegrationTest{
 
     @Test(priority = 1)
     public void testKeystore() throws InterruptedException{
+        log.info("testKeystore");
         String keystoreAlias = "test";
         String keystoreUsername = "test";
         String keystorePassword = "test";
@@ -35,6 +38,7 @@ public class KeystoreTest extends BaseIntegrationTest{
 
     @Test(priority = 2)
     public void exportKeystore() throws InterruptedException{
+        log.info("exportKeystore");
         String keystoreAlias = "test";
         String jksFile = "keystore.jks";
         LoginPage loginPage = new LoginPage(this.driver);

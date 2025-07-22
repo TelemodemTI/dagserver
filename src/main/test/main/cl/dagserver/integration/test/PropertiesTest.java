@@ -7,10 +7,13 @@ import main.cl.dagserver.integration.pom.LoginPage;
 import main.cl.dagserver.integration.pom.PropertiesPage;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 public class PropertiesTest extends BaseIntegrationTest {
     
   @Test(priority = 1)
   public void getActualProps() {
+    log.info("getActualProps");
     LoginPage loginPage = new LoginPage(this.driver);
     if(loginPage.login("dagserver", "dagserver")){
       AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -25,6 +28,7 @@ public class PropertiesTest extends BaseIntegrationTest {
   
   @Test(priority = 2)
   public void createNewProperty() throws InterruptedException {
+    log.info("createNewProperty");
     LoginPage loginPage = new LoginPage(this.driver);
     if(loginPage.login("dagserver", "dagserver")){
       AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -39,6 +43,7 @@ public class PropertiesTest extends BaseIntegrationTest {
   
   @Test(priority = 3)
   public void deleteProperty() throws InterruptedException {
+    log.info("deleteProperty");
     LoginPage loginPage = new LoginPage(this.driver);
     if(loginPage.login("dagserver", "dagserver")){
       AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -53,6 +58,7 @@ public class PropertiesTest extends BaseIntegrationTest {
   
   @Test(priority = 4)
   public void importProperties() throws InterruptedException {
+    log.info("importProperties");
     LoginPage loginPage = new LoginPage(this.driver);
     if(loginPage.login("dagserver", "dagserver")){
       AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -70,6 +76,7 @@ public class PropertiesTest extends BaseIntegrationTest {
   
   @Test(priority = 5)
   public void exportProperties() throws InterruptedException {
+    log.info("exportProperties");
     LoginPage loginPage = new LoginPage(this.driver);
     if(loginPage.login("dagserver", "dagserver")){
       AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -84,6 +91,7 @@ public class PropertiesTest extends BaseIntegrationTest {
   
   @Test(priority = 6)
   public void deleteByGroup() throws InterruptedException {
+    log.info("deleteByGroup");
     LoginPage loginPage = new LoginPage(this.driver);
     if(loginPage.login("dagserver", "dagserver")){
       AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);

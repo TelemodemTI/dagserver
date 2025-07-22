@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -11,9 +12,11 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class JobsExecOKAnyNoTest extends BaseIntegrationTest {
     @Test(priority = 1)
     public void addDesignStartGroovy() throws InterruptedException {
+        log.info("addDesignStartGroovy");
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
         String group = "group.test";
@@ -40,6 +43,7 @@ public class JobsExecOKAnyNoTest extends BaseIntegrationTest {
     }
     @Test(priority = 2)
     public void addGroovyStep() throws InterruptedException {
+        log.info("addGroovyStep");
         String dagname = "TEST_DAG";
         String step = "step2";
         LoginPage loginPage = new LoginPage(this.driver);
@@ -67,6 +71,7 @@ public class JobsExecOKAnyNoTest extends BaseIntegrationTest {
 
     @Test(priority = 3)
     public void executeDag() throws InterruptedException {
+        log.info("executeDag");
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
         String step = "step2";

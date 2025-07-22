@@ -12,7 +12,7 @@ public class LoginTest extends BaseIntegrationTest {
   
   @Test
   public void wrongCredentials() {
-	  log.error("test");
+	  log.error("wrongCredentials");
     LoginPage loginPage = new LoginPage(this.driver);
     if(!loginPage.login("dagserver", "clave mala")){
       Assertions.assertTrue(true);
@@ -21,6 +21,7 @@ public class LoginTest extends BaseIntegrationTest {
   
   @Test
   public void loginOk() {
+    log.info("loginOk");
     LoginPage loginPage = new LoginPage(this.driver);
     if(loginPage.login("dagserver", "dagserver")){
       var aut = new AuthenticatedPage(this.driver);

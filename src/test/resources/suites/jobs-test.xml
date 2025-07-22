@@ -1,0 +1,29 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Jobs Integration Suite">
+  <test name="JobsAddDesignCron Test">
+    <classes>
+      <class name="main.cl.dagserver.integration.test.JobsAddDesignCronTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsAddDesignListenerTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsAddDesignListenerTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsAddDesignNoneTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsDagCompilationTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsDagRecompiledTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsDesignCopyValuesTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsDesignEditDagTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsEventBubbleCronTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsEventBubbleNoneTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecOKAnyNoTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecOKAnySiTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecOkErrorNoTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecOkErrorSiTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecOKOKNoTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecOKOKSiTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecutionCronTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecutionListenerTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecutionNoneArgsTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsExecutionNoneInvalidArgsTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsMultiDagTest"/>
+      <class name="main.cl.dagserver.integration.test.JobsValidateStepDuplicateTest"/>
+    </classes>
+  </test>
+</suite>

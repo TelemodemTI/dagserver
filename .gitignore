@@ -34,3 +34,4 @@ build/
 src/main/resources/static
 /target/
 /test-output/
+test-output/

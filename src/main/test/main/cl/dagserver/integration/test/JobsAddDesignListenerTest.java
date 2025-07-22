@@ -2,6 +2,8 @@ package main.cl.dagserver.integration.test;
 
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
+
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -9,10 +11,12 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class JobsAddDesignListenerTest extends BaseIntegrationTest {
 
     @Test(priority = 1)
     public void addDesignListener() throws InterruptedException {
+        log.info("addDesignListener");
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";
         String group = "group.test";
@@ -42,6 +46,7 @@ public class JobsAddDesignListenerTest extends BaseIntegrationTest {
     
     @Test(priority = 2)
     public void editDesignListener() throws InterruptedException {
+        log.info("editDesignListener");
         String jarname = "testing.jar";
         String step = "step1";
         String dagname = "TEST_DAG";
@@ -72,6 +77,7 @@ public class JobsAddDesignListenerTest extends BaseIntegrationTest {
 
     @Test(priority = 3)
     public void deleteDesignListener() throws InterruptedException {
+        log.info("deleteDesignListener");
         String step1 = "step1";
         String jarname = "testing.jar";
         String dagname = "TEST_DAG";

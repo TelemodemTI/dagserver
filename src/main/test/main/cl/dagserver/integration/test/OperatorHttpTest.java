@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -25,12 +26,13 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
-
+@Log4j2
 public class OperatorHttpTest extends BaseOperatorTest {
 
 	@SuppressWarnings("rawtypes")
 	private GenericContainer webserverContainer;
-	private String urlr = "http://host.docker.internal/";
+	private String hostname = "http://host.docker.internal/";
+	private String urlr = "";
 	
     @SuppressWarnings({ "resource", "deprecation", "rawtypes" })
 	@BeforeMethod
@@ -47,7 +49,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(responseBody);
                 String uuid = jsonNode.get("uuid").asText();
-                urlr = urlr + uuid;
+                urlr = hostname + uuid;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,10 +64,11 @@ public class OperatorHttpTest extends BaseOperatorTest {
     
     @Test(priority = 1)
     public void httpOperatorGetTest() throws InterruptedException {
+        log.info("httpOperatorGetTest");
     	String dagname = "TEST_FILE1_DAG";
         String step = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorGetTest.jar";
         String timeoutr = "10000";
     	String methodr = "GET";
     	String contentr = "text/html";
@@ -102,12 +105,12 @@ public class OperatorHttpTest extends BaseOperatorTest {
 
     @Test(priority = 2)
     public void httpOperatorPostTest() throws InterruptedException {
-    
+        log.info("httpOperatorPostTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorPostTest.jar";
         String methodr = "POST";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -154,11 +157,12 @@ public class OperatorHttpTest extends BaseOperatorTest {
 
     @Test(priority = 3)
     public void httpOperatorPutTest() throws InterruptedException {
+        log.info("httpOperatorPutTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorPutTest.jar";
         String methodr = "PUT";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -205,11 +209,12 @@ public class OperatorHttpTest extends BaseOperatorTest {
 
     @Test(priority = 4)
     public void httpOperatorDeleteTest() throws InterruptedException {
+        log.info("httpOperatorDeleteTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "httpOperatorDeleteTest.jar";
         String methodr = "DELETE";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -255,7 +260,7 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 10)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
-
+        log.info("canBeExecutedInGroovyTest");
         String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
@@ -288,11 +293,12 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 11)
     public void urlCanBeOutputStepTest() throws InterruptedException {
+        log.info("urlCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "urlCanBeOutputStepTest.jar";
         String methodr = "GET";
     	String contentr = "text/html";
     	String timeoutr = "10000";
@@ -337,11 +343,12 @@ public class OperatorHttpTest extends BaseOperatorTest {
     }
     @Test(priority = 12)
     public void authorizationHeaderCanBeOutputStepTest() throws InterruptedException {
+        log.info("authorizationHeaderCanBeOutputStepTest");
     	String dagname = "TEST_FILE1_DAG";
         String step1 = "step0";
         String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "authorizationHeaderCanBeOutputStepTest.jar";
         String methodr = "GET";
     	String contentr = "text/html";
     	String timeoutr = "10000";

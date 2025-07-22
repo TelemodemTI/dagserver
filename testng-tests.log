@@ -1,0 +1,822 @@
+Picked up _JAVA_OPTIONS: -Xmx512M
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< main.cl:dagserver >--------------------------
+[INFO] Building dagserver 0.8.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact org.slf4j:slf4j-log4j12:jar:2.0.13 has been relocated to org.slf4j:slf4j-reload4j:jar:2.0.13
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.13:prepare-agent (prepare-agent) @ dagserver ---
+[INFO] argLine set to -javaagent:C:\\Users\\diego\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.13\\org.jacoco.agent-0.8.13-runtime.jar=destfile=C:\\Users\\diego\\Documents\\GitHub\\dagserver\\target\\jacoco.exec
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:install-node-and-npm (install node and npm) @ dagserver ---
+[INFO] Node v21.6.0 is already installed.
+[INFO] NPM 10.8.1 is already installed.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm install) @ dagserver ---
+[INFO] Running 'npm install' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] up to date, audited 943 packages in 4s
+[INFO] 
+[INFO] 93 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] 38 vulnerabilities (6 low, 15 moderate, 15 high, 2 critical)
+[INFO] 
+[INFO] To address all issues, run:
+[INFO]   npm audit fix
+[INFO] 
+[INFO] Run `npm audit` for details.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm run build) @ dagserver ---
+[INFO] Running 'npm run build' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] > dagserver-front@0.0.0 build
+[INFO] > ng build
+[INFO] 
+[INFO] Node.js version v21.6.0 detected.
+[INFO] Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/releases/.
+[INFO] - Generating browser application bundles (phase: setup)...
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] - Copying assets...
+[INFO] ✔ Copying assets complete.
+[INFO] - Generating index html...
+[INFO] - Generating index html...
+[INFO] 3 rules skipped due to selector errors:
+[INFO]   0% -> Unmatched selector: %
+[INFO]   50% -> Unmatched selector: %
+[INFO]   100% -> Unmatched selector: %
+[INFO] ✔ Index html generation complete.
+[INFO] 
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] main.45dcd9faa6beffd1.js      | main          | 663.75 kB |               159.87 kB
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] scripts.33a33be7ffb48cdd.js   | scripts       |  47.68 kB |                14.20 kB
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\inputs\jobs\newj\newj.component.ts depends on 'buffer'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] polyfills.3c89c6480acba356.js | polyfills     |  33.10 kB |                10.67 kB
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] runtime.e36e80d7f0efbf68.js   | runtime       | 923 bytes |               516 bytes
+[INFO] 
+[INFO] styles.ef46db3751d8e999.css   | styles        |   0 bytes |                       -
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\outputs\encryption\encryption.output.adapter.service.ts depends on 'crypto-js'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] 
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] | Initial Total | 745.42 kB |               185.25 kB
+[INFO] 
+[INFO] 
+[INFO] Warning: bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 245.42 kB with a total of 745.42 kB.
+[INFO] Build at: 2025-07-19T19:45:30.614Z - Hash: 3ec99531a4944b59 - Time: 9119ms
+[INFO] 
+[INFO] 
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ dagserver ---
+[INFO] Copying 113 resources from src\main\resources to target\classes
+[INFO] Copying 17 resources from src\test\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dagserver ---
+[INFO] Copying 17 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ dagserver ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running TestSuite
+SLF4J(W): Class path contains multiple SLF4J providers.
+SLF4J(W): Found provider [ch.qos.logback.classic.spi.LogbackServiceProvider@592e843a]
+SLF4J(W): Found provider [org.slf4j.reload4j.Reload4jServiceProvider@1d1f7216]
+SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J(I): Actual provider is of type [ch.qos.logback.classic.spi.LogbackServiceProvider@592e843a]
+15:45:35.441 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+15:45:35.466 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+15:45:36.544 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+15:45:38.034 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+15:45:38.037 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+15:45:38.115 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 20.10.17
+  API Version: 1.41
+  Operating System: Docker Desktop
+  Total Memory: 6280 MB
+15:45:38.241 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Creating container for image: testcontainers/ryuk:0.7.0
+15:45:38.709 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 is starting: 01a3c6d8415c4465c0cd768e6fd37d1ef57b1b24d5dfa1deba2c700bb1936dd3
+15:45:40.797 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 started in PT2.5561335S
+15:45:40.830 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+15:45:40.831 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+15:45:40.832 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+15:45:40.832 [main] INFO tc.selenium/standalone-chrome:latest -- Creating container for image: selenium/standalone-chrome:latest
+15:45:42.086 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest is starting: 026e3f212cddf26c3601fb7270b7c99361b3a1c7ab8af5e5845f8c7c163b3323
+15:45:48.262 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest started in PT7.4290542S
+15:45:48.263 [main] INFO tc.maximolira/dagserver:latest -- Creating container for image: maximolira/dagserver:latest
+15:45:48.367 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest is starting: a4a7ce689e9a0659f73c58e2a3661075b75fe9fef43fedd306fc9becef69676f
+15:46:05.393 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest started in PT17.1305943S
+jul. 19, 2025 3:46:05 P.�M. org.openqa.selenium.remote.tracing.opentelemetry.OpenTelemetryTracer createTracer
+INFO: Using OpenTelemetry for tracing
+15:46:10.824 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- url: http://localhost:63783
+15:46:12.644 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker images Ready
+15:46:14.162 [main] ERROR main.cl.dagserver.integration.test.LoginTest -- test
+15:46:19.046 [main] ERROR main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker Images Shutdown
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 45.187 s - in TestSuite
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:12 min
+[INFO] Finished at: 2025-07-19T15:46:19-04:00
+[INFO] ------------------------------------------------------------------------
+Picked up _JAVA_OPTIONS: -Xmx512M
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< main.cl:dagserver >--------------------------
+[INFO] Building dagserver 0.8.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact org.slf4j:slf4j-log4j12:jar:2.0.13 has been relocated to org.slf4j:slf4j-reload4j:jar:2.0.13
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.13:prepare-agent (prepare-agent) @ dagserver ---
+[INFO] argLine set to -javaagent:C:\\Users\\diego\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.13\\org.jacoco.agent-0.8.13-runtime.jar=destfile=C:\\Users\\diego\\Documents\\GitHub\\dagserver\\target\\jacoco.exec
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:install-node-and-npm (install node and npm) @ dagserver ---
+[INFO] Node v21.6.0 is already installed.
+[INFO] NPM 10.8.1 is already installed.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm install) @ dagserver ---
+[INFO] Running 'npm install' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] up to date, audited 943 packages in 4s
+[INFO] 
+[INFO] 93 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] 38 vulnerabilities (6 low, 15 moderate, 15 high, 2 critical)
+[INFO] 
+[INFO] To address all issues, run:
+[INFO]   npm audit fix
+[INFO] 
+[INFO] Run `npm audit` for details.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm run build) @ dagserver ---
+[INFO] Running 'npm run build' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] > dagserver-front@0.0.0 build
+[INFO] > ng build
+[INFO] 
+[INFO] Node.js version v21.6.0 detected.
+[INFO] Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/releases/.
+[INFO] - Generating browser application bundles (phase: setup)...
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] - Copying assets...
+[INFO] ✔ Copying assets complete.
+[INFO] - Generating index html...
+[INFO] - Generating index html...
+[INFO] 3 rules skipped due to selector errors:
+[INFO]   0% -> Unmatched selector: %
+[INFO]   50% -> Unmatched selector: %
+[INFO]   100% -> Unmatched selector: %
+[INFO] ✔ Index html generation complete.
+[INFO] 
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] main.45dcd9faa6beffd1.js      | main          | 663.75 kB |               159.87 kB
+[INFO] scripts.33a33be7ffb48cdd.js   | scripts       |  47.68 kB |                14.20 kB
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] polyfills.3c89c6480acba356.js | polyfills     |  33.10 kB |                10.67 kB
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\inputs\jobs\newj\newj.component.ts depends on 'buffer'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] runtime.e36e80d7f0efbf68.js   | runtime       | 923 bytes |               516 bytes
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] styles.ef46db3751d8e999.css   | styles        |   0 bytes |                       -
+[INFO] 
+[INFO] 
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\outputs\encryption\encryption.output.adapter.service.ts depends on 'crypto-js'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] | Initial Total | 745.42 kB |               185.25 kB
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] 
+[INFO] 
+[INFO] Build at: 2025-07-19T19:46:46.402Z - Hash: 3ec99531a4944b59 - Time: 10438ms
+[INFO] Warning: bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 245.42 kB with a total of 745.42 kB.
+[INFO] 
+[INFO] 
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ dagserver ---
+[INFO] Copying 113 resources from src\main\resources to target\classes
+[INFO] Copying 17 resources from src\test\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dagserver ---
+[INFO] Copying 17 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ dagserver ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running TestSuite
+SLF4J(W): Class path contains multiple SLF4J providers.
+SLF4J(W): Found provider [ch.qos.logback.classic.spi.LogbackServiceProvider@7e242b4d]
+SLF4J(W): Found provider [org.slf4j.reload4j.Reload4jServiceProvider@305f031]
+SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J(I): Actual provider is of type [ch.qos.logback.classic.spi.LogbackServiceProvider@7e242b4d]
+15:46:51.298 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+15:46:51.343 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+15:46:52.540 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+15:46:53.436 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+15:46:53.440 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+15:46:53.479 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 20.10.17
+  API Version: 1.41
+  Operating System: Docker Desktop
+  Total Memory: 6280 MB
+15:46:53.555 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Creating container for image: testcontainers/ryuk:0.7.0
+15:46:54.010 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 is starting: fa9c6f1bdcb34e760db9e0118fcbad7d5423ed164ce8a6ae9fb4cca107fc261d
+15:46:55.096 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 started in PT1.540573S
+15:46:55.107 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+15:46:55.107 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+15:46:55.108 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+15:46:55.109 [main] INFO tc.selenium/standalone-chrome:latest -- Creating container for image: selenium/standalone-chrome:latest
+15:46:56.186 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest is starting: a767e79fde3dfaa6ea5055c9c783e623760c49db0560d18448d03fa77fa8b405
+15:47:00.686 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest started in PT5.5777745S
+15:47:00.687 [main] INFO tc.maximolira/dagserver:latest -- Creating container for image: maximolira/dagserver:latest
+15:47:00.764 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest is starting: 58746d70447249a247e9d78f79d586f043453fb9dafe7ce4a93f09ff9bb047fd
+15:47:15.663 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest started in PT14.9756834S
+jul. 19, 2025 3:47:15 P.�M. org.openqa.selenium.remote.tracing.opentelemetry.OpenTelemetryTracer createTracer
+INFO: Using OpenTelemetry for tracing
+15:47:18.909 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- url: http://localhost:59116
+15:47:19.976 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker images Ready
+15:47:29.397 [main] ERROR main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker Images Shutdown
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 39.637 s - in TestSuite
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:08 min
+[INFO] Finished at: 2025-07-19T15:47:30-04:00
+[INFO] ------------------------------------------------------------------------
+Picked up _JAVA_OPTIONS: -Xmx512M
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< main.cl:dagserver >--------------------------
+[INFO] Building dagserver 0.8.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact org.slf4j:slf4j-log4j12:jar:2.0.13 has been relocated to org.slf4j:slf4j-reload4j:jar:2.0.13
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.13:prepare-agent (prepare-agent) @ dagserver ---
+[INFO] argLine set to -javaagent:C:\\Users\\diego\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.13\\org.jacoco.agent-0.8.13-runtime.jar=destfile=C:\\Users\\diego\\Documents\\GitHub\\dagserver\\target\\jacoco.exec
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:install-node-and-npm (install node and npm) @ dagserver ---
+[INFO] Node v21.6.0 is already installed.
+[INFO] NPM 10.8.1 is already installed.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm install) @ dagserver ---
+[INFO] Running 'npm install' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] up to date, audited 943 packages in 4s
+[INFO] 
+[INFO] 93 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] 38 vulnerabilities (6 low, 15 moderate, 15 high, 2 critical)
+[INFO] 
+[INFO] To address all issues, run:
+[INFO]   npm audit fix
+[INFO] 
+[INFO] Run `npm audit` for details.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm run build) @ dagserver ---
+[INFO] Running 'npm run build' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] > dagserver-front@0.0.0 build
+[INFO] > ng build
+[INFO] 
+[INFO] Node.js version v21.6.0 detected.
+[INFO] Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/releases/.
+[INFO] - Generating browser application bundles (phase: setup)...
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] - Copying assets...
+[INFO] ✔ Copying assets complete.
+[INFO] - Generating index html...
+[INFO] - Generating index html...
+[INFO] 3 rules skipped due to selector errors:
+[INFO]   0% -> Unmatched selector: %
+[INFO]   50% -> Unmatched selector: %
+[INFO]   100% -> Unmatched selector: %
+[INFO] ✔ Index html generation complete.
+[INFO] 
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] main.45dcd9faa6beffd1.js      | main          | 663.75 kB |               159.87 kB
+[INFO] main.45dcd9faa6beffd1.js      | main          | 663.75 kB |               159.87 kB
+[INFO] scripts.33a33be7ffb48cdd.js   | scripts       |  47.68 kB |                14.20 kB
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\inputs\jobs\newj\newj.component.ts depends on 'buffer'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] polyfills.3c89c6480acba356.js | polyfills     |  33.10 kB |                10.67 kB
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] runtime.e36e80d7f0efbf68.js   | runtime       | 923 bytes |               516 bytes
+[INFO] 
+[INFO] styles.ef46db3751d8e999.css   | styles        |   0 bytes |                       -
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\outputs\encryption\encryption.output.adapter.service.ts depends on 'crypto-js'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] 
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] | Initial Total | 745.42 kB |               185.25 kB
+[INFO] 
+[INFO] 
+[INFO] Warning: bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 245.42 kB with a total of 745.42 kB.
+[INFO] Build at: 2025-07-19T19:47:57.112Z - Hash: 3ec99531a4944b59 - Time: 10699ms
+[INFO] 
+[INFO] 
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ dagserver ---
+[INFO] Copying 113 resources from src\main\resources to target\classes
+[INFO] Copying 17 resources from src\test\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dagserver ---
+[INFO] Copying 17 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ dagserver ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running TestSuite
+SLF4J(W): Class path contains multiple SLF4J providers.
+SLF4J(W): Found provider [ch.qos.logback.classic.spi.LogbackServiceProvider@43b4fe19]
+SLF4J(W): Found provider [org.slf4j.reload4j.Reload4jServiceProvider@25ddbbbb]
+SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J(I): Actual provider is of type [ch.qos.logback.classic.spi.LogbackServiceProvider@43b4fe19]
+15:48:01.976 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+15:48:02.009 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+15:48:03.060 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+15:48:03.831 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+15:48:03.833 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+15:48:03.864 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 20.10.17
+  API Version: 1.41
+  Operating System: Docker Desktop
+  Total Memory: 6280 MB
+15:48:03.924 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Creating container for image: testcontainers/ryuk:0.7.0
+15:48:04.337 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 is starting: 1de2debbedb0b9f40dba4dd9ac8f6ed630dd650cf46e79f5a3c2a7fce2e504bd
+15:48:05.029 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 started in PT1.1050835S
+15:48:05.044 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+15:48:05.044 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+15:48:05.045 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+15:48:05.047 [main] INFO tc.selenium/standalone-chrome:latest -- Creating container for image: selenium/standalone-chrome:latest
+15:48:05.958 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest is starting: 8b4745ad7192b772490ea614f73c5a30231a8b34e51e82b682a3e6396e664e96
+15:48:09.998 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest started in PT4.9510687S
+15:48:09.999 [main] INFO tc.maximolira/dagserver:latest -- Creating container for image: maximolira/dagserver:latest
+15:48:10.304 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest is starting: 317e7fd8462b0dfd026b7951b12d82c99aa590ef305c2f832beef03569543683
+15:48:25.283 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest started in PT15.2836205S
+jul. 19, 2025 3:48:25 P.�M. org.openqa.selenium.remote.tracing.opentelemetry.OpenTelemetryTracer createTracer
+INFO: Using OpenTelemetry for tracing
+15:48:27.989 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- url: http://localhost:52025
+15:48:28.979 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker images Ready
+15:48:39.879 [main] ERROR main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker Images Shutdown
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 39.53 s - in TestSuite
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:08 min
+[INFO] Finished at: 2025-07-19T15:48:40-04:00
+[INFO] ------------------------------------------------------------------------
+Picked up _JAVA_OPTIONS: -Xmx512M
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< main.cl:dagserver >--------------------------
+[INFO] Building dagserver 0.8.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact org.slf4j:slf4j-log4j12:jar:2.0.13 has been relocated to org.slf4j:slf4j-reload4j:jar:2.0.13
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.13:prepare-agent (prepare-agent) @ dagserver ---
+[INFO] argLine set to -javaagent:C:\\Users\\diego\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.13\\org.jacoco.agent-0.8.13-runtime.jar=destfile=C:\\Users\\diego\\Documents\\GitHub\\dagserver\\target\\jacoco.exec
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:install-node-and-npm (install node and npm) @ dagserver ---
+[INFO] Node v21.6.0 is already installed.
+[INFO] NPM 10.8.1 is already installed.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm install) @ dagserver ---
+[INFO] Running 'npm install' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] up to date, audited 943 packages in 4s
+[INFO] 
+[INFO] 93 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] 38 vulnerabilities (6 low, 15 moderate, 15 high, 2 critical)
+[INFO] 
+[INFO] To address all issues, run:
+[INFO]   npm audit fix
+[INFO] 
+[INFO] Run `npm audit` for details.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm run build) @ dagserver ---
+[INFO] Running 'npm run build' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] > dagserver-front@0.0.0 build
+[INFO] > ng build
+[INFO] 
+[INFO] Node.js version v21.6.0 detected.
+[INFO] Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/releases/.
+[INFO] - Generating browser application bundles (phase: setup)...
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] - Copying assets...
+[INFO] ✔ Copying assets complete.
+[INFO] - Generating index html...
+[INFO] - Generating index html...
+[INFO] 3 rules skipped due to selector errors:
+[INFO]   0% -> Unmatched selector: %
+[INFO]   50% -> Unmatched selector: %
+[INFO]   100% -> Unmatched selector: %
+[INFO] ✔ Index html generation complete.
+[INFO] 
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\inputs\jobs\newj\newj.component.ts depends on 'buffer'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependenciesmain.45dcd9faa6beffd1.js      | main          | 663.75 kB |               159.87 kB
+[INFO] 
+[INFO] scripts.33a33be7ffb48cdd.js   | scripts       |  47.68 kB |                14.20 kB
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\outputs\encryption\encryption.output.adapter.service.ts depends on 'crypto-js'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] polyfills.3c89c6480acba356.js | polyfills     |  33.10 kB |                10.67 kB
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] runtime.e36e80d7f0efbf68.js   | runtime       | 923 bytes |               516 bytes
+[INFO] 
+[INFO] styles.ef46db3751d8e999.css   | styles        |   0 bytes |                       -
+[INFO] Warning: bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 245.42 kB with a total of 745.42 kB.
+[INFO] 
+[INFO] 
+[INFO] | Initial Total | 745.42 kB |               185.25 kB
+[INFO] 
+[INFO] 
+[INFO] Build at: 2025-07-19T19:49:06.790Z - Hash: 3ec99531a4944b59 - Time: 10129ms
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ dagserver ---
+[INFO] Copying 113 resources from src\main\resources to target\classes
+[INFO] Copying 17 resources from src\test\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dagserver ---
+[INFO] Copying 17 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ dagserver ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running TestSuite
+SLF4J(W): Class path contains multiple SLF4J providers.
+SLF4J(W): Found provider [ch.qos.logback.classic.spi.LogbackServiceProvider@1d1f7216]
+SLF4J(W): Found provider [org.slf4j.reload4j.Reload4jServiceProvider@423e4cbb]
+SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J(I): Actual provider is of type [ch.qos.logback.classic.spi.LogbackServiceProvider@1d1f7216]
+15:49:11.330 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+15:49:11.357 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+15:49:12.603 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+15:49:13.603 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+15:49:13.606 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+15:49:13.653 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 20.10.17
+  API Version: 1.41
+  Operating System: Docker Desktop
+  Total Memory: 6280 MB
+15:49:13.722 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Creating container for image: testcontainers/ryuk:0.7.0
+15:49:14.235 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 is starting: 15f25fc931f303bc38a1de152a93221c0d2801734932a44a66d6cfe25a585f02
+15:49:14.820 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 started in PT1.0978782S
+15:49:14.832 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+15:49:14.833 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+15:49:14.835 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+15:49:14.836 [main] INFO tc.selenium/standalone-chrome:latest -- Creating container for image: selenium/standalone-chrome:latest
+15:49:15.723 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest is starting: e11dbc29f8ced4561dad6fbf7e636028ccf29d36d82cd8d550e194256f7012b0
+15:49:19.716 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest started in PT4.8794482S
+15:49:19.716 [main] INFO tc.maximolira/dagserver:latest -- Creating container for image: maximolira/dagserver:latest
+15:49:19.790 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest is starting: 51702bd608bbde6129f78b6ed56e87082a787518d1ab1a18ce951354bc4bea27
+15:49:35.194 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest started in PT15.478736S
+jul. 19, 2025 3:49:35 P.�M. org.openqa.selenium.remote.tracing.opentelemetry.OpenTelemetryTracer createTracer
+INFO: Using OpenTelemetry for tracing
+15:49:38.789 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- url: http://localhost:63069
+15:49:39.787 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker images Ready
+15:50:10.112 [main] ERROR main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker Images Shutdown
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 60.428 s - in TestSuite
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:28 min
+[INFO] Finished at: 2025-07-19T15:50:10-04:00
+[INFO] ------------------------------------------------------------------------
+Picked up _JAVA_OPTIONS: -Xmx512M
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< main.cl:dagserver >--------------------------
+[INFO] Building dagserver 0.8.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact org.slf4j:slf4j-log4j12:jar:2.0.13 has been relocated to org.slf4j:slf4j-reload4j:jar:2.0.13
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.13:prepare-agent (prepare-agent) @ dagserver ---
+[INFO] argLine set to -javaagent:C:\\Users\\diego\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.13\\org.jacoco.agent-0.8.13-runtime.jar=destfile=C:\\Users\\diego\\Documents\\GitHub\\dagserver\\target\\jacoco.exec
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:install-node-and-npm (install node and npm) @ dagserver ---
+[INFO] Node v21.6.0 is already installed.
+[INFO] NPM 10.8.1 is already installed.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm install) @ dagserver ---
+[INFO] Running 'npm install' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] up to date, audited 943 packages in 9s
+[INFO] 
+[INFO] 93 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] 38 vulnerabilities (6 low, 15 moderate, 15 high, 2 critical)
+[INFO] 
+[INFO] To address all issues, run:
+[INFO]   npm audit fix
+[INFO] 
+[INFO] Run `npm audit` for details.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm run build) @ dagserver ---
+[INFO] Running 'npm run build' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] > dagserver-front@0.0.0 build
+[INFO] > ng build
+[INFO] 
+[INFO] Node.js version v21.6.0 detected.
+[INFO] Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/releases/.
+[INFO] - Generating browser application bundles (phase: setup)...
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] - Copying assets...
+[INFO] ✔ Copying assets complete.
+[INFO] - Generating index html...
+[INFO] - Generating index html...
+[INFO] 3 rules skipped due to selector errors:
+[INFO]   0% -> Unmatched selector: %
+[INFO]   50% -> Unmatched selector: %
+[INFO]   100% -> Unmatched selector: %
+[INFO] ✔ Index html generation complete.
+[INFO] 
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] main.45dcd9faa6beffd1.js      | main          | 663.75 kB |               159.87 kB
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\inputs\jobs\newj\newj.component.ts depends on 'buffer'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] scripts.33a33be7ffb48cdd.js   | scripts       |  47.68 kB |                14.20 kB
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] polyfills.3c89c6480acba356.js | polyfills     |  33.10 kB |                10.67 kB
+[INFO] 
+[INFO] runtime.e36e80d7f0efbf68.js   | runtime       | 923 bytes |               516 bytes
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\outputs\encryption\encryption.output.adapter.service.ts depends on 'crypto-js'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] styles.ef46db3751d8e999.css   | styles        |   0 bytes |                       -
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] 
+[INFO] 
+[INFO] | Initial Total | 745.42 kB |               185.25 kB
+[INFO] Warning: bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 245.42 kB with a total of 745.42 kB.
+[INFO] 
+[INFO] 
+[INFO] Build at: 2025-07-19T19:50:40.839Z - Hash: 3ec99531a4944b59 - Time: 10034ms
+[INFO] 
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ dagserver ---
+[INFO] Copying 113 resources from src\main\resources to target\classes
+[INFO] Copying 17 resources from src\test\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dagserver ---
+[INFO] Copying 17 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ dagserver ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running TestSuite
+SLF4J(W): Class path contains multiple SLF4J providers.
+SLF4J(W): Found provider [ch.qos.logback.classic.spi.LogbackServiceProvider@743cb8e0]
+SLF4J(W): Found provider [org.slf4j.reload4j.Reload4jServiceProvider@c7a975a]
+SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J(I): Actual provider is of type [ch.qos.logback.classic.spi.LogbackServiceProvider@743cb8e0]
+15:50:45.650 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+15:50:45.680 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+15:50:46.682 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+15:50:47.819 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+15:50:47.822 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+15:50:47.865 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 20.10.17
+  API Version: 1.41
+  Operating System: Docker Desktop
+  Total Memory: 6280 MB
+15:50:47.984 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Creating container for image: testcontainers/ryuk:0.7.0
+15:50:48.517 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 is starting: 197881da3cd6a2725d8e0f1e270359a06c2f0b4f86480b9b1271c84edc444073
+15:50:49.151 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 started in PT1.168044S
+15:50:49.166 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+15:50:49.166 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+15:50:49.168 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+15:50:49.169 [main] INFO tc.selenium/standalone-chrome:latest -- Creating container for image: selenium/standalone-chrome:latest
+15:50:50.156 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest is starting: 9ea1f14bd530854ca2e3e8b17a879de4635bf825ca9250d5496d04ccc3cf5917
+15:50:54.093 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest started in PT4.9238936S
+15:50:54.093 [main] INFO tc.maximolira/dagserver:latest -- Creating container for image: maximolira/dagserver:latest
+15:50:54.171 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest is starting: e6d37f5c752ebaf50f6d74009ddecff3467f402d33b47072a7c88c7b9670ba25
+15:51:07.930 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest started in PT13.8368449S
+jul. 19, 2025 3:51:08 P.�M. org.openqa.selenium.remote.tracing.opentelemetry.OpenTelemetryTracer createTracer
+INFO: Using OpenTelemetry for tracing
+15:51:11.178 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- url: http://localhost:62311
+15:51:13.396 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker images Ready
+15:52:05.667 [main] ERROR main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker Images Shutdown
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 81.673 s - in TestSuite
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:53 min
+[INFO] Finished at: 2025-07-19T15:52:06-04:00
+[INFO] ------------------------------------------------------------------------
+Picked up _JAVA_OPTIONS: -Xmx512M
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< main.cl:dagserver >--------------------------
+[INFO] Building dagserver 0.8.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact org.slf4j:slf4j-log4j12:jar:2.0.13 has been relocated to org.slf4j:slf4j-reload4j:jar:2.0.13
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.13:prepare-agent (prepare-agent) @ dagserver ---
+[INFO] argLine set to -javaagent:C:\\Users\\diego\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.13\\org.jacoco.agent-0.8.13-runtime.jar=destfile=C:\\Users\\diego\\Documents\\GitHub\\dagserver\\target\\jacoco.exec
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:install-node-and-npm (install node and npm) @ dagserver ---
+[INFO] Node v21.6.0 is already installed.
+[INFO] NPM 10.8.1 is already installed.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm install) @ dagserver ---
+[INFO] Running 'npm install' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] up to date, audited 943 packages in 4s
+[INFO] 
+[INFO] 93 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] 38 vulnerabilities (6 low, 15 moderate, 15 high, 2 critical)
+[INFO] 
+[INFO] To address all issues, run:
+[INFO]   npm audit fix
+[INFO] 
+[INFO] Run `npm audit` for details.
+[INFO] 
+[INFO] --- frontend-maven-plugin:1.15.1:npm (npm run build) @ dagserver ---
+[INFO] Running 'npm run build' in C:\Users\diego\Documents\GitHub\dagserver\front
+[INFO] npm warn config init.author.name Use `--init-author-name` instead.
+[INFO] npm warn config init.author.email Use `--init-author-email` instead.
+[INFO] 
+[INFO] > dagserver-front@0.0.0 build
+[INFO] > ng build
+[INFO] 
+[INFO] Node.js version v21.6.0 detected.
+[INFO] Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/releases/.
+[INFO] - Generating browser application bundles (phase: setup)...
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] ✔ Browser application bundle generation complete.
+[INFO] - Copying assets...
+[INFO] ✔ Copying assets complete.
+[INFO] - Generating index html...
+[INFO] - Generating index html...
+[INFO] 3 rules skipped due to selector errors:
+[INFO]   0% -> Unmatched selector: %
+[INFO]   50% -> Unmatched selector: %
+[INFO]   100% -> Unmatched selector: %
+[INFO] ✔ Index html generation complete.
+[INFO] 
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] main.45dcd9faa6beffd1.js      | main          | 663.75 kB |               159.87 kB
+[INFO] scripts.33a33be7ffb48cdd.js   | scripts       |  47.68 kB |                14.20 kB
+[INFO] polyfills.3c89c6480acba356.js | polyfills     |  33.10 kB |                10.67 kB
+[INFO] Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+[INFO] runtime.e36e80d7f0efbf68.js   | runtime       | 923 bytes |               516 bytes
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\inputs\jobs\newj\newj.component.ts depends on 'buffer'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] styles.ef46db3751d8e999.css   | styles        |   0 bytes |                       -
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] 
+[INFO] | Initial Total | 745.42 kB |               185.25 kB
+[INFO] 
+[INFO] 
+[INFO] Warning: C:\Users\diego\Documents\GitHub\dagserver\front\src\app\infrastructure\outputs\encryption\encryption.output.adapter.service.ts depends on 'crypto-js'. CommonJS or AMD dependencies can cause optimization bailouts.
+[INFO] Build at: 2025-07-19T19:52:38.322Z - Hash: 3ec99531a4944b59 - Time: 14042ms
+[INFO] For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+[INFO] 
+[INFO] Warning: bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 245.42 kB with a total of 745.42 kB.
+[INFO] 
+[INFO] 
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ dagserver ---
+[INFO] Copying 113 resources from src\main\resources to target\classes
+[INFO] Copying 17 resources from src\test\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dagserver ---
+[INFO] Copying 17 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ dagserver ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ dagserver ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running TestSuite
+SLF4J(W): Class path contains multiple SLF4J providers.
+SLF4J(W): Found provider [ch.qos.logback.classic.spi.LogbackServiceProvider@4ebea12c]
+SLF4J(W): Found provider [org.slf4j.reload4j.Reload4jServiceProvider@2a1edad4]
+SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J(I): Actual provider is of type [ch.qos.logback.classic.spi.LogbackServiceProvider@4ebea12c]
+15:52:43.149 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+15:52:43.164 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+15:52:44.105 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+15:52:45.067 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+15:52:45.071 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+15:52:45.110 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 20.10.17
+  API Version: 1.41
+  Operating System: Docker Desktop
+  Total Memory: 6280 MB
+15:52:45.183 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Creating container for image: testcontainers/ryuk:0.7.0
+15:52:45.631 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 is starting: 34fe48be7d4b26e8bea3ce2dfe173b850814306293948d22bd973c89567563e3
+15:52:46.833 [main] INFO tc.testcontainers/ryuk:0.7.0 -- Container testcontainers/ryuk:0.7.0 started in PT1.6500359S
+15:52:46.846 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+15:52:46.847 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+15:52:46.849 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+15:52:46.850 [main] INFO tc.selenium/standalone-chrome:latest -- Creating container for image: selenium/standalone-chrome:latest
+15:52:48.060 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest is starting: 3f492d7fb9633f54cd756fc95dcee483ebc8919d79896aa0a9c7b6179a3cd39c
+15:52:57.065 [main] INFO tc.selenium/standalone-chrome:latest -- Container selenium/standalone-chrome:latest started in PT10.2145513S
+15:52:57.066 [main] INFO tc.maximolira/dagserver:latest -- Creating container for image: maximolira/dagserver:latest
+15:52:57.171 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest is starting: b5497efce27c8be76e1438dc3b9ddfc6db78b4514e63e2df74476f0bf61b1520
+15:53:23.210 [main] INFO tc.maximolira/dagserver:latest -- Container maximolira/dagserver:latest started in PT26.1435127S
+jul. 19, 2025 3:53:23 P.�M. org.openqa.selenium.remote.tracing.opentelemetry.OpenTelemetryTracer createTracer
+INFO: Using OpenTelemetry for tracing
+15:53:29.458 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- url: http://localhost:52509
+15:53:30.956 [main] INFO main.cl.dagserver.integration.test.core.BaseIntegrationTest -- Docker images Ready

@@ -3,16 +3,19 @@ package main.cl.dagserver.integration.test;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseIntegrationTest;
 
+@Log4j2
 public class JobsMultiDagTest extends BaseIntegrationTest{
 
     @Test(priority = 1)
     public void createMultiDag() throws InterruptedException{
+        log.info("createMultiDag");
         String jarname = "testing.jar";
         String dagname1 = "DAG_TEST";
         String group = "group.test";

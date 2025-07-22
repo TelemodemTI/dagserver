@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Operator CMD Tests">
+  <test name="Operator CMD Tests">
+    <classes>
+      <class name="main.cl.dagserver.integration.test.OperatorCmdTest"/>
+    </classes>
+  </test>
+</suite>

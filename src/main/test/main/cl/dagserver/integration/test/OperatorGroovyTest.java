@@ -2,6 +2,8 @@ package main.cl.dagserver.integration.test;
 
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
+
+import lombok.extern.log4j.Log4j2;
 import main.cl.dagserver.integration.pom.AuthenticatedPage;
 import main.cl.dagserver.integration.pom.JobsPage;
 import main.cl.dagserver.integration.pom.LoginPage;
@@ -9,11 +11,12 @@ import main.cl.dagserver.integration.pom.segments.EditorParamModal;
 import main.cl.dagserver.integration.pom.segments.JobsUncompiledTab;
 import main.cl.dagserver.integration.test.core.BaseOperatorTest;
 
-
+@Log4j2
 public class OperatorGroovyTest extends BaseOperatorTest {
 
     @Test(priority = 1)
     public void okBasicTest() throws InterruptedException {
+        log.info("okBasicTest");
         String dagname = "TEST_BASIC_DAG";
         String step = "step1";
         String group = "group.test";
@@ -40,6 +43,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
 
     @Test(priority = 2)
     public void okListTest() throws InterruptedException {
+		log.info("okListTest");
     	String dagname = "TEST_LIST_DAG";
         String step = "step1";
         String group = "group.test";
@@ -72,6 +76,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
     
     @Test(priority = 3)
     public void okMapTest() throws InterruptedException {
+		log.info("okMapTest");
     	String dagname = "TEST_MAP_DAG";
         String step = "step1";
         String group = "group.test";
@@ -101,6 +106,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
     
     @Test(priority = 4)
     public void okListMapTest() throws InterruptedException {
+		log.info("okListMapTest");
         String dagname = "TEST_MAP_LIST_DAG";
         String step = "step1";
         String group = "group.test";
@@ -131,6 +137,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
     
     @Test(priority = 5)
     public void okNumberTest() throws InterruptedException {
+		log.info("okNumberTest");
         String dagname = "TEST_NUMBER_DAG";
         String step = "step1";
         String group = "group.test";
@@ -161,6 +168,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
 
     @Test(priority = 6)
     public void okUncompiledTest() throws InterruptedException {
+		log.info("okUncompiledTest");
         String dagname = "TEST_UNCOMPILED_DAG";
         String dagnameExec = "TEST_UNCOMPILED_TOBE_DAG";
         String step = "step1";
@@ -200,6 +208,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
     
     @Test(priority = 7)
     public void okCompiledTest() throws InterruptedException {
+		log.info("okCompiledTest");
         String dagname = "TEST_COMPILED_DAG";
         String dagnameExec = "TEST_COMPILED_TOBE_DAG";
         String step = "step1";
@@ -238,6 +247,7 @@ public class OperatorGroovyTest extends BaseOperatorTest {
 
     @Test(priority = 8)
     public void failExcepcionTest() throws InterruptedException {
+		log.info("failExcepcionTest");
         String dagname = "TEST_FAIL_EXCEPTION_DAG";
         String step = "step1";
         String group = "group.test";
@@ -260,11 +270,12 @@ public class OperatorGroovyTest extends BaseOperatorTest {
 	 
     @Test(priority = 9)
     public void canBeExecutedInGroovyTest() throws InterruptedException {
+		log.info("canBeExecutedInGroovyTest");
     	String dagname = "TEST_EXECUTED_BY_GROOVY_DAG";
         String step = "step1";
         String group = "group.test";
         String jarname = "canBeExecutedInGroovyTest.jar";
-        String cmd1 = "def args = new Properties();def optionals = new Properties();def sourceStr = \"source\";def code = \"return [\"test\":\""+step+"\"]\";args.setProperty(sourceStr,code );return operator.setArgs(args).setOptionals(optionals).setOperator(\"GroovyOperator\").execute()";
+        String cmd1 = "def args = new Properties();def optionals = new Properties();def sourceStr = \"source\";def code = \"return \\\"test\\\"\";args.setProperty(sourceStr,code );return operator.setArgs(args).setOptionals(optionals).setOperator(\"GroovyOperator\").execute()";
         LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);
@@ -273,19 +284,22 @@ public class OperatorGroovyTest extends BaseOperatorTest {
         	jobsPage = authenticatedPage.goToJobs();
         	var status = executeDesign(step, jarname, dagname,jobsPage);
         	if(!status.isEmpty()) {
-        		if(status.getJSONObject(0).get("output").equals(step)) {
+        		if(status.getJSONObject(0).get("output").equals("test")) {
         			authenticatedPage.goToJobs();
                     authenticatedPage.logout();
         			Assertions.assertTrue(true);
         		} else {
         			Assertions.fail("Problema al ejecutar el operador?");
         		}
+        	} else {
+        		Assertions.fail("Problema al ejecutar el operador?");
         	}
         }
     }
 	
     @Test(priority = 10)
     public void sourceCanBeOutputStepTest() throws InterruptedException {
+		log.info("sourceCanBeOutputStepTest");
 		String dagname = "TEST_GROOVY_CAN_BE_OUTPUTED_DAG";
         String step1 = "step1";
 		String step2 = "step2";
@@ -299,8 +313,9 @@ public class OperatorGroovyTest extends BaseOperatorTest {
         	JobsPage jobsPage = authenticatedPage.goToJobs();
         	this.createGroovyJob(jobsPage, dagname, step1, group, jarname, cmd1);
         	jobsPage = authenticatedPage.goToJobs();
-			
-			var canvas =jobsPage.goToUncompiledTab().editDesign(jarname);
+			var uncompiled = jobsPage.goToUncompiledTab();
+			uncompiled.searchUncompiled(jarname);
+			var canvas = uncompiled.editDesign(jarname);
 			canvas.selectDag(dagname);
 			canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.GroovyOperator");
 			EditorParamModal params = canvas.selectStage(step2);

@@ -98,6 +98,8 @@ public class JobsUncompiledTab {
             List<WebElement> columnas = fila.findElements(By.tagName("td"));
             WebElement userColumn = columnas.get(1);
             if(userColumn.getText().equals(jarname)) {
+            	WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(10));
+                wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"dataTables-uncompiledjobs\"]/tbody/tr["+i+"]/td[4]/button[1]")));
             	driver.findElement(By.xpath("//*[@id=\"dataTables-uncompiledjobs\"]/tbody/tr["+i+"]/td[4]/button[1]")).click();
                 return new CanvasDagEditor(driver);
             }
