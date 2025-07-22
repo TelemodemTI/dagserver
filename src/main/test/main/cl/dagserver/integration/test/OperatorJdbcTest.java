@@ -103,7 +103,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest2.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "SELECT * FROM testcontainer.tests where label = :label";
         String cmd1 = "return [[label:'test']]";
@@ -155,7 +155,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest3.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "insert into tests(label) values (:label);";
         String cmd1 = "return [[label:'inserted']]";
@@ -207,7 +207,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest4.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "update testcontainer.tests set label = :new_value where label = :old_value;";
         String cmd1 = "return [[old_value:'updated',new_value:'updated1']]";
@@ -259,7 +259,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest5.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "delete FROM testcontainer.tests where label = :label";
         String cmd1 = "return [[label:'deleteme']]";
@@ -342,7 +342,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest7.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "SELECT * FROM testcontainer.tests";
         var jdbcurl = this.mySQLContainer.getJdbcUrl().replace("localhost", "host.docker.internal");
@@ -394,7 +394,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest8.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "SELECT * FROM testcontainer.tests";
         var jdbcurl = this.mySQLContainer.getJdbcUrl().replace("localhost", "host.docker.internal");
@@ -445,7 +445,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest9.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "SELECT * FROM testcontainer.tests";
         var jdbcurl = this.mySQLContainer.getJdbcUrl().replace("localhost", "host.docker.internal");
@@ -496,7 +496,7 @@ public class OperatorJdbcTest extends BaseOperatorTest {
     	String step1 = "step0";
     	String step2 = "step1";
         String group = "group.test";
-        String jarname = "filetest1.jar";
+        String jarname = "filetest10.jar";
         String jdbcdriver = "com.mysql.cj.jdbc.Driver";
         String sql = "SELECT * FROM testcontainer.tests";
         var jdbcurl = this.mySQLContainer.getJdbcUrl().replace("localhost", "host.docker.internal");
