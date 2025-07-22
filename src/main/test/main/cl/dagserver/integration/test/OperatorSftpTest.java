@@ -185,7 +185,9 @@ public class OperatorSftpTest extends BaseOperatorTest {
         		authenticatedPage.goToJobs();
                 authenticatedPage.logout();
         		Assertions.assertTrue(true);
-        	}
+        	} else {
+            	Assertions.fail("no se ejecuto el operador");
+            }
         }
     }
     
@@ -199,7 +201,6 @@ public class OperatorSftpTest extends BaseOperatorTest {
         String jarname = "filetest5.jar";
         String cmd1 = "return \""+host+"\"";
 
-    	
     	LoginPage loginPage = new LoginPage(this.driver);
         if(loginPage.login("dagserver", "dagserver")){
         	AuthenticatedPage authenticatedPage = new AuthenticatedPage(this.driver);

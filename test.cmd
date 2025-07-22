@@ -1,10 +1,11 @@
 @echo off
 
+echo ==== Inicio de pruebas: %date% %time% ==== > test-output.log
 rem Eliminar la imagen Docker maximolira/dagserver si existe
 docker image rm -f maximolira/dagserver
 
 rem Ejecutar pruebas JUnit 
-call mvn test -P junit-tests > test-output.log 2>&1
+call mvn test -P junit-tests >> test-output.log 2>&1
 if errorlevel 1 exit /b 1
 
 rem Contruyendo el contenedor Docker
@@ -49,5 +50,4 @@ if errorlevel 1 exit /b 1
 call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-sftp-test.xml >> test-output.log 2>&1
 if errorlevel 1 exit /b 1
 
-docker push maximolira/dagserver >> test-output.log 2>&1
-if errorlevel 1 exit /b 1
+echo ==== Fin de pruebas: %date% %time% ==== >> test-output.log
