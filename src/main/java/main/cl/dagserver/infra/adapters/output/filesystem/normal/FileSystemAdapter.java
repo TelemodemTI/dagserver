@@ -10,14 +10,13 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DirectoryEntryDTO;
 import main.cl.dagserver.infra.adapters.output.filesystem.DagFileSystem;
 
 @Component
 @Profile("filesystem-normal")
-public class FileSystemAdapter extends DagFileSystem implements FileSystemOutputPort {
+public class FileSystemAdapter extends DagFileSystem {
 
 	@Value("${param.folderpath}")
 	private String pathfolder;
