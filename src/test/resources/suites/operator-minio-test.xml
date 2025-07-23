@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Operator MinIO Tests">
+  <test name="Operator MinIO Tests">
+    <classes>
+      <class name="main.cl.dagserver.integration.test.OperatorMinioTest"/>
+    </classes>
+  </test>
+</suite>

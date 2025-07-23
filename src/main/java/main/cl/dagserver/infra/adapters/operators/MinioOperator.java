@@ -52,7 +52,7 @@ public class MinioOperator extends OperatorStage {
 			throw new DomainException(new Exception("invalid credentials entry in keystore"));
 		}
 		try {
-			MinioClient minioClient = MinioClient.builder().endpoint(this.args.getProperty("host").trim()).credentials(this.credentials.getUsername().trim(), this.credentials.getPassword().trim()).build();
+			MinioClient minioClient = MinioClient.builder().endpoint(this.getInputProperty("host").trim()).credentials(this.credentials.getUsername().trim(), this.credentials.getPassword().trim()).build();
 			
 			List<String> comds = Arrays.asList(this.args.getProperty("commands").split(";"));
 			for (Iterator<String> iterator = comds.iterator(); iterator.hasNext();) {
@@ -85,7 +85,7 @@ public class MinioOperator extends OperatorStage {
             Files.createDirectories(localFilePath.getParent());
             InputStream stream = minioClient.getObject(
                     GetObjectArgs.builder()
-                            .bucket(this.args.getProperty("baseBucket")) // Nombre del bucket
+                            .bucket(this.getInputProperty("baseBucket")) // Nombre del bucket
                             .object(remoteFilePath) // Ruta del archivo en MinIO
                             .build()
             );
@@ -111,7 +111,7 @@ public class MinioOperator extends OperatorStage {
 			var path = Paths.get(fileInput);
             minioClient.uploadObject(
                     UploadObjectArgs.builder()
-                        .bucket(this.args.getProperty("baseBucket"))
+                        .bucket(this.getInputProperty("baseBucket"))
                         .object(path.getFileName().toString())
                         .filename(fileInput)
                         .build());
@@ -122,13 +122,13 @@ public class MinioOperator extends OperatorStage {
 	}
 
 	private DataFrame list(MinioClient minioClient,String directory) throws IOException, Exception {
-		Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket(this.args.getProperty("baseBucket")).build());
+		Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket(this.getInputProperty("baseBucket")).build());
 		List<Map<String, Object>> content = new ArrayList<>();
 		for (Result<Item> result : results) {
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("filename", result.get().objectName());
 			StatObjectResponse stat = minioClient.statObject(StatObjectArgs.builder()
-                    .bucket(this.args.getProperty("baseBucket"))
+                    .bucket(this.getInputProperty("baseBucket"))
                     .object(result.get().objectName())
                     .build());
 			map.put("size", stat.size());

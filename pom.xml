@@ -182,11 +182,6 @@
 		    <artifactId>commons-net</artifactId>
 		    <version>3.9.0</version>
 		</dependency>
-	  	<dependency>
-			  <groupId>com.hierynomus</groupId>
-			  <artifactId>smbj</artifactId>
-			  <version>0.10.0</version>
-		</dependency>
 		<dependency>
 		    <groupId>fr.brouillard.oss.security.xhub</groupId>
 		    <artifactId>xhub4j-core</artifactId>
