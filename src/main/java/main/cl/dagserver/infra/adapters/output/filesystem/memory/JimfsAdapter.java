@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import main.cl.dagserver.application.ports.output.FileSystemOutputPort;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DirectoryEntryDTO;
 import main.cl.dagserver.infra.adapters.output.filesystem.DagFileSystem;
@@ -18,7 +17,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 @Profile("filesystem-memory")
-public class JimfsAdapter extends DagFileSystem implements FileSystemOutputPort {
+public class JimfsAdapter extends DagFileSystem {
 
 	private static final String WORK = "/work/";
 	private static final String SEP = "/";
