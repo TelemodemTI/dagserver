@@ -49,5 +49,7 @@ call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/
 if errorlevel 1 exit /b 1
 call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-sftp-test.xml >> test-output.log 2>&1
 if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-minio-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
 
 echo ==== Fin de pruebas: %date% %time% ==== >> test-output.log

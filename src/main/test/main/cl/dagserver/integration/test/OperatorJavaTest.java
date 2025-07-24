@@ -34,6 +34,8 @@ public class OperatorJavaTest extends BaseOperatorTest {
             params.selectTab("//*[@id=\"home_li\"]/a");
             params.sendParameter("classpath", classpath, "input");
     		params.sendParameter("className", className, "input");
+    		params.selectTab("//*[@id=\"file_li\"]/a");
+            params.selectFile("classpath",classpath);
             params.save();
             canvas.saveJar();
         	jobsPage = authenticatedPage.goToJobs();
@@ -112,8 +114,9 @@ public class OperatorJavaTest extends BaseOperatorTest {
             canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.JavaOperator");
             EditorParamModal params = canvas.selectStage(step2);
             params.selectTab("//*[@id=\"home_li\"]/a");
-            params.sendParameter("classpath", classpath, "input");
     		params.sendParameter("className", "${step0}", "input");
+    		params.selectTab("//*[@id=\"file_li\"]/a");
+            params.selectFile("classpath",classpath);
             params.save();
             canvas.save();
             canvas.close();
@@ -160,8 +163,12 @@ public class OperatorJavaTest extends BaseOperatorTest {
             canvas.addStep(dagname,step2,"main.cl.dagserver.infra.adapters.operators.JavaOperator");
             EditorParamModal params = canvas.selectStage(step2);
             params.selectTab("//*[@id=\"home_li\"]/a");
-            params.sendParameter("classpath", "${step0}", "input");
+            
     		params.sendParameter("className", classNames, "input");
+    		
+    		params.selectTab("//*[@id=\"file_li\"]/a");
+            params.selectFile("classpath","${step0}");
+    		
             params.save();
             canvas.save();
             canvas.close();

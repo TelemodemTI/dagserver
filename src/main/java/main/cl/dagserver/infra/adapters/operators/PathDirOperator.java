@@ -63,7 +63,7 @@ public class PathDirOperator extends OperatorStage {
 	@Override
 	public JSONObject getMetadataOperator() {
 		MetadataManager metadata = new MetadataManager("main.cl.dagserver.infra.adapters.operators.PathDirOperator");
-		metadata.setParameter("path", "file");
+		metadata.setParameter("path", "text");
 		metadata.setType("PROCCESS");
 		return metadata.generate();
 	}

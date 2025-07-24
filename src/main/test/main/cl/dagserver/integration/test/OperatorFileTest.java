@@ -35,8 +35,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.selectTab("//*[@id=\"home_li\"]/a");
             params.sendParameter("mode", "read", "list");
             params.sendParameter("firstRowTitles", "true", "list");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/prueba.csv");
+            params.sendParameter("filepath", "/prueba.csv", "input");
             params.save();
             canvas.saveJar();
         	jobsPage = authenticatedPage.goToJobs();
@@ -71,8 +70,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.selectTab("//*[@id=\"home_li\"]/a");
             params.sendParameter("mode", "read", "list");
             params.sendParameter("firstRowTitles", "true", "list");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/prueba.csv");
+            params.sendParameter("filepath", "/prueba.csv", "input");
             params.save();
             canvas.saveJar();
         	jobsPage = authenticatedPage.goToJobs();
@@ -108,8 +106,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.sendParameter("mode", "read", "list");
             params.sendParameter("firstRowTitles", "true", "list");
             params.sendParameter("rowDelimiter", ";", "input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/prueba.csv");
+            params.sendParameter("filepath", "/prueba.csv", "input");
             params.save();
             canvas.saveJar();
         	jobsPage = authenticatedPage.goToJobs();
@@ -145,8 +142,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.sendParameter("mode", "read", "list");
             params.sendParameter("firstRowTitles", "false", "list");
             params.sendParameter("rowDelimiter", ";", "input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/prueba.csv");
+            params.sendParameter("filepath", "/prueba.csv", "input");
             params.save();
             canvas.saveJar();
         	jobsPage = authenticatedPage.goToJobs();
@@ -182,8 +178,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.selectTab("//*[@id=\"home_li\"]/a");
             params.sendParameter("mode", "read", "list");
             params.sendParameter("firstRowTitles", "true", "list");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/noexiste.csv");
+            params.sendParameter("filepath", "/noexiste.csv", "input");
             params.save();
             canvas.saveJar();
         	jobsPage = authenticatedPage.goToJobs();
@@ -228,8 +223,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.sendParameter("mode", "write", "list");
             params.sendParameter("firstRowTitles", "true", "list");
             params.sendParameter("xcom", step1,"list");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/selenium/salida.txt");
+            params.sendParameter("filepath", "/selenium/salida.txt", "input");
             params.save();
             canvas.save();
             canvas.close();
@@ -286,8 +280,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.sendParameter("mode", "write", "list");
             params.sendParameter("firstRowTitles", "false", "list");
             params.sendParameter("xcom", step1,"list");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/selenium/salida.txt");
+            params.sendParameter("filepath", "/selenium/salida.txt", "input");
             params.save();
             canvas.save();
             canvas.close();
@@ -339,8 +332,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.sendParameter("firstRowTitles", "true", "list");
             params.sendParameter("xcom", step1,"list");
             params.sendParameter("rowDelimiter", ";", "input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/selenium/salida.txt");
+            params.sendParameter("filepath", "/selenium/salida.txt", "input");
             params.save();
             canvas.save();
             canvas.close();
@@ -393,8 +385,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.sendParameter("firstRowTitles", "false", "list");
             params.sendParameter("xcom", step1,"list");
             params.sendParameter("rowDelimiter", ";", "input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","/selenium/salida.txt");
+            params.sendParameter("filepath", "/selenium/salida.txt", "input");
             params.save();
             canvas.save();
             canvas.close();
@@ -474,8 +465,7 @@ public class OperatorFileTest extends BaseOperatorTest {
             params.selectTab("//*[@id=\"home_li\"]/a");
             params.sendParameter("mode", "read", "list");
             params.sendParameter("firstRowTitles", "true", "list");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filepath","${step0}");
+            params.sendParameter("filepath", "${step0}", "input");
             params.save();
             canvas.save();
             canvas.close();

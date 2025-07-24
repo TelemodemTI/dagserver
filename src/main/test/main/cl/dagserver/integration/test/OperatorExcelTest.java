@@ -53,8 +53,8 @@ public class OperatorExcelTest extends BaseOperatorTest {
             canvas = uncompileds.editDesign(jarname);
             canvas.selectDag(dagname);
             params = canvas.selectStage(step);
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filePath",filepath);
+            params.selectTab("//*[@id=\"home_li\"]/a");
+            params.sendParameter("filePath", filepath,"input");
             params.save();
             canvas.save();
             canvas.close();
@@ -104,8 +104,8 @@ public class OperatorExcelTest extends BaseOperatorTest {
             canvas = uncompileds.editDesign(jarname);
             canvas.selectDag(dagname);
             params = canvas.selectStage(step);
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filePath",filepath);
+            params.selectTab("//*[@id=\"home_li\"]/a");
+            params.sendParameter("filePath", filepath,"input");
             params.save();
             canvas.save();
             canvas.close();
@@ -160,8 +160,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
             params.sendParameter("sheetName", sheetName,"input");
     		params.sendParameter("startRow", startRow,"input");
     		params.sendParameter("startColumn", startColumn,"input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filePath","/selenium/salida.xls");
+            params.sendParameter("filePath", "/selenium/salida.xls","input");
             params.save();
             canvas.save();
             canvas.close();
@@ -222,8 +221,8 @@ public class OperatorExcelTest extends BaseOperatorTest {
             params.sendParameter("sheetName", sheetName,"input");
     		params.sendParameter("startRow", startRow,"input");
     		params.sendParameter("startColumn", startColumn,"input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filePath","/selenium/salida.xlsx");
+    		params.sendParameter("filePath", "/selenium/salida.xlsx","input");
+
             params.save();
             canvas.save();
             canvas.close();
@@ -315,8 +314,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
             params.sendParameter("sheetName", sheetName,"input");
     		params.sendParameter("startRow", startRow,"input");
     		params.sendParameter("startColumn", startColumn,"input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filePath","${step0}");
+    		params.sendParameter("filePath", "${step0}","input");
             params.save();
             canvas.save();
             canvas.close();
@@ -372,8 +370,7 @@ public class OperatorExcelTest extends BaseOperatorTest {
             params.sendParameter("sheetName", "${step0}","input");
     		params.sendParameter("startRow", startRow,"input");
     		params.sendParameter("startColumn", startColumn,"input");
-            params.selectTab("//*[@id=\"file_li\"]/a");
-            params.selectFile("filePath","/planilla.xls");
+    		params.sendParameter("filePath", "/planilla.xls","input");
             params.save();
             canvas.save();
             canvas.close();
