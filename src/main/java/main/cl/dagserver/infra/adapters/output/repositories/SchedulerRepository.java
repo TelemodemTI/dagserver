@@ -15,6 +15,7 @@ import jakarta.annotation.PostConstruct;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
@@ -39,8 +40,6 @@ import main.cl.dagserver.infra.adapters.output.repositories.entities.Metadata;
 import main.cl.dagserver.infra.adapters.output.repositories.entities.PropertyParameter;
 import main.cl.dagserver.infra.adapters.output.repositories.entities.ScheUncompiledDags;
 import main.cl.dagserver.infra.adapters.output.repositories.entities.User;
-import main.cl.dagserver.infra.adapters.output.repositories.mappers.SchedulerMapper;
-
 
 @Component
 @ImportResource("classpath:properties-config.xml")
@@ -50,7 +49,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	private static final String VALUE = "value";
 	private static final String VALUEP = "value.";
 	private static final String OPTEXT = ".opts";
-	
+	private ModelMapper modelMapper = new ModelMapper();
 	private static final String UNCOMPILEDQUERY = "select uncom from ScheUncompiledDags uncom where uncom.uncompiledId = ";
 	
 	@Autowired
@@ -61,8 +60,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	
 	@Autowired
 	private DAO dao;
-	@Autowired
-	private SchedulerMapper mapper;
+	
 	
 	@PostConstruct
     private void loadPropertiesToRepo() {
@@ -98,23 +96,23 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	
 	public List<EventListenerDTO> listEventListeners(){
 		var list = dao.read(EventListener.class, "select listener from EventListener as listener");
-		return list.stream().map(elt -> mapper.toEventListenerDTO(elt)).toList();
+		return list.stream().map(elt -> modelMapper.map(elt,EventListenerDTO.class)).toList();
 	}
 	public List<EventListenerDTO> getEventListeners(String listenerName){
 		var list = dao.read(EventListener.class, "select listener from EventListener as listener where listener.listenerName = '"+listenerName+"'");
-		return list.stream().map(elt -> mapper.toEventListenerDTO(elt)).toList();
+		return list.stream().map(elt -> modelMapper.map(elt,EventListenerDTO.class)).toList();
 	}
 	
 	public List<LogDTO> getLogs(String dagname){
 		var list = dao.read(Log.class, "select log from Log as log where log.dagname = '"+dagname+"' order by log.execDt desc");
-		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
+		return list.stream().map(elt -> modelMapper.map(elt,LogDTO.class)).toList();
 	}
 	
 	public LogDTO getLog(Integer logid){
 		HashMap<String, Object> param = new HashMap<>();
 		param.put("logid",logid);
 		var log = dao.read(Log.class, "select log from Log as log where log.id = :logid",param).get(0);
-		return mapper.toLogDTO(log);
+		return modelMapper.map(log,LogDTO.class);
 	}
 
 	public void setLog(Map<String, String> parmdata, Map<String, OperatorStatus> status, List<String> timestamps) {
@@ -165,7 +163,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	
 	public List<UserDTO> findUser(String username) {
 		List<User> founded = dao.read(User.class, "select user from User as user where user.username = '"+username+"'");
-		return founded.stream().map(elt -> mapper.toUserDTO(elt)).toList(); 
+		return founded.stream().map(elt -> modelMapper.map(elt,UserDTO.class)).toList();
 	}
 	public List<PropertyParameterDTO> getProperties(String groupname) throws DomainException{
 		try {
@@ -175,7 +173,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 			} else {
 				founded = dao.read(PropertyParameter.class, "select props from PropertyParameter as props");
 			}
-			return founded.stream().map(elt -> mapper.toPropertyParameterDTO(elt)).toList();	
+			return founded.stream().map(elt -> modelMapper.map(elt,PropertyParameterDTO.class)).toList();
 		} catch (Exception e) {
 			throw new DomainException(e);
 		}
@@ -450,7 +448,7 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 		var users = dao.read(User.class, "select creds from User as creds");
 		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
 			User user = iterator.next();
-			list.add(mapper.toUserDTO(user));
+			list.add(modelMapper.map(user,UserDTO.class));
 		}
 		return list;
 	}
@@ -538,13 +536,13 @@ public class SchedulerRepository implements SchedulerRepositoryOutputPort {
 	@Override
 	public List<LogDTO> getLastLogs() {
 		List<Log> list = dao.read(Log.class,"select log from Log as log order by log.execDt desc",new HashMap<>(),0,5);
-		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
+		return list.stream().map(elt -> modelMapper.map(elt,LogDTO.class)).toList();
 	}
 	
 	@Override
 	public List<LogDTO> getAllLogs() {
 		List<Log> list = dao.read(Log.class,"select log from Log as log order by log.execDt desc",new HashMap<>());
-		return list.stream().map(elt -> mapper.toLogDTO(elt)).toList(); 
+		return list.stream().map(elt -> modelMapper.map(elt,LogDTO.class)).toList();
 	}
 
 	@Override

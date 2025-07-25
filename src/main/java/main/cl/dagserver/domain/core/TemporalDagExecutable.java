@@ -51,7 +51,7 @@ public class TemporalDagExecutable extends DagExecutable  {
 	protected OperatorStatus evaluate(String stopAtStep) {
 		evalDt = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-		evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
+		evalstring = RandomGenerator.generateRandomString(12)+"_"+sdf.format(evalDt);
 		var fa = this.createDagMemoryAppender(evalstring);
 		xcom = new HashMap<>();
 		logdag = Logger.getLogger(evalstring);

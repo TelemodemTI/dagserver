@@ -9,6 +9,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,6 +39,7 @@ import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.core.OperatorStage;
+import main.cl.dagserver.domain.core.RandomGenerator;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
@@ -129,7 +131,9 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				String[] name = ze.getName().replace(".properties", "").split("/");
 				props.put(name[name.length-1], prop);
 		} catch (Exception e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJarProperties"));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "analizeJarProperties",evalkey));
 		}
 		return props;
 	}
@@ -148,7 +152,9 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				 }
 			}
 		} catch (Exception e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "getProperties"));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "getProperties",evalkey));
 		}
 		return prop;
 	}
@@ -301,7 +307,9 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 				}
 			}
 		} catch (Exception e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "activateDeactivate"));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "activateDeactivate",evalkey));
 		}
 	}
 	public List<DagDTO> getDagDetail(String jarname) throws DomainException {
@@ -358,7 +366,9 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 					result.add(dto);
 				}	
 			} catch (Exception e) {
-				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "getDagDetailJAR"));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+				String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "getDagDetailJAR", evalkey));
 			}	
 		}
 		return result;
@@ -407,7 +417,9 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 		    dag.setDagname(dagname);
 		    return dag;	
 		} catch (Exception e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "initializeDag"));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "initializeDag",evalkey));
 			throw new DomainException(e);
 		}
 		

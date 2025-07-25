@@ -184,6 +184,7 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 			ex.setClassname(map.get("classname"));
 			ex.setMethod(map.get("method"));
 			ex.setStack(map.get("stacktrace"));
+			ex.setEvalkey(map.get("evalkey"));
 			newrv.add(ex);
 		}
 		return newrv;

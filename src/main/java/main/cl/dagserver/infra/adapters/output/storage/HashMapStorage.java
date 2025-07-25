@@ -90,6 +90,7 @@ public class HashMapStorage implements StorageOutputPort {
 		excpd.put("classname", classname);
 		excpd.put("method",method);
 		excpd.put("stacktrace",stacktrace);
+		excpd.put("evalkey",event.getEvalstring());
 		mapExceptions.put(sdf.format(new Date()), excpd);	
 	}
 

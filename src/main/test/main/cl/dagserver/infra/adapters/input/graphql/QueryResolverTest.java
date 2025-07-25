@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
@@ -31,9 +30,7 @@ import main.cl.dagserver.domain.model.PropertyDTO;
 import main.cl.dagserver.domain.model.SessionDTO;
 import main.cl.dagserver.domain.model.UncompiledDTO;
 import main.cl.dagserver.domain.model.UserDTO;
-import main.cl.dagserver.infra.adapters.input.graphql.mappers.QueryResolverMapper;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Scheduled;
-import main.cl.dagserver.infra.adapters.input.graphql.types.Session;
 
 class QueryResolverTest {
 
@@ -45,18 +42,15 @@ class QueryResolverTest {
 	@Mock
 	LoginUseCase login;
 	
-	@Mock
-	QueryResolverMapper mapper;
+	
 	
 	@BeforeEach
     void init() {
 		handler = mock(SchedulerQueryUseCase.class);
 		login = mock(LoginUseCase.class);
-		mapper = mock(QueryResolverMapper.class);
-		resolver = new QueryResolver(handler,login,mapper);
+		resolver = new QueryResolver(handler,login);
 		ReflectionTestUtils.setField(resolver, "handler", handler);
 		ReflectionTestUtils.setField(resolver, "login", login);
-		ReflectionTestUtils.setField(resolver, "mapper", mapper);
 		
 	}
 	@Test
@@ -64,12 +58,6 @@ class QueryResolverTest {
 		SessionDTO rv = new SessionDTO();
 		rv.setToken("test");
 		rv.setRefreshToken("refresh");
-		
-		Session session = new Session();
-		session.setRefreshToken("refresh");
-		session.setToken("token");
-		
-		when(mapper.toSession(any())).thenReturn(session);
 		when(login.apply(anyString())).thenReturn(rv);
 		var test = resolver.login("test");
 		assertNotNull(test);

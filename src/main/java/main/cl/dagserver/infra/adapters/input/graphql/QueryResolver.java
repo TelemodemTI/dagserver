@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -21,7 +22,6 @@ import main.cl.dagserver.domain.core.DataFrameUtils;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.DagDTO;
 import main.cl.dagserver.domain.model.LogDTO;
-import main.cl.dagserver.infra.adapters.input.graphql.mappers.QueryResolverMapper;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Account;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Agent;
 import main.cl.dagserver.infra.adapters.input.graphql.types.Available;
@@ -45,17 +45,16 @@ public class QueryResolver {
 	private static final String JOBLISTENER = "JOB LISTENER";
 	private SchedulerQueryUseCase handler;
 	private LoginUseCase login;
-	private QueryResolverMapper mapper;
+	private ModelMapper modelMapper = new ModelMapper();
 
 	@Autowired
-	public QueryResolver(SchedulerQueryUseCase handler,LoginUseCase login,QueryResolverMapper mapper) {
+	public QueryResolver(SchedulerQueryUseCase handler,LoginUseCase login) {
 		this.handler = handler;
 		this.login = login;
-		this.mapper = mapper;
 	}
 	@QueryMapping
 	public Session login(@Argument String token) {
-		return mapper.toSession(login.apply(token));
+		return modelMapper.map(login.apply(token),Session.class);
 	}
 	@QueryMapping
 	public String operatorsMetadata() throws DomainException {
@@ -223,19 +222,19 @@ public class QueryResolver {
 	}
 	@QueryMapping
 	public List<Property> properties() throws DomainException{
-		return handler.properties().stream().map(elt -> mapper.toProperty(elt)).toList();
+		return handler.properties().stream().map(elt -> modelMapper.map(elt, Property.class)).toList();
 	}
 	@QueryMapping
 	public List<Agent> agents(){
-		return handler.agents().stream().map(elt -> mapper.toAgent(elt)).toList();
+		return handler.agents().stream().map(elt -> modelMapper.map(elt,Agent.class)).toList();
 	}
 	@QueryMapping
 	public List<Uncompiled> getUncompileds(@Argument String token) throws DomainException{
-		return handler.getUncompileds(token).stream().map(elt -> mapper.toUncompiled(elt)).toList();
+		return handler.getUncompileds(token).stream().map(elt -> modelMapper.map(elt,Uncompiled.class)).toList();
 	}
 	@QueryMapping
 	public List<Account> credentials(@Argument String token) throws DomainException{
-		return handler.credentials(token).stream().map(elt -> mapper.toAccount(elt)).toList();
+		return handler.credentials(token).stream().map(elt -> modelMapper.map(elt,Account.class)).toList();
 	}
 	@QueryMapping
 	public String getIcons(@Argument String type) throws DomainException {
@@ -256,19 +255,21 @@ public class QueryResolver {
 	@QueryMapping
 	public List<Exceptions> exceptions(@Argument String token) {
 		try {
-			return handler.getExceptions(token).stream().map(elt -> mapper.toExceptions(elt)).toList();	
+			return handler.getExceptions(token).stream().map(elt -> modelMapper.map(elt,Exceptions.class)).toList();	
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
 	}
 	@QueryMapping
 	public DirectoryEntry mounted(@Argument String token) throws DomainException {
-		return mapper.toDirectoryEntry(handler.mounted(token));
+		var entry = modelMapper.map(handler.mounted(token),DirectoryEntry.class);
+		entry.setType("folder");
+		return entry;
 	}
 	@QueryMapping
 	public List<KeystoreEntry> keystoreEntries(@Argument String token){
 		try {
-			return handler.getKeystoreEntries(token).stream().map(elt -> mapper.toKeystoreEntry(elt)).toList();	
+			return handler.getKeystoreEntries(token).stream().map(elt -> modelMapper.map(elt,KeystoreEntry.class)).toList();
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
