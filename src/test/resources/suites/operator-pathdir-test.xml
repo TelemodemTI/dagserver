@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Operator PathDir Tests">
+  <test name="Operator PathDir Tests">
+    <classes>
+      <class name="main.cl.dagserver.integration.test.OperatorPathDirTest"/>
+    </classes>
+  </test>
+</suite>
