@@ -162,6 +162,7 @@ public class QueryResolver {
 			entry.setExecDt(log.getExecDt());
 			entry.setId(log.getId());
 			entry.setValue(log.getValue());
+			entry.setEvalkey(log.getEvalkey());
 			JSONObject wrapper = new JSONObject();
 			var mpa = log.getXcom();
 			var keys = mpa.keySet();
@@ -260,6 +261,18 @@ public class QueryResolver {
 			return new ArrayList<>();
 		}
 	}
+	
+	@QueryMapping
+	public List<Exceptions> exceptionsFromExecution(@Argument String token,@Argument String evalkey) {
+		try {
+			return handler.getExceptions(token,evalkey).stream().map(elt -> modelMapper.map(elt,Exceptions.class)).toList();	
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	
+	
 	@QueryMapping
 	public DirectoryEntry mounted(@Argument String token) throws DomainException {
 		var entry = modelMapper.map(handler.mounted(token),DirectoryEntry.class);

@@ -181,10 +181,23 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   getExceptions(): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
       var token = localStorage.getItem("dagserver_token")
-      var string = "query exceptions($token: String) {exceptions(token:$token) {eventDt,classname,method,stack}}"
+      var string = "query exceptions($token: String) {exceptions(token:$token) {eventDt,classname,method,stack,evalkey}}"
       this.query(string,{token:token}).subscribe((result:any)=>{
         if(result && result.exceptions){
           resolve(result.exceptions as any[]);
+        }
+      })
+    })
+  }
+
+
+  getExceptionsFromExecution(evalkey:String): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      var token = localStorage.getItem("dagserver_token")
+      var string = "query exceptionsFromExecution($token: String, $evalkey:String) {exceptionsFromExecution(token:$token, evalkey:$evalkey) {eventDt,classname,method,stack,evalkey}}"
+      this.query(string,{token:token, evalkey:evalkey}).subscribe((result:any)=>{
+        if(result && result.exceptionsFromExecution){
+          resolve(result.exceptionsFromExecution as any[]);
         }
       })
     })
@@ -193,7 +206,7 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
 
   getLastLogs(): Promise<Log[]> {
     return new Promise<Log[]>((resolve, reject) => {
-      var string = "query last {last {id,dagname,execDt,value,outputxcom,status, channel,marks}}"
+      var string = "query last {last {id,dagname,execDt,value,outputxcom,status, channel,marks , evalkey}}"
       this.query(string,{}).subscribe((result:any)=>{
         if(result && result.last){
           resolve(result.last as Log[]);
@@ -448,8 +461,9 @@ export class GraphQLOutputPortAdapterService implements GraphQLOutputPort {
   }
   logs(dagname: String): Promise<Log[]> {
     return new Promise<Log[]>((resolve, reject) => {
-      var string = "query logs($dagname:String!) {logs(dagname:$dagname) {id,dagname,execDt,value,outputxcom,xcomkey,status, channel,marks}}"
+      var string = "query logs($dagname:String!) {logs(dagname:$dagname) {id,dagname,execDt,value,outputxcom,xcomkey,status, channel,marks , evalkey}}"
       this.query(string,{dagname:dagname}).subscribe((result:any)=>{
+        console.log(result.logs)
         if(result && result.logs){
           resolve(result.logs as Log[]);
         }

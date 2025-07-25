@@ -76,7 +76,6 @@ export class ExistingjComponent {
     }
   }
   handleKeyDown(event: KeyboardEvent) {
-    console.log(event)
     if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
       event.preventDefault();
       this.saveJar();
@@ -238,21 +237,12 @@ export class ExistingjComponent {
     this.currStepname = item.step
     this.modalparam.close()
     this.valuer.show()
-    /*
-    let data = await this.service.executeDagUncompiled(this.uncompiled,item.dagname,item.step,"");    
-    this.service.sendResultExecution(data);
-    this.resultStepModal.show(data);*/
   }
   async playDesignJob(){
     if(this.hasViewDetail){
       this.currDagname = this.selectedTab
       this.currStepname = ""
       this.valuer.show()
-      /*
-      let data = await this.service.executeDagUncompiled(this.uncompiled,this.selectedTab,"","");    
-      this.service.sendResultExecution(data);
-      this.resultStepModal.show(data);
-      */
     } else {
       alert("you must select DAG implementation first!")
     }    

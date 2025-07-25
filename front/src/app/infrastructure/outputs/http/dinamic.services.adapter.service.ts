@@ -91,7 +91,8 @@ export class DinamicAdapterService implements DinamicOutputPort {
                 dagname: dagname,
                 stepname: stepname,
                 token: token,
-                args: args,
+                args: args
+                
             };
             this.http.post(url, JSON.stringify(body), { headers: headers }).subscribe((result:any)=>{
                 resolve(result)

@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class LogPOJO {
 	private Integer id;
+	private String evalkey;
 	private String dagname;
 	private Date execDt;
 	private String value;

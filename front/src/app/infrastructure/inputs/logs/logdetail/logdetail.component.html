@@ -46,7 +46,7 @@
                             
                             
                             <div class="col-md-6">
-                                <b>Status</b>
+                                <b>Status</b>{{item?.evalkey}}<br>
                                 <div class="table-responsive">
                                     <table class="table table-striped table-bordered table-hover">
                                         <thead>
@@ -63,7 +63,14 @@
                                         </tbody>
                                     </table>
                                 </div>
-
+                                <br>
+                                <label>Exceptions</label><br>
+                                <div class="list-group">
+                                    <a class="list-group-item" *ngFor="let item of exceptions" (click)="expDetail(item)">
+                                        <span class="badge">{{item.eventDt}}</span>
+                                        {{item.method}}
+                                    </a>
+                                </div>
                             </div>
                             
                         </div>
