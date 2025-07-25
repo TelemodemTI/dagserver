@@ -117,7 +117,7 @@ public abstract class DagFileSystem implements FileSystemOutputPort {
 	
 	public void createFolder(String foldername) throws DomainException {
 	    try {
-	        Path folderPath = this.getFolderPath(foldername);
+	        Path folderPath = this.getPath(foldername);
 	        Files.createDirectories(folderPath);
 	    } catch (IOException e) {
 	        throw new DomainException(e);
@@ -128,10 +128,10 @@ public abstract class DagFileSystem implements FileSystemOutputPort {
 	    try {
 	        Path targetPath;
 	        if (file == null || file.isEmpty()) {
-	            targetPath = this.getFolderPath(folder);
+	            targetPath = this.getPath(folder);
 	        } else {
 	            String realpath = (folder + SEP + file).replace("//", SEP ).replace("/\\", SEP);            
-	            targetPath = this.getFolderPath(realpath);
+	            targetPath = this.getPath(realpath);
 	        }
 	        Files.delete(targetPath);
 	    } catch (IOException e) {

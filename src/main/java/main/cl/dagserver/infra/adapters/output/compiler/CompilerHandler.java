@@ -174,13 +174,13 @@ public class CompilerHandler implements CompilerOutputPort {
         return false;
     }
 	private void validateOverwrite(String jarName, Boolean force) throws DomainException {
-	    Path filePath = fileSystem.getFolderPath(jarName);
+	    Path filePath = fileSystem.getPath(jarName);
 	    if (Files.exists(filePath) && Boolean.FALSE.equals(force)) {
 		    throw new DomainException(new Exception("File exists"));
 		}
 	}
 	public void validateDagOverwrite(String dagname) throws DomainException {	    
-	    Path folderPath = fileSystem.getFolderPath();
+	    Path folderPath = fileSystem.getPath("/");
 	    String className = "generated_dag/main/" + dagname + ".class";
 
 	    try (Stream<Path> paths = Files.walk(folderPath)) {
@@ -208,7 +208,7 @@ public class CompilerHandler implements CompilerOutputPort {
         }
 	}
 	private Unloaded<DagExecutable> getClassDefinition(Map<String, String> dtomap, JSONArray boxes) throws DomainException {
-		Path folderPath = fileSystem.getFolderPath();
+		Path folderPath = fileSystem.getPath("/");
 	    ClassFileLocator classFileLocator = new DirectoryClassFileLocator(folderPath.toString());
 	    TypePool pool = new TypePool.Default(new CacheProvider.Simple(), classFileLocator, TypePool.Default.ReaderMode.FAST);
 	    
@@ -253,7 +253,7 @@ public class CompilerHandler implements CompilerOutputPort {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		String tag = sdf.format(new Date());
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-	    Path jarFilePath = fileSystem.getFolderPath(tag+"."+jarname);
+	    Path jarFilePath = fileSystem.getPath(tag+"."+jarname);
 	    try (
 	        InputStream fis = classloader.getResourceAsStream("basedag.zip");
 	        OutputStream fos = Files.newOutputStream(jarFilePath);
@@ -346,7 +346,7 @@ public class CompilerHandler implements CompilerOutputPort {
     @Override
     public void deleteJarfile(String jarname) throws DomainException {
         try {
-            Path removePath = fileSystem.getFolderPath(jarname);
+            Path removePath = fileSystem.getPath(jarname);
             if(removePath != null) {
             	Files.deleteIfExists(removePath);  // Esto elimina el archivo si existe, similar a FileDeleteStrategy.FORCE.delete
             }
@@ -361,7 +361,7 @@ public class CompilerHandler implements CompilerOutputPort {
 
     @Override
     public JSONObject reimport(String jarname) throws DomainException {
-        Path jarFilePath = fileSystem.getFolderPath(jarname);
+        Path jarFilePath = fileSystem.getPath(jarname);
         if (jarFilePath == null || !Files.exists(jarFilePath)) {
             throw new DomainException(new Exception("Jar file not found"));
         }

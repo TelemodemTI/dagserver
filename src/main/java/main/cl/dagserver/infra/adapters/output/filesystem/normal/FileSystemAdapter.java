@@ -22,21 +22,12 @@ public class FileSystemAdapter extends DagFileSystem {
 	private String pathfolder;
 		
 	@Override
-	public Path getFolderPath() {
-		return Paths.get(pathfolder);
-		
-	}
-	@Override
-	public Path getFolderPath(String jarname) {
+	public Path getPath(String jarname) {
 		return Paths.get(pathfolder, jarname);
 	}
 	@Override
-	public Path getJDBCDriversPath(String inputPath) {
-		return Paths.get(pathfolder);
-	}
-	@Override
 	public DirectoryEntryDTO getContents() throws DomainException {
-		Path root = this.getFolderPath();
+		Path root = this.getPath("/");
 		DirectoryEntryDTO directoryEntry = new DirectoryEntryDTO();
 	    directoryEntry.setPath("/");
 	    directoryEntry.setContent(getFileEntries(root));
@@ -47,7 +38,7 @@ public class FileSystemAdapter extends DagFileSystem {
 	    try {
 	    	Path sanitizedUploadPath = Paths.get(uploadPath).normalize(); 
 	        Path sanitizedRealname = Paths.get(realname).getFileName(); // Solo toma el nombre del archivo
-	        Path destinationPath = this.getFolderPath(sanitizedUploadPath.toString()).resolve(sanitizedRealname);
+	        Path destinationPath = this.getPath(sanitizedUploadPath.toString()).resolve(sanitizedRealname);
 	        if (destinationPath.getParent() != null) {
 	            Files.createDirectories(destinationPath.getParent());
 	        }
