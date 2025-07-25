@@ -32,7 +32,6 @@ public class OperatorJavaTest extends BaseOperatorTest {
             canvas.addStep(dagname,step,"main.cl.dagserver.infra.adapters.operators.JavaOperator");
             EditorParamModal params = canvas.selectStage(step);
             params.selectTab("//*[@id=\"home_li\"]/a");
-            params.sendParameter("classpath", classpath, "input");
     		params.sendParameter("className", className, "input");
     		params.selectTab("//*[@id=\"file_li\"]/a");
             params.selectFile("classpath",classpath);
