@@ -34,9 +34,16 @@
                     <div class="col-md-6">
                         <label>Result status</label><br>
                         {{data?.result}}<br>
-                        {{data?.evalDt}}
-
-                    </div>
+                        {{data?.evalDt}}<br>
+                        {{data?.evalkey}}<br>
+                        <br>
+                        <label>Exceptions</label><br>
+                        <div class="list-group">
+                            <a class="list-group-item" *ngFor="let item of exceptions" (click)="expDetail(item)">
+                                <span class="badge">{{item.eventDt}}</span>
+                                {{item.method}}
+                            </a>
+                        </div>
 
             </div>
             <div class="modal-footer">

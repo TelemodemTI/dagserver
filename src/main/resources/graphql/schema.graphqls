@@ -81,6 +81,7 @@ type Scheduled {
 
 type LogEntry {
 	id: Int,
+	evalkey: String,
 	dagname: String,
 	execDt: String,
 	value: String,
@@ -101,7 +102,8 @@ type Exceptions {
 	eventDt: String,
 	classname: String,
 	method: String,
-	stack: String
+	stack: String,
+	evalkey: String
 }
 
 type Session {
@@ -144,6 +146,7 @@ type Query {
 	channelStatus(token: String) : [Channel],
 	exportUncompiled(token: String,uncompiled:Int): String,
 	exceptions(token:String): [Exceptions],
+	exceptionsFromExecution(token:String, evalkey:String): [Exceptions],
 	mounted(token:String): DirectoryEntry,
 	keystoreEntries(token:String):[KeystoreEntry]
 }

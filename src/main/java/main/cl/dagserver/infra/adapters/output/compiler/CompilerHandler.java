@@ -40,6 +40,7 @@ import main.cl.dagserver.domain.annotations.Operator;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
 import main.cl.dagserver.domain.core.OperatorStage;
+import main.cl.dagserver.domain.core.RandomGenerator;
 import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.domain.model.AuthDTO;
 import net.bytebuddy.ByteBuddy;
@@ -296,7 +297,8 @@ public class CompilerHandler implements CompilerOutputPort {
 	        }
 	        zos.closeEntry();
 	    } catch (Exception e) {
-	        eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "packageJar"));
+	    	String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+	        eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "packageJar",evalkey));
 	    }
 	}
     public String getPackageDef(String input) {

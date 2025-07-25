@@ -1,5 +1,7 @@
 package main.cl.dagserver.infra.adapters.confs;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.quartz.Job;
@@ -21,6 +23,7 @@ import main.cl.dagserver.application.ports.input.GetDefaultJobsUseCase;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.core.DagExecutable;
 import main.cl.dagserver.domain.core.ExceptionEventLog;
+import main.cl.dagserver.domain.core.RandomGenerator;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 
@@ -77,7 +80,9 @@ public class WebConfig implements WebMvcConfigurer {
 					 	
 				}
 			} catch (Exception e) {
-				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "contextRefreshedEvent"));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+				String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "contextRefreshedEvent",evalkey));
 			}	
 		}
 	}
@@ -90,7 +95,9 @@ public class WebConfig implements WebMvcConfigurer {
 			quartz.stop();
 			quartz.getScheduler().clear();
 		} catch (Exception e) {
-			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "contextCleanupEvent"));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+			eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "contextCleanupEvent", evalkey));
 		}
 	}
 	@Bean

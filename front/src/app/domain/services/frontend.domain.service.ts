@@ -294,4 +294,7 @@ export class FrontEndDomainService implements
   removeException(eventDt:string){
     return this.adapter.removeException(eventDt);
   }
+  getExceptionsFromExecution(evalkey:String): Promise<any[]>{
+    return this.adapter.getExceptionsFromExecution(evalkey);
+  }
 }

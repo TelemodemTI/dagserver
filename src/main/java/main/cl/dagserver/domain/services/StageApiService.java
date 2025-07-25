@@ -151,6 +151,7 @@ public class StageApiService extends BaseServiceComponent implements StageApiUse
 			output.put("result", result);
 			output.put("dagname", dagname);
 			output.put("objetive", stepName);
+			output.put("evalkey", dagtmp.getEvalstring());
 			output.put("evalDt", sdf.format(dagtmp.getEvalDt()));
 			output.put("log", dagtmp.getLogText());
 		} catch (Exception e) {

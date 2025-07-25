@@ -19,6 +19,7 @@ export abstract class GraphQLOutputPort {
     public abstract reimport(jarname: any): Promise<any>;
     public abstract removeException(eventDt: string): Promise<void>
     public abstract getExceptions(): Promise<any[]>
+    public abstract getExceptionsFromExecution(evalkey:String): Promise<any[]>
     public abstract getLastLogs(): Promise<Log[]>;
     public abstract logout(): Promise<void>;
     public abstract renameUncompiled(uncompiled: number, arg1: any): Promise<void>;

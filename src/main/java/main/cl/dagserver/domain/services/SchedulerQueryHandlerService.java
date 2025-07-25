@@ -184,7 +184,31 @@ public class SchedulerQueryHandlerService extends BaseServiceComponent implement
 			ex.setClassname(map.get("classname"));
 			ex.setMethod(map.get("method"));
 			ex.setStack(map.get("stacktrace"));
+			ex.setEvalkey(map.get("evalkey"));
 			newrv.add(ex);
+		}
+		return newrv;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ExceptionsDTO> getExceptions(String token, String evalkey) throws DomainException {
+		auth.untokenize(token);
+		List<ExceptionsDTO> newrv = new ArrayList<>();
+		var exceptions = this.storage.listException();
+		var keys = exceptions.keySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String dt = iterator.next();
+			Map<String,String> map = (Map<String,String>) exceptions.get(dt);
+			if(evalkey.equals(map.get("evalkey").toString())) {
+				ExceptionsDTO ex = new ExceptionsDTO();
+				ex.setEventDt(dt);
+				ex.setClassname(map.get("classname"));
+				ex.setMethod(map.get("method"));
+				ex.setStack(map.get("stacktrace"));
+				ex.setEvalkey(map.get("evalkey"));
+				newrv.add(ex);	
+			}
 		}
 		return newrv;
 	}

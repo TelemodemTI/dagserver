@@ -3,6 +3,7 @@ package main.cl.dagserver.infra.adapters.output.storage;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.nhl.dflib.DataFrame;
 
 import main.cl.dagserver.domain.core.ExceptionEventLog;
+import main.cl.dagserver.domain.core.RandomGenerator;
 import main.cl.dagserver.domain.exceptions.DomainException;
 
 class HashMapStorageTest {
@@ -24,7 +26,9 @@ class HashMapStorageTest {
 	
 	@Test
 	void addExceptionTest() {
-		ExceptionEventLog event = new ExceptionEventLog(new Object(),new DomainException(new Exception("test")),"message"); 
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+		ExceptionEventLog event = new ExceptionEventLog(new Object(),new DomainException(new Exception("test")),"message", evalkey); 
 		storage.addException(event);
 		assertTrue(true);
 	}

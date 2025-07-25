@@ -31,6 +31,7 @@ public interface SchedulerQueryUseCase {
 	String exportUncompiled(String token, Integer uncompiled) throws DomainException;
 	List<LogDTO> getLastLogs() throws DomainException;
 	List<ExceptionsDTO> getExceptions(String token) throws DomainException;
+	List<ExceptionsDTO> getExceptions(String token,String evalkey) throws DomainException;
 	DirectoryEntryDTO mounted(String token) throws DomainException;
 	List<KeystoreEntryDTO> getKeystoreEntries(String token) throws DomainException;
 }

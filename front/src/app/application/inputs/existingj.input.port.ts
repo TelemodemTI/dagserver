@@ -8,4 +8,5 @@ export abstract class ExistingJInputPort {
   public abstract getIcons(type:string) : Promise<string>;
   public abstract executeDagUncompiled(uncompiledId:number,dagname:string,stepname:string,args:string) : Promise<any>
   public abstract sendResultExecution(data:any): Promise<void>
+  public abstract getExceptionsFromExecution(evalkey:String): Promise<any[]>
 }

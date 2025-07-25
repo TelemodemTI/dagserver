@@ -4,7 +4,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import java.lang.reflect.Constructor;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,9 +30,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
-
 import com.nhl.dflib.DataFrame;
-
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.annotations.Operator;
@@ -42,7 +39,6 @@ import main.cl.dagserver.domain.exceptions.DomainException;
 import main.cl.dagserver.infra.adapters.confs.ApplicationContextUtils;
 import main.cl.dagserver.infra.adapters.confs.InMemoryLoggerAppender;
 import main.cl.dagserver.infra.adapters.confs.QuartzConfig;
-
 
 public class DagExecutable implements Job,JobListener  {
 	
@@ -94,7 +90,7 @@ public class DagExecutable implements Job,JobListener  {
 	
 	private String eventname = "";
 	private Map<String,DagNode> nodeList = new HashMap<>();
-	private SecureRandom random = new SecureRandom();
+	
 	protected Properties extrArgs;
 	protected SchedulerRepositoryOutputPort repo;
 	protected QuartzConfig quartzConfig;
@@ -143,7 +139,7 @@ public class DagExecutable implements Job,JobListener  {
 		Map<String,OperatorStatus> status = new HashMap<>();
 		Date evalDt = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-		String evalstring = this.generateRandomString(12)+"_"+sdf.format(evalDt);
+		String evalstring = RandomGenerator.generateRandomString(12)+"_"+sdf.format(evalDt);
 		List<String> timestamps = new ArrayList<>();
 		var fa = this.createDagMemoryAppender(evalstring);
 		Map<String,Object> data = new HashMap<>();
@@ -204,7 +200,7 @@ public class DagExecutable implements Job,JobListener  {
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			} catch (Exception e) {
-				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "evaluate"));
+				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "evaluate",evalstring));
 				throw new JobExecutionException(e);
 			}
 		}
@@ -241,7 +237,7 @@ public class DagExecutable implements Job,JobListener  {
 	            this.instanciateEvaluate(args, parmdata, timestamps);
 	        } catch (JobExecutionException e) {
 	            logdag.error(e);
-	            eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "scheduler"));
+	            eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "scheduler", evalstring));
 	        }
 	    });
 	}
@@ -414,7 +410,9 @@ public class DagExecutable implements Job,JobListener  {
 				this.executionSource = "JOB_LISTENER";
 				this.quartzConfig.executeInmediate(this);
 			} catch (DomainException e) {
-				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "jobToBeExecuted"));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+				String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "jobToBeExecuted", evalkey));
 			}	
 		}
 	}
@@ -433,7 +431,9 @@ public class DagExecutable implements Job,JobListener  {
 				this.executionSource = "JOB_LISTENER";
 				this.quartzConfig.executeInmediate(this);
 			} catch (DomainException e) {
-				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "jobWasExecuted"));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+				String evalkey = RandomGenerator.generateRandomString(12)+"_"+sdf.format(new Date());
+				eventPublisher.publishEvent(new ExceptionEventLog(this, new DomainException(e), "jobWasExecuted", evalkey));
 			}	
 		}
 	}
@@ -491,17 +491,7 @@ public class DagExecutable implements Job,JobListener  {
 	public JobDetail getDetail() {
 		return this.jobDetail;
 	}
-	protected String generateRandomString(Integer targetStringLength) {
-		int leftLimit = 97; // letter 'a'
-	    int rightLimit = 122; // letter 'z'
-	    StringBuilder buffer = new StringBuilder(targetStringLength);
-	    for (int i = 0; i < targetStringLength; i++) {
-	        int randomLimitedInt = leftLimit + (int) 
-	          (this.random.nextFloat() * (rightLimit - leftLimit + 1));
-	        buffer.append((char) randomLimitedInt);
-	    }
-	    return buffer.toString();
-	}
+	
 
 	public String getExecutionSource() {
 		return executionSource;

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } fr
 import { Router } from '@angular/router';
 import { InputsChannelsInputPort } from 'src/app/application/inputs/inputschannels.input.port';
 import { PropsInputPort } from 'src/app/application/inputs/props.input.port';
+declare var $:any
 @Component({
   selector: 'app-api-key',
   templateUrl: './api-key.component.html',
@@ -21,6 +22,9 @@ export class ApiKeyComponent implements OnInit {
     this.propsApis = properties1.filter((elem:any)=>{ return elem.group == "HTTP_CHANNEL_API_KEY"})
     console.log(this.propsApis)
     this.cdr.detectChanges();
+     setTimeout(()=> {
+      $('#dataTables-apikey').DataTable({responsive: true});
+    },100)
   }
   async createHttpApiKey(){
     let value = prompt("Enter the application name")
