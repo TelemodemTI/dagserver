@@ -15,6 +15,8 @@
 	<description>dagserver</description>
 	<packaging>jar</packaging>
 	<properties>
+		<aetherVersion>1.1.0</aetherVersion>
+    	<mavenVersion>3.2.1</mavenVersion>
 		<java.version>17</java.version>
 		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
 		<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -267,6 +269,71 @@
 		    <artifactId>commons-compress</artifactId>
 		    <version>1.27.1</version> <!-- o la versión más reciente -->
 		</dependency>
+      
+      
+      	<!--AETHER-->
+      	<dependency>
+	        <groupId>org.eclipse.aether</groupId>
+	        <artifactId>aether-api</artifactId>
+	        <version>${aetherVersion}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.eclipse.aether</groupId>
+	        <artifactId>aether-spi</artifactId>
+	        <version>${aetherVersion}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.eclipse.aether</groupId>
+	        <artifactId>aether-util</artifactId>
+	        <version>${aetherVersion}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.eclipse.aether</groupId>
+	        <artifactId>aether-impl</artifactId>
+	        <version>${aetherVersion}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.eclipse.aether</groupId>
+	        <artifactId>aether-connector-basic</artifactId>
+	        <version>${aetherVersion}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.eclipse.aether</groupId>
+	        <artifactId>aether-transport-file</artifactId>
+	        <version>${aetherVersion}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.eclipse.aether</groupId>
+	        <artifactId>aether-transport-http</artifactId>
+	        <version>${aetherVersion}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.apache.maven</groupId>
+	        <artifactId>maven-aether-provider</artifactId>
+	        <version>${mavenVersion}</version>
+	    </dependency>
+	      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      	
       
       
 		<!-- TESTING -->
