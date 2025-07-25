@@ -57,7 +57,7 @@ public class DagPathClassLoadHelper extends CascadingClassLoadHelper {
 		ApplicationContext appCtx = new ApplicationContextUtils().getApplicationContext();
 		if(ctx !=null && appCtx != null) {
 			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
-			Path folderPath = handler.getFolderPath();
+			Path folderPath = handler.getPath("/");
 			try {
 				return this.getClassForLoad(folderPath, name);	
 			} catch (Exception e) {

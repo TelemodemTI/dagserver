@@ -29,17 +29,7 @@ public class JimfsAdapter extends DagFileSystem {
 	}
 	
 	@Override
-	public Path getFolderPath() {
-		return this.fs.getPath(WORK);
-	}
-
-	@Override
-	public Path getFolderPath(String jarname) {
-		return this.fs.getPath(WORK + jarname);
-	}
-
-	@Override
-	public Path getJDBCDriversPath(String inputPath) {
+	public Path getPath(String inputPath) {
 		String realpath = (WORK+inputPath).replace(DSEP, SEP);
 		return this.fs.getPath(realpath);
 	}
@@ -47,7 +37,7 @@ public class JimfsAdapter extends DagFileSystem {
 	public DirectoryEntryDTO getContents() throws DomainException {
 		DirectoryEntryDTO directoryEntry = new DirectoryEntryDTO();
 	    directoryEntry.setPath(SEP);	    
-	    directoryEntry.setContent(getFileEntries(this.getFolderPath()));
+	    directoryEntry.setContent(getFileEntries(this.getPath("/")));
 	    return directoryEntry;
 	}
 
@@ -55,7 +45,7 @@ public class JimfsAdapter extends DagFileSystem {
 	public void upload(Path tempFile, String uploadPath,String realname) throws DomainException {
 	    try {
 	    	String realnamec = (uploadPath+SEP+realname).replace(DSEP, SEP);
-	        Path destinationPath = this.getFolderPath(realnamec);
+	        Path destinationPath = this.getPath(realnamec);
 	        this.createIfNull(destinationPath);
 	        Files.copy(tempFile, destinationPath);
 	    } catch (IOException e) {

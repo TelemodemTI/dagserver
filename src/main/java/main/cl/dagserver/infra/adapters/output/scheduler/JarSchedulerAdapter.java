@@ -68,7 +68,7 @@ public class JarSchedulerAdapter implements JarSchedulerOutputPort {
 	public JarSchedulerAdapter init() throws DomainException {
 	    this.classMap = new HashMap<>();
 	    this.jars = new ArrayList<>();
-	    Path folderPath = fileSystem.getFolderPath();
+	    Path folderPath = fileSystem.getPath("/");
 	    List<Path> jarFiles = new ArrayList<>();
 	    try (Stream<Path> paths = Files.walk(folderPath)) {
 	        jarFiles = paths.filter(path -> {

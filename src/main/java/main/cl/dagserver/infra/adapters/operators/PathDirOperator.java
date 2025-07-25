@@ -30,7 +30,7 @@ public class PathDirOperator extends OperatorStage {
 	    log.debug("args");
 	    log.debug(this.args);
 	    List<Map<String, Object>> returnv = new ArrayList<>();
-	    String path = this.args.getProperty("path");
+	    String path = this.getInputProperty("path");
 	    try {
 	        Path dirPath = Paths.get(path);
 	        

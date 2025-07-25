@@ -18,19 +18,19 @@ class JimfsAdapterTest {
 	
 	@Test
 	void getFolderPathTest(){
-		var rv = memory.getFolderPath();
+		var rv = memory.getPath("/");
 		assertNotNull(rv);
 	}
 	
 	@Test
 	void getFolderPathStringTest() {
-		var rv = memory.getFolderPath("");
+		var rv = memory.getPath("");
 		assertNotNull(rv);
 	}
 	
 	@Test
 	void getJDBCDriversPathTest() {
-		var rv = memory.getJDBCDriversPath("");
+		var rv = memory.getPath("");
 		assertNotNull(rv);
 	}
 	@Test

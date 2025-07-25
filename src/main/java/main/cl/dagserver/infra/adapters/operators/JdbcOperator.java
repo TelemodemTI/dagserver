@@ -58,7 +58,7 @@ public class JdbcOperator extends OperatorStage {
 		if(appCtx != null) {
 			var handler =  appCtx.getBean("internalOperatorService", InternalOperatorUseCase.class);
 			try {
-				Path driversPath = handler.getJDBCDriversPath(this.getInputProperty("driverPath"));
+				Path driversPath = handler.getPath(this.getInputProperty("driverPath"));
 				this.credentials = handler.getCredentials(this.args.getProperty("credentials"));
 				this.searchJarFiles(driversPath,archivosJar);	
 			} catch (Exception e) {
