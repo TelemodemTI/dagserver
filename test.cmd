@@ -2,14 +2,14 @@
 
 echo ==== Inicio de pruebas: %date% %time% ==== > test-output.log
 rem Eliminar la imagen Docker maximolira/dagserver si existe
-docker image rm -f maximolira/dagserver
+call docker image rm -f maximolira/dagserver
 
 rem Ejecutar pruebas JUnit 
 call mvn test -P junit-tests >> test-output.log 2>&1
 if errorlevel 1 exit /b 1
 
 rem Contruyendo el contenedor Docker
-docker build -t maximolira/dagserver . >> test-output.log 2>&1
+call docker build -t maximolira/dagserver . >> test-output.log 2>&1
 if errorlevel 1 exit /b 1
 
 rem Ejecutar pruebas TestNG principales
@@ -29,6 +29,8 @@ call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/
 if errorlevel 1 exit /b 1
 
 rem Ejecutar pruebas TestNG Operadores
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-pathdir-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
 call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-cmd-test.xml >> test-output.log 2>&1
 if errorlevel 1 exit /b 1
 call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-excel-test.xml >> test-output.log 2>&1
@@ -51,5 +53,9 @@ call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/
 if errorlevel 1 exit /b 1
 call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-minio-test.xml >> test-output.log 2>&1
 if errorlevel 1 exit /b 1
+call mvn surefire:test -P testng-tests -DsuiteXmlFile=src/test/resources/suites/operator-aether-test.xml >> test-output.log 2>&1
+if errorlevel 1 exit /b 1
+
+
 
 echo ==== Fin de pruebas: %date% %time% ==== >> test-output.log
