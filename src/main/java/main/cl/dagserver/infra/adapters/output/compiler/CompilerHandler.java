@@ -212,16 +212,12 @@ public class CompilerHandler implements CompilerOutputPort {
 		Path folderPath = fileSystem.getPath("/");
 	    ClassFileLocator classFileLocator = new DirectoryClassFileLocator(folderPath.toString());
 	    TypePool pool = new TypePool.Default(new CacheProvider.Simple(), classFileLocator, TypePool.Default.ReaderMode.FAST);
-	    
 	    ByteBuddy byteBuddy = new ByteBuddy();
-	    
 	    Builder<DagExecutable> builderbb = byteBuddy.subclass(DagExecutable.class, ConstructorStrategy.Default.NO_CONSTRUCTORS)
 	                                                .name(dtomap.get("classname"));
 	    Initial<DagExecutable> inicial = builderbb.defineConstructor(Visibility.PUBLIC);
-	    
 	    ReceiverTypeDefinition<DagExecutable> receiver = inicial.intercept(builder.build(dtomap.get(JARNAME), boxes));
 	    Unloaded<DagExecutable> varu = null;
-	    
 	    if ("cron".equals(dtomap.get("type"))) {
 	        varu = receiver.annotateType(AnnotationDescription.Builder.ofType(Dag.class)
 	                .define(NAME, dtomap.get(NAME))

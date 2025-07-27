@@ -94,19 +94,12 @@ public class KeystoreAdapter implements KeystoreOutputPort {
 	    try {
 	        KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) local.getEntry(alias, new KeyStore.PasswordProtection(this.password.toCharArray()));
 	        SecretKey secretKey = secretKeyEntry.getSecretKey();
-
-	        // Obtener los bytes de la clave (que representan el JSON)
 	        byte[] keyBytes = secretKey.getEncoded();
-
-	        // Convertir los bytes a String JSON
 	        String jsonStr = new String(keyBytes);
-
-	        // Convertir el JSON a CredentialsDTO
 	        JSONObject json = new JSONObject(jsonStr);
 	        CredentialsDTO credentials = new CredentialsDTO();
 	        credentials.setUsername(json.getString("username"));
 	        credentials.setPassword(json.getString("password"));
-
 	        return credentials;
 	    } catch (Exception e) {
 	        throw new DomainException(e);
@@ -134,8 +127,6 @@ public class KeystoreAdapter implements KeystoreOutputPort {
 
 	public File generateKeystoreFile(String filename) throws DomainException {
 	    try {
-	        //el archivo que luego necesito importar a travez del metodo importKeystore
-	    	//se crea en este metodo
 	    	File jksFile = File.createTempFile(filename, ".jks");
 	        try (FileOutputStream fos = new FileOutputStream(jksFile)) {
 	            local.store(fos, this.password.toCharArray());
