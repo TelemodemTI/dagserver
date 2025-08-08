@@ -31,6 +31,8 @@ import org.quartz.JobListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import com.nhl.dflib.DataFrame;
+
+import lombok.Data;
 import main.cl.dagserver.application.ports.output.SchedulerRepositoryOutputPort;
 import main.cl.dagserver.domain.annotations.Dag;
 import main.cl.dagserver.domain.annotations.Operator;
@@ -51,6 +53,7 @@ public class DagExecutable implements Job,JobListener  {
 	private static final String EVALSTRING = "evalstring";
 	private static final String STATUSTOBE = "statusToBe";
 	
+	@Data
 	protected class DagNode {
 		protected Class<?> operator;
 		protected String name;
@@ -60,30 +63,6 @@ public class DagExecutable implements Job,JobListener  {
 			this.name = name;
 			this.operator = operator;
 			this.args = args;
-			this.optionals = optionals;
-		}
-		public Class<?> getOperator() {
-			return operator;
-		}
-		public void setOperator(Class<?> operator) {
-			this.operator = operator;
-		}
-		public String getName() {
-			return name;
-		}
-		public void setName(String name) {
-			this.name = name;
-		}
-		public Properties getArgs() {
-			return args;
-		}
-		public void setArgs(Properties args) {
-			this.args = args;
-		}
-		public Properties getOptionals() {
-			return optionals;
-		}
-		public void setOptionals(Properties optionals) {
 			this.optionals = optionals;
 		}
 	}
