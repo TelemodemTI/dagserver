@@ -16,6 +16,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<aetherVersion>1.1.0</aetherVersion>
+		<openhtml.version>1.0.10</openhtml.version>
     	<mavenVersion>3.2.1</mavenVersion>
 		<java.version>17</java.version>
 		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
@@ -213,8 +214,6 @@
 		    <artifactId>jaxb-runtime</artifactId>
 		</dependency>
 		
-		
-		
 		<dependency>
 		    <groupId>org.javassist</groupId>
 		    <artifactId>javassist</artifactId>
@@ -316,7 +315,18 @@
 	        <version>${mavenVersion}</version>
 	    </dependency>
 	      
-      
+      	<dependency>
+	  		<groupId>com.openhtmltopdf</groupId>
+	  		<artifactId>openhtmltopdf-core</artifactId>
+	  		<version>${openhtml.version}</version>
+	  	</dependency>
+	  	
+	  	<dependency>
+	  		<!-- Required for PDF output. -->
+	  		<groupId>com.openhtmltopdf</groupId>
+	  		<artifactId>openhtmltopdf-pdfbox</artifactId>
+	  		<version>${openhtml.version}</version>
+	  	</dependency>
       
       
       
