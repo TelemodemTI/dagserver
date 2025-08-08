@@ -63,7 +63,7 @@ public class AetherOperator extends OperatorStage {
 	    	artifact = artifactResult.getArtifact();
 	    	byte[] content = Files.readAllBytes(artifact.getFile().toPath());
 			String jarname = artifact.getFile().getName();
-			Path destination = handler.getPath(jarname);
+			Path destination = handler.getPath("/"+jarname);
 			Files.write(destination, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
 		} catch (Exception e) {
