@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class DirectoryEntryDTO {
-	private String path;
+	private String name;
+	private String type;
 	private List<FileEntryDTO> content;
 }

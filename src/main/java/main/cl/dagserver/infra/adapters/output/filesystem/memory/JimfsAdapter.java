@@ -36,7 +36,8 @@ public class JimfsAdapter extends DagFileSystem {
 	@Override
 	public DirectoryEntryDTO getContents() throws DomainException {
 		DirectoryEntryDTO directoryEntry = new DirectoryEntryDTO();
-	    directoryEntry.setPath(SEP);	    
+	    directoryEntry.setName(SEP);
+	    directoryEntry.setType("folder");
 	    directoryEntry.setContent(getFileEntries(this.getPath("/")));
 	    return directoryEntry;
 	}

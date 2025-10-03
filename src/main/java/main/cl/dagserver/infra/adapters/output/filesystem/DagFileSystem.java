@@ -98,7 +98,7 @@ public abstract class DagFileSystem implements FileSystemOutputPort {
 	    try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
 	        for (Path entry : stream) {
 	        	FileEntryDTO fileEntry = new FileEntryDTO();
-	            fileEntry.setFilename(entry.getFileName().toString());       
+	            fileEntry.setName(entry.getFileName().toString());       
 	            if (Files.isDirectory(entry)) {
 	                fileEntry.setType("folder");
 	                fileEntry.setContent(getFileEntries(entry));
