@@ -18,7 +18,7 @@
 		<aetherVersion>1.1.0</aetherVersion>
 		<openhtml.version>1.0.10</openhtml.version>
     	<mavenVersion>3.2.1</mavenVersion>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
 		<sonar.coverage.jacoco.xmlReportPaths>${basedir}/target/jacoco_report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.exclusions>
@@ -328,27 +328,6 @@
 	  		<version>${openhtml.version}</version>
 	  	</dependency>
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      	
-      
-      
 		<!-- TESTING -->
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -370,6 +349,9 @@
 		    <artifactId>mysql</artifactId>
 		    <scope>test</scope>
 		</dependency>
+		
+		
+		
 		<dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
